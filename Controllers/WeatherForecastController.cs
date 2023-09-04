@@ -33,10 +33,10 @@ namespace WebApplication1.Controllers
         public IEnumerable<WeatherForecast> Get()
         {
             var id = 7;
-            
-                Establishment obj = new Establishment { Id = id, Name = "hej" };
-                _establishmentRepository.Add(obj);
-            Location loc = new Location { Id = id + 10, Establishment = obj };
+
+            Establishment obj = new Establishment { Id = id, Name = "hej" };
+            _establishmentRepository.Add(obj);
+            Location loc = new Location { Id = id + 10, EstablishmentId = obj.Id };
             _locationRepository.Add(loc);
 
             var download = _establishmentRepository.Get(id);

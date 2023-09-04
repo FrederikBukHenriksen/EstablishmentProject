@@ -10,7 +10,7 @@ namespace WebApplication1.Models
     {
         public int Id { get; set; }
         public int EstablishmentId { get; set; }
-        public Establishment Establishment { get; set; }
+        //public Establishment Establishment { get; set; }
     }
 
     public class LocationConfiguration : IEntityTypeConfiguration<Location>
@@ -19,9 +19,9 @@ namespace WebApplication1.Models
         {
             builder.HasKey(e => e.Id);
 
-            builder.HasOne(x => x.Establishment)
-                .WithMany()
-                .HasForeignKey(e => e.EstablishmentId);
+            //builder.HasOne(x => x.Establishment)
+            //    .WithMany()
+            //    .HasForeignKey(e => e.EstablishmentId);
         }
     }
 

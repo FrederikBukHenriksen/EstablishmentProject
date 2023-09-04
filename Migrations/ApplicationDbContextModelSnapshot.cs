@@ -21,6 +21,7 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -43,23 +44,24 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EstablishmentId")
+                        .IsUnique();
+
                     b.ToTable("Location");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Location", "Location")
-                        .WithOne("Establishment")
-                        .HasForeignKey("WebApplication1.Models.Establishment", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Location", b =>
                 {
-                    b.Navigation("Establishment")
+                    b.HasOne("WebApplication1.Models.Establishment", null)
+                        .WithOne("Location")
+                        .HasForeignKey("WebApplication1.Models.Location", "EstablishmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
+                {
+                    b.Navigation("Location")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

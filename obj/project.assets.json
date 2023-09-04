@@ -1504,11 +1504,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ekste\\Desktop\\Establishment_v3\\WebApplication1\\WebApplication1.csproj",
+      "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj",
       "projectName": "WebApplication1",
-      "projectPath": "C:\\Users\\Ekste\\Desktop\\Establishment_v3\\WebApplication1\\WebApplication1.csproj",
+      "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj",
       "packagesPath": "C:\\Users\\Ekste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ekste\\Desktop\\Establishment_v3\\WebApplication1\\obj\\",
+      "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Ekste\\AppData\\Roaming\\NuGet\\NuGet.Config",

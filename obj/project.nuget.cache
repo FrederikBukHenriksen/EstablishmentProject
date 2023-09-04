@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0mBeFEfNoFYjdFA1JqSg28gDDayHXtA7diCBd1PX0x9TOpBjJASRRfmKHmxgwXk0U4H2Tl4IrWdNb+SUuIni3A==",
+  "dgSpecHash": "2LGS6/aDchGBWwJtWBdOV3V3MUGCUD+6kQnPdYwIrad8JM4Y/7ZoimlY6LaqcUkhap5L4K/PSFb+AZF2RLuB0g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ekste\\Desktop\\Establishment_v3\\WebApplication1\\WebApplication1.csproj",
+  "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ekste\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.10\\microsoft.entityframeworkcore.7.0.10.nupkg.sha512",

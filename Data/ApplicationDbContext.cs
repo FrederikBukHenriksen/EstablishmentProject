@@ -13,12 +13,12 @@ namespace WebApplication1.Data
 
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new LocationConfiguration());
-        }
+        //    modelBuilder.ApplyConfiguration(new LocationConfiguration());
+        //}
     public DbSet<Establishment> Establishment { get; set; }
         //public DbSet<Location> Location { get; set; }
 
