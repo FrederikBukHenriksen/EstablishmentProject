@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Repositories;
+//using WebApplication1.Repositories;
 
 namespace WebApplication1.Controllers
 {
@@ -13,34 +13,34 @@ namespace WebApplication1.Controllers
     };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IEstablishmentRepository _establishmentRepository;
-        private readonly ILocationRepository _locationRepository;
+        //private readonly IEstablishmentRepository _establishmentRepository;
+        //private readonly ILocationRepository _locationRepository;
 
 
 
         public WeatherForecastController(
-            ILogger<WeatherForecastController> logger,
-            IEstablishmentRepository establishmentRepository,
-            ILocationRepository locationRepository
+            ILogger<WeatherForecastController> logger
+            //IEstablishmentRepository establishmentRepository,
+            //ILocationRepository locationRepository
             )
         {
             _logger = logger;
-            _establishmentRepository = establishmentRepository;
-            _locationRepository = locationRepository;
+            //_establishmentRepository = establishmentRepository;
+            //_locationRepository = locationRepository;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
-            var id = 7;
+            //var id = 7;
 
-            Establishment obj = new Establishment { Id = id, Name = "hej" };
-            _establishmentRepository.Add(obj);
-            Location loc = new Location { Id = id + 10, EstablishmentId = obj.Id };
-            _locationRepository.Add(loc);
+            //Establishment obj = new Establishment { Id = id, Name = "hej" };
+            //_establishmentRepository.Add(obj);
+            //Location loc = new Location { Id = id + 10, EstablishmentId = obj.Id };
+            //_locationRepository.Add(loc);
 
-            var download = _establishmentRepository.Get(id);
-            var download2 = _locationRepository.Get(id+10);
+            //var download = _establishmentRepository.Get(id);
+            //var download2 = _locationRepository.Get(id+10);
 
 
 
