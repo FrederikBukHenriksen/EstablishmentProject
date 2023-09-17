@@ -1,6 +1,4 @@
-﻿using WebApplication1.Models;
-
-namespace WebApplication1.Repositories
+﻿namespace WebApplication1.Repositories
 {  
     public class LocationRepository : Repository<Location>, ILocationRepository
     {

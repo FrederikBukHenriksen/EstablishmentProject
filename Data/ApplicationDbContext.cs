@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Metadata;
-using WebApplication1.Models;
 
 namespace WebApplication1.Data
 {
@@ -14,14 +13,14 @@ namespace WebApplication1.Data
 
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new LocationConfiguration());
-        }
-        public DbSet<Establishment> Establishment { get; set; }
-        public DbSet<Location> Location { get; set; }
+        //    modelBuilder.ApplyConfiguration(new LocationConfiguration());
+        //}
+    public DbSet<Establishment> Establishment { get; set; }
+        //public DbSet<Location> Location { get; set; }
 
 
     }
