@@ -106,3 +106,4 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\obj\Debug\net6.0\refint\Web
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\obj\Debug\net6.0\WebApplication1.pdb
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\obj\Debug\net6.0\WebApplication1.genruntimeconfig.cache
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\obj\Debug\net6.0\ref\WebApplication1.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\bin\Debug\net6.0\nswag.json
