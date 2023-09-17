@@ -1,15 +1,14 @@
 # Use root/example as user/password credentials
-version: '3.1'
+version: "3.1"
 
 services:
-
   db:
     image: mysql
     # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
     # (this is just an example, not intended to be a production configuration)
     # command: --default-authentication-plugin=mysql_native_password
     volumes:
-    - "./.data/db:/var/lib/mysql"
+      - "./.data/db:/var/lib/mysql"
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -25,3 +24,8 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  # angular-app:
+  #   image: angular # Use the name you specified when building the Angular image
+  #   ports:
+  #     - "8080:80"
