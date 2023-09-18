@@ -23,6 +23,10 @@ namespace WebApplication1
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
+            builder.Services.AddCors(options =>
+            options.AddDefaultPolicy(
+                policy => policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
+
 
             //Add repository
             builder.Services.AddTransient<ApplicationDbContext>();
@@ -37,7 +41,6 @@ namespace WebApplication1
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddMvcCore().AddApiExplorer();
             builder.Services.AddOpenApiDocument(options => {
                 options.PostProcess = document =>
                 {
@@ -63,11 +66,13 @@ namespace WebApplication1
 
             var app = builder.Build();
 
+            app.UseCors();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                //app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseOpenApi();
+                app.UseSwaggerUi3();
             }
 
             app.UseHttpsRedirection();
