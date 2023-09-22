@@ -26,13 +26,13 @@ namespace WebApplication1.Controllers
 
             //Establishment obj = new Establishment { Id = id, Name = "hej" };
             //_establishmentRepository.Add(obj);
-            //Location loc = new Location { Id = 8, EstablishmentId = obj.Id };
+            Location loc = new Location { };
             //_locationRepository.Add(loc);
 
             //var download = _establishmentRepository.Get(id);
-            var download2 = _locationRepository.Get(id+10);
+            //var download2 = _locationRepository.Get(id+10);
 
-            return download2;
+            return loc;
         }
     }
 }

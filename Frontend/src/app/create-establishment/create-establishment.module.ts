@@ -9,8 +9,10 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [CreateEstablishmentComponent],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule],
 })
 export class CreateEstablishmentModule {}

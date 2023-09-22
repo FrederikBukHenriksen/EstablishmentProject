@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Commands;
 using WebApplication1.Repositories;
 
 namespace WebApplication1.Controllers
@@ -8,33 +9,32 @@ namespace WebApplication1.Controllers
     public class EstablishmentController : ControllerBase
     {
         private readonly IEstablishmentRepository _establishmentRepository;
-        private readonly ILocationRepository _locationRepository;
 
         public EstablishmentController(
-            IEstablishmentRepository establishmentRepository,
-            ILocationRepository locationRepository
+            IEstablishmentRepository establishmentRepository
             )
         {
             _establishmentRepository = establishmentRepository;
-            _locationRepository = locationRepository;
+        }
+
+        [HttpGet]
+        [Route("/get")]
+        public Establishment Get(Guid id)
+        {
+            return _establishmentRepository.Get(id);    
+        }
+
+        [Route("/getall")]
+        public IEnumerable<Establishment> GetAll()
+        {
+            return _establishmentRepository.GetAll();
         }
 
         [HttpPost]
-        public Establishment Post()
+        public void Post(CreateEstablishmentCommand command)
         {
-
-
-            Establishment est = new Establishment { Name = "hej" };
+            Establishment est = new Establishment { Name = command.Name };
             _establishmentRepository.Add(est);
-
-
-
-            var download = _establishmentRepository.Get(est.Id);
-
-            Location loc = new Location { Address = "Vesterbrogade", Establishment = download };
-            _locationRepository.Add(loc);
-
-            return download;
         }
     }
 }
