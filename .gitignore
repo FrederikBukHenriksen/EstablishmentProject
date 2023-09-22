@@ -1,4 +1,8 @@
-.data
-obj
-.vs
-Migrations
+#Backend
+
+#Folders
+.data/*
+bin/*
+Migrations/*
+obj/*
+Properties/*
