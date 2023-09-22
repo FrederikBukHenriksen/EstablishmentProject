@@ -6,3 +6,4 @@ bin/*
 Migrations/*
 obj/*
 Properties/*
+.vs/*
