@@ -33,7 +33,7 @@ namespace WebApplication1.Repositories
             return Query.Where(predicate).AsEnumerable();
         }
 
-        public TEntity Get(int id)
+        public TEntity Get(Guid id)
         {
             return Context.Set<TEntity>().Find(id);
         }
