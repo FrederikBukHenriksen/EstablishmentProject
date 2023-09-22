@@ -9,7 +9,7 @@ namespace WebApplication1.Models
     public class Establishment : EntityBase
     {
         public string Name { get; set; }
-        public Location? LocationId { get; set; }
+        //public Location Location { get; set; }
     }
 
     public class EstablishmentConfiguration : IEntityTypeConfiguration<Establishment>
@@ -17,9 +17,10 @@ namespace WebApplication1.Models
         public void Configure(EntityTypeBuilder<Establishment> builder)
         {
             builder.ToTable(nameof(Establishment));
-            builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Name);
+            builder.Property(e => e.Name).IsRequired();
+
+            //builder.Navigation(e => e.Location);
 
         }
     }
