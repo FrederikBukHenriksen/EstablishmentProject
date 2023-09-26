@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { HttpContext } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 
 import {
+  AuthenticationClient,
   CreateEstablishmentCommand,
   EstablishmentClient,
   TestClient,
@@ -25,16 +26,13 @@ export class CreateEstablishmentComponent {
     lastName: new FormControl(''),
   });
 
-  constructor(
-    private readonly establishmentClient: EstablishmentClient,
-    private readonly testClient: TestClient
-  ) {
-    // this.establishmentClient
-    //   .get('91da6f64-ac3e-4545-8caa-f3f39270d29d')
-    //   .subscribe((x) => console.log('haha', x));
-    // this.establishmentClient.getAll().subscribe((x) => console.log(x));
+  //Injection
+  private readonly establishmentClient = inject(EstablishmentClient);
+  private readonly testClient = inject(TestClient);
+  private readonly auth = inject(AuthenticationClient);
 
-    this.testClient.get().subscribe((x) => console.log('fak off', x));
+  constructor() {
+    this.auth.loginv2GET().subscribe((x) => console.log('fak off', x));
   }
 
   protected onSubmit() {

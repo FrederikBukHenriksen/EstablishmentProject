@@ -8,7 +8,7 @@ import { LoginComponent } from './login/login.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { CreateEstablishmentModule } from './create-establishment/create-establishment.module';
 import { API_BASE_URL } from 'models';
-import { HttpIntercepterService } from './http-intercepter.service';
+import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
@@ -18,12 +18,17 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
     LoginComponent,
     HomepageComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, CreateEstablishmentModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    CreateEstablishmentModule,
+    HttpClientModule,
+  ],
   providers: [
-    { provide: API_BASE_URL, useValue: 'https://localhost:44331' },
+    { provide: API_BASE_URL, useValue: '' },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: HttpIntercepterService,
+      useClass: HttpInterceptService,
       multi: true,
     },
   ],

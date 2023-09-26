@@ -23,13 +23,13 @@ namespace WebApplication1
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            //var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCookie(options => options.Cookie.Name = "token")
+                .AddJwtBearer(
                 options =>
-                options.TokenValidationParameters = new TokenValidationParameters
+                { options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = "issuer",
                     ValidAudience = "audience",
@@ -38,7 +38,17 @@ namespace WebApplication1
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                });
+                };
+                    options.Events = new JwtBearerEvents {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["token"];
+                            return Task.CompletedTask;
+                        }
+                    }; 
+                }
+                );
+                
 
             builder.Services.AddAuthorization(options =>
             {
@@ -50,9 +60,15 @@ namespace WebApplication1
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
-            builder.Services.AddCors(options =>
-            options.AddDefaultPolicy(
-                policy => policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
+            //builder.Services.AddCors(options =>
+            //options.AddDefaultPolicy(
+            //    policy => policy
+            //    .WithOrigins("https://localhost:44331,https://localhost:4200")
+            //    .AllowAnyHeader()
+            //    .SetIsOriginAllowed(_ => true)
+
+            //    .AllowAnyMethod()
+            //));
 
 
 
@@ -69,11 +85,32 @@ namespace WebApplication1
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddOpenApiDocument();
+            builder.Services.AddOpenApiDocument(options => {
+                options.PostProcess = document =>
+                {
+                    document.Info = new OpenApiInfo
+                    {
+                        Version = "v1",
+                        Title = "ToDo API",
+                        Description = "An ASP.NET Core Web API for managing ToDo items",
+                        TermsOfService = "https://example.com/terms",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Example Contact",
+                            Url = "https://example.com/contact"
+                        },
+                        License = new OpenApiLicense
+                        {
+                            Name = "Example License",
+                            Url = "https://example.com/license"
+                        }
+                    };
+                };
+            });
 
             var app = builder.Build();
 
-            app.UseCors();
+            //app.UseCors();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

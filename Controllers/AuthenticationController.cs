@@ -11,7 +11,7 @@ using WebApplication1.Repositories;
 namespace WebApplication1.Controllers
 {
     [ApiController]
-    [Route("login")]
+    [Route("api/login")]
     public class AuthenticationController : ControllerBase
     {
         public AuthenticationController(
@@ -20,21 +20,44 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        public string Login()
+    //    public string Login()
+    //    {
+    //        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication"));
+    //        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+    //        var claims = new[]
+    //        {
+    //    new Claim(JwtRegisteredClaimNames.Sub, "Frederik"),
+    //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    //    new Claim(ClaimTypes.Role,"admin")
+    //}
+    //        ;
+
+    //        var token = new JwtSecurityToken(
+    //            issuer: "issuer",
+    //            audience: "audience",
+    //            claims: claims,
+    //            expires: DateTime.UtcNow.AddMinutes(60),
+    //            signingCredentials: credentials
+    //        );
+
+    //        return new JwtSecurityTokenHandler().WriteToken(token);
+
+
+        //}
+
+
+        [HttpPost]
+        public IActionResult Loginv2()
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication"));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-        new Claim(JwtRegisteredClaimNames.Sub, "Frederik"),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         new Claim(ClaimTypes.Role,"admin")
     }
             ;
-
-            //claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-
 
             var token = new JwtSecurityToken(
                 issuer: "issuer",
@@ -43,12 +66,11 @@ namespace WebApplication1.Controllers
                 expires: DateTime.UtcNow.AddMinutes(60),
                 signingCredentials: credentials
             );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-
-
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            this.HttpContext.Response.Cookies.Append("token", "jwt", new CookieOptions {  HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None});
+            this.HttpContext.Response.Headers.Add("access-control-expose-headers","Set-Cookie");
+            return Ok();
         }
-
 
     }
 }
