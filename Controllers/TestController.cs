@@ -4,6 +4,7 @@ using WebApplication1.Repositories;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class TestController : ControllerBase

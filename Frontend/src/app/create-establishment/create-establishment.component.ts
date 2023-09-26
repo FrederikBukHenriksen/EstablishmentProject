@@ -8,7 +8,11 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { CreateEstablishmentCommand, EstablishmentClient } from 'models';
+import {
+  CreateEstablishmentCommand,
+  EstablishmentClient,
+  TestClient,
+} from 'models';
 
 @Component({
   selector: 'app-create-establishment',
@@ -21,11 +25,16 @@ export class CreateEstablishmentComponent {
     lastName: new FormControl(''),
   });
 
-  constructor(private readonly establishmentClient: EstablishmentClient) {
-    this.establishmentClient
-      .get('91da6f64-ac3e-4545-8caa-f3f39270d29d')
-      .subscribe((x) => console.log('haha', x));
-    this.establishmentClient.getAll().subscribe((x) => console.log(x));
+  constructor(
+    private readonly establishmentClient: EstablishmentClient,
+    private readonly testClient: TestClient
+  ) {
+    // this.establishmentClient
+    //   .get('91da6f64-ac3e-4545-8caa-f3f39270d29d')
+    //   .subscribe((x) => console.log('haha', x));
+    // this.establishmentClient.getAll().subscribe((x) => console.log(x));
+
+    this.testClient.get().subscribe((x) => console.log('fak off', x));
   }
 
   protected onSubmit() {
