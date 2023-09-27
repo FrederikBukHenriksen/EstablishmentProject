@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { AuthenticationClient } from 'models';
+import { AuthenticationClient } from 'api';
 
 @Injectable({
   providedIn: 'root',

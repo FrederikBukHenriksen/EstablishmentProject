@@ -312,7 +312,7 @@ export class TestClient {
     }
 
     get(): Observable<Location> {
-        let url_ = this.baseUrl + "/Test";
+        let url_ = this.baseUrl + "/api/test";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

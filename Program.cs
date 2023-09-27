@@ -26,23 +26,23 @@ namespace WebApplication1
 
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddCookie(options => options.Cookie.Name = "token")
-                .AddJwtBearer(
-                options =>
-                { options.TokenValidationParameters = new TokenValidationParameters
+                .AddCookie(options => options.Cookie.Name = "jwt")
+                .AddJwtBearer( options =>
                 {
-                    ValidIssuer = "issuer",
-                    ValidAudience = "audience",
+                    options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    //ValidIssuer = "issuer",
+                    //ValidAudience = "audience",
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    //ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                 };
                     options.Events = new JwtBearerEvents {
                         OnMessageReceived = context =>
                         {
-                            context.Token = context.Request.Cookies["token"];
+                            context.Token = context.Request.Cookies["jwt"];
                             return Task.CompletedTask;
                         }
                     }; 

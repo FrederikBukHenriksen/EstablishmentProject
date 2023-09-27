@@ -6,7 +6,7 @@ namespace WebApplication1.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/test")]
     public class TestController : ControllerBase
     {
 

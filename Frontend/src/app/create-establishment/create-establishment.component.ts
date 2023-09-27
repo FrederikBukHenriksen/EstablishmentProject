@@ -8,12 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 
-import {
-  AuthenticationClient,
-  CreateEstablishmentCommand,
-  EstablishmentClient,
-  TestClient,
-} from 'models';
+import { AuthenticationClient, TestClient } from 'api';
 
 @Component({
   selector: 'app-create-establishment',
@@ -27,7 +22,7 @@ export class CreateEstablishmentComponent {
   });
 
   //Injection
-  private readonly establishmentClient = inject(EstablishmentClient);
+  // private readonly establishmentClient = inject(EstablishmentClient);
   private readonly testClient = inject(TestClient);
   private readonly auth = inject(AuthenticationClient);
 
@@ -40,10 +35,12 @@ export class CreateEstablishmentComponent {
 
     console.log('lastName', this.applyForm.value.lastName);
 
-    this.establishmentClient
-      .post({
-        name: this.applyForm.value.firstName,
-      } as CreateEstablishmentCommand)
-      .subscribe();
+    // this.establishmentClient
+    //   .post({
+    //     name: this.applyForm.value.firstName,
+    //   } as CreateEstablishmentCommand)
+    //   .subscribe();
+
+    this.testClient.get().subscribe((x) => console.log('hehehe', x));
   }
 }

@@ -7,10 +7,9 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { CreateEstablishmentModule } from './create-establishment/create-establishment.module';
-import { API_BASE_URL } from 'models';
+import { API_BASE_URL } from 'api';
 import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
 @NgModule({
   declarations: [
     AppComponent,

@@ -60,15 +60,14 @@ namespace WebApplication1.Controllers
             ;
 
             var token = new JwtSecurityToken(
-                issuer: "issuer",
-                audience: "audience",
+                //issuer: "issuer",
+                //audience: "audience",
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(60),
                 signingCredentials: credentials
             );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            this.HttpContext.Response.Cookies.Append("token", "jwt", new CookieOptions {  HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None});
-            this.HttpContext.Response.Headers.Add("access-control-expose-headers","Set-Cookie");
+            this.HttpContext.Response.Cookies.Append("jwt", jwt, new CookieOptions {  HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None});
             return Ok();
         }
 
