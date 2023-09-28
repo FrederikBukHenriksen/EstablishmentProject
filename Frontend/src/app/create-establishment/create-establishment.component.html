@@ -4,5 +4,12 @@
 
   <label for="last-name">Last Name</label>
   <input id="last-name" type="text" formControlName="lastName" />
-  <button type="submit" class="primary">Apply now</button>
+
+  <ng-container *ngIf="buttonColor === 'blue'">
+    <button [ngStyle]="{ 'background-color': buttonColor }">Blue Button</button>
+  </ng-container>
+
+  <ng-container *ngIf="buttonColor === 'red'">
+    <button [ngStyle]="{ 'background-color': buttonColor }">Red Button</button>
+  </ng-container>
 </form>

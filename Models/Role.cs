@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Models
 {
-    public enum Roles
+    public enum Role
     {
         Admin,
         User

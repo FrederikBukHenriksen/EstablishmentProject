@@ -1,18 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using System.Text;
-using WebApplication1.Controllers;
-using WebApplication1.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using NSwag;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
-using System;
-
-
+using WebApplication1.Services;
 
 namespace WebApplication1
 {
@@ -31,12 +21,10 @@ namespace WebApplication1
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    //ValidIssuer = "issuer",
-                    //ValidAudience = "audience",
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    //ValidateLifetime = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                 };
                     options.Events = new JwtBearerEvents {
@@ -48,11 +36,10 @@ namespace WebApplication1
                     }; 
                 }
                 );
-                
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("admin", policy => policy.RequireRole("admin"));
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
             });
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -60,27 +47,14 @@ namespace WebApplication1
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
-            //builder.Services.AddCors(options =>
-            //options.AddDefaultPolicy(
-            //    policy => policy
-            //    .WithOrigins("https://localhost:44331,https://localhost:4200")
-            //    .AllowAnyHeader()
-            //    .SetIsOriginAllowed(_ => true)
-
-            //    .AllowAnyMethod()
-            //));
-
-
-
             //Add repository
             builder.Services.AddTransient<ApplicationDbContext>();
 
-            builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
-            builder.Services.AddScoped<ILocationRepository, LocationRepository>();
-
-
             // Add services to the container.
             builder.Services.AddControllers();
+            //builder.Services.AddServices();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddRepositories();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -108,9 +82,9 @@ namespace WebApplication1
                 };
             });
 
-            var app = builder.Build();
 
-            //app.UseCors();
+
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -124,13 +98,9 @@ namespace WebApplication1
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
 
-
             app.Run();
-
-
         }
     }
 

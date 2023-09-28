@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace WebApplication1.Models
 {
-    public class EntityBase
+    public abstract class EntityBase
     {
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
