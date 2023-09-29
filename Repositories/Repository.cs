@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System.Xml;
+﻿using System.Linq.Expressions;
 
 namespace WebApplication1.Repositories
 {
@@ -14,7 +12,7 @@ namespace WebApplication1.Repositories
         public Repository(DbContext Context)
         {
             this.Context = Context;
-            this.Query = Context.Set<TEntity>().AsQueryable();
+            Query = Context.Set<TEntity>().AsQueryable();
         }
 
         public void Add(TEntity entity)

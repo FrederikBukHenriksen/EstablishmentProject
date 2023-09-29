@@ -28,11 +28,11 @@ export class AuthenticationClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    login(command: LoginCommand): Observable<FileResponse> {
+    login(loginCommand: LoginCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/authentication/login";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
+        const content_ = JSON.stringify(loginCommand);
 
         let options_ : any = {
             body: content_,

@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Namotion.Reflection;
-using System.Net;
-using System.Reflection.Emit;
-
-namespace WebApplication1.Models
+﻿namespace WebApplication1.Models
 {
     public abstract class EntityBase
     {

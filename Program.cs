@@ -1,8 +1,7 @@
-using System.Text;
-using NSwag;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using WebApplication1.Services;
+using NSwag;
+using System.Text;
 
 namespace WebApplication1
 {
@@ -10,30 +9,31 @@ namespace WebApplication1
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddCookie(options => options.Cookie.Name = "jwt")
-                .AddJwtBearer( options =>
+                .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                };
-                    options.Events = new JwtBearerEvents {
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
                         OnMessageReceived = context =>
                         {
                             context.Token = context.Request.Cookies["jwt"];
                             return Task.CompletedTask;
                         }
-                    }; 
+                    };
                 }
                 );
 
@@ -52,14 +52,16 @@ namespace WebApplication1
 
             // Add services to the container.
             builder.Services.AddControllers();
+
             //builder.Services.AddServices();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddServices();
             builder.Services.AddRepositories();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddOpenApiDocument(options => {
+            builder.Services.AddOpenApiDocument(options =>
+            {
                 options.PostProcess = document =>
                 {
                     document.Info = new OpenApiInfo
@@ -84,7 +86,7 @@ namespace WebApplication1
 
 
 
-            var app = builder.Build();
+            WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Metadata;
-
-namespace WebApplication1.Data
+﻿namespace WebApplication1.Data
 {
     public class ApplicationDbContext : DbContext
     {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using YamlDotNet.Core.Tokens;
 
 namespace WebApplication1.Models
 {
@@ -14,7 +13,7 @@ namespace WebApplication1.Models
     {
         public void Configure(EntityTypeBuilder<Location> builder)
         {
-            builder.ToTable(nameof(Location));  
+            builder.ToTable(nameof(Location));
 
             builder.Property(e => e.Address);
 
