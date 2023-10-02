@@ -359,10 +359,7 @@ export class TestClient {
     }
 }
 
-export interface ACommand {
-}
-
-export interface LoginCommand extends ACommand {
+export interface LoginCommand {
     username: string;
     password: string;
 }
@@ -378,6 +375,9 @@ export interface User extends EntityBase {
 
 export interface Establishment extends EntityBase {
     name: string;
+}
+
+export interface ACommand {
 }
 
 export interface CreateEstablishmentCommand extends ACommand {
