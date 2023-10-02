@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.CommandHandlers.CommandReturn
 {
-    public abstract class CommandHandlerBase : ICommandHandlerReturn
+    public abstract class CommandHandlerReturnBase : ICommandHandlerReturn
     {
         public object _value = null;
 

@@ -56,6 +56,7 @@ namespace WebApplication1
             //builder.Services.AddServices();
             builder.Services.AddServices();
             builder.Services.AddRepositories();
+            builder.Services.AddCommandHandlers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

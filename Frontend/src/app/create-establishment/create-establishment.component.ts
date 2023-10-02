@@ -1,16 +1,6 @@
-import { CommonModule } from '@angular/common';
-import {
-  HttpClient,
-  HttpContext,
-  HttpErrorResponse,
-} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 import { AuthenticationClient, LoginCommand, TestClient } from 'api';
 
@@ -25,21 +15,16 @@ export class CreateEstablishmentComponent {
     lastName: new FormControl(''),
   });
 
-  //Injection
-  // private readonly establishmentClient = inject(EstablishmentClient);
-  private readonly testClient = inject(TestClient);
-  private readonly auth = inject(AuthenticationClient);
+  private readonly authenticationClient = inject(AuthenticationClient);
 
   public buttonColor = 'blue';
-
-  constructor() {}
 
   protected onSubmit() {
     console.log('firstName', this.applyForm.value.firstName);
 
     console.log('lastName', this.applyForm.value.lastName);
 
-    this.auth
+    this.authenticationClient
       .login({
         username: this.applyForm.value.firstName,
         password: this.applyForm.value.lastName,
@@ -54,7 +39,9 @@ export class CreateEstablishmentComponent {
           console.error('fejlowitz', e.status);
         },
         complete: () =>
-          this.auth.getUser().subscribe((x) => console.log('brugerinfo', x)),
+          this.authenticationClient
+            .getUser()
+            .subscribe((x) => console.log('brugerinfo', x)),
       });
   }
 }

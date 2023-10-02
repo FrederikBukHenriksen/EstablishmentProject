@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.CommandHandlers;
+using WebApplication1.CommandHandlers.CommandReturn;
 using WebApplication1.Commands;
 using WebApplication1.Services;
 
@@ -14,8 +16,13 @@ namespace WebApplication1.Controllers
         [HttpPost("login")]
         public IActionResult login(
             [FromBody] LoginCommand loginCommand,
+            [FromServices] ICommandHandler<LoginCommand,ICommandHandlerReturn> loginCommandHandler,
             [FromServices] IAuthenticationService authenticationService)
         {
+
+            var ok = loginCommandHandler.ExecuteAsync(loginCommand, new CancellationToken());
+
+
             if (!(loginCommand.Username.Equals("frederik") && loginCommand.Password.Equals("1234")))
             {
                 return StatusCode(500);
