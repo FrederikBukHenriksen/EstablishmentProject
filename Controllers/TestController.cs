@@ -1,28 +1,22 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Repositories;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/test")]
     public class TestController : ControllerBase
     {
-        private readonly IEstablishmentRepository _establishmentRepository;
-        private readonly ILocationRepository _locationRepository;
 
         public TestController(
-            IEstablishmentRepository establishmentRepository,
-            ILocationRepository locationRepository
             )
         {
-            _establishmentRepository = establishmentRepository;
-            _locationRepository = locationRepository;
         }
-
-        [HttpGet(Name = "Lolcat")]
+        [Authorize("admin")]
+        [HttpGet(Name = "testEndPoint")]
         public Location Get()
         {
-            var id = 7;
 
             //Establishment obj = new Establishment { Id = id, Name = "hej" };
             //_establishmentRepository.Add(obj);

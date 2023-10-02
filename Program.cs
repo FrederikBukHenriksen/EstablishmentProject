@@ -1,12 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using WebApplication1.Controllers;
-using WebApplication1.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using NSwag;
-
+using System.Text;
 
 namespace WebApplication1
 {
@@ -14,34 +9,60 @@ namespace WebApplication1
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCookie(options => options.Cookie.Name = "jwt")
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["jwt"];
+                            return Task.CompletedTask;
+                        }
+                    };
+                }
+                );
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            });
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
-            builder.Services.AddCors(options =>
-            options.AddDefaultPolicy(
-                policy => policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()));
-
-
             //Add repository
             builder.Services.AddTransient<ApplicationDbContext>();
-
-            builder.Services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
-            builder.Services.AddScoped<ILocationRepository, LocationRepository>();
-
 
             // Add services to the container.
             builder.Services.AddControllers();
 
+            //builder.Services.AddServices();
+            builder.Services.AddServices();
+            builder.Services.AddRepositories();
+            builder.Services.AddCommandHandlers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddOpenApiDocument(options => {
+            builder.Services.AddOpenApiDocument(options =>
+            {
                 options.PostProcess = document =>
                 {
                     document.Info = new OpenApiInfo
@@ -64,9 +85,9 @@ namespace WebApplication1
                 };
             });
 
-            var app = builder.Build();
 
-            app.UseCors();
+
+            WebApplication app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -77,15 +98,12 @@ namespace WebApplication1
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
-
             app.Run();
-
-
         }
     }
 

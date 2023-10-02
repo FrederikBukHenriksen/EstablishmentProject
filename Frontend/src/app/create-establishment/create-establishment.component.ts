@@ -1,14 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { HttpContext } from '@angular/common/http';
-import { Component } from '@angular/core';
-import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 
-import { CreateEstablishmentCommand, EstablishmentClient } from 'models';
+import { AuthenticationClient, LoginCommand, TestClient } from 'api';
 
 @Component({
   selector: 'app-create-establishment',
@@ -21,22 +15,33 @@ export class CreateEstablishmentComponent {
     lastName: new FormControl(''),
   });
 
-  constructor(private readonly establishmentClient: EstablishmentClient) {
-    this.establishmentClient
-      .get('91da6f64-ac3e-4545-8caa-f3f39270d29d')
-      .subscribe((x) => console.log('haha', x));
-    this.establishmentClient.getAll().subscribe((x) => console.log(x));
-  }
+  private readonly authenticationClient = inject(AuthenticationClient);
+
+  public buttonColor = 'blue';
 
   protected onSubmit() {
     console.log('firstName', this.applyForm.value.firstName);
 
     console.log('lastName', this.applyForm.value.lastName);
 
-    this.establishmentClient
-      .post({
-        name: this.applyForm.value.firstName,
-      } as CreateEstablishmentCommand)
-      .subscribe();
+    this.authenticationClient
+      .login({
+        username: this.applyForm.value.firstName,
+        password: this.applyForm.value.lastName,
+      } as LoginCommand)
+      .subscribe({
+        next: (v) => {
+          this.buttonColor = 'blue';
+          console.log(v);
+        },
+        error: (e: HttpErrorResponse) => {
+          this.buttonColor = 'red';
+          console.error('fejlowitz', e.status);
+        },
+        complete: () =>
+          this.authenticationClient
+            .getUser()
+            .subscribe((x) => console.log('brugerinfo', x)),
+      });
   }
 }

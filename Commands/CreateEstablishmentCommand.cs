@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Commands
 {
-    public class CreateEstablishmentCommand : Command
+    public class CreateEstablishmentCommand : ACommand
     {
         public string Name { get; set; }
 

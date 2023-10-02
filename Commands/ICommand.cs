@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Commands
 {
-    public class Command
+    public interface ICommand
     {
     }
 }

@@ -21,7 +21,7 @@ namespace WebApplication1.Controllers
         [Route("/get")]
         public Establishment Get(Guid id)
         {
-            return _establishmentRepository.Get(id);    
+            return _establishmentRepository.Get(id);
         }
 
         [Route("/getall")]

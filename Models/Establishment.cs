@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Namotion.Reflection;
-using System.Net;
-using System.Reflection.Emit;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace WebApplication1.Models
 {

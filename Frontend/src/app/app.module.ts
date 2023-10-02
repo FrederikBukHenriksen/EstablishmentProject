@@ -7,8 +7,9 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { CreateEstablishmentModule } from './create-establishment/create-establishment.module';
-import { API_BASE_URL } from 'models';
-
+import { API_BASE_URL } from 'api';
+import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 @NgModule({
   declarations: [
     AppComponent,
@@ -16,8 +17,21 @@ import { API_BASE_URL } from 'models';
     LoginComponent,
     HomepageComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, CreateEstablishmentModule],
-  providers: [{ provide: API_BASE_URL, useValue: 'https://localhost:44331' }],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    CreateEstablishmentModule,
+    HttpClientModule,
+  ],
+  providers: [
+    { provide: API_BASE_URL, useValue: '' },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptService,
+      multi: true,
+    },
+  ],
+
   bootstrap: [AppComponent],
 })
 export class AppModule {}
