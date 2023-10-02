@@ -1,5 +1,6 @@
 ﻿using WebApplication1.CommandHandlers;
 using WebApplication1.CommandHandlers.CommandReturn;
+using WebApplication1.Commands;
 using WebApplication1.Repositories;
 using WebApplication1.Services;
 
@@ -15,7 +16,11 @@ namespace WebApplication1
         {
             serviceCollection.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
             serviceCollection.AddScoped<ILocationRepository, LocationRepository>();
-            serviceCollection.AddTransient<ICommandHandler<LoginCommandHandler, ICommandHandlerReturn>, LoginCommandHandler>();
+        }
+
+        public static void AddCommandHandlers(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddTransient<ICommandHandler<LoginCommand, ICommandHandlerReturn>, LoginCommandHandler>();
         }
     }
 }
