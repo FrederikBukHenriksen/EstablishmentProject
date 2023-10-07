@@ -1,35 +1,45 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WebApplication1.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebApplication1.Services
 {
 
-    public interface IAuthenticationService
+    public interface IAuthService
     {
+
+        public User Login(string username, string password);
+
         public string GetUserInfo(string token);
 
         public string GenerateJwtToken(string username, List<Role> roles);
     }
 
-    public class AuthenticationService : IAuthenticationService
+    public class AuthService : IAuthService
     {
+
+        public AuthService([FromServices] IUserRepository userRepository)
+        {
+            this.userRepository = userRepository;
+        }
+
         private static readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
         private static readonly string _securityKey = "this is my custom Secret key for authentication";
+        private readonly IUserRepository userRepository;
 
         public string GenerateJwtToken(string username, List<Role> roles)
         {
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_securityKey));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            string rolesString = string.Join(", ",
-                roles.Select(x => x.ToString()).ToList()
-                );
+            string rolesString = string.Join(", ", roles.Select(x => x.ToString()).ToList());
 
-            Claim[] claims = new[] {
-                new Claim("username", username), new Claim("roles", rolesString)};
+            Claim[] claims = new[] {new Claim("username", username), new Claim("roles", rolesString)};
 
             JwtSecurityToken token = new JwtSecurityToken(
                 claims: claims,
@@ -38,6 +48,17 @@ namespace WebApplication1.Services
             );
             string jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+        public User Login(string username, string password)
+        {
+
+            var foundUser = userRepository.FindAll(x => x.Username.Equals(username) && x.Password.Equals(password)).First();
+
+            return new User
+            {
+                Username = username,
+                Role = Role.Admin.ToString()
+            };
         }
 
         public string GetUserInfo(string token)

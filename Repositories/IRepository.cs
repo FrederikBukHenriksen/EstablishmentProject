@@ -3,6 +3,9 @@
     using System.Linq.Expressions;
     public interface IRepository<TEntity> where TEntity : class
     {
+        DbContext Context { get; }
+
+        IQueryable<TEntity> Queryable { get; }
         TEntity Get(Guid id);
         TEntity Find(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate);

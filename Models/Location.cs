@@ -5,7 +5,6 @@ namespace WebApplication1.Models
     public class Location : EntityBase
     {
         public string Address { get; set; }
-        public Guid EstablishmentId { get; set; }
         public Establishment Establishment { get; set; }
     }
 
@@ -17,9 +16,6 @@ namespace WebApplication1.Models
 
             builder.Property(e => e.Address);
 
-            //builder.HasOne(s => s.Establishment)
-            //.WithOne(a => a.Location)
-            //.HasForeignKey<Location>(a => a.Id);
         }
     }
 

@@ -386,7 +386,6 @@ export interface CreateEstablishmentCommand extends ACommand {
 
 export interface Location extends EntityBase {
     address: string;
-    establishmentId: string;
     establishment: Establishment;
 }
 

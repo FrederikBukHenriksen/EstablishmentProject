@@ -2,11 +2,9 @@
 
 namespace WebApplication1.CommandHandlers
 {
-    public interface ICommandHandler<TCommand, TCommandReturn>
+    public interface ICommandHandler<TCommand, TReturn>
         where TCommand : ICommand
-        where TCommandReturn : CommandReturn.ICommandHandlerReturn
     {
-        Task<CommandReturn.ICommandHandlerReturn> ExecuteAsync(ICommand command, CancellationToken cancellationToken);
+        public Task<TReturn> ExecuteAsync(TCommand command, CancellationToken cancellationToken);
     }
-
 }
