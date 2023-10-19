@@ -1,6 +1,7 @@
-import { NgModule } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
+  Router,
   RouterModule,
   RouterStateSnapshot,
   Routes,
@@ -8,20 +9,29 @@ import {
 import { LoginComponent } from './login/login.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { CreateEstablishmentComponent } from './create-establishment/create-establishment.component';
+import { AuthenticationClient } from 'api';
+import { map } from 'rxjs';
 
-const isUserLoggedIn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
-  true;
-};
+const authGuard =
+  (roles: string[]) =>
+  (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    let authenticationClient = inject(AuthenticationClient);
+    return authenticationClient.getLoggedInUser().pipe(
+      map((user) => {
+        if (roles.find((x) => x == roles[user.role])) {
+          return true;
+        }
+        return false;
+      })
+    );
+  };
 
 const routes: Routes = [
   { path: '', component: HomepageComponent },
   { path: 'login', component: LoginComponent },
   {
     path: 'create-establishment',
-    canActivate: [isUserLoggedIn],
+    canActivate: [authGuard(['Admin'])],
     component: CreateEstablishmentComponent,
   },
 ];

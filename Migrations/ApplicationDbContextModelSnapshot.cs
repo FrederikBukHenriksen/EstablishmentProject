@@ -34,24 +34,76 @@ namespace WebApplication1.Migrations
                     b.ToTable("Establishment", (string)null);
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Location", b =>
+            modelBuilder.Entity("WebApplication1.Models.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Address")
+                    b.Property<Guid?>("EstablishmentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("EstablishmentId")
+                    b.Property<float>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<Guid?>("SaleId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EstablishmentId");
 
-                    b.ToTable("Location", (string)null);
+                    b.HasIndex("SaleId");
+
+                    b.ToTable("Item");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("EstablishmentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("TableId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstablishmentId");
+
+                    b.HasIndex("TableId");
+
+                    b.ToTable("Sale");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Table", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("EstablishmentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstablishmentId");
+
+                    b.ToTable("Table");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.User", b =>
@@ -61,6 +113,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Role")
@@ -76,15 +129,57 @@ namespace WebApplication1.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Location", b =>
+            modelBuilder.Entity("WebApplication1.Models.Item", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Establishment", null)
+                        .WithMany("Items")
+                        .HasForeignKey("EstablishmentId");
+
+                    b.HasOne("WebApplication1.Models.Sale", null)
+                        .WithMany("Items")
+                        .HasForeignKey("SaleId");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
                 {
                     b.HasOne("WebApplication1.Models.Establishment", "Establishment")
+                        .WithMany("Sales")
+                        .HasForeignKey("EstablishmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.Table", "Table")
                         .WithMany()
+                        .HasForeignKey("TableId");
+
+                    b.Navigation("Establishment");
+
+                    b.Navigation("Table");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Table", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
+                        .WithMany("Tables")
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Establishment");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Sales");
+
+                    b.Navigation("Tables");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
