@@ -24,6 +24,14 @@ namespace WebApplication1.Controllers
             return _establishmentRepository.Get(id);
         }
 
+        [HttpGet]
+        [Route("/get/sale")]
+        public void GetSale(Guid id)
+        {
+            var sales = _establishmentRepository.Queryable.Where(x => x.Id == new Guid("00000000-0000-0000-0000-000000000000")).Select(x => x.Sales).ToList();
+            return;
+        }
+
         [Route("/getall")]
         public IEnumerable<Establishment> GetAll()
         {

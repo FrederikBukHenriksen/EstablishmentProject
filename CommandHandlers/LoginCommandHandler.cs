@@ -10,22 +10,26 @@ namespace WebApplication1.CommandHandlers
     public class LoginCommandHandler : CommandHandlerBase<LoginCommand, string>
     {
         private readonly IAuthService authService;
-            
+        private readonly IUserRepository userRepository;
+
         public LoginCommandHandler(
-            [FromServices] IAuthService authService)
+            [FromServices] IAuthService authService, IUserRepository userRepository)
         {
             this.authService = authService;
+            this.userRepository = userRepository;
         }
 
-        public override Task<string> ExecuteAsync(LoginCommand command, CancellationToken cancellationToken)
-        {
-            var login = authService.Login(command.Username, command.Password);
-            if (login != null)
+            public override async Task<string> ExecuteAsync(LoginCommand command, CancellationToken cancellationToken)
             {
-                throw new Exception("Could not be signed in");
+                bool loginFound = authService.Login(command.Username, command.Password);
+                User? user = await userRepository.Queryable.Where(x => x.Username == command.Username).FirstOrDefaultAsync(cancellationToken);
+                if (!loginFound || user == null)
+                {
+                    throw new Exception("Login failed");
+                }
+
+                var result = authService.GenerateJwtToken(user.Username, new List<Role> { user.Role });
+                return result;
             }
-            var result = authService.GenerateJwtToken(login.Username, new List<Role> { Role.Admin });
-            return Task.Run(() => { return result; });
-        }
     }
 }

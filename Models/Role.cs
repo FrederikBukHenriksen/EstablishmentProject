@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.Models
+﻿using System.ComponentModel;
+
+namespace WebApplication1.Models
 {
     public enum Role
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,9 +13,9 @@ namespace WebApplication1.Services
     public interface IAuthService
     {
 
-        public User Login(string username, string password);
+        public bool Login(string username, string password);
 
-        public string GetUserInfo(string token);
+        public User? GetUserInfo(string token);
 
         public string GenerateJwtToken(string username, List<Role> roles);
     }
@@ -49,23 +50,31 @@ namespace WebApplication1.Services
             string jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
-        public User Login(string username, string password)
+
+        public bool Login(string username, string password)
         {
-
-            var foundUser = userRepository.FindAll(x => x.Username.Equals(username) && x.Password.Equals(password)).First();
-
-            return new User
-            {
-                Username = username,
-                Role = Role.Admin.ToString()
-            };
+            return userRepository.HasAny(x => x.Username == username && x.Password == password);
         }
 
-        public string GetUserInfo(string token)
+        public User? GetUserInfo(string token)
         {
-            JwtSecurityToken secutiryToken = _jwtSecurityTokenHandler.ReadJwtToken(token);
-            string name = secutiryToken.Claims.First().Value;
-            return name;
+            string? usernameClaim = GetClaimValue(token, "username");
+            if (usernameClaim == null) {
+                return null;
+            }
+            User? user = userRepository.Find(x => x.Username == usernameClaim);
+            return user;
+        }
+
+    private static string? GetClaimValue(string token, string claimType)
+    {
+        JwtSecurityToken securityToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            var claim = securityToken.Claims.FirstOrDefault(c => c.Type == claimType);
+            if (claim == null)
+            {
+                return null;
+            }
+            return claim.Value;
         }
     }
 }

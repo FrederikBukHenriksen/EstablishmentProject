@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApplication1.Repositories
@@ -28,12 +29,18 @@ namespace WebApplication1.Repositories
 
         public TEntity Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return context.Find<TEntity>(predicate);
+            //return context.Find<TEntity>(predicate);
+            return context.Set<TEntity>().SingleOrDefault(predicate);
         }
 
         public IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
         {
             return Queryable.Where(predicate).AsEnumerable();
+        }
+
+        public bool HasAny(Expression<Func<TEntity, bool>> predicate)
+        {
+            return Queryable.Any(predicate);
         }
 
         public TEntity Get(Guid id)

@@ -15,7 +15,9 @@ namespace WebApplication1
 
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddCookie(options => options.Cookie.Name = "jwt")
+                .AddCookie(options => { options.Cookie.Name = "jwt";
+                    options.LoginPath = "/Login";
+                })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters

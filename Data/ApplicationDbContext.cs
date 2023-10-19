@@ -4,7 +4,6 @@
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
 
-        public DbSet<Location> Location { get; set; }
         public DbSet<Establishment> Establishment { get; set; }
         public DbSet<User> User { get; set; }
 
@@ -13,7 +12,6 @@
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
-            modelBuilder.ApplyConfiguration(new LocationConfiguration());
         }
     }
 }

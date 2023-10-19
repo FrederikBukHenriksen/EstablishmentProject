@@ -14,7 +14,6 @@ namespace WebApplication1
         public static void AddRepositories(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
-            serviceCollection.AddScoped<ILocationRepository, LocationRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
         }
 

@@ -5,7 +5,9 @@ namespace WebApplication1.Models
     public class Establishment : EntityBase
     {
         public string Name { get; set; }
-        //public Location Location { get; set; }
+        public List<Table> Tables { get; set; }
+        public List<Item> Items { get; set; }
+        public List<Sale> Sales { get; set; }
     }
 
     public class EstablishmentConfiguration : IEntityTypeConfiguration<Establishment>
@@ -16,7 +18,10 @@ namespace WebApplication1.Models
 
             builder.Property(e => e.Name).IsRequired();
 
-            //builder.Navigation(e => e.Location);
+        builder.HasMany(e => e.Sales)
+        .WithOne(e => e.Establishment)
+        .IsRequired();
+
 
         }
     }

@@ -9,6 +9,7 @@
         TEntity Get(Guid id);
         TEntity Find(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate);
+        public bool HasAny(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> GetAll();
         void Add(TEntity entity);
         void Remove(TEntity entity);
