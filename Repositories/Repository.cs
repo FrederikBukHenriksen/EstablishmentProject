@@ -27,7 +27,7 @@ namespace WebApplication1.Repositories
             SaveChanges();
         }
 
-        public TEntity Find(Expression<Func<TEntity, bool>> predicate)
+        public TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
             //return context.Find<TEntity>(predicate);
             return context.Set<TEntity>().SingleOrDefault(predicate);
@@ -43,7 +43,7 @@ namespace WebApplication1.Repositories
             return Queryable.Any(predicate);
         }
 
-        public TEntity Get(Guid id)
+        public TEntity? Get(Guid id)
         {
             return context.Set<TEntity>().Find(id);
         }

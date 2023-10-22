@@ -7,14 +7,20 @@ using WebApplication1.Services;
 namespace WebApplication1.Controllers
 {
     [ApiController]
-    [Route("api/analysis/correlation")]
-    public class AnalysisController
+    [Route("api/sales")]
+    public class SalesController
     {
-        [AllowAnonymous]
-        [HttpPost("product-weather-correlation")]
-        public void ProductWeatherCorrelation(GetProductSalesQuery command)
+
+        [Authorize]
+        [HttpGet("product")]
+        public void getPoductSales()
         {
+
+
+
+
             return;
         }
+
     }
 }

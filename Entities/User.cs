@@ -1,4 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
+using Namotion.Reflection;
+using Newtonsoft.Json;
+using System.Reflection.Emit;
+using System.Reflection.Metadata;
 
 namespace WebApplication1.Models
 {
@@ -8,7 +14,7 @@ namespace WebApplication1.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public Role Role { get; set; }
-        //public Establishment? Establishment { get; set; } = null;
+        public IList<Establishment> Establishment { get; set; }
         public User(string username, string password, Role role)
         {
             this.Username = username;
@@ -31,10 +37,13 @@ namespace WebApplication1.Models
                 .HasConversion(
                     role => role.ToString(),
                     roleName => (Role)Enum.Parse(typeof(Role), roleName))
-                .IsRequired(true);
+            .IsRequired(true);
 
-            //builder.Property(x => x.Establishment)
-            //    .IsRequired(false);
+            builder.Property(e => e.Establishment).HasConversion(
+                v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
+                v => JsonConvert.DeserializeObject<IList<Establishment>>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+
+
         }
     }
 }
