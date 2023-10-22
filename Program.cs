@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using System.Text;
+using WebApplication1.Middelware;
+using WebApplication1.Services;
 
 namespace WebApplication1
 {
@@ -102,8 +104,10 @@ namespace WebApplication1
 
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers();
+
+            //Add middleware
+            app.UseMiddleware<UserContextMiddleware>();
 
             app.Run();
         }

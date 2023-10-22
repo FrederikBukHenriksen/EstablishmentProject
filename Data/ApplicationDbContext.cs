@@ -7,6 +7,8 @@
         public DbSet<Establishment> Establishment { get; set; }
         public DbSet<User> User { get; set; }
 
+        public DbSet<Sale> Sale { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

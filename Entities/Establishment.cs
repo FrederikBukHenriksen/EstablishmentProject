@@ -8,6 +8,7 @@ namespace WebApplication1.Models
         public List<Table> Tables { get; set; }
         public List<Item> Items { get; set; }
         public List<Sale> Sales { get; set; }
+
     }
 
     public class EstablishmentConfiguration : IEntityTypeConfiguration<Establishment>
@@ -21,6 +22,7 @@ namespace WebApplication1.Models
         builder.HasMany(e => e.Sales)
         .WithOne(e => e.Establishment)
         .IsRequired();
+
 
 
         }

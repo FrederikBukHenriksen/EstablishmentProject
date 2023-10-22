@@ -15,13 +15,14 @@ namespace WebApplication1.Services
 
         public bool Login(string username, string password);
 
-        public User? GetUserInfo(string token);
+        public Guid? GetUserGuid(HttpContext httpContext);
 
-        public string GenerateJwtToken(string username, List<Role> roles);
+        public string GenerateJwtToken(Guid id, List<Role> roles);
     }
 
     public class AuthService : IAuthService
     {
+
 
         public AuthService([FromServices] IUserRepository userRepository)
         {
@@ -29,18 +30,19 @@ namespace WebApplication1.Services
         }
 
         private static readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-
+        private static readonly string _tokenName = "jwt";
         private static readonly string _securityKey = "this is my custom Secret key for authentication";
+
         private readonly IUserRepository userRepository;
 
-        public string GenerateJwtToken(string username, List<Role> roles)
+        public string GenerateJwtToken(Guid id, List<Role> roles)
         {
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_securityKey));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             string rolesString = string.Join(", ", roles.Select(x => x.ToString()).ToList());
 
-            Claim[] claims = new[] {new Claim("username", username), new Claim("roles", rolesString)};
+            Claim[] claims = new[] {new Claim("username", id.ToString()), new Claim("roles", rolesString)};
 
             JwtSecurityToken token = new JwtSecurityToken(
                 claims: claims,
@@ -56,14 +58,14 @@ namespace WebApplication1.Services
             return userRepository.HasAny(x => x.Username == username && x.Password == password);
         }
 
-        public User? GetUserInfo(string token)
+        public Guid? GetUserGuid(HttpContext httpContext)
         {
+            string? token = httpContext.Request.Cookies["jwt"];
             string? usernameClaim = GetClaimValue(token, "username");
-            if (usernameClaim == null) {
+            if (usernameClaim == null || usernameClaim == null) {
                 return null;
             }
-            User? user = userRepository.Find(x => x.Username == usernameClaim);
-            return user;
+            return new Guid(usernameClaim);
         }
 
     private static string? GetClaimValue(string token, string claimType)

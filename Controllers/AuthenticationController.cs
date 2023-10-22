@@ -41,18 +41,18 @@ namespace WebApplication1.Controllers
         }
 
 
-        [Authorize(Roles = "Admin, User")]
-        [HttpGet("get-user-info")]
-        public User GetLoggedInUser([FromServices] IAuthService authenticationService)
-        {
-            string? cookie = HttpContext.Request.Cookies["jwt"];
-            User user = authenticationService.GetUserInfo(cookie);
-            if (user == null)
-            {
-                throw new Exception("User not found");
-            };
-            return user;
-        }
+        //[Authorize(Roles = "Admin, User")]
+        //[HttpGet("get-user-info")]
+        //public User GetLoggedInUser([FromServices] IAuthService authenticationService)
+        //{
+        //    string? cookie = HttpContext.Request.Cookies["jwt"];
+        //    User user = authenticationService.GetUserInfo(cookie);
+        //    if (user == null)
+        //    {
+        //        throw new Exception("User not found");
+        //    };
+        //    return user;
+        //}
 
 
 
