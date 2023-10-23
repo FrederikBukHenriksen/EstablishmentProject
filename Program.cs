@@ -48,7 +48,8 @@ namespace WebApplication1
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                //options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                options.UseNpgsql(connectionString);
             });
 
             //Add repository

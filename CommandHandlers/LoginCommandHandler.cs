@@ -28,7 +28,7 @@ namespace WebApplication1.CommandHandlers
                     throw new Exception("Login failed");
                 }
 
-                var result = authService.GenerateJwtToken(user.Id, new List<Role> { user.Role });
+                var result = authService.GenerateJwtToken(user.Id);
                 return result;
             }
     }

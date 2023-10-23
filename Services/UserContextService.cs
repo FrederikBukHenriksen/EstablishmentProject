@@ -1,53 +1,54 @@
-﻿using WebApplication1.Repositories;
+﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.Repositories;
 
 namespace WebApplication1.Services
 {
     public interface IUserContextService
     {
-        public List<Guid>? EstablishmentsIds { get; set; }
-
-        public Guid? UserId { get; set; }
+        public void SetUser(Guid userId);
+        public User? GetUser();
+        public List<Establishment>? GetEstablishments();
     }
 
     public class UserContextService : IUserContextService
     {
         private readonly IUserRepository _userRepository;
 
-        private List<Guid>? _establishmentsIds = null;
-
-        private Guid? _userId = null;
+        private List<Establishment>? _establishments = null;
+        private Boolean _establishmentsLoaded = false;
+        private User? _user = null;
 
         public UserContextService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
-        //public List<Guid>? EstablishmentsIds
-        //{
-        //    get {
-        //        {
-        //            if (_userId != null && _establishmentsIds == null)
-        //            {
-        //                var estab = _userRepository.Get(((Guid) UserId)).Establishment.Id;
-        //                return new List<Guid> { estab }; }
-        //            else
-        //            {
-        //                return _establishmentsIds;
-        //            };
-        //        };
-        //    }
-        //    set { _establishmentsIds = value; }
-        //}
-
-        public List<Guid>? EstablishmentsIds
+        public void SetUser(Guid userId)
         {
-            get { return _establishmentsIds; }
-            set { _establishmentsIds = value; }
+            _user = _userRepository.Get(userId);
         }
-        public Guid? UserId
+
+        public User? GetUser()
         {
-            get { return _userId; }
-            set { _userId = value; }
+            return _user;
+        }
+
+        public List<Establishment>? GetEstablishments()
+        {
+            //if (_user == null)
+            //{
+            //    throw new Exception();
+            //}
+            //if (!_establishmentsLoaded)
+            //{
+            //    _establishments = _user.Establishments.ToList();
+            //    if (_establishments.IsNullOrEmpty())
+            //    {
+            //        _establishments = null;
+            //    }
+            //    _establishmentsLoaded = true;
+            //}
+            return _establishments;
         }
     }
 

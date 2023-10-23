@@ -17,7 +17,7 @@ namespace WebApplication1.Services
 
         public Guid? GetUserGuid(HttpContext httpContext);
 
-        public string GenerateJwtToken(Guid id, List<Role> roles);
+        public string GenerateJwtToken(Guid id);
     }
 
     public class AuthService : IAuthService
@@ -35,14 +35,13 @@ namespace WebApplication1.Services
 
         private readonly IUserRepository userRepository;
 
-        public string GenerateJwtToken(Guid id, List<Role> roles)
+        public string GenerateJwtToken(Guid id)
         {
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_securityKey));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            string rolesString = string.Join(", ", roles.Select(x => x.ToString()).ToList());
 
-            Claim[] claims = new[] {new Claim("username", id.ToString()), new Claim("roles", rolesString)};
+            Claim[] claims = new[] {new Claim("username", id.ToString())};
 
             JwtSecurityToken token = new JwtSecurityToken(
                 claims: claims,

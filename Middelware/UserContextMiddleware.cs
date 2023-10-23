@@ -19,7 +19,7 @@ namespace WebApplication1.Middelware
         {
             Guid? userId = _authService.GetUserGuid(context);
 
-            _userContextService.UserId = userId;
+            _userContextService.SetUser((Guid) userId);
             
             return next(context);
         }
