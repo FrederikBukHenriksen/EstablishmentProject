@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Data
 {
@@ -12,9 +11,6 @@ namespace WebApplication1.Data
         public DbSet<User> User { get; set; }
 
         public DbSet<Sale> Sale { get; set; }
-
-        //Configurations
-        public DbSet<UserLinkEstablishment> UserEstablishmentsLink { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

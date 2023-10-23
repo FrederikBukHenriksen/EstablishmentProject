@@ -54,6 +54,7 @@ namespace WebApplication1.Services
 
         public bool Login(string username, string password)
         {
+            var test = userRepository.GetAll().ToList();
             return userRepository.HasAny(x => x.Username == username && x.Password == password);
         }
 

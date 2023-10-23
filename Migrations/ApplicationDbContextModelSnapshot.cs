@@ -119,10 +119,6 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
@@ -169,48 +165,6 @@ namespace WebApplication1.Migrations
                         .IsRequired();
 
                     b.Navigation("Establishment");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.User", b =>
-                {
-                    b.OwnsMany("WebApplication1.Data.DataModels.UserLinkEstablishment", "UserRoleEstablishment", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid");
-
-                            b1.Property<Guid>("EstablishmentId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<int>("role")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("EstablishmentId");
-
-                            b1.HasIndex("UserId");
-
-                            b1.ToTable("UserEstablishmentsLink");
-
-                            b1.HasOne("WebApplication1.Models.Establishment", "Establishment")
-                                .WithMany()
-                                .HasForeignKey("EstablishmentId")
-                                .OnDelete(DeleteBehavior.Cascade)
-                                .IsRequired();
-
-                            b1.WithOwner("User")
-                                .HasForeignKey("UserId");
-
-                            b1.Navigation("Establishment");
-
-                            b1.Navigation("User");
-                        });
-
-                    b.Navigation("UserRoleEstablishment");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>

@@ -19,8 +19,9 @@ namespace WebApplication1.Controllers
             [FromServices] ICommandHandler<LoginCommand,string> loginCommandHandler
             )
         {
-            var jwtTokenString = await loginCommandHandler.ExecuteAsync(loginCommand, new CancellationToken());
-            this.HttpContext.Response.Cookies.Append("jwt", jwtTokenString, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
+
+            var jwtTokenString = loginCommandHandler.ExecuteAsync(loginCommand, new CancellationToken());
+            this.HttpContext.Response.Cookies.Append("jwt", jwtTokenString.Result, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
             return;
         }
 

@@ -100,7 +100,7 @@ namespace WebApplication1
                 app.UseOpenApi();
                 app.UseSwaggerUi3();
             }
-
+            Console.WriteLine("Running program!");
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
@@ -108,7 +108,7 @@ namespace WebApplication1
             app.MapControllers();
 
             //Add middleware
-            app.UseMiddleware<UserContextMiddleware>();
+            //app.UseMiddleware<UserContextMiddleware>();
 
             app.Run();
         }

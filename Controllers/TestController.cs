@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController]
     [Route("api/test")]
     public class TestController : ControllerBase
     {
 
-        public TestController(
+        public Boolean Get(
             )
         {
+            return true;
         }
 
     }

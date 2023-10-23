@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\DataModels\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
@@ -49,5 +50,12 @@
 		<Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
 		<Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
 	</Target>
+	
+	<ItemGroup>
+		<InternalsVisibleTo Include="EstablishmentProject.Test" />
+		<InternalsVisibleTo Include="TestProject1" />
+
+
+	</ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Models
 {
@@ -11,12 +10,7 @@ namespace WebApplication1.Models
     {
         public string Username { get; set; }
         public string Password { get; set; }
-        public ICollection<UserLinkEstablishment> UserRoleEstablishment { get; set; }
-        public User(string username, string password, Role role)
-        {
-            this.Username = username;
-            this.Password = password;
-        }
+
     }
 
     public class UserConfiguration : IEntityTypeConfiguration<User>
