@@ -1,39 +1,39 @@
 ﻿using System.Linq;
 using System.Linq.Expressions;
+using WebApplication1.Data.DataModels;
+using WebApplication1.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApplication1.Repositories
 {
 
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
     {
 
-        protected DbContext context;
-        protected IQueryable<TEntity> query;
+        public IDatabaseContext context;
+        public IQueryable<TEntity> query;
 
-        public Repository(DbContext Context)
+        public GenericRepository(IDatabaseContext Context)
         {
             context = Context;
             query = Context.Set<TEntity>().AsQueryable();
         }
 
-        public DbContext Context { get => context; }
+        public IDatabaseContext Context { get => context; }
 
         public IQueryable<TEntity> Queryable { get => query; }
 
         public void Add(TEntity entity)
         {
             context.Set<TEntity>().Add(entity);
-            SaveChanges();
         }
 
         public TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
-            //return context.Find<TEntity>(predicate);
-            return context.Set<TEntity>().SingleOrDefault(predicate);
+            return query.Where(predicate).FirstOrDefault();
         }
 
-        public IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate)
         {
             return Queryable.Where(predicate).AsEnumerable();
         }
@@ -56,13 +56,7 @@ namespace WebApplication1.Repositories
 
         public void Remove(TEntity entity)
         {
-            context.Remove(entity);
-            SaveChanges();
-        }
-
-        protected void SaveChanges()
-        {
-            context.SaveChanges();
+            context.Set<TEntity>().Remove(entity);
         }
     }
 }

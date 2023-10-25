@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
+using System;
+using System.Diagnostics;
 using System.Text;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
@@ -15,42 +19,11 @@ namespace WebApplication1
 
             string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddCookie(options => { options.Cookie.Name = "jwt";
-                    options.LoginPath = "/Login";
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                    };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            context.Token = context.Request.Cookies["jwt"];
-                            return Task.CompletedTask;
-                        }
-                    };
-                }
-                );
+            AddAuthentication(builder);
 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-            });
+            AddAuthorization(builder);
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                //options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-                options.UseNpgsql(connectionString);
-            });
+            AddDatabase(builder, connectionString);
 
             //Add repository
             builder.Services.AddTransient<ApplicationDbContext>();
@@ -91,8 +64,8 @@ namespace WebApplication1
             });
 
 
-
             WebApplication app = builder.Build();
+            AutoMigrate(app);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -107,10 +80,70 @@ namespace WebApplication1
             app.UseAuthorization();
             app.MapControllers();
 
-            //Add middleware
-            //app.UseMiddleware<UserContextMiddleware>();
+            AddMiddleware(app);
+
 
             app.Run();
+        }
+
+        private static void AddDatabase(WebApplicationBuilder builder, string? connectionString)
+        {
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+            });
+        }
+
+        private static void AddAuthorization(WebApplicationBuilder builder)
+        {
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            });
+        }
+
+        private static void AddAuthentication(WebApplicationBuilder builder)
+        {
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "jwt";
+                    options.LoginPath = "/Login";
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authentication")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["jwt"];
+                            return Task.CompletedTask;
+                        }
+                    };
+                }
+                );
+        }
+
+        private static void AddMiddleware(WebApplication app)
+        {
+            //app.UseMiddleware<UserContextMiddleware>();
+        }
+
+        private static void AutoMigrate(WebApplication app)
+        {
+            var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            dbContext.Database.Migrate();
+            scope.Dispose();
         }
     }
 

@@ -3,12 +3,19 @@
 
     public interface IEstablishmentRepository : IRepository<Establishment>
     {
+        Establishment getItAll(Guid id);
     }
-    public class EstablishmentRepository : Repository<Establishment>, IEstablishmentRepository
+    public class EstablishmentRepository : GenericRepository<Establishment>, IEstablishmentRepository
     {
 
-        public EstablishmentRepository(ApplicationDbContext context) : base(context)
+        public EstablishmentRepository(IDatabaseContext context) : base(context)
         {
+        }
+
+        public Establishment getItAll(Guid id)
+        {
+            var res = context.Set<Establishment>().Include(x => x.Location).Where(x => x.Id == id).FirstOrDefault();
+            return res;
         }
     }
 }

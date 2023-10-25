@@ -518,7 +518,7 @@ export class TestClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    get(): Observable<boolean> {
+    establishment(): Observable<User> {
         let url_ = this.baseUrl + "/api/test";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -532,20 +532,20 @@ export class TestClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+            return this.processEstablishment(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(response_ as any);
+                    return this.processEstablishment(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<boolean>;
+                    return _observableThrow(e) as any as Observable<User>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<boolean>;
+                return _observableThrow(response_) as any as Observable<User>;
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<boolean> {
+    protected processEstablishment(response: HttpResponseBase): Observable<User> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -555,7 +555,7 @@ export class TestClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as boolean;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as User;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -579,27 +579,36 @@ export interface LoginCommand {
 }
 
 export interface EntityBase {
-    id: string;
 }
 
 export interface Establishment extends EntityBase {
+    id: string;
     name: string;
+    location: Location | undefined;
     tables: Table[];
     items: Item[];
     sales: Sale[];
 }
 
+export interface Location extends EntityBase {
+    id: string;
+    country: string;
+}
+
 export interface Table extends EntityBase {
+    id: string;
     establishment: Establishment;
     name: string;
 }
 
 export interface Item extends EntityBase {
+    id: string;
     name: string;
     price: number;
 }
 
 export interface Sale extends EntityBase {
+    id: string;
     establishment: Establishment;
     timestamp: Date;
     items: Item[];
@@ -611,6 +620,19 @@ export interface ACommand {
 
 export interface CreateEstablishmentCommand extends ACommand {
     name: string;
+}
+
+export interface User extends EntityBase {
+    id: string;
+    username: string;
+    password: string;
+    userRoles: UserRole[];
+}
+
+export interface UserRole extends EntityBase {
+    user: User;
+    establishment: Establishment;
+    role: Establishment;
 }
 
 export class ApiException extends Error {

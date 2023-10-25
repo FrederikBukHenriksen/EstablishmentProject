@@ -1,5 +1,6 @@
 ﻿using WebApplication1.CommandHandlers;
 using WebApplication1.Commands;
+using WebApplication1.Data;
 using WebApplication1.Repositories;
 
 namespace WebApplication1.Services
@@ -10,12 +11,15 @@ namespace WebApplication1.Services
         {
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
+            serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetService<ApplicationDbContext>());
 
         }
         public static void AddRepositories(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
+            serviceCollection.AddScoped<IUserRolesRepository, UserRolesRepository>();
+
             serviceCollection.AddScoped<ISalesRepository, SalesRepository>();
         }
 

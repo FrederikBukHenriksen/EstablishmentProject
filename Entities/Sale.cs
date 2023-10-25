@@ -4,6 +4,8 @@ namespace WebApplication1.Models
 {
     public class Sale : EntityBase
     {
+        [Key]
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Establishment Establishment { get; set; }
 
         public DateTime Timestamp { get; set; }

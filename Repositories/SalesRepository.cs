@@ -5,7 +5,7 @@
     {
     }
 
-    public class SalesRepository : Repository<Sale>, ISalesRepository
+    public class SalesRepository : GenericRepository<Sale>, ISalesRepository
     {
         public SalesRepository(ApplicationDbContext context) : base(context)
         {

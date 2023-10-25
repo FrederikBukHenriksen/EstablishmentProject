@@ -1,0 +1,10 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace WebApplication1.Repositories
+{
+    public interface IDatabaseContext
+    {
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+        void SaveChanges();
+    }
+}

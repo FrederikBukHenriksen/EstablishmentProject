@@ -22,10 +22,49 @@ namespace WebApplication1.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("WebApplication1.Data.DataModels.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EstablishmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "EstablishmentId");
+
+                    b.HasIndex("EstablishmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRole");
+                });
+
+            modelBuilder.Entity("WebApplication1.Entities.Location", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Location");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("LocationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -33,6 +72,8 @@ namespace WebApplication1.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Establishment", (string)null);
                 });
@@ -128,6 +169,34 @@ namespace WebApplication1.Migrations
                     b.ToTable("User", (string)null);
                 });
 
+            modelBuilder.Entity("WebApplication1.Data.DataModels.UserRole", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
+                        .WithMany()
+                        .HasForeignKey("EstablishmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Establishment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
+                {
+                    b.HasOne("WebApplication1.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.Navigation("Location");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.Item", b =>
                 {
                     b.HasOne("WebApplication1.Models.Establishment", null)
@@ -179,6 +248,11 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Models.Sale", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
