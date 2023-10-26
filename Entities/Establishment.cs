@@ -6,7 +6,7 @@ namespace WebApplication1.Models
     public class Establishment : EntityBase
     {
         public string Name { get; set; }
-        //public Location? Location { get; set; } = null;
+        public Location? Location { get; set; } = null;
         public List<Table> Tables { get; set; }
         public List<Item> Items { get; set; }
         public List<Sale> Sales { get; set; }

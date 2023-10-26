@@ -32,10 +32,10 @@ namespace WebApplication1.Controllers
 
             var user = _userRepository.GetAll().FirstOrDefault();
 
-            var estab = _userRolesRepository.Queryable
-                .Where(x => x.User.Id == user.Id)
-                .Select(x => x.Establishment)
-            .FirstOrDefault();
+            //var estab = _userRolesRepository.Queryable
+            //    .Where(x => x.User.Id == user.Id)
+            //    .Select(x => x.Establishment)
+            //.FirstOrDefault();
 
             //_userRolesRepository.Context.Entry(user).Collection(x => x.UserRoles).Query().Load();
             //_userRolesRepository.Context.Entry(userRole).Reference(x => x.User).Load();

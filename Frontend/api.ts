@@ -584,9 +584,14 @@ export interface EntityBase {
 
 export interface Establishment extends EntityBase {
     name: string;
+    location: Location | undefined;
     tables: Table[];
     items: Item[];
     sales: Sale[];
+}
+
+export interface Location extends EntityBase {
+    country: string;
 }
 
 export interface Table extends EntityBase {

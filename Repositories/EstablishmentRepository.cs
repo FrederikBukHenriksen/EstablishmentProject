@@ -14,7 +14,7 @@
 
         public Establishment getItAll(Guid id)
         {
-            var res = context.Set<Establishment>().Where(x => x.Id == id).FirstOrDefault();
+            var res = context.Set<Establishment>().Include(x => x.Location).Where(x => x.Id == id).FirstOrDefault();
             return res;
         }
     }

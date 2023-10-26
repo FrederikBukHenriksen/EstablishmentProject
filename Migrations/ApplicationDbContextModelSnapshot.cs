@@ -52,11 +52,16 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Establishment", (string)null);
                 });
@@ -87,6 +92,21 @@ namespace WebApplication1.Migrations
                     b.HasIndex("SaleId");
 
                     b.ToTable("Item");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Location", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Sale", b =>
@@ -169,6 +189,15 @@ namespace WebApplication1.Migrations
                     b.Navigation("Establishment");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Item", b =>
