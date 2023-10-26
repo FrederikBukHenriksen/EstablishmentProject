@@ -7,7 +7,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace WebApplication1.Repositories
 {
 
-    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
     {
 
         public IDatabaseContext context;

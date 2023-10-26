@@ -1,7 +1,7 @@
 ﻿namespace WebApplication1.Repositories
 {
     using System.Linq.Expressions;
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IRepository<TEntity> where TEntity : EntityBase
     {
         IDatabaseContext Context { get; }
 
