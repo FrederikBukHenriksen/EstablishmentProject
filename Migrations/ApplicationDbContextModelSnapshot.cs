@@ -44,6 +44,15 @@ namespace WebApplication1.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRole");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000002"),
+                            EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Id = new Guid("8c015f8a-fbf0-4565-bd47-55de9f75de40"),
+                            Role = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
@@ -162,19 +171,19 @@ namespace WebApplication1.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("eb9f2767-d8be-40be-bdc4-f7b0e4405b01"),
+                            Id = new Guid("d1c35d41-ad46-4557-b52d-578e10ce82b4"),
                             EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
                             Name = "Table 1"
                         },
                         new
                         {
-                            Id = new Guid("28fc8d4d-d6fe-47d5-99c2-3235cea7f9ee"),
+                            Id = new Guid("e7019f88-39ee-49c8-9079-f58365a63a67"),
                             EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
                             Name = "Table 2"
                         },
                         new
                         {
-                            Id = new Guid("85976645-4c79-42e2-8665-1a1ce6166458"),
+                            Id = new Guid("3be92ae0-1b33-45c4-9b0d-f344fc117775"),
                             EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
                             Name = "Table 3"
                         });
@@ -197,6 +206,14 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Password = "1234",
+                            Username = "Frederik"
+                        });
                 });
 
             modelBuilder.Entity("WebApplication1.Data.DataModels.UserRole", b =>

@@ -628,7 +628,12 @@ export interface User extends EntityBase {
 export interface UserRole extends EntityBase {
     user: User;
     establishment: Establishment;
-    role: Establishment;
+    role: Role;
+}
+
+export enum Role {
+    Admin = 0,
+    User = 1,
 }
 
 export class ApiException extends Error {

@@ -9,7 +9,7 @@ namespace WebApplication1.Data.DataModels
     {
         public User User { get; set; }
         public Establishment Establishment { get; set; }
-        public Establishment Role { get; set; }
+        public Role Role { get; set; }
 
         public class UserRolesConfiguration : IEntityTypeConfiguration<UserRole>
         {
@@ -34,7 +34,7 @@ namespace WebApplication1.Data.DataModels
                 builder.Property(x => x.Role)
                     .HasConversion(
                         role => role.ToString(),
-                        roleName => (Establishment)Enum.Parse(typeof(Establishment), roleName))
+                        roleName => (Role) Enum.Parse(typeof(Role), roleName))
                 .IsRequired(true);
             }
         }

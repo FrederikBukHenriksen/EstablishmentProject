@@ -31,6 +31,10 @@ namespace WebApplication1.Controllers
             var testEstab = _establishmentRepository.getItAll(new Guid("00000000-0000-0000-0000-000000000001"));
 
             var user = _userRepository.GetAll().FirstOrDefault();
+            var user2 = _userRepository.Context.Set<User>().FirstOrDefault();
+
+
+
 
             //var estab = _userRolesRepository.Queryable
             //    .Where(x => x.User.Id == user.Id)

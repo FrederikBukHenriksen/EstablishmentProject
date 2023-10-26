@@ -19,7 +19,6 @@ namespace WebApplication1.Models
         {
             this.Name = Name;
         }
-
     }
 
     public class EstablishmentConfiguration : IEntityTypeConfiguration<Establishment>

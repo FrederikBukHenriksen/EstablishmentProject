@@ -63,7 +63,6 @@ namespace WebApplication1
                 };
             });
 
-
             WebApplication app = builder.Build();
             AutoMigrate(app);
 
@@ -82,7 +81,7 @@ namespace WebApplication1
 
             AddMiddleware(app);
 
-
+            
             app.Run();
         }
 
