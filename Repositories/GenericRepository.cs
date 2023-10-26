@@ -7,19 +7,19 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace WebApplication1.Repositories
 {
 
-    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
+    public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
 
-        public IDatabaseContext context;
+        public DbContext context;
         public IQueryable<TEntity> query;
 
-        public GenericRepository(IDatabaseContext Context)
+        public GenericRepository(DbContext Context)
         {
             context = Context;
             query = Context.Set<TEntity>().AsQueryable();
         }
 
-        public IDatabaseContext Context { get => context; }
+        public DbContext Context { get => context; }
 
         public IQueryable<TEntity> Queryable { get => query; }
 

@@ -30,6 +30,9 @@ namespace WebApplication1.Migrations
                     b.Property<Guid>("EstablishmentId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
@@ -40,22 +43,7 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
-                });
-
-            modelBuilder.Entity("WebApplication1.Entities.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Location");
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
@@ -64,16 +52,11 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("Establishment", (string)null);
                 });
@@ -186,15 +169,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Establishment");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
-                {
-                    b.HasOne("WebApplication1.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
-                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Item", b =>

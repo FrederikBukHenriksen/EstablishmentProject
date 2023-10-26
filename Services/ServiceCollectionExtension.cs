@@ -11,7 +11,6 @@ namespace WebApplication1.Services
         {
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
-            serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetService<ApplicationDbContext>());
 
         }
         public static void AddRepositories(this IServiceCollection serviceCollection)

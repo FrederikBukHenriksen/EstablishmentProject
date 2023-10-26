@@ -1,15 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApplication1.Data.DataModels;
-using WebApplication1.Entities;
 
 namespace WebApplication1.Models
 {
     public class Establishment : EntityBase
     {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
-        public Location? Location { get; set; } = null;
+        //public Location? Location { get; set; } = null;
         public List<Table> Tables { get; set; }
         public List<Item> Items { get; set; }
         public List<Sale> Sales { get; set; }

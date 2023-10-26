@@ -579,36 +579,27 @@ export interface LoginCommand {
 }
 
 export interface EntityBase {
+    id: string;
 }
 
 export interface Establishment extends EntityBase {
-    id: string;
     name: string;
-    location: Location | undefined;
     tables: Table[];
     items: Item[];
     sales: Sale[];
 }
 
-export interface Location extends EntityBase {
-    id: string;
-    country: string;
-}
-
 export interface Table extends EntityBase {
-    id: string;
     establishment: Establishment;
     name: string;
 }
 
 export interface Item extends EntityBase {
-    id: string;
     name: string;
     price: number;
 }
 
 export interface Sale extends EntityBase {
-    id: string;
     establishment: Establishment;
     timestamp: Date;
     items: Item[];
@@ -623,7 +614,6 @@ export interface CreateEstablishmentCommand extends ACommand {
 }
 
 export interface User extends EntityBase {
-    id: string;
     username: string;
     password: string;
     userRoles: UserRole[];

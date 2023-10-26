@@ -8,10 +8,7 @@ using WebApplication1.Data.DataModels;
 namespace WebApplication1.Models
 {
     public class User : EntityBase
-
     {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
         public string Username { get; set; }
         public string Password { get; set; }
 

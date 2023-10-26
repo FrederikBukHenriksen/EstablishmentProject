@@ -1,9 +1,9 @@
 ﻿namespace WebApplication1.Repositories
 {
     using System.Linq.Expressions;
-    public interface IRepository<TEntity> where TEntity : EntityBase
+    public interface IRepository<TEntity> where TEntity : class
     {
-        IDatabaseContext Context { get; }
+        DbContext Context { get; }
 
         IQueryable<TEntity> Queryable { get; }
         TEntity? Get(Guid id);
