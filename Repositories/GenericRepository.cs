@@ -10,16 +10,16 @@ namespace WebApplication1.Repositories
     public abstract class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
 
-        public DbContext context;
+        public IDatabaseContext context;
         public IQueryable<TEntity> query;
 
-        public GenericRepository(DbContext Context)
+        public GenericRepository(IDatabaseContext Context)
         {
             context = Context;
             query = Context.Set<TEntity>().AsQueryable();
         }
 
-        public DbContext Context { get => context; }
+        public IDatabaseContext Context { get => context; }
 
         public IQueryable<TEntity> Queryable { get => query; }
 

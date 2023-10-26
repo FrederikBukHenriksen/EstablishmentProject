@@ -7,7 +7,7 @@
 
     public class SalesRepository : GenericRepository<Sale>, ISalesRepository
     {
-        public SalesRepository(ApplicationDbContext context) : base(context)
+        public SalesRepository(IDatabaseContext context) : base(context)
         {
         }
     }

@@ -3,7 +3,7 @@
     using System.Linq.Expressions;
     public interface IRepository<TEntity> where TEntity : class
     {
-        DbContext Context { get; }
+        IDatabaseContext Context { get; }
 
         IQueryable<TEntity> Queryable { get; }
         TEntity? Get(Guid id);
