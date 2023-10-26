@@ -14,6 +14,8 @@
 
         Establishment IEstablishmentRepository.getItAll(Guid id)
         {
+            var test = context.Set<Establishment>().Include(x => x.Tables).Where(x => x.Id == id).FirstOrDefault();
+
             var res = context.Set<Establishment>().Include(x => x.Location).Where(x => x.Id == id).FirstOrDefault();
             return res;
         }

@@ -43,7 +43,7 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
@@ -64,6 +64,13 @@ namespace WebApplication1.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Establishment", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "My Establishment"
+                        });
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Item", b =>
@@ -151,6 +158,26 @@ namespace WebApplication1.Migrations
                     b.HasIndex("EstablishmentId");
 
                     b.ToTable("Table");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("eb9f2767-d8be-40be-bdc4-f7b0e4405b01"),
+                            EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Table 1"
+                        },
+                        new
+                        {
+                            Id = new Guid("28fc8d4d-d6fe-47d5-99c2-3235cea7f9ee"),
+                            EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Table 2"
+                        },
+                        new
+                        {
+                            Id = new Guid("85976645-4c79-42e2-8665-1a1ce6166458"),
+                            EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Name = "Table 3"
+                        });
                 });
 
             modelBuilder.Entity("WebApplication1.Models.User", b =>

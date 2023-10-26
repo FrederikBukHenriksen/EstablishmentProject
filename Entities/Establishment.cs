@@ -7,9 +7,19 @@ namespace WebApplication1.Models
     {
         public string Name { get; set; }
         public Location? Location { get; set; } = null;
-        public List<Table> Tables { get; set; }
-        public List<Item> Items { get; set; }
-        public List<Sale> Sales { get; set; }
+        public ICollection<Table>? Tables { get; set; }
+        public ICollection<Item>? Items { get; set; }
+        public ICollection<Sale>? Sales { get; set; }
+
+        public Establishment()
+        { 
+        }
+
+        public Establishment(string Name)
+        {
+            this.Name = Name;
+        }
+
     }
 
     public class EstablishmentConfiguration : IEntityTypeConfiguration<Establishment>
