@@ -23,7 +23,7 @@ namespace WebApplication1.CommandHandlers
             public override async Task<string> ExecuteAsync(LoginCommand command, CancellationToken cancellationToken)
             {
                 bool loginFound = authService.Login(command.Username, command.Password);
-                User? user = await userRepository.Queryable.Where(x => x.Username == command.Username).FirstOrDefaultAsync(cancellationToken);
+                User? user = userRepository.Find(x => x.Username == command.Username);
                 if (!loginFound || user == null)
                 {
                     throw new Exception("Login failed");

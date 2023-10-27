@@ -32,23 +32,23 @@ namespace WebApplication1.Data
                 }
             );
 
-            modelBuilder.Entity<Table>().HasData(
-                new Table
-                {
-                    Name = "Table 1",
-                    EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
-                },
-                new Table
-                {
-                    Name = "Table 2",
-                    EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
-                },
-                new Table
-                {
-                    Name = "Table 3",
-                    EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
-                }
-            );
+            //modelBuilder.Entity<Table>().HasData(
+            //    new Table
+            //    {
+            //        Name = "Table 1",
+            //        EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+            //    },
+            //    new Table
+            //    {
+            //        Name = "Table 2",
+            //        EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+            //    },
+            //    new Table
+            //    {
+            //        Name = "Table 3",
+            //        EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"),
+            //    }
+            //);
 
             static User GetUser()
             {

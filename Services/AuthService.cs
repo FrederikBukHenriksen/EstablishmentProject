@@ -22,8 +22,6 @@ namespace WebApplication1.Services
 
     public class AuthService : IAuthService
     {
-
-
         public AuthService([FromServices] IUserRepository userRepository)
         {
             this.userRepository = userRepository;
@@ -54,8 +52,7 @@ namespace WebApplication1.Services
 
         public bool Login(string username, string password)
         {
-            var test = userRepository.GetAll().ToList();
-            return userRepository.HasAny(x => x.Username == username && x.Password == password);
+            return userRepository.Contains(x => x.Username == username && x.Password == password);
         }
 
         public Guid? GetUserGuid(HttpContext httpContext)

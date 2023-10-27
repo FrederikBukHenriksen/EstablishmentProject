@@ -28,7 +28,7 @@ namespace WebApplication1.Controllers
         [Route("/get/sale")]
         public void GetSale(Guid id)
         {
-            var sales = _establishmentRepository.Queryable.Where(x => x.Id == new Guid("00000000-0000-0000-0000-000000000000")).Select(x => x.Sales).ToList();
+            var sales = _establishmentRepository.Find(x => x.Id == new Guid("00000000-0000-0000-0000-000000000000")).Sales;
             return;
         }
 

@@ -3,15 +3,15 @@
     using System.Linq.Expressions;
     public interface IRepository<TEntity> where TEntity : EntityBase
     {
-        IDatabaseContext Context { get; }
+        protected IDatabaseContext Context { get; }
 
-        IQueryable<TEntity> Queryable { get; }
         TEntity? Get(Guid id);
+        IEnumerable<TEntity>? GetAll();
+        bool Contains(Expression<Func<TEntity, bool>> predicate);
         TEntity? Find(Expression<Func<TEntity, bool>> predicate);
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate);
-        public bool HasAny(Expression<Func<TEntity, bool>> predicate);
-        IEnumerable<TEntity> GetAll();
+        IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate);
         void Add(TEntity entity);
+        void Update(TEntity entity);
         void Remove(TEntity entity);
     }
 }

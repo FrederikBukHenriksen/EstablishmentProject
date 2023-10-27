@@ -4,7 +4,8 @@ namespace WebApplication1.Repositories
 {
     public interface IDatabaseContext
     {
-        void haha();
+        int SaveChanges();
+        void Dispose();
         DbSet<TEntity> Set<TEntity>() where TEntity : class;
     }
 }

@@ -5,7 +5,7 @@
     {
     }
 
-    public class UserRepository : GenericRepository<User>, IUserRepository
+    public class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(IDatabaseContext context) : base(context)
         {

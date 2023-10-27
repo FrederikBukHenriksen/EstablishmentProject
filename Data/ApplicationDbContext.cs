@@ -30,10 +30,14 @@ namespace WebApplication1.Data
 
         }
 
-        public void haha()
+        public override int SaveChanges()
         {
-            var entityType = Model.FindEntityType(typeof(UserRole)).GetProperties();
-            return;
+            return base.SaveChanges();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
         }
     }
 }

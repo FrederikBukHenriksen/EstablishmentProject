@@ -8,7 +8,7 @@ namespace WebApplication1.Repositories
     {
     }
 
-    public class UserRolesRepository : GenericRepository<UserRole>, IUserRolesRepository
+    public class UserRolesRepository : Repository<UserRole>, IUserRolesRepository
     {
         public UserRolesRepository(IDatabaseContext context) : base(context)
         { }
