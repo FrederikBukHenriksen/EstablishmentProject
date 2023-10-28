@@ -11,6 +11,7 @@
         TEntity? Find(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate);
         void Add(TEntity entity);
+        void AddRange(IEnumerable<TEntity> entities);
         void Update(TEntity entity);
         void Remove(TEntity entity);
     }

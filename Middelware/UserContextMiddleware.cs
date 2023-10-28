@@ -17,7 +17,7 @@ namespace WebApplication1.Middelware
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            Guid? userId = _authService.GetUserGuid(context);
+            Guid? userId = _authService.GetUserFromGuid(context);
 
             _userContextService.SetUser((Guid) userId);
             

@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection.Metadata.Ecma335;
@@ -24,6 +25,11 @@ namespace WebApplication1.Repositories
         public void Add(TEntity entity)
         {
             context.Set<TEntity>().Add(entity);
+        }
+
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            context.Set<TEntity>().AddRange(entities);
         }
 
         public bool Contains(Expression<Func<TEntity, bool>> predicate)

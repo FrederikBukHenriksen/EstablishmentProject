@@ -18,9 +18,10 @@ const authGuard =
     let authenticationClient = inject(AuthenticationClient);
     return authenticationClient.getLoggedInUser().pipe(
       map((user) => {
-        if (roles.find((x) => x == roles[user.role])) {
-          return true;
-        }
+        console.log(user);
+        // if (roles.find((x) => x == roles[user.role])) {
+        return true;
+        // }
         return false;
       })
     );

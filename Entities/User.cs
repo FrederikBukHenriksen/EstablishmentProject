@@ -21,7 +21,11 @@ namespace WebApplication1.Models
         {
             builder.ToTable(nameof(User));
 
+            builder.HasIndex(u => u.Username)
+            .IsUnique();
+
             builder.Property(x => x.Username).IsRequired(true);
+
 
             builder.Property(x => x.Password).IsRequired(true);
 

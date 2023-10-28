@@ -26,7 +26,7 @@ namespace WebApplication1.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
-            TestDataSeeder.SeedDataBase(modelBuilder);
+            //TestDataSeeder.SeedDataBase(modelBuilder);
 
         }
 

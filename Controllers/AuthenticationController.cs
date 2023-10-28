@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Commands;
+using WebApplication1.Models;
 using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
@@ -32,7 +33,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost("logout")]
         public async void LogOut([FromServices] IAuthService authenticationService)
         {
@@ -41,26 +42,27 @@ namespace WebApplication1.Controllers
         }
 
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet("is-logged-in")]
         public bool IsLoggedIn([FromServices] IAuthService authenticationService)
         {
-            return true;
+            return authenticationService.GetUserFromGuid(this.HttpContext) != null;
         }
 
 
-        //[Authorize(Roles = "Admin, User")]
-        //[HttpGet("get-user-info")]
-        //public User GetLoggedInUser([FromServices] IAuthService authenticationService)
-        //{
-        //    string? cookie = HttpContext.Request.Cookies["jwt"];
-        //    User user = authenticationService.GetUserInfo(cookie);
-        //    if (user == null)
-        //    {
-        //        throw new Exception("User not found");
-        //    };
-        //    return user;
-        //}
+        [Authorize]
+        [HttpGet("get-user-info")]
+        public User GetLoggedInUser([FromServices] IUserContextService userContextService)
+        {
+            string? cookie = HttpContext.Request.Cookies["jwt"];
+            try
+            {
+                return userContextService.GetUser();
+            } catch (Exception e) {
+                this.HttpContext.Response.StatusCode = 401;
+                return null;
+            };
+        }
 
 
 
