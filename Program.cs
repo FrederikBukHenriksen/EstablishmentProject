@@ -134,7 +134,7 @@ namespace WebApplication1
 
         private static void AddMiddleware(WebApplication app)
         {
-            //app.UseMiddleware<UserContextMiddleware>();
+            app.UseMiddleware<UserContextMiddleware>();
         }
 
         private static void AutoMigrate(WebApplication app)

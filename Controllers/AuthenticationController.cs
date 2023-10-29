@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Commands;
@@ -23,6 +24,7 @@ namespace WebApplication1.Controllers
             try
             {
                 var jwtTokenString = loginCommandHandler.ExecuteAsync(loginCommand, new CancellationToken());
+
                 this.HttpContext.Response.Cookies.Append("jwt", jwtTokenString.Result, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
                 return;
             }

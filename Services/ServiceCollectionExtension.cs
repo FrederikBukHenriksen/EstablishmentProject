@@ -1,6 +1,7 @@
 ﻿using WebApplication1.CommandHandlers;
 using WebApplication1.Commands;
 using WebApplication1.Data;
+using WebApplication1.Middelware;
 using WebApplication1.Repositories;
 
 namespace WebApplication1.Services
@@ -11,6 +12,7 @@ namespace WebApplication1.Services
         {
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
+            serviceCollection.AddScoped<UserContextMiddleware>();
 
             serviceCollection.AddScoped<IDatabaseContext>(provider =>  provider.GetRequiredService<ApplicationDbContext>());
 
