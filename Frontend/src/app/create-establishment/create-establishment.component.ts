@@ -2,7 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import Chart, { ChartOptions } from 'chart.js/auto';
-import { AuthenticationClient, LoginCommand } from 'api';
+import {
+  AnalysisClient,
+  AuthenticationClient,
+  LineChartData,
+  LoginCommand,
+} from 'api';
 
 @Component({
   selector: 'app-create-establishment',
@@ -11,7 +16,7 @@ import { AuthenticationClient, LoginCommand } from 'api';
 })
 export class CreateEstablishmentComponent implements OnInit {
   private readonly authenticationClient = inject(AuthenticationClient);
-
+  private readonly analysisClient = inject(AnalysisClient);
   applyForm = new FormGroup({
     firstName: new FormControl(''),
     lastName: new FormControl(''),
@@ -23,35 +28,45 @@ export class CreateEstablishmentComponent implements OnInit {
 
   public buttonColor = 'blue';
 
+  public data!: LineChartData;
+
   ngOnInit(): void {
-    this.chart = this.createChart();
+    this.analysisClient.productSalesChart().subscribe({
+      next: (data) => {
+        this.data = data;
+      },
+    });
+
+    this.chart = this.createChart(this.data);
   }
 
-  createChart(): Chart {
+  createChart(data: LineChartData): Chart {
     return new Chart('canvas', {
       data: {
         datasets: [
           {
             type: 'line',
             label: 'Line Dataset',
-            data: [20, 30, 40, 50],
+            // data: [20, 30, 40, 50],
+            data: data.values.map((x) => x.item2),
           },
         ],
-        labels: [
-          '8:00',
-          '9:00',
-          '10:00',
-          '11:00',
-          '12:00',
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-          '17:00',
-          '18:00',
-          '19:00',
-          '20:00',
-        ],
+        labels: data.values.map((x) => x.item1),
+        // labels: [
+        //   '8:00',
+        //   '9:00',
+        //   '10:00',
+        //   '11:00',
+        //   '12:00',
+        //   '13:00',
+        //   '14:00',
+        //   '15:00',
+        //   '16:00',
+        //   '17:00',
+        //   '18:00',
+        //   '19:00',
+        //   '20:00',
+        // ],
       },
       options: this.getOptions(),
     });
@@ -75,12 +90,6 @@ export class CreateEstablishmentComponent implements OnInit {
   protected onSubmit() {
     this.lolcat = false;
     this.updateChart();
-
-    // console.log('lolcat', this.lolcat);
-    // console.log('firstName', this.applyForm.value.firstName);
-
-    // console.log('lastName', this.applyForm.value.lastName);
-
     this.authenticationClient
       .logIn({
         username: this.applyForm.value.firstName,

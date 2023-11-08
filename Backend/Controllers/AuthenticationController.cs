@@ -48,7 +48,7 @@ namespace WebApplication1.Controllers
         [HttpGet("is-logged-in")]
         public bool IsLoggedIn([FromServices] IAuthService authenticationService)
         {
-            return authenticationService.GetUserFromGuid(this.HttpContext) != null;
+            return authenticationService.GetUserFromHttp(this.HttpContext) != null;
         }
 
 

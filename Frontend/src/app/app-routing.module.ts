@@ -32,7 +32,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
     path: 'create-establishment',
-    canActivate: [authGuard(['Admin'])],
+    // canActivate: [authGuard(['Admin'])],
     component: CreateEstablishmentComponent,
   },
 ];

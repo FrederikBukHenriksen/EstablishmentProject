@@ -23,8 +23,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        public User Establishment (
-            )
+        public User Establishment()
         {
             var getSimpleEstab = _establishmentRepository.Find(x => true);
 
@@ -32,8 +31,9 @@ namespace WebApplication1.Controllers
 
             var user = _userRepository.GetAll().FirstOrDefault();
 
-            return user;
+            var testOfEager = _userRolesRepository.GetAll().ToList();
 
+            return user;
         }
 
     }

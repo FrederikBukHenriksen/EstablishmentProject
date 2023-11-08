@@ -1,20 +1,19 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Commands;
-using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
 {
     [ApiController]
-    [Route("api/analysis/correlation")]
+    [Route("api/analysis/")]
     public class AnalysisController
     {
-        [AllowAnonymous]
-        [HttpPost("product-weather-correlation")]
-        public void ProductWeatherCorrelation(GetProductSalesQuery command)
+        [HttpPost("sales-line-chart")]
+        public LineChartData ProductSalesChart([FromServices] GetProductSalesChartQueryHandler handler)
         {
-            return;
+            var command = new GetProductSalesChartQuery() { ItemId = Guid.Empty, StartDate = DateTime.Today.AddDays(-1), EndDate = DateTime.Today.AddDays(1) };
+            var result = handler.ExecuteAsync(command, new CancellationToken());
+            return result.Result;
         }
     }
 }
+

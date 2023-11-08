@@ -6,7 +6,7 @@ namespace WebApplication1.Models
     {
         public Establishment Establishment { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public DateTime TimeStamp { get; set; }
 
         public List<Item> Items { get; set; } = new List<Item>();
 
@@ -30,7 +30,7 @@ namespace WebApplication1.Models
         {
             builder.ToTable(nameof(Sale));
 
-            builder.Property(e => e.Timestamp).IsRequired();
+            builder.Property(e => e.TimeStamp).IsRequired();
 
             builder.Property(e => e.Items).IsRequired();
 

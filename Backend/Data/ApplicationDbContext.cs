@@ -11,7 +11,7 @@ namespace WebApplication1.Data
     public class ApplicationDbContext : DbContext, IDatabaseContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {
-
+            this.ChangeTracker.LazyLoadingEnabled = false;
         }
 
         //Entities

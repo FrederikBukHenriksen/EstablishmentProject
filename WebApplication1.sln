@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1.Test", "..\EstablishmentProject.Test\WebApplication1.Test.csproj", "{033DC738-0D87-40D4-BAE2-BE6170F78B86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstablishmentProject.test", "..\EstablishmentProject.Test\EstablishmentProject.test.csproj", "{033DC738-0D87-40D4-BAE2-BE6170F78B86}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "Backend\WebApplication1.csproj", "{47662A4B-0BF3-460D-BEC0-EE8BAEEE6A66}"
 EndProject

@@ -12,6 +12,7 @@ namespace WebApplication1.Services
         {
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
+
             serviceCollection.AddScoped<UserContextMiddleware>();
 
             serviceCollection.AddScoped<IDatabaseContext>(provider =>  provider.GetRequiredService<ApplicationDbContext>());
@@ -29,6 +30,8 @@ namespace WebApplication1.Services
         public static void AddCommandHandlers(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ICommandHandler<LoginCommand, string>, LoginCommandHandler>();
+            serviceCollection.AddTransient<ICommandHandler<GetProductSalesChartQuery, LineChartData>, GetProductSalesChartQueryHandler>();
+
         }
     }
 }

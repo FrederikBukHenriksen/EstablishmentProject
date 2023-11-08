@@ -28,37 +28,34 @@ export class AnalysisClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    productWeatherCorrelation(command: GetProductSalesQuery): Observable<void> {
-        let url_ = this.baseUrl + "/api/analysis/correlation/product-weather-correlation";
+    productSalesChart(): Observable<LineChartData> {
+        let url_ = this.baseUrl + "/api/analysis/sales-line-chart";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processProductWeatherCorrelation(response_);
+            return this.processProductSalesChart(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processProductWeatherCorrelation(response_ as any);
+                    return this.processProductSalesChart(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<LineChartData>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<LineChartData>;
         }));
     }
 
-    protected processProductWeatherCorrelation(response: HttpResponseBase): Observable<void> {
+    protected processProductSalesChart(response: HttpResponseBase): Observable<LineChartData> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -67,7 +64,9 @@ export class AnalysisClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as LineChartData;
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -295,12 +294,12 @@ export class EstablishmentClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    get(id: string | undefined): Observable<Establishment> {
-        let url_ = this.baseUrl + "/get?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "id=" + encodeURIComponent("" + id) + "&";
+    get(establishmentId: string | undefined): Observable<Establishment> {
+        let url_ = this.baseUrl + "/api/establishment/get?";
+        if (establishmentId === null)
+            throw new Error("The parameter 'establishmentId' cannot be null.");
+        else if (establishmentId !== undefined)
+            url_ += "establishmentId=" + encodeURIComponent("" + establishmentId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -347,57 +346,8 @@ export class EstablishmentClient {
         return _observableOf(null as any);
     }
 
-    getSale(id: string | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/get/sale?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "id=" + encodeURIComponent("" + id) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetSale(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetSale(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processGetSale(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    getAll(): Observable<Establishment[]> {
-        let url_ = this.baseUrl + "/getall";
+    getAll(): Observable<Establishment[] | null> {
+        let url_ = this.baseUrl + "/api/establishment/get-all";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -416,14 +366,14 @@ export class EstablishmentClient {
                 try {
                     return this.processGetAll(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[]>;
+                    return _observableThrow(e) as any as Observable<Establishment[] | null>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment[]>;
+                return _observableThrow(response_) as any as Observable<Establishment[] | null>;
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<Establishment[]> {
+    protected processGetAll(response: HttpResponseBase): Observable<Establishment[] | null> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -435,55 +385,6 @@ export class EstablishmentClient {
             let result200: any = null;
             result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment[];
             return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    post(command: CreateEstablishmentCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/establishment";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPost(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processPost(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processPost(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -615,10 +516,25 @@ export class TestClient {
     }
 }
 
-export interface GetProductSalesQuery {
-    productId: string[];
-    startDate: Date;
-    endDate: Date;
+export interface Chart {
+    type: ChartType;
+}
+
+export interface LineChartData extends Chart {
+    xLegend: string | undefined;
+    yLegend: string | undefined;
+    values: ValueTupleOfDateTimeAndInteger[];
+}
+
+export interface ValueTupleOfDateTimeAndInteger {
+    item1: Date;
+    item2: number;
+}
+
+export enum ChartType {
+    LineChart = 0,
+    BarChart = 1,
+    PieChart = 2,
 }
 
 export interface LoginCommand {
@@ -666,7 +582,7 @@ export interface Item extends EntityBase {
 
 export interface Sale extends EntityBase {
     establishment: Establishment;
-    timestamp: Date;
+    timeStamp: Date;
     items: Item[];
     table: Table | undefined;
 }
@@ -674,13 +590,6 @@ export interface Sale extends EntityBase {
 export enum Role {
     Admin = 0,
     User = 1,
-}
-
-export interface ACommand {
-}
-
-export interface CreateEstablishmentCommand extends ACommand {
-    name: string;
 }
 
 export class ApiException extends Error {

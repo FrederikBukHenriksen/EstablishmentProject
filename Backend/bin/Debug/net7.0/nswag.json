@@ -121,7 +121,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "Frontend/api.ts",
+      "output": "../Frontend/api.ts",
       "newLineBehavior": "Auto"
     }
   }

@@ -15,12 +15,14 @@ namespace WebApplication1.Middelware
             _userContextService = userContextService;
         }
 
-        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public Task InvokeAsync(HttpContext context, RequestDelegate next)  
         {
-            Guid? userId = _authService.GetUserFromGuid(context);
+            Guid? userId = _authService.GetUserFromHttp(context);
 
-            _userContextService.SetUser((Guid) userId);
-            
+            if (userId != null) {
+                _userContextService.SetUser((Guid)userId);
+            };
+
             return next(context);
         }
     }
