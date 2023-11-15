@@ -6,32 +6,28 @@ using WebApplication1.Services;
 
 namespace WebApplication1.CommandHandlers
 {
-    public class GetProductSalesChartQuery : ACommand
+    public class GetProductSalesPerDayQuery : ACommand
     {
         public Guid ItemId { get; set; }
+        public TimeResolution Resolution { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
-        public class LineChartData  : Chart
+    public class ProductSalesPerDayDTO
     {
-        public string? xLegend = null;
-        public string? yLegend = null;
-        public ICollection<(DateTime, int)> values = null;
+        public ICollection<(DateTime, int)>? values = null;
     }
 
-    public abstract class Chart
+    public enum TimeResolution
     {
-        public required ChartType type;
+        quarter,
+        hour,
+        day,
+        month,
+        year,
     }
 
-    public enum ChartType
-    {
-        LineChart,
-        BarChart,
-        PieChart
-    }
-
-    public class GetProductSalesChartQueryHandler : CommandHandlerBase<GetProductSalesChartQuery, LineChartData>
+    public class GetProductSalesChartQueryHandler : CommandHandlerBase<GetProductSalesPerDayQuery, ProductSalesPerDayDTO>
     {
         private readonly ISalesRepository salesRepository;
         private readonly IUserContextService userContextService;
@@ -42,30 +38,49 @@ namespace WebApplication1.CommandHandlers
             this.userContextService = userContextService;
         }
 
-        public override async Task<LineChartData> ExecuteAsync(GetProductSalesChartQuery command, CancellationToken cancellationToken)
+        public override async Task<ProductSalesPerDayDTO> ExecuteAsync(GetProductSalesPerDayQuery command, CancellationToken cancellationToken)
         {
             Establishment? Establishment = this.userContextService.GetActiveEstablishment();
-
-            //create timeline
-            List<DateTime> datesInRange = new List<DateTime>();
-            for (DateTime date = command.StartDate; date <= command.EndDate; date = date.AddDays(1))
-            {
-                datesInRange.Add(date);
-            }
 
             IEnumerable<Sale> sales = this.salesRepository.GetAll().Where(x => x.Establishment.Id == Establishment.Id);
             IEnumerable<Sale> saleTimeslot = sales.Where(x => x.TimeStamp >= command.StartDate && x.TimeStamp <= command.EndDate);
             IEnumerable<IGrouping<DateTime, Sale>> grouped = saleTimeslot.GroupBy(x => x.TimeStamp.Date);
 
-            //Map every sale onto dateInRange
+            //Create timeline
+            List<DateTime> timeline = new List<DateTime>();
+
+            Func<DateTime,DateTime> res = x => {
+                switch (command.Resolution)
+                {
+                    case TimeResolution.quarter:
+                        return x.AddMinutes(15);
+                    case TimeResolution.hour:
+                        return x.AddHours(1);
+                    case TimeResolution.day:
+                        return x.AddDays(1);
+                    case TimeResolution.month:
+                        return x.AddMonths(1);
+                    case TimeResolution.year:
+                        return x.AddYears(1);
+                    default:
+                        return x;
+                }
+            };
+
+            for (DateTime date = command.StartDate; date <= command.EndDate; date = res(date))
+            {
+                timeline.Add(date);
+            }
+
+            //Map every sale of item onto dateInRange
             List<(DateTime, int)> salesPerDay = new List<(DateTime, int)>();
-            foreach (DateTime date in datesInRange)
+            foreach (DateTime date in timeline)
             {
                 int salesOnDate = grouped.Where(x => x.Key == date).Count();
                 salesPerDay.Add((date, salesOnDate));
             }
 
-            return new LineChartData() { type = ChartType.LineChart, values = salesPerDay };
+            return new ProductSalesPerDayDTO() { values = salesPerDay };
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
+using WebApplication1.Services.Analysis;
 
 namespace WebApplication1
 {
@@ -81,7 +82,8 @@ namespace WebApplication1
 
             AddMiddleware(app);
 
-            
+            SpearmansCrossCorrelation.DoAnalysis();
+
             app.Run();
 
         }

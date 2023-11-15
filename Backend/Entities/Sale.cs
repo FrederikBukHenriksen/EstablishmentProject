@@ -11,17 +11,6 @@ namespace WebApplication1.Models
         public List<Item> Items { get; set; } = new List<Item>();
 
         public Table? Table { get; set; }
-
-        public float GetTotalPrice()
-        {
-            float total = 0;
-            foreach (Item item in Items)
-            {
-                total += item.Price;
-            }
-            return total;
-        }
-
     }
 
     public class CheckConfiguration : IEntityTypeConfiguration<Sale>

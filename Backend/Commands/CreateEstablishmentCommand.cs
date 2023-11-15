@@ -3,6 +3,5 @@
     public class CreateEstablishmentCommand : ACommand
     {
         public string Name { get; set; }
-
     }
 }

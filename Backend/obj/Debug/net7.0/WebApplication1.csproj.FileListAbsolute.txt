@@ -129,3 +129,4 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\re
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\WebApplication1.pdb
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\WebApplication1.genruntimeconfig.cache
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\ref\WebApplication1.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\MathNet.Numerics.dll

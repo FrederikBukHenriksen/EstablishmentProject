@@ -36,7 +36,8 @@ namespace WebApplication1.Services
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
 
-            Claim[] claims = new[] { new Claim("username", id.ToString()) };
+            Claim[] claims = new[] { new Claim("username", id.ToString()),
+            };
 
             JwtSecurityToken token = new JwtSecurityToken(
                 claims: claims,

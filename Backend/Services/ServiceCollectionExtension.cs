@@ -23,14 +23,13 @@ namespace WebApplication1.Services
             serviceCollection.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<IUserRolesRepository, UserRolesRepository>();
-
             serviceCollection.AddScoped<ISalesRepository, SalesRepository>();
         }
 
         public static void AddCommandHandlers(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ICommandHandler<LoginCommand, string>, LoginCommandHandler>();
-            serviceCollection.AddTransient<ICommandHandler<GetProductSalesChartQuery, LineChartData>, GetProductSalesChartQueryHandler>();
+            serviceCollection.AddTransient<ICommandHandler<GetProductSalesPerDayQuery, ProductSalesPerDayDTO>, GetProductSalesChartQueryHandler>();
 
         }
     }

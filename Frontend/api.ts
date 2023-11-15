@@ -28,7 +28,7 @@ export class AnalysisClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    productSalesChart(): Observable<LineChartData> {
+    productSalesChart(): Observable<ProductSalesPerDayDTO> {
         let url_ = this.baseUrl + "/api/analysis/sales-line-chart";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -48,14 +48,14 @@ export class AnalysisClient {
                 try {
                     return this.processProductSalesChart(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<LineChartData>;
+                    return _observableThrow(e) as any as Observable<ProductSalesPerDayDTO>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<LineChartData>;
+                return _observableThrow(response_) as any as Observable<ProductSalesPerDayDTO>;
         }));
     }
 
-    protected processProductSalesChart(response: HttpResponseBase): Observable<LineChartData> {
+    protected processProductSalesChart(response: HttpResponseBase): Observable<ProductSalesPerDayDTO> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -65,7 +65,7 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as LineChartData;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProductSalesPerDayDTO;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -516,25 +516,13 @@ export class TestClient {
     }
 }
 
-export interface Chart {
-    type: ChartType;
-}
-
-export interface LineChartData extends Chart {
-    xLegend: string | undefined;
-    yLegend: string | undefined;
-    values: ValueTupleOfDateTimeAndInteger[];
+export interface ProductSalesPerDayDTO {
+    values: ValueTupleOfDateTimeAndInteger[] | undefined;
 }
 
 export interface ValueTupleOfDateTimeAndInteger {
     item1: Date;
     item2: number;
-}
-
-export enum ChartType {
-    LineChart = 0,
-    BarChart = 1,
-    PieChart = 2,
 }
 
 export interface LoginCommand {
@@ -576,6 +564,7 @@ export interface Table extends EntityBase {
 }
 
 export interface Item extends EntityBase {
+    establishment: Establishment;
     name: string;
     price: number;
 }

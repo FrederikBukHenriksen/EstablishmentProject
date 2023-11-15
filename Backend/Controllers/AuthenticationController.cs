@@ -50,23 +50,5 @@ namespace WebApplication1.Controllers
         {
             return authenticationService.GetUserFromHttp(this.HttpContext) != null;
         }
-
-
-        [Authorize]
-        [HttpGet("get-user-info")]
-        public User GetLoggedInUser([FromServices] IUserContextService userContextService)
-        {
-            string? cookie = HttpContext.Request.Cookies["jwt"];
-            try
-            {
-                return userContextService.GetUser();
-            } catch (Exception e) {
-                this.HttpContext.Response.StatusCode = 401;
-                return null;
-            };
-        }
-
-
-
     }
 }
