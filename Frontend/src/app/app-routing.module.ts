@@ -12,20 +12,20 @@ import { CreateEstablishmentComponent } from './create-establishment/create-esta
 import { AuthenticationClient } from 'api';
 import { map } from 'rxjs';
 
-const authGuard =
-  (roles: string[]) =>
-  (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    let authenticationClient = inject(AuthenticationClient);
-    return authenticationClient.getLoggedInUser().pipe(
-      map((user) => {
-        console.log(user);
-        // if (roles.find((x) => x == roles[user.role])) {
-        return true;
-        // }
-        return false;
-      })
-    );
-  };
+// const authGuard =
+//   (roles: string[]) =>
+//   (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+//     let authenticationClient = inject(AuthenticationClient);
+//     return authenticationClient.getLoggedInUser().pipe(
+//       map((user) => {
+//         console.log(user);
+//         // if (roles.find((x) => x == roles[user.role])) {
+//         return true;
+//         // }
+//         return false;
+//       })
+//     );
+//   };
 
 const routes: Routes = [
   { path: '', component: HomepageComponent },

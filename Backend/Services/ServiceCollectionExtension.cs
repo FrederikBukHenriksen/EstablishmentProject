@@ -1,4 +1,5 @@
-﻿using WebApplication1.CommandHandlers;
+﻿using MathNet.Numerics;
+using WebApplication1.CommandHandlers;
 using WebApplication1.Commands;
 using WebApplication1.Data;
 using WebApplication1.Middelware;
@@ -12,10 +13,8 @@ namespace WebApplication1.Services
         {
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
-
             serviceCollection.AddScoped<UserContextMiddleware>();
-
-            serviceCollection.AddScoped<IDatabaseContext>(provider =>  provider.GetRequiredService<ApplicationDbContext>());
+            serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
         }
         public static void AddRepositories(this IServiceCollection serviceCollection)
@@ -24,12 +23,13 @@ namespace WebApplication1.Services
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<IUserRolesRepository, UserRolesRepository>();
             serviceCollection.AddScoped<ISalesRepository, SalesRepository>();
-        }
+        }   
 
         public static void AddCommandHandlers(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ICommandHandler<LoginCommand, string>, LoginCommandHandler>();
             serviceCollection.AddTransient<ICommandHandler<GetProductSalesPerDayQuery, ProductSalesPerDayDTO>, GetProductSalesChartQueryHandler>();
+
 
         }
     }

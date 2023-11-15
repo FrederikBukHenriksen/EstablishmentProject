@@ -8,7 +8,7 @@ namespace WebApplication1.Models
 
         public DateTime TimeStamp { get; set; }
 
-        public List<Item> Items { get; set; } = new List<Item>();
+        //public List<Item> Items { get; set; } = new List<Item>();
 
         public Table? Table { get; set; }
     }
@@ -21,7 +21,7 @@ namespace WebApplication1.Models
 
             builder.Property(e => e.TimeStamp).IsRequired();
 
-            builder.Property(e => e.Items).IsRequired();
+            //builder.Property(e => e.Items).IsRequired();
 
             builder.HasOne(e => e.Table);
         }

@@ -130,3 +130,6 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\We
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\WebApplication1.genruntimeconfig.cache
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\obj\Debug\net7.0\ref\WebApplication1.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\MathNet.Numerics.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\xunit.abstractions.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\xunit.assert.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\xunit.core.dll

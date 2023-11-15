@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Data;
 using WebApplication1.Data.DataModels;
 using WebApplication1.Models;
 using WebApplication1.Repositories;
+using Xunit.Abstractions;
 
 namespace WebApplication1.Controllers
 {
@@ -14,26 +16,21 @@ namespace WebApplication1.Controllers
         private IUserRepository _userRepository;
         private IUserRolesRepository _userRolesRepository;
         private IEstablishmentRepository _establishmentRepository;
+        private ApplicationDbContext _applicationDbContext;
 
-        public TestController(IUserRepository userRepository, IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
+        public TestController(IEstablishmentRepository establishmentRepository, ApplicationDbContext applicationDbContext)
         {
-            _userRepository = userRepository;
-            _userRolesRepository = userRolesRepository;
             _establishmentRepository = establishmentRepository;
+            _applicationDbContext = applicationDbContext;
         }
+
         [HttpGet]
-        public User Establishment()
+        public void Establishment()
         {
 
-            var getSimpleEstab = _establishmentRepository.Find(x => true);
-
-            var testEstab = _establishmentRepository.getItAll(new Guid("00000000-0000-0000-0000-000000000001"));
-
-            var user = _userRepository.GetAll().FirstOrDefault();
-
-            var testOfEager = _userRolesRepository.GetAll().ToList();
-
-            return user;
+            var cusItems = new List<Item> { new Item { Name = "test", Price = 10 } };
+            var extra    = new List<Item> { new Item { Name = "lige i 2eren", Price = 69 } };
+            _establishmentRepository.Add(new Establishment { Name = "Luffe", Items = new List<Item> { new Item { Name = "Karen Marie", Price = 1 } } });
         }
 
     }

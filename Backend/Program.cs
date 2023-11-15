@@ -142,6 +142,7 @@ namespace WebApplication1
 
         private static void AutoMigrate(WebApplication app)
         {
+
             var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             dbContext.Database.Migrate();

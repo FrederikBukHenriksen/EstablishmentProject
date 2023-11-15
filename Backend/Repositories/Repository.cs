@@ -14,63 +14,71 @@ namespace WebApplication1.Repositories
     {
 
         public IDatabaseContext context;
+        public DbSet<TEntity> set;
 
         public Repository(IDatabaseContext Context)
         {
             context = Context;
+            set = context.Set<TEntity>();
         }
 
         public IDatabaseContext Context { get => context; }
 
         public void Add(TEntity entity)
         {
-            context.Set<TEntity>().Add(entity);
+            set.Add(entity);
+            context.SaveChanges();
         }
 
         public void AddRange(IEnumerable<TEntity> entities)
         {
-            context.Set<TEntity>().AddRange(entities);
+            set.AddRange(entities);
+            context.SaveChanges();
         }
 
         public bool Contains(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().Any(predicate);
+            return set.Any(predicate);
         }
 
         public TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().Where(predicate).FirstOrDefault();
+            return set.Where(predicate).FirstOrDefault();
         }
 
         public IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().Where(predicate).AsEnumerable();
+            return set.Where(predicate).AsEnumerable();
         }
 
         public bool HasAny(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().Any(predicate);
+            return set.Any(predicate);
         }
 
         public TEntity? Get(Guid id)
         {
-            return context.Set<TEntity>().Find(id);
+            return set.Find(id);
+
         }
 
         public IEnumerable<TEntity>? GetAll()
         {
-            return context.Set<TEntity>().AsEnumerable();
+            return set.AsEnumerable();
+            
   
         }
 
         public void Remove(TEntity entity)
         {
-            context.Set<TEntity>().Remove(entity);
+            set.Remove(entity);
+            context.SaveChanges();
         }
 
         public void Update(TEntity entity)
         {
-            context.Set<TEntity>().Update(entity);
+            set.Update(entity);
+            context.SaveChanges();
         }
     }
 }

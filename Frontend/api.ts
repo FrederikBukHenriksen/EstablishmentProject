@@ -233,7 +233,7 @@ export class AuthenticationClient {
     }
 
     getLoggedInUser(): Observable<User> {
-        let url_ = this.baseUrl + "/api/authentication/get-user-info";
+        let url_ = this.baseUrl + "/api/authentication/get-logged-in-user";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -467,7 +467,7 @@ export class TestClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    establishment(): Observable<User> {
+    establishment(): Observable<void> {
         let url_ = this.baseUrl + "/api/test";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -476,7 +476,6 @@ export class TestClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
-                "Accept": "application/json"
             })
         };
 
@@ -487,14 +486,14 @@ export class TestClient {
                 try {
                     return this.processEstablishment(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<User>;
+                    return _observableThrow(e) as any as Observable<void>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<User>;
+                return _observableThrow(response_) as any as Observable<void>;
         }));
     }
 
-    protected processEstablishment(response: HttpResponseBase): Observable<User> {
+    protected processEstablishment(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -503,9 +502,7 @@ export class TestClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as User;
-            return _observableOf(result200);
+            return _observableOf(null as any);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -517,12 +514,12 @@ export class TestClient {
 }
 
 export interface ProductSalesPerDayDTO {
-    values: ValueTupleOfDateTimeAndInteger[] | undefined;
+    values: SalesAndTimeSlotDTO[] | undefined;
 }
 
-export interface ValueTupleOfDateTimeAndInteger {
-    item1: Date;
-    item2: number;
+export interface SalesAndTimeSlotDTO {
+    date: Date;
+    salesCount: number;
 }
 
 export interface LoginCommand {
@@ -548,32 +545,12 @@ export interface UserRole extends EntityBase {
 
 export interface Establishment extends EntityBase {
     name: string;
-    location: Location | undefined;
-    tables: Table[] | undefined;
-    items: Item[] | undefined;
-    sales: Sale[] | undefined;
-}
-
-export interface Location extends EntityBase {
-    country: string;
-}
-
-export interface Table extends EntityBase {
-    establishment: Establishment;
-    name: string;
+    items: Item[];
 }
 
 export interface Item extends EntityBase {
-    establishment: Establishment;
     name: string;
     price: number;
-}
-
-export interface Sale extends EntityBase {
-    establishment: Establishment;
-    timeStamp: Date;
-    items: Item[];
-    table: Table | undefined;
 }
 
 export enum Role {

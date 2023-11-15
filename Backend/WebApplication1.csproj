@@ -36,6 +36,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="xunit.assert" Version="2.4.2" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
   </ItemGroup>
 
 	<Target Name="NSwag" BeforeTargets="AfterBuild" Condition="'$(TF_BUILD)'!='True'">
@@ -43,9 +45,6 @@
 			<Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
 			<Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
 		</Exec>
-
-		<Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
-		<Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
 	</Target>
 	
 	<ItemGroup>

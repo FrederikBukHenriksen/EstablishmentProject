@@ -18,7 +18,7 @@ namespace WebApplication1.CommandHandlers
             this.authService = authService;
         }
 
-            public override async Task<string> ExecuteAsync(LoginCommand command, CancellationToken cancellationToken)
+            public override string Execute(LoginCommand command)
             {
                 User user = authService.Login(command.Username, command.Password);
                 var result = authService.GenerateJwtToken(user.Id);

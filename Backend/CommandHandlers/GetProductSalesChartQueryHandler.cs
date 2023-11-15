@@ -15,12 +15,19 @@ namespace WebApplication1.CommandHandlers
     }
     public class ProductSalesPerDayDTO
     {
-        public ICollection<(DateTime, int)>? values = null;
+        public ICollection<SalesAndTimeSlotDTO>? values { get; set; }
+    }
+
+    public class SalesAndTimeSlotDTO
+    {
+        public DateTime Date { get; set; }
+        public int SalesCount { get; set; }
     }
 
     public enum TimeResolution
     {
-        quarter,
+        quarterHour,
+        halfHour,
         hour,
         day,
         month,
@@ -36,15 +43,18 @@ namespace WebApplication1.CommandHandlers
         {
             this.salesRepository = salesRepository;
             this.userContextService = userContextService;
-        }
+        }   
 
-        public override async Task<ProductSalesPerDayDTO> ExecuteAsync(GetProductSalesPerDayQuery command, CancellationToken cancellationToken)
+        public override ProductSalesPerDayDTO Execute(GetProductSalesPerDayQuery command)
         {
             Establishment? Establishment = this.userContextService.GetActiveEstablishment();
 
             IEnumerable<Sale> sales = this.salesRepository.GetAll().Where(x => x.Establishment.Id == Establishment.Id);
-            IEnumerable<Sale> saleTimeslot = sales.Where(x => x.TimeStamp >= command.StartDate && x.TimeStamp <= command.EndDate);
-            IEnumerable<IGrouping<DateTime, Sale>> grouped = saleTimeslot.GroupBy(x => x.TimeStamp.Date);
+
+            IEnumerable<Sale> salesWithinTimePeriod = sales.Where(x => x.TimeStamp >= command.StartDate && x.TimeStamp <= command.EndDate);
+
+            IEnumerable<IGrouping<DateTime, Sale>> salesGroupedByTimeSlots = salesWithinTimePeriod.GroupBy(x => x.TimeStamp.Date);
+
 
             //Create timeline
             List<DateTime> timeline = new List<DateTime>();
@@ -52,8 +62,10 @@ namespace WebApplication1.CommandHandlers
             Func<DateTime,DateTime> res = x => {
                 switch (command.Resolution)
                 {
-                    case TimeResolution.quarter:
+                    case TimeResolution.quarterHour:
                         return x.AddMinutes(15);
+                    case TimeResolution.halfHour:
+                        return x.AddMinutes(30);
                     case TimeResolution.hour:
                         return x.AddHours(1);
                     case TimeResolution.day:
@@ -73,25 +85,13 @@ namespace WebApplication1.CommandHandlers
             }
 
             //Map every sale of item onto dateInRange
-            List<(DateTime, int)> salesPerDay = new List<(DateTime, int)>();
+            List<SalesAndTimeSlotDTO> salesPerDay = new List<SalesAndTimeSlotDTO>();
             foreach (DateTime date in timeline)
             {
-                int salesOnDate = grouped.Where(x => x.Key == date).Count();
-                salesPerDay.Add((date, salesOnDate));
+                int salesOnDate = salesGroupedByTimeSlots.Where(x => x.Key == date).Count();
+                salesPerDay.Add(new SalesAndTimeSlotDTO { Date = date, SalesCount = salesOnDate});
             }
-
             return new ProductSalesPerDayDTO() { values = salesPerDay };
         }
     }
 }
-
-
-//Liste, med lister over alle transactions
-
-//Udregn frekvensen for hver item. Hvor mange fremgår dét item fra transactions
-
-//Ud fra frekvensen, så tildel en prioritet. Hvis lige høj frekvens, få FCFS    
-
-//reorder transactionerne ift prioriteten
-
-//Take the first transaction, and make at tree from it out of null. Make sure all transactions have a path from null.

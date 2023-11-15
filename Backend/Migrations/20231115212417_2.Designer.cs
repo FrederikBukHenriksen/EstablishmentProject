@@ -12,8 +12,8 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231110124658_YourMigrationName")]
-    partial class YourMigrationName
+    [Migration("20231115212417_2")]
+    partial class _2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
@@ -55,18 +55,13 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("Establishment", (string)null);
+                    b.ToTable("Establishment");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Item", b =>
@@ -82,78 +77,14 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
-
-                    b.Property<Guid?>("SaleId")
-                        .HasColumnType("uuid");
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EstablishmentId");
-
-                    b.HasIndex("SaleId");
 
                     b.ToTable("Item");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("country")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Location");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EstablishmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TableId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EstablishmentId");
-
-                    b.HasIndex("TableId");
-
-                    b.ToTable("Sale");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Table", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EstablishmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EstablishmentId");
-
-                    b.ToTable("Table");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.User", b =>
@@ -176,14 +107,6 @@ namespace WebApplication1.Migrations
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Password = "1234",
-                            Username = "Frederik"
-                        });
                 });
 
             modelBuilder.Entity("WebApplication1.Data.DataModels.UserRole", b =>
@@ -205,64 +128,14 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
-                    b.Navigation("Location");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Item", b =>
                 {
                     b.HasOne("WebApplication1.Models.Establishment", null)
                         .WithMany("Items")
                         .HasForeignKey("EstablishmentId");
-
-                    b.HasOne("WebApplication1.Models.Sale", null)
-                        .WithMany("Items")
-                        .HasForeignKey("SaleId");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
-                        .WithMany("Sales")
-                        .HasForeignKey("EstablishmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Table", "Table")
-                        .WithMany()
-                        .HasForeignKey("TableId");
-
-                    b.Navigation("Establishment");
-
-                    b.Navigation("Table");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Table", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
-                        .WithMany("Tables")
-                        .HasForeignKey("EstablishmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Establishment");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
-                {
-                    b.Navigation("Items");
-
-                    b.Navigation("Sales");
-
-                    b.Navigation("Tables");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
                 {
                     b.Navigation("Items");
                 });

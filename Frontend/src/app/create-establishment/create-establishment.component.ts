@@ -5,8 +5,8 @@ import Chart, { ChartOptions } from 'chart.js/auto';
 import {
   AnalysisClient,
   AuthenticationClient,
-  LineChartData,
   LoginCommand,
+  ProductSalesPerDayDTO,
 } from 'api';
 
 @Component({
@@ -28,30 +28,29 @@ export class CreateEstablishmentComponent implements OnInit {
 
   public buttonColor = 'blue';
 
-  public data!: LineChartData;
+  public data!: ProductSalesPerDayDTO;
 
   ngOnInit(): void {
     this.analysisClient.productSalesChart().subscribe({
       next: (data) => {
         this.data = data;
+        this.chart = this.createChart(this.data);
       },
     });
-
-    this.chart = this.createChart(this.data);
   }
 
-  createChart(data: LineChartData): Chart {
+  createChart(data: ProductSalesPerDayDTO): Chart {
     return new Chart('canvas', {
       data: {
         datasets: [
           {
             type: 'line',
-            label: 'Line Dataset',
+            // label: 'Line Dataset',
             // data: [20, 30, 40, 50],
-            data: data.values.map((x) => x.item2),
+            data: data.values!.map((x) => x.salesCount),
           },
         ],
-        labels: data.values.map((x) => x.item1),
+        labels: data.values!.map((x) => x.date.toString()),
         // labels: [
         //   '8:00',
         //   '9:00',
@@ -85,29 +84,5 @@ export class CreateEstablishmentComponent implements OnInit {
   private updateChart() {
     this.chart.options = this.getOptions();
     this.chart.update();
-  }
-
-  protected onSubmit() {
-    this.lolcat = false;
-    this.updateChart();
-    this.authenticationClient
-      .logIn({
-        username: this.applyForm.value.firstName,
-        password: this.applyForm.value.lastName,
-      } as LoginCommand)
-      .subscribe({
-        next: (v) => {
-          this.buttonColor = 'blue';
-          console.log(v);
-        },
-        error: (e: HttpErrorResponse) => {
-          this.buttonColor = 'red';
-          console.error('fejlowitz', e.status);
-        },
-        complete: () =>
-          this.authenticationClient
-            .getLoggedInUser()
-            .subscribe((user) => console.log('brugerinfo', user)),
-      });
   }
 }

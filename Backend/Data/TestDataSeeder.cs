@@ -5,12 +5,14 @@ using static WebApplication1.Data.DataModels.UserRole;
 using System;
 using System.Collections.Generic;
 using MathNet.Numerics.Distributions;
-
+using System.Security.Cryptography;
 
 namespace WebApplication1.Data
 {
-    public static class TestDataSeeder
+    public class TestDataSeeder
     {
+
+
         public static void SeedDataBase(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
@@ -19,6 +21,8 @@ namespace WebApplication1.Data
             modelBuilder.Entity<Establishment>().HasData(
                 GetEstablishments()
             );
+
+            var item = new Item { Name = "Espresso", Price = 25 };
 
             modelBuilder.Entity<UserRole>().HasData(
                 new
@@ -29,20 +33,10 @@ namespace WebApplication1.Data
                     UserId = new Guid("00000000-0000-0000-0000-000000000001"),
                 }
             ); ;
-
-            modelBuilder.Entity<Item>().HasData(
-                new { Id = Guid.NewGuid(), EstablishmentId = new Guid("00000000-0000-0000-0000-000000000001"), Name = "Espresso", Price = 30.0 }
-                );
         }
 
         private static List<User> GetUsers()
         {
-            //double mean = 50.0;
-            //double stdDev = 10.0;
-            //int numberOfDataPoints = 100;
-
-            //// Create a normal distribution
-            //Normal normalDistribution = new Normal(mean, stdDev);
 
             return new List<User>() {
                 new User
@@ -71,15 +65,13 @@ namespace WebApplication1.Data
         };
         }
 
-        //private static List<Item> GetItems()
-        //{
-        //    return new List<Item>()
-        //    {
-        //        new {Id = Guid.NewGuid(),Establishment = new Guid("00000000-0000-0000-0000-000000000001"),Name = "Espresso", Price = 30},
-        //        //new Item {Name = "Smoothie", Price = 50},
-        //        //new Item {Name = "Bun with cheese", Price = 60}
-        //    };
-        //}
+        private static List<Item> GetItems()
+        {
+            return new List<Item>()
+            {
+                new Item {Name = "Nævesuppe", Price = 69 },
+            };
+        }
 
 
         //private static List<Sale> GetSale()
