@@ -1,3 +1,4 @@
+using DMIOpenData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -82,7 +83,12 @@ namespace WebApplication1
 
             AddMiddleware(app);
 
-            SpearmansCrossCorrelation.DoAnalysis();
+            DMIOpenDataClient client = new DMIOpenDataClient();
+            string stationId;
+            stationId = Task.Run(async () => await client.GetIdOfClosestStation()).Result;
+
+            //client.GetDataAsync();
+
 
             app.Run();
 
@@ -145,7 +151,7 @@ namespace WebApplication1
 
             var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            dbContext.Database.Migrate();
+            //dbContext.Database.Migrate();
             scope.Dispose();
         }
     }

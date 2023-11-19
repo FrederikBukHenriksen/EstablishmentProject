@@ -51,9 +51,9 @@ namespace WebApplication1.CommandHandlers
 
             IEnumerable<Sale> sales = this.salesRepository.GetAll().Where(x => x.Establishment.Id == Establishment.Id);
 
-            IEnumerable<Sale> salesWithinTimePeriod = sales.Where(x => x.TimeStamp >= command.StartDate && x.TimeStamp <= command.EndDate);
+            IEnumerable<Sale> salesWithinTimePeriod = sales.Where(x => x.TimestampStart >= command.StartDate && x.TimestampStart <= command.EndDate);
 
-            IEnumerable<IGrouping<DateTime, Sale>> salesGroupedByTimeSlots = salesWithinTimePeriod.GroupBy(x => x.TimeStamp.Date);
+            IEnumerable<IGrouping<DateTime, Sale>> salesGroupedByTimeSlots = salesWithinTimePeriod.GroupBy(x => x.TimestampEnd.Date);
 
 
             //Create timeline

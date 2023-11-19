@@ -550,7 +550,7 @@ export interface Establishment extends EntityBase {
 
 export interface Item extends EntityBase {
     name: string;
-    price: number;
+    price: number | undefined;
 }
 
 export enum Role {
