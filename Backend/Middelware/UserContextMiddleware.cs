@@ -22,10 +22,8 @@ namespace WebApplication1.Middelware
             if (userId != null) {
                 _userContextService.SetUser((Guid)userId);
                 _userContextService.FecthAccesibleEstablishments();
-                _userContextService.LoadHttpSessionData(context);
+                _userContextService.FetchActiveEstablishmentFromHttpHeader(context);
             };
-
-
             return next(context);
         }
     }

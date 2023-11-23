@@ -11,12 +11,20 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class HttpInterceptService implements HttpInterceptor {
+  public ElectionId: string = '00000000-0000-0000-0000-000000000001';
+
   constructor() {}
 
   intercept(
-    req: HttpRequest<any>,
+    request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    return next.handle(req);
+    const modifiedRequest = request.clone({
+      setHeaders: {
+        EstablishmentId: this.ElectionId,
+      },
+    });
+
+    return next.handle(modifiedRequest);
   }
 }

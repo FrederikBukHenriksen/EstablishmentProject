@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Http;
+using System.Linq;
 using WebApplication1.Models;
 using WebApplication1.Repositories;
 
@@ -10,8 +11,7 @@ namespace WebApplication1.Services
         public User? GetUser();
         public List<Establishment> GetAccessibleEstablishments();
         public Establishment? GetActiveEstablishment();
-        public HttpContext SetActiveEstablishmentInSession(HttpContext httpcontext, Guid establishmentId);
-        public void LoadHttpSessionData(HttpContext httpContext);
+        public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext);
         public void FecthAccesibleEstablishments();
     }
 
@@ -47,17 +47,6 @@ namespace WebApplication1.Services
             _establishments = _userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User.Id == _user.Id).Select(x => x.Establishment).ToList();
         }
 
-        public HttpContext SetActiveEstablishmentInSession(HttpContext context, Guid establishmentId)
-        {
-            var containsEstablishment = this._establishments!.Any(x => x.Id == establishmentId);
-            if (containsEstablishment)
-            {
-                _establishment = _establishmentRepository.GetById(establishmentId);
-                context.Session.SetString("EstablishmentId", establishmentId.ToString());
-            }
-            return context;
-        }
-
         public User? GetUser()
         {
             return _user;
@@ -74,9 +63,9 @@ namespace WebApplication1.Services
             return _establishments;
         }
 
-        public void LoadHttpSessionData(HttpContext httpContext)
+        public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext)
         {
-            string EstablishmentIdAsString = httpContext.Session.GetString("EstablishmentId");
+            string EstablishmentIdAsString = httpContext.Request.Headers["EstablishmentId"];
             if (EstablishmentIdAsString != null)
             {
                 Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);
@@ -84,10 +73,8 @@ namespace WebApplication1.Services
                 if (UserIsAssociatedWithEstablishment)
                 {
                     _establishment = _establishmentRepository.GetById(EstablishmentId);
-
                 }
             }
-
         }
     }
 }
