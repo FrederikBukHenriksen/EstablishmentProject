@@ -6,7 +6,7 @@ namespace WebApplication1.Repositories
 
     public interface IUserRolesRepository : IRepository<UserRole>
     {
-        IEnumerable<UserRole> GetAllInclude();
+        IEnumerable<UserRole> GetAllIncludeEstablishment();
     }
 
     public class UserRolesRepository : Repository<UserRole>, IUserRolesRepository
@@ -15,7 +15,7 @@ namespace WebApplication1.Repositories
         { }
 
         //Method is needed in the UserContextMiddleware
-        public IEnumerable<UserRole> GetAllInclude()
+        public IEnumerable<UserRole> GetAllIncludeEstablishment()
         {
             return this.context.Set<UserRole>().Include(x => x.User).Include(x => x.Establishment);
         }

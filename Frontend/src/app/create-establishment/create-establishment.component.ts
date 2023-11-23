@@ -6,7 +6,7 @@ import {
   AnalysisClient,
   AuthenticationClient,
   LoginCommand,
-  ProductSalesPerDayDTO,
+  GraphDTO,
 } from 'api';
 
 @Component({
@@ -28,7 +28,7 @@ export class CreateEstablishmentComponent implements OnInit {
 
   public buttonColor = 'blue';
 
-  public data!: ProductSalesPerDayDTO;
+  public data!: GraphDTO;
 
   ngOnInit(): void {
     this.analysisClient.productSalesChart().subscribe({
@@ -39,7 +39,7 @@ export class CreateEstablishmentComponent implements OnInit {
     });
   }
 
-  createChart(data: ProductSalesPerDayDTO): Chart {
+  createChart(data: GraphDTO): Chart {
     return new Chart('canvas', {
       data: {
         datasets: [

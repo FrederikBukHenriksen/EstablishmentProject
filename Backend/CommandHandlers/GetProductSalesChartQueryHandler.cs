@@ -13,12 +13,12 @@ namespace WebApplication1.CommandHandlers
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
-    public class ProductSalesPerDayDTO
+    public class GraphDTO
     {
-        public ICollection<SalesAndTimeSlotDTO>? values { get; set; }
+        public ICollection<TimeAndValue>? values { get; set; }
     }
 
-    public class SalesAndTimeSlotDTO
+    public class TimeAndValue
     {
         public DateTime Date { get; set; }
         public int SalesCount { get; set; }
@@ -34,7 +34,7 @@ namespace WebApplication1.CommandHandlers
         year,
     }
 
-    public class GetProductSalesChartQueryHandler : CommandHandlerBase<GetProductSalesPerDayQuery, ProductSalesPerDayDTO>
+    public class GetProductSalesChartQueryHandler : CommandHandlerBase<GetProductSalesPerDayQuery, GraphDTO>
     {
         private readonly ISalesRepository salesRepository;
         private readonly IUserContextService userContextService;
@@ -45,7 +45,7 @@ namespace WebApplication1.CommandHandlers
             this.userContextService = userContextService;
         }   
 
-        public override ProductSalesPerDayDTO Execute(GetProductSalesPerDayQuery command)
+        public override GraphDTO Execute(GetProductSalesPerDayQuery command)
         {
             Establishment? Establishment = this.userContextService.GetActiveEstablishment();
 
@@ -85,13 +85,13 @@ namespace WebApplication1.CommandHandlers
             }
 
             //Map every sale of item onto dateInRange
-            List<SalesAndTimeSlotDTO> salesPerDay = new List<SalesAndTimeSlotDTO>();
+            List<TimeAndValue> salesPerDay = new List<TimeAndValue>();
             foreach (DateTime date in timeline)
             {
                 int salesOnDate = salesGroupedByTimeSlots.Where(x => x.Key == date).Count();
-                salesPerDay.Add(new SalesAndTimeSlotDTO { Date = date, SalesCount = salesOnDate});
+                salesPerDay.Add(new TimeAndValue { Date = date, SalesCount = salesOnDate});
             }
-            return new ProductSalesPerDayDTO() { values = salesPerDay };
+            return new GraphDTO() { values = salesPerDay };
         }
     }
 }

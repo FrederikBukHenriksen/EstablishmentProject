@@ -14,7 +14,10 @@ namespace WebApplication1.Models
         public void Configure(EntityTypeBuilder<Item> builder)
         {
 
+
             builder.Property(e => e.Name).IsRequired();
+
+            builder.HasIndex(e => e.Name).IsUnique();
 
             builder.Property(e => e.Price).IsRequired();
 

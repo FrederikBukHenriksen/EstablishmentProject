@@ -7,20 +7,14 @@ namespace WebApplication1.Models
     {
         public string Name { get; set; }
         //public Location? Location { get; set; } = null;
-        public ICollection<Item> Items { get; set; }
+        public ICollection<Item> Items { get; set; } = new List<Item>();
         //public ICollection<Table>? Tables { get; set; } = null;
-        //public ICollection<Sale>? Sales { get; set; } = null;
-
+        public ICollection<Sale> Sales { get; set; } = new List<Sale>();
+        //public Location Location { get; set; }
         internal Establishment()
         {
             
         }
-
-        public Establishment(string name)
-        {
-            Name = name;
-        }
-
     }
 
 
@@ -28,6 +22,8 @@ namespace WebApplication1.Models
     {
         public void Configure(EntityTypeBuilder<Establishment> builder)
         {
+            builder.Property(x => x.Name);
+            //builder.Property(x => x.Location);
 
         }
     }

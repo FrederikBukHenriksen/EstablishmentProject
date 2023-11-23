@@ -1,4 +1,6 @@
-﻿using WebApplication1.Repositories;
+﻿using System.Linq;
+using WebApplication1.Models;
+using WebApplication1.Repositories;
 
 namespace WebApplication1.Services
 {
@@ -6,9 +8,11 @@ namespace WebApplication1.Services
     {
         public void SetUser(Guid userId);
         public User? GetUser();
-        Establishment? GetActiveEstablishment();
-        IEnumerable<Establishment>? GetAccessibleEstablishments();
-        void SetEstablishment(Guid establishmentId);
+        public List<Establishment> GetAccessibleEstablishments();
+        public Establishment? GetActiveEstablishment();
+        public HttpContext SetActiveEstablishmentInSession(HttpContext httpcontext, Guid establishmentId);
+        public void LoadHttpSessionData(HttpContext httpContext);
+        public void FecthAccesibleEstablishments();
     }
 
     public class UserContextService : IUserContextService
@@ -19,7 +23,7 @@ namespace WebApplication1.Services
 
         private User? _user = null;
         private Establishment? _establishment = null;
-        private IEnumerable<Establishment>? _establishments = null;
+        private List<Establishment>? _establishments = null;
 
         public UserContextService(IUserRepository userRepository,IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
         {
@@ -31,30 +35,27 @@ namespace WebApplication1.Services
         public void SetUser(Guid userId)
         {
             var testGetAll = _userRepository.GetAll();
-            _user = _userRepository.Get(userId);
+            _user = _userRepository.GetById(userId);
             if (_user == null)
             {
                 return;
             }
-            this.FetchEstablishments();
         }
 
-        public void SetEstablishment(Guid establishmentId)
+        public void FecthAccesibleEstablishments()
         {
-            if (_user == null)
-            {
-                throw new Exception("User must be set prior to establishment");
-            }
-            if (_establishment == null)
-            {
-                throw new Exception("User does not have access to any establishments");
-            }
+            _establishments = _userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User.Id == _user.Id).Select(x => x.Establishment).ToList();
+        }
+
+        public HttpContext SetActiveEstablishmentInSession(HttpContext context, Guid establishmentId)
+        {
             var containsEstablishment = this._establishments!.Any(x => x.Id == establishmentId);
-            if (!containsEstablishment)
+            if (containsEstablishment)
             {
-                throw new Exception("User does not have access to the establishment");
+                _establishment = _establishmentRepository.GetById(establishmentId);
+                context.Session.SetString("EstablishmentId", establishmentId.ToString());
             }
-            _establishment = _establishmentRepository.Get(establishmentId);
+            return context;
         }
 
         public User? GetUser()
@@ -64,29 +65,29 @@ namespace WebApplication1.Services
 
         public Establishment? GetActiveEstablishment()
         {
+ 
             return _establishment;
         }
 
-        public IEnumerable<Establishment>? GetAccessibleEstablishments()
+        public List<Establishment>? GetAccessibleEstablishments()
         {
             return _establishments;
         }
 
-        private void FetchEstablishments()
+        public void LoadHttpSessionData(HttpContext httpContext)
         {
-            if (_user == null)
+            string EstablishmentIdAsString = httpContext.Session.GetString("EstablishmentId");
+            if (EstablishmentIdAsString != null)
             {
-                return;
+                Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);
+                bool UserIsAssociatedWithEstablishment = GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);
+                if (UserIsAssociatedWithEstablishment)
+                {
+                    _establishment = _establishmentRepository.GetById(EstablishmentId);
+
+                }
             }
-            this._establishments = _userRolesRepository.GetAllInclude().Where(x => x.User.Id == _user.Id).Select(x => x.Establishment);
+
         }
-
-
-
-
-
-
     }
-
-
 }

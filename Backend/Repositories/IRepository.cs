@@ -5,7 +5,7 @@
     {
         protected IDatabaseContext Context { get; }
 
-        TEntity? Get(Guid id);
+        TEntity? GetById(Guid id);
         IEnumerable<TEntity>? GetAll();
         bool Contains(Expression<Func<TEntity, bool>> predicate);
         TEntity? Find(Expression<Func<TEntity, bool>> predicate);

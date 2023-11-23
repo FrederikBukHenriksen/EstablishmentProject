@@ -10,9 +10,15 @@ import { CreateEstablishmentModule } from './create-establishment/create-establi
 import { API_BASE_URL } from 'api';
 import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, NavbarComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    NavbarComponent,
+    SelectEstablishmentComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

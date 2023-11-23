@@ -10,8 +10,8 @@ namespace WebApplication1.Controllers
     public class AnalysisController
     {
         [HttpPost("sales-line-chart")]
-        public ProductSalesPerDayDTO ProductSalesChart(
-            [FromServices] ICommandHandler<GetProductSalesPerDayQuery, ProductSalesPerDayDTO> handler
+        public GraphDTO ProductSalesChart(
+            [FromServices] ICommandHandler<GetProductSalesPerDayQuery, GraphDTO> handler
             )
         {
 

@@ -1,21 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Namotion.Reflection;
+using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Models
 {
     public class Sale : EntityBase
     {
         public Establishment Establishment { get; set; }
-        public DateTime? TimestampStart { get; set; }
-        public DateTime TimestampEnd { get; set; }
-        public List<Item> Items { get; set; } = new List<Item>();
+        public DateTime TimestampStart { get; set; } = DateTime.Now.ToUniversalTime();
+        public DateTime TimestampEnd { get; set; } = DateTime.Now.ToUniversalTime();
+        public List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
         public Table? Table { get; set; }
-
-        public Sale AddItem(Item item)
-        {
-            this.Items.Add(item);
-            return this;
-        }
     }
 
     public class CheckConfiguration : IEntityTypeConfiguration<Sale>
@@ -27,9 +22,8 @@ namespace WebApplication1.Models
             builder.Property(e => e.TimestampStart);
 
 
-            builder.Property(e => e.TimestampEnd).IsRequired();
+            builder.Property(e => e.TimestampEnd);
 
-            //builder.Property(e => e.Items).IsRequired();
 
             builder.HasOne(e => e.Table);
         }

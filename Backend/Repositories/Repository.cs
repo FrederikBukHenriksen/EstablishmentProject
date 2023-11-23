@@ -56,7 +56,7 @@ namespace WebApplication1.Repositories
             return set.Any(predicate);
         }
 
-        public TEntity? Get(Guid id)
+        public TEntity? GetById(Guid id)
         {
             return set.Find(id);
 

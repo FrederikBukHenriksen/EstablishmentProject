@@ -15,8 +15,8 @@ namespace WebApplication1.Services
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
             serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
         }
+
         public static void AddRepositories(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
@@ -28,9 +28,9 @@ namespace WebApplication1.Services
         public static void AddCommandHandlers(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<ICommandHandler<LoginCommand, string>, LoginCommandHandler>();
-            serviceCollection.AddTransient<ICommandHandler<GetProductSalesPerDayQuery, ProductSalesPerDayDTO>, GetProductSalesChartQueryHandler>();
-
-
+            serviceCollection.AddTransient<ICommandHandler<GetProductSalesPerDayQuery, GraphDTO>, GetProductSalesChartQueryHandler>();
+            serviceCollection.AddTransient<ICommandHandler<CorrelationBetweenSalesAndWeatherCommand, (TimeSpan, double)>, CorrelationBetweenSoldItemsAndWeatherCommandHandler>();
+            serviceCollection.AddTransient<ICommandHandler<CorrelationGraphCommand, CorrelationGraphReturn>, CorrelationGraphHandler>();
         }
     }
 }

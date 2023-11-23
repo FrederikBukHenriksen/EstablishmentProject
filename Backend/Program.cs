@@ -1,4 +1,5 @@
 using DMIOpenData;
+using MathNet.Numerics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -10,6 +11,7 @@ using System.Text;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
 using WebApplication1.Services.Analysis;
+using static System.Net.WebRequestMethods;
 
 namespace WebApplication1
 {
@@ -18,6 +20,8 @@ namespace WebApplication1
         public static void Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); //Make postgres use timestamp instead of timestamptz
 
             string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -30,8 +34,10 @@ namespace WebApplication1
             //Add repository
             builder.Services.AddTransient<ApplicationDbContext>();
 
-            // Add services to the container.
             builder.Services.AddControllers();
+
+            builder.Services.AddDistributedMemoryCache(); // Add this line for in-memory cache
+            builder.Services.AddSession();
 
             //builder.Services.AddServices();
             builder.Services.AddServices();
@@ -68,30 +74,23 @@ namespace WebApplication1
             WebApplication app = builder.Build();
             AutoMigrate(app);
 
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseOpenApi();
                 app.UseSwaggerUi3();
             }
-            Console.WriteLine("Running program!");
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSession();
             app.MapControllers();
 
             AddMiddleware(app);
 
-            DMIOpenDataClient client = new DMIOpenDataClient();
-            string stationId;
-            stationId = Task.Run(async () => await client.GetIdOfClosestStation()).Result;
-
-            //client.GetDataAsync();
-
-
             app.Run();
-
         }
 
         private static void AddDatabase(WebApplicationBuilder builder, string? connectionString)
@@ -151,7 +150,7 @@ namespace WebApplication1
 
             var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            //dbContext.Database.Migrate();
+            dbContext.Database.Migrate();
             scope.Dispose();
         }
     }
