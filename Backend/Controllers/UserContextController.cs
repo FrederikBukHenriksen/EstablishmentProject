@@ -19,10 +19,10 @@ namespace WebApplication1.Controllers
         //    userContextService.SetActiveEstablishmentInSession(this.HttpContext,EstablishmentId);
         //}
 
-        //[HttpPost("get-active-establishment")]
-        //public Establishment GetActiveEstablishment([FromServices] IUserContextService userContextService)
-        //{
-        //    return userContextService.GetActiveEstablishment();
-        //}
+        [HttpPost("get-active-establishment")]
+        public Establishment GetActiveEstablishment([FromServices] IUserContextService userContextService)
+        {
+            return userContextService.GetActiveEstablishment();
+        }
     }
 }

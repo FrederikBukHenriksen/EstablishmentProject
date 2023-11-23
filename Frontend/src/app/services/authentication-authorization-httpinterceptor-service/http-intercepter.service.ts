@@ -6,12 +6,17 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { SessionStorageService } from '../session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpInterceptService implements HttpInterceptor {
-  public ElectionId: string = '00000000-0000-0000-0000-000000000001';
+  private sessionStorageService = inject(SessionStorageService);
+  private ActiveEstablishmentId: string =
+    this.sessionStorageService.getActiveEstablishment() == null
+      ? ''
+      : this.sessionStorageService.getActiveEstablishment()!;
 
   constructor() {}
 
@@ -21,7 +26,7 @@ export class HttpInterceptService implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const modifiedRequest = request.clone({
       setHeaders: {
-        EstablishmentId: this.ElectionId,
+        EstablishmentId: this.ActiveEstablishmentId,
       },
     });
 

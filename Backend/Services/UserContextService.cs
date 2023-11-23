@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using WebApplication1.Models;
 using WebApplication1.Repositories;
@@ -66,7 +67,7 @@ namespace WebApplication1.Services
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext)
         {
             string EstablishmentIdAsString = httpContext.Request.Headers["EstablishmentId"];
-            if (EstablishmentIdAsString != null)
+            if (!EstablishmentIdAsString.IsNullOrEmpty())
             {
                 Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);
                 bool UserIsAssociatedWithEstablishment = GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);

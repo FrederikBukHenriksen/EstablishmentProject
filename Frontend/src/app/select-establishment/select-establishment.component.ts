@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationClient, Establishment, UserContextClient } from 'api';
 import { HttpInterceptService } from '../services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
+import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
 @Component({
   selector: 'app-select-establishment',
@@ -11,7 +12,7 @@ import { HttpInterceptService } from '../services/authentication-authorization-h
 export class SelectEstablishmentComponent {
   private userContextClient = inject(UserContextClient);
   private router = inject(Router);
-  private httpInterceptService = inject(HttpInterceptService);
+  private sessionStorageService = inject(SessionStorageService);
 
   protected accesibleEstablishments: Establishment[] = [];
 
@@ -27,7 +28,7 @@ export class SelectEstablishmentComponent {
   }
 
   protected onSelectEstablishment(establishmentId: string) {
-    this.httpInterceptService.ElectionId =
-      '00000000-0000-0000-0000-000000000002';
+    this.sessionStorageService.setActiveEstablishment(establishmentId);
+    this.router.navigate(['/create-establishment']);
   }
 }

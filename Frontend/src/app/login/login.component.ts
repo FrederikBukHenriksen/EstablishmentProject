@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit {
   }
 
   protected onLogin() {
+    console.log('onLogin');
     this.loginService.Login(
       this.loginFormDef.value.name!,
       this.loginFormDef.value.password!
