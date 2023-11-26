@@ -8,10 +8,10 @@ namespace WebApplication1.Services
 {
     public interface IUserContextService
     {
-        public void SetUser(Guid userId);
-        public User? GetUser();
+        public User GetUser();
+        public Establishment GetActiveEstablishment();
         public List<Establishment> GetAccessibleEstablishments();
-        public Establishment? GetActiveEstablishment();
+        public void SetUser(Guid userId);
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext);
         public void FecthAccesibleEstablishments();
     }
@@ -48,19 +48,30 @@ namespace WebApplication1.Services
             _establishments = _userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User.Id == _user.Id).Select(x => x.Establishment).ToList();
         }
 
-        public User? GetUser()
+        public User GetUser()
         {
+            if (_user == null)
+            {
+                throw  new NullReferenceException("User is null");
+            }
             return _user;
         }
 
-        public Establishment? GetActiveEstablishment()
+        public Establishment GetActiveEstablishment()
         {
- 
+            if (_establishment == null)
+            {
+                throw new NullReferenceException("Active establishment is null");
+            }
             return _establishment;
         }
 
-        public List<Establishment>? GetAccessibleEstablishments()
+        public List<Establishment> GetAccessibleEstablishments()
         {
+            if (_establishments == null)
+            {
+                throw new NullReferenceException("Accessible establishments are null");
+            }
             return _establishments;
         }
 

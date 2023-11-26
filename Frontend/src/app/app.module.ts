@@ -11,6 +11,7 @@ import { API_BASE_URL } from 'api';
 import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { SelectEstablishmentComponent } from './select-establishment/select-esta
     LoginModule,
     HttpClientModule,
     HomepageModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },

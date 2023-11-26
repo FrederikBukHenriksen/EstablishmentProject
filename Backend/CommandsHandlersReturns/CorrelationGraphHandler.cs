@@ -1,5 +1,5 @@
 ﻿using DMIOpenData;
-using WebApplication1.Commands;
+using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Repositories;
 using WebApplication1.Services;
 using WebApplication1.Services.Analysis;
@@ -7,30 +7,35 @@ using WebApplication1.Services.Analysis;
 namespace WebApplication1.CommandHandlers
 {
 
-    public class CorrelationBetweenSalesAndWeatherCommand : ACommand
+    public class CorrelationGraphCommand : CommandBase
     {
         //public Guid ItemId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
-    public class CorrelationBetweenSoldItemsAndWeatherCommandHandler : CommandHandlerBase<CorrelationBetweenSalesAndWeatherCommand, (TimeSpan, double)>
+
+    public class CorrelationGraphReturn
+    {
+        public GraphDTO PrimaryGraph { get; set; }
+        public GraphDTO SecondaryGraph { get; set; }
+    }
+
+    public class CorrelationGraphHandler : HandlerBase<CorrelationGraphCommand, CorrelationGraphReturn>
     {
         private IWeatherApi weatherApi;
         private IUserContextService userContextService;
         private ISalesRepository salesRepository;
 
-        public CorrelationBetweenSoldItemsAndWeatherCommandHandler(IUserContextService userContextService, ISalesRepository salesRepository)
+        public CorrelationGraphHandler(IUserContextService userContextService, ISalesRepository salesRepository)
         {
             this.weatherApi = new DmiWeatherApi();
             this.userContextService = userContextService;
             this.salesRepository = salesRepository;
         }
 
-        public override (TimeSpan,double) Execute(CorrelationBetweenSalesAndWeatherCommand command)
+        public override CorrelationGraphReturn Execute(CorrelationGraphCommand command)
         {
             Establishment establishment = this.userContextService.GetActiveEstablishment();
-            //Location location = establishment.Location;
-            //Coordinates coordinates = location.Coordinates;
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
 
             //Get sales data
@@ -46,9 +51,9 @@ namespace WebApplication1.CommandHandlers
             List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(coordinates, command.StartDate, command.EndDate).Result;
 
             var spearman = CrossCorrelation.DoAnalysis(numberOfSalesPerHour, temperaturePerHour);
-            var largestSpearman = spearman.OrderByDescending(x => Math.Abs(x.Item2)).First();
 
-            return largestSpearman;
+            return new CorrelationGraphReturn { PrimaryGraph = new GraphDTO(), SecondaryGraph = new GraphDTO() };
+            
         }
     }
 }

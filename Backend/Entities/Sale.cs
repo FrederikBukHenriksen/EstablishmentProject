@@ -7,7 +7,7 @@ namespace WebApplication1.Models
     public class Sale : EntityBase
     {
         public Establishment Establishment { get; set; }
-        public DateTime TimestampStart { get; set; } = DateTime.Now.ToUniversalTime();
+        public DateTime? TimestampStart { get; set; } = null;
         public DateTime TimestampEnd { get; set; } = DateTime.Now.ToUniversalTime();
         public List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
         public Table? Table { get; set; }

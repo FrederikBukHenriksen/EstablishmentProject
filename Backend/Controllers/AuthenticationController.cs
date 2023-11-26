@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Commands;
+using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Data.DataModels;
 using WebApplication1.Models;
 using WebApplication1.Repositories;
@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
         [HttpPost("login")]
         public async void LogIn(
             [FromBody] LoginCommand loginCommand,
-            [FromServices] ICommandHandler<LoginCommand, string> loginCommandHandler
+            [FromServices] IHandler<LoginCommand, string> loginCommandHandler
             )
         {
             try

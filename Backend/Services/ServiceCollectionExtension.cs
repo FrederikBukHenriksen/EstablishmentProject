@@ -1,6 +1,6 @@
 ﻿using MathNet.Numerics;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Commands;
+using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Data;
 using WebApplication1.Middelware;
 using WebApplication1.Repositories;
@@ -23,14 +23,16 @@ namespace WebApplication1.Services
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<IUserRolesRepository, UserRolesRepository>();
             serviceCollection.AddScoped<ISalesRepository, SalesRepository>();
-        }   
+            serviceCollection.AddScoped<IItemRepository, ItemRepository>();
+
+        }
 
         public static void AddCommandHandlers(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddTransient<ICommandHandler<LoginCommand, string>, LoginCommandHandler>();
-            serviceCollection.AddTransient<ICommandHandler<GetProductSalesPerDayQuery, GraphDTO>, GetProductSalesChartQueryHandler>();
-            serviceCollection.AddTransient<ICommandHandler<CorrelationBetweenSalesAndWeatherCommand, (TimeSpan, double)>, CorrelationBetweenSoldItemsAndWeatherCommandHandler>();
-            serviceCollection.AddTransient<ICommandHandler<CorrelationGraphCommand, CorrelationGraphReturn>, CorrelationGraphHandler>();
+            serviceCollection.AddTransient<IHandler<LoginCommand, string>, LoginCommandHandler>();
+            serviceCollection.AddTransient<IHandler<GetProductSalesPerDayQuery, GraphDTO>, GetProductSalesChartQueryHandler>();
+            serviceCollection.AddTransient<IHandler<CorrelationBetweenSalesAndWeatherCommand, List<(TimeSpan, double)>>, CorrelationBetweenSoldItemsAndWeatherCommandHandler>();
+            serviceCollection.AddTransient<IHandler<CorrelationGraphCommand, CorrelationGraphReturn>, CorrelationGraphHandler>();
         }
     }
 }

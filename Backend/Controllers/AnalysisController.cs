@@ -6,23 +6,58 @@ using WebApplication1.Repositories;
 namespace WebApplication1.Controllers
 {
     [ApiController]
-    [Route("api/analysis/")]
+    [Route("api/sales-analysis/")]
     public class AnalysisController
     {
-        [HttpPost("sales-line-chart")]
-        public GraphDTO ProductSalesChart(
-            [FromServices] ICommandHandler<GetProductSalesPerDayQuery, GraphDTO> handler
+        [HttpPost("sales")]
+        public GraphDTO Sales(GetProductSalesPerDayQuery command,
+            [FromServices] IHandler<GetProductSalesPerDayQuery, GraphDTO> handler
             )
         {
+            return handler.Execute(command);
+        }
 
-            var command = new GetProductSalesPerDayQuery() { ItemId = Guid.Empty, Resolution = TimeResolution.halfHour,  StartDate = new DateTime(DateTime.Now.Year, 7, 1, 8, 0, 0), EndDate = new DateTime(DateTime.Now.Year, 7, 1, 18, 0, 0) };
-            var result = handler.Execute(command);
+        [HttpPost("sales-mean")]
+        public GraphDTO MeanSales(GetProductSalesPerDayQuery command,
+        [FromServices] IHandler<GetProductSalesPerDayQuery, GraphDTO> handler
+        )
+        {
+            return handler.Execute(command);
+        }
 
-            foreach (var item in result.values)
-            {
-                item.SalesCount = 10+ new Random().Next(-5, 5);
-            }
-            return result;
+
+        [HttpPost("sales-median")]
+        public GraphDTO MedianSales(GetProductSalesPerDayQuery command,
+        [FromServices] IHandler<GetProductSalesPerDayQuery, GraphDTO> handler
+        )
+        {
+            return handler.Execute(command);
+        }
+
+        [HttpPost("sales-variance")]
+        public GraphDTO VarianceSales(GetProductSalesPerDayQuery command,
+        [FromServices] IHandler<GetProductSalesPerDayQuery, GraphDTO> handler
+        )
+        {
+            return handler.Execute(command);
+        }
+
+
+        [HttpPost("cross-correlation-with-weather")]
+        public List<(TimeSpan, double)> CorrelationCoefficientAndLag(CorrelationBetweenSalesAndWeatherCommand command,
+            [FromServices] IHandler<CorrelationBetweenSalesAndWeatherCommand, List<(TimeSpan, double)>> handler)
+        {
+            return handler.Execute(command);
+
+        }
+
+
+        [HttpPost("mean-shift-clustering")]
+        public List<(TimeSpan, double)> MeanShiftClustering(CorrelationBetweenSalesAndWeatherCommand command,
+            [FromServices] IHandler<CorrelationBetweenSalesAndWeatherCommand, List<(TimeSpan, double)>> handler)
+        {
+            return handler.Execute(command);
+
         }
     }
 }

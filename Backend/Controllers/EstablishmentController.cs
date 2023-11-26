@@ -33,5 +33,14 @@ namespace WebApplication1.Controllers
         {
             return _userContextService.GetAccessibleEstablishments().ToList();
         }
+
+        [HttpGet("items/get-all")]
+        public ICollection<Item> ItemGetAll([FromServices] IUserContextService userContextService,
+        [FromServices] IEstablishmentRepository establishmentRepository)
+        {
+            Establishment activeEstablishment = userContextService.GetActiveEstablishment();
+            var res = establishmentRepository.GetItems(activeEstablishment.Id)!;
+            return res;
+        }
     }
 }

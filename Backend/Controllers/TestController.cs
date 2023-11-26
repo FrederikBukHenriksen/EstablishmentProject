@@ -55,7 +55,7 @@ namespace WebApplication1.Controllers
         {
            
 
-            User user1 = TestDataFactory.CreateUser();
+            User user1 = TestDataFactory.CreateUser(username: "Frederik", password: "1234");
 
             Establishment establishment1 = TestDataFactory.CreateEstablishment(Guid.Parse("00000000-0000-0000-0000-000000000001"));
 

@@ -12,6 +12,10 @@ using WebApplication1.Middelware;
 using WebApplication1.Services;
 using WebApplication1.Services.Analysis;
 using static System.Net.WebRequestMethods;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WebApplication1
 {
@@ -36,8 +40,13 @@ namespace WebApplication1
 
             builder.Services.AddControllers();
 
-            builder.Services.AddDistributedMemoryCache(); // Add this line for in-memory cache
-            builder.Services.AddSession();
+            //builder.Services.AddDistributedMemoryCache(); // Add this line for in-memory cache
+            //builder.Services.AddSession(); //Add
+
+            //builder.Services.AddControllers().AddNewtonsoftJson(options =>
+            //    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+
+            //); //Allows for circular references in json
 
             //builder.Services.AddServices();
             builder.Services.AddServices();
@@ -85,7 +94,7 @@ namespace WebApplication1
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSession();
+            //app.UseSession();
             app.MapControllers();
 
             AddMiddleware(app);

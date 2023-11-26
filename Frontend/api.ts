@@ -28,15 +28,19 @@ export class AnalysisClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    productSalesChart(): Observable<GraphDTO> {
+    productSalesChart(command: GetProductSalesPerDayQuery): Observable<GraphDTO> {
         let url_ = this.baseUrl + "/api/analysis/sales-line-chart";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -497,6 +501,54 @@ export class EstablishmentClient {
         }
         return _observableOf(null as any);
     }
+
+    itemGetAll(): Observable<Item[]> {
+        let url_ = this.baseUrl + "/api/establishment/items/get-all";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processItemGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processItemGetAll(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Item[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Item[]>;
+        }));
+    }
+
+    protected processItemGetAll(response: HttpResponseBase): Observable<Item[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Item[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 @Injectable({
@@ -730,6 +782,54 @@ export class UserContextClient {
         }
         return _observableOf(null as any);
     }
+
+    getActiveEstablishment(): Observable<Establishment> {
+        let url_ = this.baseUrl + "/api/user-context/get-active-establishment";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetActiveEstablishment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetActiveEstablishment(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Establishment>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Establishment>;
+        }));
+    }
+
+    protected processGetActiveEstablishment(response: HttpResponseBase): Observable<Establishment> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export interface GraphDTO {
@@ -739,6 +839,25 @@ export interface GraphDTO {
 export interface TimeAndValue {
     date: Date;
     salesCount: number;
+}
+
+export interface ACommand {
+}
+
+export interface GetProductSalesPerDayQuery extends ACommand {
+    itemId: string;
+    resolution: TimeResolution;
+    startDate: Date;
+    endDate: Date;
+}
+
+export enum TimeResolution {
+    QuarterHour = 0,
+    HalfHour = 1,
+    Hour = 2,
+    Day = 3,
+    Month = 4,
+    Year = 5,
 }
 
 export interface LoginCommand {
