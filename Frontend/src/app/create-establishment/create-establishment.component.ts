@@ -63,7 +63,7 @@ export class CreateEstablishmentComponent implements OnInit {
       endDate: new Date(new Date().setUTCHours(15, 0, 0, 0)),
     };
 
-    this.analysisClient.productSalesChart(command).subscribe({
+    this.analysisClient.sales(command).subscribe({
       next: (data) => {
         this.data = data;
         this.chart = this.createChart(this.data);

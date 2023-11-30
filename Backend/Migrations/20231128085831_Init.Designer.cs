@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApplication1.Data;
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231128085831_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,31 @@ namespace WebApplication1.Migrations
                     b.ToTable("SalesItems");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Establishment", b =>
+            modelBuilder.Entity("WebApplication1.Data.DataModels.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EstablishmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "EstablishmentId");
+
+                    b.HasIndex("EstablishmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRole");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +88,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Establishment");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Item", b =>
+            modelBuilder.Entity("WebApplication1.Models.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +115,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Item");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Location", b =>
+            modelBuilder.Entity("WebApplication1.Models.Location", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,7 +126,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Location");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Sale", b =>
+            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,7 +153,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Sale");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Table", b =>
+            modelBuilder.Entity("WebApplication1.Models.Table", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,11 +173,15 @@ namespace WebApplication1.Migrations
                     b.ToTable("Table");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.User", b =>
+            modelBuilder.Entity("WebApplication1.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -168,39 +199,15 @@ namespace WebApplication1.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.UserRole", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EstablishmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId", "EstablishmentId");
-
-                    b.HasIndex("EstablishmentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRole");
-                });
-
             modelBuilder.Entity("WebApplication1.Data.DataModels.SalesItems", b =>
                 {
-                    b.HasOne("WebApplication1.Domain.Entities.Item", "Item")
+                    b.HasOne("WebApplication1.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Domain.Entities.Sale", "Sale")
+                    b.HasOne("WebApplication1.Models.Sale", "Sale")
                         .WithMany("SalesItems")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -211,18 +218,37 @@ namespace WebApplication1.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Item", b =>
+            modelBuilder.Entity("WebApplication1.Data.DataModels.UserRole", b =>
                 {
-                    b.HasOne("WebApplication1.Domain.Entities.Establishment", null)
+                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
+                        .WithMany()
+                        .HasForeignKey("EstablishmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Establishment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.Item", b =>
+                {
+                    b.HasOne("WebApplication1.Models.Establishment", null)
                         .WithMany("Items")
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Location", b =>
+            modelBuilder.Entity("WebApplication1.Models.Location", b =>
                 {
-                    b.OwnsOne("WebApplication1.Domain.Entities.Coordinates", "Coordinates", b1 =>
+                    b.OwnsOne("WebApplication1.Models.Coordinates", "Coordinates", b1 =>
                         {
                             b1.Property<Guid>("LocationId")
                                 .HasColumnType("uuid");
@@ -245,15 +271,15 @@ namespace WebApplication1.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Sale", b =>
+            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
                 {
-                    b.HasOne("WebApplication1.Domain.Entities.Establishment", "Establishment")
+                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
                         .WithMany("Sales")
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Domain.Entities.Table", "Table")
+                    b.HasOne("WebApplication1.Models.Table", "Table")
                         .WithMany()
                         .HasForeignKey("TableId");
 
@@ -262,51 +288,30 @@ namespace WebApplication1.Migrations
                     b.Navigation("Table");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Table", b =>
+            modelBuilder.Entity("WebApplication1.Models.Table", b =>
                 {
-                    b.HasOne("WebApplication1.Domain.Entities.Establishment", "Establishment")
-                        .WithMany("Tables")
-                        .HasForeignKey("EstablishmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Establishment");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain.Entities.UserRole", b =>
-                {
-                    b.HasOne("WebApplication1.Domain.Entities.Establishment", "Establishment")
+                    b.HasOne("WebApplication1.Models.Establishment", "Establishment")
                         .WithMany()
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Domain.Entities.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Establishment");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Establishment", b =>
+            modelBuilder.Entity("WebApplication1.Models.Establishment", b =>
                 {
                     b.Navigation("Items");
 
                     b.Navigation("Sales");
-
-                    b.Navigation("Tables");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.Sale", b =>
+            modelBuilder.Entity("WebApplication1.Models.Sale", b =>
                 {
                     b.Navigation("SalesItems");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain.Entities.User", b =>
+            modelBuilder.Entity("WebApplication1.Models.User", b =>
                 {
                     b.Navigation("UserRoles");
                 });
