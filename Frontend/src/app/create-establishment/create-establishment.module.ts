@@ -19,6 +19,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatSliderModule,
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
   ],
 })
 export class CreateEstablishmentModule {}

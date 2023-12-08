@@ -1,8 +1,38 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import Chart, { ChartOptions } from 'chart.js/auto';
-import { AuthenticationClient, LoginCommand } from 'api';
+import Chart, { ChartTypeRegistry } from 'chart.js/auto';
+import {
+  AnalysisClient,
+  EstablishmentClient,
+  SalesQuery,
+  SalesSortingParameters,
+  CommandBase,
+  ReturnBase,
+  Sale,
+  SalesMeanOverTime,
+  SalesMeanQueryReturn,
+} from 'api';
+import { DateToTime as DateToString } from '../utils/TimeHelper';
+import { Observable } from 'rxjs';
+
+import { MatDialog } from '@angular/material/dialog';
+import {
+  CheckBoxData,
+  DialogCheckboxComponent,
+} from '../dialog-checkbox/dialog-checkbox.component';
+
+export interface grafTyper {
+  name: string;
+  command?: CommandBase;
+  fetch?: (command: CommandBase) => Observable<ReturnBase>;
+  dataExtractor?: (data: ReturnBase) => chartData;
+}
+
+export interface chartData {
+  name: string;
+  data: number[];
+  label: string[];
+  type: keyof ChartTypeRegistry;
+}
 
 @Component({
   selector: 'app-create-establishment',
@@ -10,95 +40,121 @@ import { AuthenticationClient, LoginCommand } from 'api';
   styleUrls: ['./create-establishment.component.scss'],
 })
 export class CreateEstablishmentComponent implements OnInit {
-  private readonly authenticationClient = inject(AuthenticationClient);
+  private readonly analysisClient = inject(AnalysisClient);
+  private readonly establishmentClient = inject(EstablishmentClient);
+  public dialog = inject(MatDialog);
 
-  applyForm = new FormGroup({
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-  });
+  protected items: CheckBoxData[] = [];
 
-  chart!: Chart;
+  chart?: Chart;
 
-  lolcat: boolean = true;
+  public salesData!: Sale[];
+  public salesDataTimeline!: [Date, number];
 
-  public buttonColor = 'blue';
+  private command: SalesQuery = {
+    salesSortingParameters: {
+      mustContaiedItems: [],
+      useDataFromTimeframePeriods: [],
+    } as SalesSortingParameters,
+  };
 
   ngOnInit(): void {
-    this.chart = this.createChart();
+    this.establishmentClient.itemGetAll().subscribe({
+      next: (x) => {
+        this.items = x.map(
+          (x) =>
+            ({
+              id: x.id,
+              name: x.name,
+              selected: false,
+            } as CheckBoxData)
+        );
+      },
+    });
+    this.getData();
+    console.log('ngOnInit');
   }
 
-  createChart(): Chart {
-    return new Chart('canvas', {
-      data: {
-        datasets: [
-          {
-            type: 'line',
-            label: 'Line Dataset',
-            data: [20, 30, 40, 50],
-          },
-        ],
-        labels: [
-          '8:00',
-          '9:00',
-          '10:00',
-          '11:00',
-          '12:00',
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-          '17:00',
-          '18:00',
-          '19:00',
-          '20:00',
-        ],
+  muligeGrafer = [
+    {
+      name: 'Sale numbers',
+      command: this.command,
+      fetch: (command: CommandBase) =>
+        this.analysisClient.meanSales(command as SalesMeanOverTime),
+
+      dataExtractor: (data: ReturnBase) => {
+        var result = data as SalesMeanQueryReturn;
+
+        return {
+          name: 'Sale numbers',
+          data: result.data.map((x) => x.value),
+          label: result.data.map((x) => DateToString(x.dateTime)),
+          type: 'bar',
+        } as chartData;
       },
-      options: this.getOptions(),
+    } as grafTyper,
+  ];
+
+  grafDictionary: { [key: string]: chartData } = {};
+
+  public getData() {
+    this.muligeGrafer.forEach((endpoint) => {
+      endpoint.fetch!(endpoint.command!).subscribe({
+        next: (x) => {
+          var data = endpoint.dataExtractor!(x);
+          this.grafDictionary[endpoint.name] = data;
+          console.log('data', data);
+        },
+      });
     });
   }
 
-  private getOptions(): ChartOptions {
-    return {
-      scales: {
-        y: {
-          beginAtZero: this.lolcat,
-        },
+  openDialog() {
+    console.log('muligeGrafer', this.muligeGrafer);
+    console.log('dic', this.grafDictionary);
+    this;
+    this.createChart();
+    console.log(
+      'list',
+      Object.values(this.grafDictionary).map((x) => ({
+        type: 'line',
+        data: x.data,
+      }))
+    );
+
+    const dialogRef = this.dialog.open(DialogCheckboxComponent, {
+      data: this.items,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.items = result;
+      console.log('The dialog was closed', this.items);
+      this.command.salesSortingParameters!.mustContaiedItems = this.items
+        .filter((x) => x.selected)
+        .map((x) => x.id);
+    });
+  }
+
+  createChart(): Chart {
+    var ok = this.salesData.map((x) => DateToString(x.timestampPayment));
+
+    return new Chart('canvas', {
+      data: {
+        datasets: Object.values(this.grafDictionary).map((x) => ({
+          label: x.name,
+          type: x.type,
+          data: x.data,
+          borderColor: 'blue',
+          backgroundColor: 'rgba(0, 0, 255, 0.2)',
+          fill: true,
+        })),
+        labels: this.salesData.map((x) => DateToString(x.timestampPayment)),
       },
-    };
+      // options: this.getOptions(),
+    });
   }
-
   private updateChart() {
-    this.chart.options = this.getOptions();
-    this.chart.update();
-  }
-
-  protected onSubmit() {
-    this.lolcat = false;
-    this.updateChart();
-
-    // console.log('lolcat', this.lolcat);
-    // console.log('firstName', this.applyForm.value.firstName);
-
-    // console.log('lastName', this.applyForm.value.lastName);
-
-    this.authenticationClient
-      .logIn({
-        username: this.applyForm.value.firstName,
-        password: this.applyForm.value.lastName,
-      } as LoginCommand)
-      .subscribe({
-        next: (v) => {
-          this.buttonColor = 'blue';
-          console.log(v);
-        },
-        error: (e: HttpErrorResponse) => {
-          this.buttonColor = 'red';
-          console.error('fejlowitz', e.status);
-        },
-        complete: () =>
-          this.authenticationClient
-            .getLoggedInUser()
-            .subscribe((user) => console.log('brugerinfo', user)),
-      });
+    this.chart?.destroy();
+    this.chart = this.createChart();
   }
 }

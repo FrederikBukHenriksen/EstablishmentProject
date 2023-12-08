@@ -10,9 +10,22 @@ import { CreateEstablishmentModule } from './create-establishment/create-establi
 import { API_BASE_URL } from 'api';
 import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogCheckboxComponent } from './dialog-checkbox/dialog-checkbox.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, NavbarComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    NavbarComponent,
+    SelectEstablishmentComponent,
+    DialogCheckboxComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -20,6 +33,11 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
     LoginModule,
     HttpClientModule,
     HomepageModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    FormsModule,
+    NgChartsModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },
