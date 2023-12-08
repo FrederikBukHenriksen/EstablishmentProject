@@ -905,8 +905,8 @@ export interface Sale extends EntityBase {
 }
 
 export interface Establishment extends EntityBase {
-    name: string;
-    location: Location;
+    name: string | undefined;
+    location: Location | undefined;
     items: Item[];
     tables: Table[];
     sales: Sale[];

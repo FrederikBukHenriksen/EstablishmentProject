@@ -55,11 +55,11 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             return this;
         }
 
-        public override ISaleBuilder UseExistingEntity(Sale entity)
-        {
-            Entity = entity;
-            return this;
-        }
+        //public override ISaleBuilder UseExistingEntity(Sale entity)
+        //{
+        //    Entity = entity;
+        //    return this;
+        //}
 
         //public override ISaleBuilder CreateNewEntity()
         //{

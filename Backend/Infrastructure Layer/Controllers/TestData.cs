@@ -18,7 +18,7 @@ namespace WebApplication1.Controllers
     [AllowAnonymous]
     [ApiController]
     [Route("api/test")]
-    public class TestController : ControllerBase
+    public class TestData : ControllerBase
     {
         private IUserRepository _userRepository;
         private ISalesService salesService;
@@ -27,7 +27,7 @@ namespace WebApplication1.Controllers
         private IEstablishmentRepository _establishmentRepository;
         private ApplicationDbContext _applicationDbContext;
 
-        public TestController(ISalesService salesService,IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
+        public TestData(ISalesService salesService,IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
         {
             this.salesService = salesService;
             _salesRepository = salesRepository;
@@ -42,15 +42,15 @@ namespace WebApplication1.Controllers
 
             // Resolve the transient service directly
             //var yourService = serviceProvider.GetRequiredService<IEstablishmentBuilder>();
-            var haha = factory.Establishment();
+            var haha = factory.EstablishmentBuilder;
                 Establishment estab = haha.WithName("Cafe Frederik").Build();
                 list.Add(estab);
 
-            var lol = factory.Establishment();
+            var lol = factory.EstablishmentBuilder;
             var ok = lol.WithId(Guid.Parse("00000000-0000-0000-0000-000000000000")).Build();
             list.Add(ok);
 
-            var heinz = factory.Establishment().UseExistingEntity(estab).Build();
+            var heinz = factory.EstablishmentBuilder.UseEntity(estab).Build();
 
 
 
@@ -93,7 +93,7 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public void Establishment()
+        public void SeedDatabase()
         {
            
 

@@ -6,14 +6,31 @@ using WebApplication1.Utils;
 
 namespace WebApplication1.CommandHandlers
 {
-    public  class SalesMeanOverTime : CommandBase
+    public abstract class SalesMeanOverTime : CommandBase
     {
         public SalesSortingParameters? salesSortingParameters { get; set; }
         public TimeResolution TimeResolution { get; set; }
-        public List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
+        public abstract List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales);
+    }
+
+    public class SalesMeanOverTimeAverageSpend : SalesMeanOverTime
+    {
+        public override List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
         {
             IEnumerable<IGrouping<int, Sale>> groupedSales = sales.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.TimestampPayment, TimeResolution));
-            return groupedSales.Select(x => ( x.Key, x.Average(x => 1)) ).ToList();
+            return groupedSales.Select(x => (x.Key, x.Average(x => x.GetTotalPrice()))).ToList();
+        }
+    }
+
+    public class SalesMeanOverTimeAverageNumberOfSales : SalesMeanOverTime
+    {
+        public override List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
+        {
+            IEnumerable<IGrouping<DateTime, Sale>> GroupedOnTimeResolutionUnique = sales.GroupBy(x => TimeHelper.GroupForAverage(x.TimestampPayment, TimeResolution));
+            List<(DateTime, double)> ok = GroupedOnTimeResolutionUnique.Select(x => (x.Key, (double) x.Count())).ToList();
+            IEnumerable<IGrouping<int, (DateTime, double)>> secondGrouping = ok.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.Item1, TimeResolution));
+            List<(int Key, double)> ok2 = secondGrouping.Select(x => (x.Key, x.Average(x => x.Item2))).ToList();
+            return ok2;
         }
     }
 
@@ -22,13 +39,13 @@ namespace WebApplication1.CommandHandlers
         public List<(int,double?)> Data { get; set; }
     }
 
-    public class SalesMeanQueryHandler : HandlerBase<SalesMeanOverTime, SalesMeanQueryReturn>
+    public class SalesMeanOverTimeQueryHandler : HandlerBase<SalesMeanOverTime, SalesMeanQueryReturn>
     {
         private IEstablishmentRepository establishmentRepository;
         private ISalesRepository salesRepository;
         private IUserContextService userContextService;
 
-        public SalesMeanQueryHandler(IEstablishmentRepository establishmentRepository, IUserContextService userContextService, ISalesRepository salesRepository)
+        public SalesMeanOverTimeQueryHandler(IEstablishmentRepository establishmentRepository, IUserContextService userContextService, ISalesRepository salesRepository)
         {
             this.establishmentRepository = establishmentRepository;
             this.salesRepository = salesRepository;

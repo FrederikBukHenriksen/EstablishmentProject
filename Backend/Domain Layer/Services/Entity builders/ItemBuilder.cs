@@ -9,11 +9,11 @@
 
     public class ItemBuilder : EntityBuilderBase<Item>, IItemBuilder
     {
-        public override IEntityBuilder<Item> UseExistingEntity(Item entity)
-        {
-            this.Entity = entity;
-            return this;
-        }
+        //public override IEntityBuilder<Item> UseExistingEntity(Item entity)
+        //{
+        //    this.Entity = entity;
+        //    return this;
+        //}
 
         public IItemBuilder WithName(string name)
         {

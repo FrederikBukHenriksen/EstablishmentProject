@@ -12,11 +12,11 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
     }
     public class SalesItemsBuilder : EntityBuilderBase<SalesItems>, ISalesItemsBuilder
     {
-        public override IEntityBuilder<SalesItems> UseExistingEntity(SalesItems entity)
-        {
-            this.Entity = entity;
-            return this;
-        }
+        //public override IEntityBuilder<SalesItems> UseExistingEntity(SalesItems entity)
+        //{
+        //    this.Entity = entity;
+        //    return this;
+        //}
 
         public ISalesItemsBuilder WithItem(Item item)
         {

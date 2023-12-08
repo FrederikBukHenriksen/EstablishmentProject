@@ -9,10 +9,10 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
     public interface IEntityBuilder<T> where T : EntityBase
     {
-        T Entity { get; set; }
-        T Build();
-        bool EntityValidation();
-        IEntityBuilder<T> UseExistingEntity(T entity);
+        protected T Entity { get; set; }
+        public T Build();
+        protected bool EntityValidation();
+        //public IEntityBuilder<T> UseExistingEntity(T entity);
         //IEntityBuilder<T> CreateNewEntity();
 
     }
@@ -47,6 +47,6 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             return true;
                 }
 
-        public abstract IEntityBuilder<T> UseExistingEntity(T entity);
+        //public abstract IEntityBuilder<T> UseExistingEntity(T entity);
     }
 }

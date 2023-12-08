@@ -36,7 +36,7 @@ namespace WebApplication1.Program
             AddDatabase(builder, connectionString);
 
             //Add repository
-            builder.Services.AddTransient<ApplicationDbContext>();
+            //builder.Services.AddTransient<ApplicationDbContext>();
 
             builder.Services.AddControllers();
 

@@ -12,6 +12,7 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
         IEstablishmentBuilder WithItems(ICollection<Item> items);
         IEstablishmentBuilder WithTables(ICollection<Table> tables);
         IEstablishmentBuilder WithSales(ICollection<Sale> sales);
+        IEstablishmentBuilder UseEntity(Establishment entity);
     }
 
         public class EstablishmentBuilder : EntityBuilderBase<Establishment>, IEstablishmentBuilder
@@ -58,11 +59,12 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
             return this;
         }
 
-        public override IEstablishmentBuilder UseExistingEntity(Establishment entity)
+        public IEstablishmentBuilder UseEntity(Establishment entity)
         {
             Entity = entity;
             return this;
         }
+
 
         //public override IEntityBuilder<Establishment> CreateNewEntity()
         //{

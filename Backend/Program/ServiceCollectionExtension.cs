@@ -26,6 +26,8 @@ namespace WebApplication1.Program
             //Entity services
             serviceCollection.AddTransient<IEstablishmentBuilder, EstablishmentBuilder>();
             serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
+            serviceCollection.AddTransient<IItemBuilder, ItemBuilder>();
+
             serviceCollection.AddScoped<FactoryServiceBuilder>();
 
 
@@ -45,7 +47,7 @@ namespace WebApplication1.Program
         {
             serviceCollection.AddTransient<IHandler<LoginCommand, LoginReturn>, LoginCommandHandler>();
             serviceCollection.AddTransient<IHandler<SalesQuery, SalesQueryReturn>, SalesQueryHandler>();
-            //serviceCollection.AddTransient<IHandler<SalesMeanOverTime, SalesMeanQueryReturn>>();
+            serviceCollection.AddTransient<IHandler<SalesMeanOverTime, SalesMeanQueryReturn>, SalesMeanOverTimeQueryHandler>();
 
             serviceCollection.AddTransient<IHandler<CorrelationCommand, CorrelationReturn>, CorrelationHandler>();
             serviceCollection.AddTransient<IHandler<CorrelationGraphCommand, CorrelationGraphReturn>, CorrelationGraphHandler>();
