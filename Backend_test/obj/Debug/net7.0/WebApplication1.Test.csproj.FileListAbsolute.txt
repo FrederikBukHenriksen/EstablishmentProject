@@ -930,3 +930,12 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\o
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\obj\Debug\net7.0\WebApplication1.Test.pdb
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\obj\Debug\net7.0\WebApplication1.Test.genruntimeconfig.cache
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\obj\Debug\net7.0\ref\WebApplication1.Test.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.csproj.AssemblyReference.cache
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\MvcTestingAppManifest.json
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.AssemblyInfoInputs.cache
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.AssemblyInfo.cs
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.csproj.CoreCompileInputs.cache
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\refint\WebApplication1.Test.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.pdb

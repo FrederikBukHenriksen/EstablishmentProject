@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Km+cWrdKiOIe3QikkfcS/7G0aPPDMCANSTqehHF5Cu/vgHVOZEpqPmsHDDuaAd7O9S3E+pFd30qXwfpEwaebWA==",
+  "dgSpecHash": "1lDH3OLBoV8IO0CGbt/iDdPGhC1zQe8IAT0p0yx2iX2jbwQzHU+oSu4wyXtWgpccXOsqx/PA98RUvfRmHKZ+MQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\WebApplication1.Test.csproj",
+  "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\WebApplication1.Test.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ekste\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",

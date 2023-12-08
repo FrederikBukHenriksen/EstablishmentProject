@@ -1,4 +1,4 @@
-import { TimeResolution } from 'api';
+import { TimePeriod, TimeResolution } from 'api';
 
 export function todayDateUtc(): Date {
   return new Date(
@@ -28,7 +28,7 @@ export function DateToTime(dateTime: Date): string {
   });
 }
 
-export function addToDate(
+export function AddToDateTimeResolution(
   date: Date,
   value: number,
   timeResolution: TimeResolution
@@ -42,6 +42,22 @@ export function addToDate(
       return new Date(date.setMonth(date.getMonth() + value));
     case TimeResolution.Year:
       return new Date(date.setFullYear(date.getFullYear() + value));
+  }
+}
+
+export function GetIdentifierOfDate(
+  date: Date,
+  timeResolution: TimeResolution
+): number {
+  switch (timeResolution) {
+    case TimeResolution.Hour:
+      return date.getHours();
+    case TimeResolution.Date:
+      return date.getDate();
+    case TimeResolution.Month:
+      return date.getMonth();
+    case TimeResolution.Year:
+      return date.getFullYear();
   }
 }
 
@@ -75,7 +91,23 @@ export function ExtractDateByTimeResolution(
   }
 }
 
-export function createTimelineOfObjects<T>(
+export function GetAllDatesBetween(
+  timePeriod: TimePeriod,
+  timeResolution: TimeResolution
+): Date[] {
+  var dates: Date[] = [];
+
+  var startDate = ExtractDateByTimeResolution(timePeriod.start, timeResolution);
+  var endDate = ExtractDateByTimeResolution(timePeriod.end, timeResolution);
+
+  while (startDate <= endDate) {
+    dates.push(startDate);
+    startDate = AddToDateTimeResolution(startDate, 1, timeResolution);
+  }
+  return dates;
+}
+
+export function CreateTimelineOfObjects<T>(
   list: T[],
   DateSelector: (x: T) => Date,
   startDateInput: Date,
@@ -101,7 +133,7 @@ export function createTimelineOfObjects<T>(
       timeline.set(startDate, groupedObjects.get(startDate)!);
     }
 
-    startDate = addToDate(startDate, 1, resolution);
+    startDate = AddToDateTimeResolution(startDate, 1, resolution);
   }
 
   return timeline;

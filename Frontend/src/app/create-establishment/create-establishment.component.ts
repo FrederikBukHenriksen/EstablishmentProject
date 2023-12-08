@@ -8,10 +8,18 @@ import {
   CommandBase,
   ReturnBase,
   Sale,
-  SalesMeanOverTime,
   SalesMeanQueryReturn,
+  TimePeriod,
+  SalesMeanOverTimeAverageSpend,
+  SalesMeanOverTime,
+  TimeResolution,
 } from 'api';
-import { DateToTime as DateToString } from '../utils/TimeHelper';
+import {
+  CreateTimelineOfObjects,
+  DateToTime as DateToString,
+  GetAllDatesBetween,
+  GetIdentifierOfDate,
+} from '../utils/TimeHelper';
 import { Observable } from 'rxjs';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -51,7 +59,7 @@ export class CreateEstablishmentComponent implements OnInit {
   public salesData!: Sale[];
   public salesDataTimeline!: [Date, number];
 
-  private command: SalesQuery = {
+  private salesQueryCommand: SalesQuery = {
     salesSortingParameters: {
       mustContaiedItems: [],
       useDataFromTimeframePeriods: [],
@@ -75,30 +83,76 @@ export class CreateEstablishmentComponent implements OnInit {
     console.log('ngOnInit');
   }
 
-  muligeGrafer = [
+  possibleGraphs = [
     {
-      name: 'Sale numbers',
-      command: this.command,
+      name: 'Average sale',
+      command: {
+        timeResolution: TimeResolution.Month,
+        salesSortingParameters: undefined,
+      } as SalesMeanOverTimeAverageSpend,
+
       fetch: (command: CommandBase) =>
         this.analysisClient.meanSales(command as SalesMeanOverTime),
 
       dataExtractor: (data: ReturnBase) => {
         var result = data as SalesMeanQueryReturn;
 
+        var timeResolution = TimeResolution.Month;
+
+        var timePeriod = {
+          start: new Date('2023-01-01'),
+          end: new Date('2023-01-31'),
+        } as TimePeriod;
+
+        var timeline: Date[] = GetAllDatesBetween(timePeriod, timeResolution);
+        var combinedTimeLineAndData: [Date, number][] = [];
+
+        timeline.forEach((x) => {
+          var data = result.data.find(
+            (y) => y.item1 === GetIdentifierOfDate(x, timeResolution)
+          );
+          if (data) {
+            combinedTimeLineAndData.push([x, data.item2 ?? 0]);
+          } else {
+            combinedTimeLineAndData.push([x, 0]);
+          }
+        });
+
+        var sortedCominedTimeAndData = combinedTimeLineAndData.sort();
+
         return {
           name: 'Sale numbers',
-          data: result.data.map((x) => x.value),
-          label: result.data.map((x) => DateToString(x.dateTime)),
+          data: sortedCominedTimeAndData.map((x) => x[1]),
+          label: sortedCominedTimeAndData.map((x) => DateToString(x[0])),
           type: 'bar',
         } as chartData;
       },
     } as grafTyper,
   ];
 
+  // muligeGrafer = [
+  //   {
+  //     name: 'Sale numbers',
+  //     command: this.command,
+  //     fetch: (command: CommandBase) =>
+  //       this.analysisClient.meanSales(command as SalesMeanOverTime),
+
+  //     dataExtractor: (data: ReturnBase) => {
+  //       var result = data as SalesMeanQueryReturn;
+  //       return {
+  //         name: 'Sale numbers',
+  //         data: result.data.map((x) => x.value),
+  //         label: result.data.map((x) => DateToString(x.dateTime)),
+  //         type: 'bar',
+  //       } as chartData;
+  //     },
+  //   } as grafTyper,
+  // ];
+
   grafDictionary: { [key: string]: chartData } = {};
 
   public getData() {
-    this.muligeGrafer.forEach((endpoint) => {
+    this.possibleGraphs.forEach((endpoint) => {
       endpoint.fetch!(endpoint.command!).subscribe({
         next: (x) => {
           var data = endpoint.dataExtractor!(x);
@@ -110,7 +164,7 @@ export class CreateEstablishmentComponent implements OnInit {
   }
 
   openDialog() {
-    console.log('muligeGrafer', this.muligeGrafer);
+    console.log('muligeGrafer', this.possibleGraphs);
     console.log('dic', this.grafDictionary);
     this;
     this.createChart();
@@ -129,9 +183,8 @@ export class CreateEstablishmentComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       this.items = result;
       console.log('The dialog was closed', this.items);
-      this.command.salesSortingParameters!.mustContaiedItems = this.items
-        .filter((x) => x.selected)
-        .map((x) => x.id);
+      this.salesQueryCommand.salesSortingParameters!.mustContaiedItems =
+        this.items.filter((x) => x.selected).map((x) => x.id);
     });
   }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Utils;
@@ -21,13 +22,19 @@ namespace WebApplication1.Controllers
             return handler.Handle(command);
         }
         [HttpPost("sales-mean")]
-        public SalesMeanQueryReturn MeanSales(SalesMeanOverTime command,[FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        [ProducesResponseType(typeof(SalesMeanQueryReturn), 200)]
+        [SwaggerOperation(
+    Summary = "Calculate sales mean over time.",
+    OperationId = "MeanSales",
+    Tags = new[] { "Sales" }
+)]
+        public SalesMeanQueryReturn MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
-            //var manualCommand = new MeanSalesCommand
+            //var command = new SalesMeanOverTimeAverageSpend
             //{
             //    TimeResolution = TimeResolution.Date,
-            //    Timeline = new TimePeriod(start: System.DateTime.Now.AddDays(-1), end: System.DateTime.Now),
+            //    //Timeline = new TimePeriod(start: System.DateTime.Now.AddDays(-1), end: System.DateTime.Now),
             //    //UseDataFromTimeframePeriods = new System.Collections.Generic.List<TimePeriod> { new TimePeriod(start: System.DateTime.Now.AddDays(-7), end: System.DateTime.Now) }
             //};
             return handler.Handle(command);

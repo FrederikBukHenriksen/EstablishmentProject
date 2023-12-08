@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "t8YiuiDvFAwtOOFt55r+KtGd4Ze96UzWYQa281I2MbsoQmmPytBu4dIv3UJ5agUjdJwcg0cbtyxu9InhrzkdXQ==",
+  "dgSpecHash": "2dA2O+IFhZd6FuP371IsBU0u4j5XJ6JjBs+6fjjZXgvnMCqgqABmbB0YiNN3z1LHCQ0SkEtG4o5ktW3P57mgDQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Ekste\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\mathnet.numerics\\5.0.0\\mathnet.numerics.5.0.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.11\\microsoft.aspnetcore.authentication.jwtbearer.7.0.11.nupkg.sha512",

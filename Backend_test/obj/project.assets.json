@@ -7484,11 +7484,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\WebApplication1.Test.csproj",
+      "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\WebApplication1.Test.csproj",
       "projectName": "WebApplication1.Test",
-      "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\WebApplication1.Test.csproj",
+      "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\WebApplication1.Test.csproj",
       "packagesPath": "C:\\Users\\Ekste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\obj\\",
+      "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Ekste\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -7570,7 +7570,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
       }
     }
   }
