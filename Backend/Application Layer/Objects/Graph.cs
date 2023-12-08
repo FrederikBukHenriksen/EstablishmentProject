@@ -2,8 +2,8 @@
 {
 public class TimeAndValue<Type>
     {
-        public DateTime DateTime { get; set; }
-        public Type Value { get; set; }
+        public DateTime dateTime { get; set; }
+        public Type value { get; set; }
     }
 
     public class CoordinatesAndValue<Type>

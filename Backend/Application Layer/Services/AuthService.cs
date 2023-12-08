@@ -51,7 +51,7 @@ namespace WebApplication1.Services
 
         public User Login(string username, string password)
         {
-            User? user = userRepository.Find(x => ((x.Username.ToLower()) == (username.ToLower())) && x.Password == password);
+            User? user = userRepository.Find(x => ((x.Email.ToLower()) == (username.ToLower())) && x.Password == password);
             if (user == null) throw new Exception("User could not be logged in based on the given credentials");
             return user;
         }

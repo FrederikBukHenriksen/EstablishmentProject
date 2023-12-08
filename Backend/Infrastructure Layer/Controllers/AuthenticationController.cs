@@ -17,21 +17,21 @@ namespace WebApplication1.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public void LogIn(
+        public IActionResult LogIn(
             [FromBody] LoginCommand loginCommand,
-            [FromServices] IHandler<LoginCommand, string> loginCommandHandler
+            [FromServices] IHandler<LoginCommand, LoginReturn> loginCommandHandler
             )
         {
             try
             {
-                var jwtTokenString = loginCommandHandler.Handle(loginCommand);
-                this.HttpContext.Response.Cookies.Append("jwt", jwtTokenString, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
-                return;
+                LoginReturn loginReturn = loginCommandHandler.Handle(loginCommand);
+                this.HttpContext.Response.Cookies.Append("jwt", loginReturn.Token, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
+                return Ok();
             }
             catch (Exception e)
             {
-                this.HttpContext.Response.StatusCode = 401;
-                return;
+                //this.HttpContext.Response.StatusCode = 401;
+                return Unauthorized(e);
             }
         }
 

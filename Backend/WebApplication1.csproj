@@ -57,6 +57,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <Folder Include="Domain Layer\Services\Entity services\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

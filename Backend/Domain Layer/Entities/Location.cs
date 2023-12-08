@@ -2,7 +2,7 @@
 {
     public class Location : EntityBase
     {
-        public Coordinates Coordinates { get; set; }
+        public Coordinates Coordinates { get; set; } = new Coordinates { Latitude = 55.676098, Longitude = 12.568337 };
     }
 
     public class Coordinates

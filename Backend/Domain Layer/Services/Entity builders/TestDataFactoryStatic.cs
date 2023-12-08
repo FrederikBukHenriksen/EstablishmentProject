@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using WebApplication1.Data.DataModels;
 using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Program
 {
-    public static class TestDataFactory
+    public static class TestDataFactoryStatic
     {
         //Helper methods
         public static Guid CreateGuidFromInt(int number)
@@ -30,6 +31,7 @@ namespace WebApplication1.Program
             var establishment = new Establishment();
             establishment.Id = id == null ? establishment.Id : (Guid)id;
             establishment.Name = name == null ? "Establishment " + establishment.Id : establishment.Name;
+            establishment.Location = new Location();
             return establishment;
         }
 
@@ -64,8 +66,8 @@ namespace WebApplication1.Program
 
         public static User CreateUser(Guid? id = null, string username = null, string password = null)
         {
-            var user = new User("", "");
-            user.Username = username != null ? username : "User " + user.Id;
+            var user = new User();
+            user.Email = username != null ? username : "User " + user.Id;
             user.Password = password != null ? password : GetIntFromGuid(id.GetValueOrDefault()).ToString();
             user.Id = id == null ? user.Id : (Guid)id;
             return user;

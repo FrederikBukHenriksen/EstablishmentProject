@@ -59,7 +59,7 @@ namespace WebApplication1.Services
 
         public Establishment GetActiveEstablishment()
         {
-            return _establishmentRepository.GetAll().First();
+            return _establishmentRepository.GetAll().First(); // TESTING PURPOSES
             if (_establishment == null)
             {
                 throw new NullReferenceException("Active establishment is null");

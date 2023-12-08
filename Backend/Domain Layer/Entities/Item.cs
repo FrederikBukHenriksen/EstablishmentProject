@@ -5,9 +5,8 @@ namespace WebApplication1.Domain.Entities
 {
     public class Item : EntityBase
     {
-        //public Establishment Establishment { get; set; }
         public string Name { get; set; }
-        public double? Price { get; set; }
+        public double Price { get; set; }
     }
 
     public class ItemConfiguration : IEntityTypeConfiguration<Item>

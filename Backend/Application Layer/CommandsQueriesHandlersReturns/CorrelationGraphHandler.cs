@@ -25,12 +25,14 @@ namespace WebApplication1.CommandHandlers
     {
         private IWeatherApi weatherApi;
         private IUserContextService userContextService;
+        private IEstablishmentRepository establishmentRepository;
         private ISalesRepository salesRepository;
 
-        public CorrelationGraphHandler(IUserContextService userContextService, ISalesRepository salesRepository)
+        public CorrelationGraphHandler(IUserContextService userContextService,IEstablishmentRepository establishmentRepository, ISalesRepository salesRepository)
         {
             this.weatherApi = new DmiWeatherApi();
             this.userContextService = userContextService;
+            this.establishmentRepository = establishmentRepository;
             this.salesRepository = salesRepository;
         }
 
@@ -40,7 +42,8 @@ namespace WebApplication1.CommandHandlers
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
 
             //Get sales data
-            IEnumerable<Sale> sales = salesRepository.GetAll().Where(x => x.Establishment == establishment);
+            IEnumerable<Sale> sales = establishmentRepository.GetEstablishmentSales(establishment.Id);
+
             IEnumerable<Sale> salesWithTimespan = sales.Where(x => x.TimestampArrival >= command.StartDate && x.TimestampArrival <= command.EndDate);
 
             IEnumerable<IGrouping<int, Sale>> salesGroupedByHour = salesWithTimespan.GroupBy(x => x.TimestampPayment.Hour);

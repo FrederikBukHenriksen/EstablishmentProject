@@ -1,26 +1,38 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-  inject,
-} from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import Chart, { ChartOptions } from 'chart.js/auto';
+import { Component, OnInit, inject } from '@angular/core';
+import Chart, { ChartTypeRegistry } from 'chart.js/auto';
 import {
   AnalysisClient,
-  AuthenticationClient,
-  LoginCommand,
-  GraphDTO,
   EstablishmentClient,
-  Item,
-  TimeAndValue,
-  GetProductSalesPerDayQuery,
-  TimeResolution,
+  SalesQuery,
+  SalesSortingParameters,
+  CommandBase,
+  ReturnBase,
+  Sale,
+  SalesMeanOverTime,
+  SalesMeanQueryReturn,
 } from 'api';
-import { DateToTime } from '../utils/helper';
-import { lastValueFrom, switchMap } from 'rxjs';
+import { DateToTime as DateToString } from '../utils/TimeHelper';
+import { Observable } from 'rxjs';
+
+import { MatDialog } from '@angular/material/dialog';
+import {
+  CheckBoxData,
+  DialogCheckboxComponent,
+} from '../dialog-checkbox/dialog-checkbox.component';
+
+export interface grafTyper {
+  name: string;
+  command?: CommandBase;
+  fetch?: (command: CommandBase) => Observable<ReturnBase>;
+  dataExtractor?: (data: ReturnBase) => chartData;
+}
+
+export interface chartData {
+  name: string;
+  data: number[];
+  label: string[];
+  type: keyof ChartTypeRegistry;
+}
 
 @Component({
   selector: 'app-create-establishment',
@@ -28,64 +40,121 @@ import { lastValueFrom, switchMap } from 'rxjs';
   styleUrls: ['./create-establishment.component.scss'],
 })
 export class CreateEstablishmentComponent implements OnInit {
-  private readonly authenticationClient = inject(AuthenticationClient);
   private readonly analysisClient = inject(AnalysisClient);
   private readonly establishmentClient = inject(EstablishmentClient);
+  public dialog = inject(MatDialog);
 
-  applyForm = new FormGroup({
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-  });
+  protected items: CheckBoxData[] = [];
 
-  private items: Item[] = [];
-  private itemsSold?: [Item, TimeAndValue[]?];
+  chart?: Chart;
 
-  chart!: Chart;
+  public salesData!: Sale[];
+  public salesDataTimeline!: [Date, number];
 
-  public data!: GraphDTO;
+  private command: SalesQuery = {
+    salesSortingParameters: {
+      mustContaiedItems: [],
+      useDataFromTimeframePeriods: [],
+    } as SalesSortingParameters,
+  };
 
   ngOnInit(): void {
     this.establishmentClient.itemGetAll().subscribe({
       next: (x) => {
-        this.items = x;
+        this.items = x.map(
+          (x) =>
+            ({
+              id: x.id,
+              name: x.name,
+              selected: false,
+            } as CheckBoxData)
+        );
       },
     });
-
-    var itemsSold = this.items.map((item) => [item, undefined]);
-    this.getGraph();
+    this.getData();
+    console.log('ngOnInit');
   }
 
-  private getGraph() {
-    var command: GetProductSalesPerDayQuery = {
-      itemId: '00000000-0000-0000-0000-000000000001',
-      resolution: TimeResolution.Hour,
-      startDate: new Date(new Date().setUTCHours(9, 0, 0, 0)),
-      endDate: new Date(new Date().setUTCHours(15, 0, 0, 0)),
-    };
+  muligeGrafer = [
+    {
+      name: 'Sale numbers',
+      command: this.command,
+      fetch: (command: CommandBase) =>
+        this.analysisClient.meanSales(command as SalesMeanOverTime),
 
-    this.analysisClient.sales(command).subscribe({
-      next: (data) => {
-        this.data = data;
-        this.chart = this.createChart(this.data);
+      dataExtractor: (data: ReturnBase) => {
+        var result = data as SalesMeanQueryReturn;
+
+        return {
+          name: 'Sale numbers',
+          data: result.data.map((x) => x.value),
+          label: result.data.map((x) => DateToString(x.dateTime)),
+          type: 'bar',
+        } as chartData;
       },
+    } as grafTyper,
+  ];
+
+  grafDictionary: { [key: string]: chartData } = {};
+
+  public getData() {
+    this.muligeGrafer.forEach((endpoint) => {
+      endpoint.fetch!(endpoint.command!).subscribe({
+        next: (x) => {
+          var data = endpoint.dataExtractor!(x);
+          this.grafDictionary[endpoint.name] = data;
+          console.log('data', data);
+        },
+      });
     });
   }
 
-  createChart(data: GraphDTO): Chart {
+  openDialog() {
+    console.log('muligeGrafer', this.muligeGrafer);
+    console.log('dic', this.grafDictionary);
+    this;
+    this.createChart();
+    console.log(
+      'list',
+      Object.values(this.grafDictionary).map((x) => ({
+        type: 'line',
+        data: x.data,
+      }))
+    );
+
+    const dialogRef = this.dialog.open(DialogCheckboxComponent, {
+      data: this.items,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.items = result;
+      console.log('The dialog was closed', this.items);
+      this.command.salesSortingParameters!.mustContaiedItems = this.items
+        .filter((x) => x.selected)
+        .map((x) => x.id);
+    });
+  }
+
+  createChart(): Chart {
+    var ok = this.salesData.map((x) => DateToString(x.timestampPayment));
+
     return new Chart('canvas', {
       data: {
-        datasets: [
-          {
-            type: 'line',
-            data: data.values!.map((x) => x.salesCount),
-          },
-        ],
-        labels: data.values!.map((x) => DateToTime(x.date)),
+        datasets: Object.values(this.grafDictionary).map((x) => ({
+          label: x.name,
+          type: x.type,
+          data: x.data,
+          borderColor: 'blue',
+          backgroundColor: 'rgba(0, 0, 255, 0.2)',
+          fill: true,
+        })),
+        labels: this.salesData.map((x) => DateToString(x.timestampPayment)),
       },
-      options: this.getOptions(),
+      // options: this.getOptions(),
     });
   }
   private updateChart() {
-    this.chart.update();
+    this.chart?.destroy();
+    this.chart = this.createChart();
   }
 }

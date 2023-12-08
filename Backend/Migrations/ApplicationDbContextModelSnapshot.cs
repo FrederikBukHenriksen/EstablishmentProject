@@ -52,11 +52,16 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Establishment");
                 });
@@ -74,8 +79,7 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double?>("Price")
-                        .IsRequired()
+                    b.Property<double>("Price")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -111,10 +115,10 @@ namespace WebApplication1.Migrations
                     b.Property<Guid?>("TableId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("TimestampEnd")
+                    b.Property<DateTime?>("TimestampArrival")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("TimestampStart")
+                    b.Property<DateTime>("TimestampPayment")
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
@@ -132,7 +136,7 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EstablishmentId")
+                    b.Property<Guid?>("EstablishmentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -152,17 +156,17 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("Email")
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
@@ -209,6 +213,17 @@ namespace WebApplication1.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Sale");
+                });
+
+            modelBuilder.Entity("WebApplication1.Domain.Entities.Establishment", b =>
+                {
+                    b.HasOne("WebApplication1.Domain.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain.Entities.Item", b =>
@@ -264,13 +279,9 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Domain.Entities.Table", b =>
                 {
-                    b.HasOne("WebApplication1.Domain.Entities.Establishment", "Establishment")
+                    b.HasOne("WebApplication1.Domain.Entities.Establishment", null)
                         .WithMany("Tables")
-                        .HasForeignKey("EstablishmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Establishment");
+                        .HasForeignKey("EstablishmentId");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain.Entities.UserRole", b =>

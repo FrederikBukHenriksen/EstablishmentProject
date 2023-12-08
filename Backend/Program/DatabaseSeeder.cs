@@ -20,7 +20,7 @@ namespace WebApplication1.Program
 
         public void LoadData()
         {
-            var Establishment1 = TestDataFactory.CreateEstablishment();
+            var Establishment1 = TestDataFactoryStatic.CreateEstablishment();
             //for (int i = 0; i < 10; i++)
             //{
             //    Establishment1.Items.Add(TestDataFactory.CreateItem());

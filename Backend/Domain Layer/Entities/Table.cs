@@ -4,7 +4,7 @@ namespace WebApplication1.Domain.Entities
 {
     public class Table : EntityBase
     {
-        public Establishment Establishment { get; set; }
+        //public Establishment Establishment { get; set; }
         public string Name { get; set; }
 
     }

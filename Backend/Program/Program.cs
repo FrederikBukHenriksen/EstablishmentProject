@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using WebApplication1.Application_Layer.Middelware;
 
 namespace WebApplication1.Program
 {
@@ -39,51 +40,17 @@ namespace WebApplication1.Program
 
             builder.Services.AddControllers();
 
-            //builder.Services.AddDistributedMemoryCache(); // Add this line for in-memory cache
-            //builder.Services.AddSession(); //Add
-
-            //builder.Services.AddControllers().AddNewtonsoftJson(options =>
-            //    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
-
-            //); //Allows for circular references in json
-
-            //builder.Services.AddServices();
             builder.Services.AddServices();
             builder.Services.AddRepositories();
             builder.Services.AddCommandHandlers();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddOpenApiDocument(options =>
-            {
-                options.PostProcess = document =>
-                {
-                    document.Info = new OpenApiInfo
-                    {
-                        Version = "v1",
-                        Title = "ToDo API",
-                        Description = "An ASP.NET Core Web API for managing ToDo items",
-                        TermsOfService = "https://example.com/terms",
-                        Contact = new OpenApiContact
-                        {
-                            Name = "Example Contact",
-                            Url = "https://example.com/contact"
-                        },
-                        License = new OpenApiLicense
-                        {
-                            Name = "Example License",
-                            Url = "https://example.com/license"
-                        }
-                    };
-                };
-            });
+            builder.Services.AddOpenApiDocument();
 
             WebApplication app = builder.Build();
             AutoMigrate(app);
 
-
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseOpenApi();
@@ -93,7 +60,6 @@ namespace WebApplication1.Program
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseSession();
             app.MapControllers();
 
             AddMiddleware(app);
@@ -151,14 +117,19 @@ namespace WebApplication1.Program
         private static void AddMiddleware(WebApplication app)
         {
             app.UseMiddleware<UserContextMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
         }
 
         private static void AutoMigrate(WebApplication app)
         {
 
-            var scope = app.Services.CreateScope();
+            var scope = app.Services.CreateScope(); //Creates scoped lifetime for the service.
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            dbContext.Database.Migrate();
+            //if (dbContext.Database.CanConnect())
+            //{
+                dbContext.Database.Migrate();
+            //}
             scope.Dispose();
         }
     }

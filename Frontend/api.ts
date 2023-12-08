@@ -29,7 +29,7 @@ export class AnalysisClient {
     }
 
     sales(command: SalesQuery): Observable<SalesQueryReturn> {
-        let url_ = this.baseUrl + "/api/sales-analysis/sales";
+        let url_ = this.baseUrl + "/api/analysis/sales";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -80,8 +80,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    meanSales(command: MeanItemSalesCommand): Observable<MeanItemSalesReturn> {
-        let url_ = this.baseUrl + "/api/sales-analysis/sales-mean";
+    meanSales(command: SalesMeanOverTime): Observable<SalesMeanQueryReturn> {
+        let url_ = this.baseUrl + "/api/analysis/sales-mean";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -104,14 +104,14 @@ export class AnalysisClient {
                 try {
                     return this.processMeanSales(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<MeanItemSalesReturn>;
+                    return _observableThrow(e) as any as Observable<SalesMeanQueryReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<MeanItemSalesReturn>;
+                return _observableThrow(response_) as any as Observable<SalesMeanQueryReturn>;
         }));
     }
 
-    protected processMeanSales(response: HttpResponseBase): Observable<MeanItemSalesReturn> {
+    protected processMeanSales(response: HttpResponseBase): Observable<SalesMeanQueryReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -121,7 +121,7 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MeanItemSalesReturn;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as SalesMeanQueryReturn;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -132,8 +132,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    correlationCoefficientAndLag(command: CorrelationBetweenSalesAndWeatherCommand): Observable<ValueTupleOfTimeSpanAndDouble[]> {
-        let url_ = this.baseUrl + "/api/sales-analysis/cross-correlation-with-weather";
+    correlationCoefficientAndLag(command: CorrelationCommand): Observable<ValueTupleOfTimeSpanAndDouble[]> {
+        let url_ = this.baseUrl + "/api/analysis/cross-correlation-with-weather";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -184,8 +184,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    meanShiftClustering(command: CorrelationBetweenSalesAndWeatherCommand): Observable<ValueTupleOfTimeSpanAndDouble[]> {
-        let url_ = this.baseUrl + "/api/sales-analysis/mean-shift-clustering";
+    meanShiftClustering(command: MeanShiftClusteringCommand): Observable<MeanShiftClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/clustering";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -208,14 +208,14 @@ export class AnalysisClient {
                 try {
                     return this.processMeanShiftClustering(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ValueTupleOfTimeSpanAndDouble[]>;
+                    return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ValueTupleOfTimeSpanAndDouble[]>;
+                return _observableThrow(response_) as any as Observable<MeanShiftClusteringReturn>;
         }));
     }
 
-    protected processMeanShiftClustering(response: HttpResponseBase): Observable<ValueTupleOfTimeSpanAndDouble[]> {
+    protected processMeanShiftClustering(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -225,7 +225,59 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ValueTupleOfTimeSpanAndDouble[];
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MeanShiftClusteringReturn;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    meanShiftClustering2(command: MeanShiftClusteringCommand): Observable<MeanShiftClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/mean-shift-clustering";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processMeanShiftClustering2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processMeanShiftClustering2(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<MeanShiftClusteringReturn>;
+        }));
+    }
+
+    protected processMeanShiftClustering2(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MeanShiftClusteringReturn;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -250,7 +302,7 @@ export class AuthenticationClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    logIn(loginCommand: LoginCommand): Observable<void> {
+    logIn(loginCommand: LoginCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/authentication/login";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -263,6 +315,7 @@ export class AuthenticationClient {
             withCredentials: true,
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -273,24 +326,31 @@ export class AuthenticationClient {
                 try {
                     return this.processLogIn(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processLogIn(response: HttpResponseBase): Observable<void> {
+    protected processLogIn(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -829,21 +889,82 @@ export interface ReturnBase {
 }
 
 export interface SalesQueryReturn extends ReturnBase {
-    data: TimeAndValueOfInteger[];
+    sales: Sale[];
 }
 
-export interface TimeAndValueOfInteger {
-    dateTime: Date;
-    value: number;
+export interface EntityBase {
+    id: string;
+}
+
+export interface Sale extends EntityBase {
+    establishment: Establishment;
+    timestampArrival: Date | undefined;
+    timestampPayment: Date;
+    salesItems: SalesItems[];
+    table: Table | undefined;
+}
+
+export interface Establishment extends EntityBase {
+    name: string;
+    location: Location;
+    items: Item[];
+    tables: Table[];
+    sales: Sale[];
+}
+
+export interface Location extends EntityBase {
+    coordinates: Coordinates;
+}
+
+export interface Coordinates {
+    latitude: number;
+    longitude: number;
+}
+
+export interface Item extends EntityBase {
+    name: string;
+    price: number;
+}
+
+export interface Table extends EntityBase {
+    name: string;
+}
+
+export interface SalesItems extends EntityBase {
+    sale: Sale;
+    item: Item;
+    quantity: number;
 }
 
 export interface CommandBase {
 }
 
 export interface SalesQuery extends CommandBase {
+    salesSortingParameters: SalesSortingParameters | undefined;
+}
+
+export interface SalesSortingParameters {
     mustContaiedItems: string[] | undefined;
+    useDataFromTimeframePeriods: TimePeriod[] | undefined;
+}
+
+export interface TimePeriod {
+    start: Date;
+    end: Date;
+}
+
+export interface SalesMeanQueryReturn extends ReturnBase {
+    data: ValueTupleOfIntegerAndNullableDouble[];
+}
+
+export interface ValueTupleOfIntegerAndNullableDouble {
+    item1: number;
+    item2: number | undefined;
+}
+
+export interface SalesMeanOverTime extends CommandBase {
+    salesSortingParameters: SalesSortingParameters | undefined;
     timeResolution: TimeResolution;
-    timePeriod: TimePeriod;
 }
 
 export enum TimeResolution {
@@ -853,35 +974,27 @@ export enum TimeResolution {
     Year = 3,
 }
 
-export interface TimePeriod {
-    start: Date;
-    end: Date;
-}
-
-export interface MeanItemSalesReturn extends ReturnBase {
-    data: TimeAndValueOfNullableDouble[];
-}
-
-export interface TimeAndValueOfNullableDouble {
-    dateTime: Date;
-    value: number | undefined;
-}
-
-export interface MeanItemSalesCommand extends CommandBase {
-    mustContaiedItems: string[];
-    useDataFromTimeframePeriods: TimePeriod[];
-    timeResolution: TimeResolution;
-    timeline: TimePeriod;
-}
-
 export interface ValueTupleOfTimeSpanAndDouble {
     item1: string;
     item2: number;
 }
 
-export interface CorrelationBetweenSalesAndWeatherCommand extends CommandBase {
-    startDate: Date;
-    endDate: Date;
+export interface CorrelationCommand extends CommandBase {
+    timePeriod: TimePeriod;
+}
+
+export interface MeanShiftClusteringReturn extends ReturnBase {
+    clusters: Sale[][];
+}
+
+export interface MeanShiftClusteringCommand extends CommandBase {
+    salesSortingParameters: SalesSortingParameters | undefined;
+}
+
+export interface MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
+}
+
+export interface MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
 }
 
 export interface LoginCommand {
@@ -889,12 +1002,8 @@ export interface LoginCommand {
     password: string;
 }
 
-export interface EntityBase {
-    id: string;
-}
-
 export interface User extends EntityBase {
-    username: string;
+    email: string;
     password: string;
     userRoles: UserRole[];
 }
@@ -903,37 +1012,6 @@ export interface UserRole extends EntityBase {
     user: User;
     establishment: Establishment;
     role: Role;
-}
-
-export interface Establishment extends EntityBase {
-    name: string;
-    items: Item[];
-    tables: Table[];
-    sales: Sale[];
-}
-
-export interface Item extends EntityBase {
-    name: string;
-    price: number | undefined;
-}
-
-export interface Table extends EntityBase {
-    establishment: Establishment;
-    name: string;
-}
-
-export interface Sale extends EntityBase {
-    establishment: Establishment;
-    timestampStart: Date | undefined;
-    timestampPayment: Date;
-    salesItems: SalesItems[];
-    table: Table | undefined;
-}
-
-export interface SalesItems extends EntityBase {
-    sale: Sale;
-    item: Item;
-    quantity: number;
 }
 
 export enum Role {
