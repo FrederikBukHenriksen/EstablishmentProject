@@ -10,7 +10,7 @@ namespace WebApplication1.Utils
     public class SalesSortingParameters
     {
         public List<Guid>? MustContaiedItems { get; set; }
-        public List<TimePeriod>? UseDataFromTimeframePeriods { get; set; }
+        public List<DateTimePeriod>? UseDataFromTimeframePeriods { get; set; }
     }
 
     public static class SalesSortingParametersExecute
@@ -31,12 +31,12 @@ namespace WebApplication1.Utils
     public static partial class SalesHelper
     {
 
-        public static List<Sale> SortSalesByTimePeriod(this List<Sale> sales, TimePeriod timePeriods)
+        public static List<Sale> SortSalesByTimePeriod(this List<Sale> sales, DateTimePeriod timePeriods)
         {
-            return sales.SortEntitiesWithinTimePeriod(timePeriods, (x) => x.TimestampPayment);
+            return sales.SortEntitiesWithinDateTimePeriod(timePeriods, (x) => x.TimestampPayment);
         }
 
-        public static List<Sale> SortSalesByTimePeriods(this List<Sale> sales, List<TimePeriod> timePeriods)
+        public static List<Sale> SortSalesByTimePeriods(this List<Sale> sales, List<DateTimePeriod> timePeriods)
         {
             return sales.SortEntitiesWithinTimePeriods(timePeriods, (x) => x.TimestampPayment);
         }

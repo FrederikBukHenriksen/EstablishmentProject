@@ -2,6 +2,7 @@
 using WebApplication1.CommandHandlers;
 using System;
 using WebApplication1.Application_Layer.Objects;
+using NodaTime;
 
 namespace WebApplication1.Utils
 {
@@ -13,23 +14,85 @@ namespace WebApplication1.Utils
         Year,
     }
 
-    public class TimePeriod
+    public interface ITimestamp<T>
+    {
+        T Start { get; set; }
+        T End { get; set; }
+    }
+
+    public class localDatePeriod : ITimestamp<LocalDate>
+    {
+        public LocalDate Start { get; set; }
+        public LocalDate End { get; set; }
+
+        public localDatePeriod(LocalDate start, LocalDate end)
+        {
+            this.Start = start;
+            this.End = end;
+        }
+    }
+
+    public class LocalTimePeriod : ITimestamp<LocalTime>
+    {
+        public LocalTime Start { get; set; }
+        public LocalTime End { get; set; }
+
+        public LocalTimePeriod(LocalTime start, LocalTime end)
+        {
+            this.Start = start;
+            this.End = end;
+        }
+    }
+
+    public class DateTimePeriod : ITimestamp<DateTime>
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
 
-        public TimePeriod(DateTime start, DateTime end)
+        public DateTimePeriod(DateTime start, DateTime end)
         {
-            Start = start;
-            End = end;
+            start = start;
+            end = end;
         }
     }
 
+
+
     public static class TimeHelper
     {
+        public static LocalTime DateTimeToLocalTime(DateTime dateTime)
+        {
+            return new LocalTime(dateTime.Hour, dateTime.Minute, dateTime.Second);
+        }
+
+        public static DateTime LocalDateAndLocalTimeToDateTime(LocalDate localDate, LocalTime localTime)
+        {
+            return new DateTime(localDate.Year, localDate.Month, localDate.Day, localTime.Hour, localTime.Minute, localTime.Second);
+        }   
+
+        public static bool IsWithinPeriod_StartAndEndIndluded<T>(T timestamp, T start, T end) where T : IComparable<T>
+        {
+            return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) <= 0;
+        }
+
+        public static bool IsTimeWithinPeriod_StartNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
+        {
+            return timestamp.CompareTo(start) > 0 && timestamp.CompareTo(end) <= 0;
+        }
+
+        public static bool IsTimeWithinPeriod_EndNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
+        {
+            return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) < 0;
+        }
+
+        public static bool IsTimeWithinPeriod_StartAndEndNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
+        {
+            return timestamp.CompareTo(start) > 0 && timestamp.CompareTo(end) < 0;
+        }
+
         public static bool IsEntityWithinTimeframe<Entity>(
             this Entity entity,
-            TimePeriod timePeriod,
+            DateTimePeriod timePeriod,
             Func<Entity, DateTime> timestampSelector)
             where Entity : class
         {
@@ -37,9 +100,9 @@ namespace WebApplication1.Utils
             return entityTimestamp >= timePeriod.Start && entityTimestamp <= timePeriod.End;
         }
 
-        public static List<Entity> SortEntitiesWithinTimePeriod<Entity>(
+        public static List<Entity> SortEntitiesWithinDateTimePeriod<Entity>(
             this List<Entity> entityList,
-            TimePeriod timePeriod,
+            DateTimePeriod timePeriod,
             Func<Entity, DateTime> timestampSelector)
             where Entity : class
         {
@@ -52,20 +115,20 @@ namespace WebApplication1.Utils
 
         public static List<Entity> SortEntitiesWithinTimePeriods<Entity>(
             this List<Entity> entityList,
-            List<TimePeriod> timePeriods,
+            List<DateTimePeriod> timePeriods,
             Func<Entity, DateTime> timestampSelector)
             where Entity : class
         {
             List<Entity> entitiesWithinTimeframe = new List<Entity>();
             foreach (var period in timePeriods)
             {
-                List<Entity> entitiesFromPeriod = entityList.SortEntitiesWithinTimePeriod(period, timestampSelector).ToList();
+                List<Entity> entitiesFromPeriod = entityList.SortEntitiesWithinDateTimePeriod(period, timestampSelector).ToList();
                 entitiesWithinTimeframe.AddRange(entitiesFromPeriod);
             }
             return entitiesWithinTimeframe;
         }
 
-        public static List<DateTime> CreateTimelineAsList(TimePeriod timePeriod, TimeResolution resolution)
+        public static List<DateTime> CreateTimelineAsList(DateTimePeriod timePeriod, TimeResolution resolution)
         {
             Func<DateTime, DateTime> res = x => {
                 switch (resolution)

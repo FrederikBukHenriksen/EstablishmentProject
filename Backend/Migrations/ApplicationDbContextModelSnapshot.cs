@@ -195,6 +195,31 @@ namespace WebApplication1.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment.OpeningHours", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("EstablishmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("close")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("dayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("open")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstablishmentId");
+
+                    b.ToTable("OpeningHours");
+                });
+
             modelBuilder.Entity("WebApplication1.Data.DataModels.SalesItems", b =>
                 {
                     b.HasOne("WebApplication1.Domain.Entities.Item", "Item")
@@ -300,6 +325,13 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment.OpeningHours", b =>
+                {
+                    b.HasOne("WebApplication1.Domain.Entities.Establishment", null)
+                        .WithMany("opening")
+                        .HasForeignKey("EstablishmentId");
+                });
+
             modelBuilder.Entity("WebApplication1.Domain.Entities.Establishment", b =>
                 {
                     b.Navigation("Items");
@@ -307,6 +339,8 @@ namespace WebApplication1.Migrations
                     b.Navigation("Sales");
 
                     b.Navigation("Tables");
+
+                    b.Navigation("opening");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain.Entities.Sale", b =>

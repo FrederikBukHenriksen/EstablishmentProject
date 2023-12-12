@@ -6,6 +6,7 @@ using WebApplication1.Data;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Infrastructure.Data;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
 using static WebApplication1.CommandHandlers.MeanSales;
@@ -28,7 +29,8 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
             serviceCollection.AddTransient<IItemBuilder, ItemBuilder>();
 
-            serviceCollection.AddScoped<FactoryServiceBuilder>();
+            serviceCollection.AddScoped<IFactoryServiceBuilder, FactoryServiceBuilder>();
+            serviceCollection.AddScoped<TestDataCreatorService>();
 
 
         }

@@ -5,7 +5,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
     public interface IEstablishmentRepository : IRepository<Establishment>
     {
-        ICollection<Item> GetEstablishmentItems(Guid id);
+        ICollection<Item> GetItemsOfEstablishment(Guid id);
         ICollection<Sale> GetEstablishmentSales(Guid id);
         ICollection<Table> GetEstablishmentTables(Guid id);
 
@@ -18,7 +18,7 @@ namespace WebApplication1.Domain.Services.Repositories
         {
         }
 
-        ICollection<Item> IEstablishmentRepository.GetEstablishmentItems(Guid id)
+        ICollection<Item> IEstablishmentRepository.GetItemsOfEstablishment(Guid id)
         {
             var res = context.Set<Establishment>().Include(x => x.Items).Where(x => x.Id == id).First().Items;
             return res;

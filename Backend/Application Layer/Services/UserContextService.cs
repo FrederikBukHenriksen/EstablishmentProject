@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
+using System.Text;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
 
@@ -78,6 +79,7 @@ namespace WebApplication1.Services
 
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext)
         {
+
             string EstablishmentIdAsString = httpContext.Request.Headers["EstablishmentId"];
             if (!EstablishmentIdAsString.IsNullOrEmpty())
             {

@@ -2,15 +2,15 @@
 
 namespace WebApplication1.Domain.Entities
 {
-    public interface IUserBuilderService
+    public interface IUserBuilder
     {
         User CreateUser(string email, string password, ICollection<UserRole>? userRoles = null);
     }
-    public class UserBuilderService
-    {
+    public class UserBuilder{
+
         private readonly IUserRepository userRepository;
 
-        public UserBuilderService(IUserRepository userRepository)
+        public UserBuilder(IUserRepository userRepository)
         {
         this.userRepository = userRepository;
         }

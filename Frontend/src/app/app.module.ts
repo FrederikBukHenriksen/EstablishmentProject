@@ -10,26 +10,21 @@ import { CreateEstablishmentModule } from './create-establishment/create-establi
 import { API_BASE_URL } from 'api';
 import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
+import { SelectEstablishmentModule } from './select-establishment/select-establishment.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DialogCheckboxComponent } from './dialog-checkbox/dialog-checkbox.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
-
+import { DialogCheckboxModule } from './dialog-checkbox/dialog.checkbox.component.module';
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavbarComponent,
-    NavbarComponent,
-    SelectEstablishmentComponent,
-    DialogCheckboxComponent,
-  ],
+  declarations: [AppComponent, NavbarComponent, NavbarComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     CreateEstablishmentModule,
+    SelectEstablishmentModule,
+    DialogCheckboxModule,
     LoginModule,
     HttpClientModule,
     HomepageModule,

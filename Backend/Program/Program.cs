@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WebApplication1.Application_Layer.Middelware;
+using Newtonsoft.Json;
 
 namespace WebApplication1.Program
 {
@@ -37,6 +38,13 @@ namespace WebApplication1.Program
 
             //Add repository
             //builder.Services.AddTransient<ApplicationDbContext>();
+
+        //    builder.Services.AddControllers()
+        //.AddNewtonsoftJson(options =>
+        //{
+        //    options.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
+
+        //});
 
             builder.Services.AddControllers();
 

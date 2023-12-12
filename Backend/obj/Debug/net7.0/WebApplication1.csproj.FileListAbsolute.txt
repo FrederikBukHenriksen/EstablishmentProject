@@ -136,3 +136,9 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\xu
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Microsoft.AspNetCore.JsonPatch.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Scrutor.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Swashbuckle.AspNetCore.Annotations.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Swashbuckle.AspNetCore.Filters.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Swashbuckle.AspNetCore.Newtonsoft.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\NodaTime.dll

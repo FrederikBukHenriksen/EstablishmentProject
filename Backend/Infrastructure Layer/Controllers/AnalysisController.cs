@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Utils;
@@ -21,24 +20,22 @@ namespace WebApplication1.Controllers
             //command.salesSortingParameters.MustContaiedItems = new System.Collections.Generic.List<System.Guid> { new System.Guid("00000000-0000-0000-0000-000000000002") };
             return handler.Handle(command);
         }
-        [HttpPost("sales-mean")]
-        [ProducesResponseType(typeof(SalesMeanQueryReturn), 200)]
-        [SwaggerOperation(
-    Summary = "Calculate sales mean over time.",
-    OperationId = "MeanSales",
-    Tags = new[] { "Sales" }
-)]
+
+        [HttpPost("average-visits")]
         public SalesMeanQueryReturn MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
-            //var command = new SalesMeanOverTimeAverageSpend
-            //{
-            //    TimeResolution = TimeResolution.Date,
-            //    //Timeline = new TimePeriod(start: System.DateTime.Now.AddDays(-1), end: System.DateTime.Now),
-            //    //UseDataFromTimeframePeriods = new System.Collections.Generic.List<TimePeriod> { new TimePeriod(start: System.DateTime.Now.AddDays(-7), end: System.DateTime.Now) }
-            //};
             return handler.Handle(command);
         }
+
+
+        [HttpPost("average-spend")]
+        public SalesMeanQueryReturn MeanSalesAverageSpend([FromBody] SalesMeanOverTimeAverageSpend command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        )
+        {
+            return handler.Handle(command);
+        }
+
 
 
         //[HttpPost("sales-median")]

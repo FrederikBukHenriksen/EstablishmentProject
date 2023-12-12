@@ -1,4 +1,7 @@
-﻿using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
+using NJsonSchema.Converters;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
@@ -7,22 +10,19 @@ using WebApplication1.Utils;
 
 namespace WebApplication1.CommandHandlers
 {
-
-
-    [KnownType(typeof(SalesMeanOverTimeAverageSpend))]
     [KnownType(typeof(SalesMeanOverTimeAverageNumberOfSales))]
+    [KnownType(typeof(SalesMeanOverTimeAverageSpend))]
 
-    public class SalesMeanOverTime : CommandBase
+    public abstract class SalesMeanOverTime : CommandBase
     {
         public SalesSortingParameters? salesSortingParameters { get; set; }
         public TimeResolution TimeResolution { get; set; }
-        public List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
-        { return new List<(int timeResolutionIdentifer, double averageValue)> { };}
+        public abstract List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales);
     }
 
     public class SalesMeanOverTimeAverageSpend : SalesMeanOverTime
     {
-        public new List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
+        public override List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
         {
             IEnumerable<IGrouping<int, Sale>> groupedSales = sales.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.TimestampPayment, TimeResolution));
             return groupedSales.Select(x => (x.Key, x.Average(x => x.GetTotalPrice()))).ToList();
@@ -31,10 +31,10 @@ namespace WebApplication1.CommandHandlers
 
     public class SalesMeanOverTimeAverageNumberOfSales : SalesMeanOverTime
     {
-        public new List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
+        public override List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
         {
             IEnumerable<IGrouping<DateTime, Sale>> GroupedOnTimeResolutionUnique = sales.GroupBy(x => TimeHelper.GroupForAverage(x.TimestampPayment, TimeResolution));
-            List<(DateTime, double)> ok = GroupedOnTimeResolutionUnique.Select(x => (x.Key, (double) x.Count())).ToList();
+            List<(DateTime, double)> ok = GroupedOnTimeResolutionUnique.Select(x => (x.Key, (double)x.Count())).ToList();
             IEnumerable<IGrouping<int, (DateTime, double)>> secondGrouping = ok.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.Item1, TimeResolution));
             List<(int Key, double)> ok2 = secondGrouping.Select(x => (x.Key, x.Average(x => x.Item2))).ToList();
             return ok2;
@@ -61,10 +61,6 @@ namespace WebApplication1.CommandHandlers
 
         public override SalesMeanQueryReturn Handle(SalesMeanOverTime command)
         {
-            //Test
-            var testFunction = command.CalcuateAverageOverTime;
-
-
             //Fetch
             Establishment activeEstablishment = userContextService.GetActiveEstablishment();
 

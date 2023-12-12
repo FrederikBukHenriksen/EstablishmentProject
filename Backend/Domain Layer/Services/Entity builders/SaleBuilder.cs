@@ -48,23 +48,16 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             return this;
         }
 
-        public ISaleBuilder WithSoldItem((Item item, int quantity) itemAndQuantity)
+        public override bool EntityValidation()
         {
-            var projectedToSalesItems = new SalesItemsBuilder().WithSale(this.Entity).WithItem(itemAndQuantity.item).WithQuantity(itemAndQuantity.quantity).Build();
-            Entity.SalesItems.Add(projectedToSalesItems);
-            return this;
+            if (!this.DoesSaleHavePaymentTimestamp()) throw new System.Exception("Sale must have a timestamp for payment");
+
+            return true;
         }
 
-        //public override ISaleBuilder UseExistingEntity(Sale entity)
-        //{
-        //    Entity = entity;
-        //    return this;
-        //}
-
-        //public override ISaleBuilder CreateNewEntity()
-        //{
-        //    Entity = new Sale();
-        //    return this;
-        //}
+        private bool DoesSaleHavePaymentTimestamp()
+        {
+            return Entity.TimestampPayment != null;
+        }
     }
 }

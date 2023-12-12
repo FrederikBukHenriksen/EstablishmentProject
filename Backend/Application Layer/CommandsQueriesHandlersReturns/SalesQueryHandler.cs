@@ -12,12 +12,12 @@ namespace WebApplication1.CommandHandlers
     public class SalesQuery : CommandBase
     {
         public SalesSortingParameters? salesSortingParameters { get; set; }
-        //public List<TimePeriod> TimePeriods { get; set; }
+        public TimeResolution TimeResolution { get; set; }
     }
 
     public class SalesQueryReturn : ReturnBase
     {
-        public List<Sale> Sales { get; set; }
+        public List<(DateTime,int)> data { get; set; }
     }
 
     public class SalesQueryHandler : HandlerBase<SalesQuery, SalesQueryReturn>
@@ -39,19 +39,19 @@ namespace WebApplication1.CommandHandlers
 
             List<Sale> sales = establishmentRepository.GetEstablishmentSales(userContextService.GetActiveEstablishment().Id).ToList();
             sales = salesRepository.IncludeSalesItems(sales);
-            //Sort by time period
-            //sales.SortSalesByTimePeriods(command.TimePeriods);
-
+ 
             //Sort by items
-            if (command.salesSortingParameters != null)
-            {
-                sales = SalesSortingParametersExecute.SortSales(sales, command.salesSortingParameters);
-            }
+            if (command.salesSortingParameters != null) sales = SalesSortingParametersExecute.SortSales(sales, command.salesSortingParameters);
+
+            var salesGrouped = sales.GroupBy(x => TimeHelper.TimeResolutionUniqueRounder(x.TimestampPayment, command.TimeResolution));
+            var salesPerTimeResolution = salesGrouped.Select(x => (x.Key, x.Count())).ToList();
 
 
             //List<(DateTime, IEnumerable<Sale?>)> timelineWithSales = TimeHelper.mapToATimeline(sales, x => x.GetTimeOfSale(), command.TimePeriods, command.TimeResolution).ToList();
             //List<TimeAndValue<int>> res = timelineWithSales.Select(x => new TimeAndValue<int> { dateTime = x.Item1, value = x.Item2.Count() }).ToList();
-            return new SalesQueryReturn { Sales = sales.Select(x => new Sale()).ToList() };
+            return new SalesQueryReturn { data = salesPerTimeResolution };
+
+            //return new SalesQueryReturn { Sales = sales.Select(x => new Sale()).ToList() };
         }
     }
 }

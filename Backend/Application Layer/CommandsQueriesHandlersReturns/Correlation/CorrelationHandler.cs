@@ -12,7 +12,7 @@ namespace WebApplication1.CommandHandlers
 
     public abstract class CorrelationCommand : CommandBase
     {
-        public TimePeriod TimePeriod { get; set; }
+        public DateTimePeriod TimePeriod { get; set; }
         public abstract (List<(DateTime dateTime1, double value1)> variable1, List<(DateTime dateTime2, double value2)> variable2) GetData();
     }
 

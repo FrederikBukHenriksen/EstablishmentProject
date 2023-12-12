@@ -18,7 +18,7 @@ namespace WebApplication1.Controllers
     [AllowAnonymous]
     [ApiController]
     [Route("api/test")]
-    public class TestData : ControllerBase
+    public class DataSeedController : ControllerBase
     {
         private IUserRepository _userRepository;
         private ISalesService salesService;
@@ -27,7 +27,7 @@ namespace WebApplication1.Controllers
         private IEstablishmentRepository _establishmentRepository;
         private ApplicationDbContext _applicationDbContext;
 
-        public TestData(ISalesService salesService,IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
+        public DataSeedController(ISalesService salesService,IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
         {
             this.salesService = salesService;
             _salesRepository = salesRepository;
@@ -42,15 +42,15 @@ namespace WebApplication1.Controllers
 
             // Resolve the transient service directly
             //var yourService = serviceProvider.GetRequiredService<IEstablishmentBuilder>();
-            var haha = factory.EstablishmentBuilder;
+            var haha = factory.EstablishmentBuilder();
                 Establishment estab = haha.WithName("Cafe Frederik").Build();
                 list.Add(estab);
 
-            var lol = factory.EstablishmentBuilder;
+            var lol = factory.EstablishmentBuilder();
             var ok = lol.WithId(Guid.Parse("00000000-0000-0000-0000-000000000000")).Build();
             list.Add(ok);
 
-            var heinz = factory.EstablishmentBuilder.UseEntity(estab).Build();
+            //var heinz = factory.EstablishmentBuilder.UseExistingEntity(estab).Build();
 
 
 
@@ -95,8 +95,6 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public void SeedDatabase()
         {
-           
-
             User user1 = TestDataFactoryStatic.CreateUser(id: Guid.Parse("00000000-0000-0000-0000-000000000001"), username: "Frederik", password: "1234");
 
             Establishment establishment1 = TestDataFactoryStatic.CreateEstablishment(Guid.Parse("00000000-0000-0000-0000-000000000001"));

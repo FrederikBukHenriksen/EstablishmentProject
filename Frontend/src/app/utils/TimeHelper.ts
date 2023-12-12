@@ -21,7 +21,7 @@ export function CreateDate(
   return new Date(Date.UTC(year, month, day, hour, minute, second));
 }
 
-export function DateToTime(dateTime: Date): string {
+export function DateToString(dateTime: Date): string {
   return new Date(dateTime).toLocaleString('da-DK', {
     hour: 'numeric',
     minute: 'numeric',

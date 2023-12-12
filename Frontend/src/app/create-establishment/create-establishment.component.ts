@@ -1,45 +1,43 @@
 import { Component, OnInit, inject } from '@angular/core';
-import Chart, { ChartTypeRegistry } from 'chart.js/auto';
+import { ChartData, ChartDataset, ChartTypeRegistry } from 'chart.js/auto';
 import {
   AnalysisClient,
   EstablishmentClient,
-  SalesQuery,
-  SalesSortingParameters,
   CommandBase,
   ReturnBase,
-  Sale,
-  SalesMeanQueryReturn,
-  TimePeriod,
   SalesMeanOverTimeAverageSpend,
   SalesMeanOverTime,
   TimeResolution,
+  SalesMeanQueryReturn,
+  TimePeriod,
+  SalesQueryReturn,
+  SalesQuery,
 } from 'api';
-import {
-  CreateTimelineOfObjects,
-  DateToTime as DateToString,
-  GetAllDatesBetween,
-  GetIdentifierOfDate,
-} from '../utils/TimeHelper';
-import { Observable } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
 
 import { MatDialog } from '@angular/material/dialog';
 import {
   CheckBoxData,
   DialogCheckboxComponent,
+  settingsDialogData,
 } from '../dialog-checkbox/dialog-checkbox.component';
-
-export interface grafTyper {
+import {
+  AddToDateTimeResolution,
+  DateToString,
+  GetAllDatesBetween as GetAllFromTimeperiodByTimeResolution,
+  todayDateUtc,
+} from '../utils/TimeHelper';
+export interface fecthingAndExtracting {
   name: string;
-  command?: CommandBase;
-  fetch?: (command: CommandBase) => Observable<ReturnBase>;
-  dataExtractor?: (data: ReturnBase) => chartData;
+  command: CommandBase;
+  fetch: (command: CommandBase) => Observable<ReturnBase>;
+  dataExtractor: (data: ReturnBase) => ChartDataset;
 }
 
-export interface chartData {
+export interface typesOfGarphs {
   name: string;
-  data: number[];
-  label: string[];
-  type: keyof ChartTypeRegistry;
+  configuerable: boolean;
 }
 
 @Component({
@@ -52,162 +50,165 @@ export class CreateEstablishmentComponent implements OnInit {
   private readonly establishmentClient = inject(EstablishmentClient);
   public dialog = inject(MatDialog);
 
-  protected items: CheckBoxData[] = [];
+  public timeResolution: TimeResolution = TimeResolution.Date;
 
-  chart?: Chart;
-
-  public salesData!: Sale[];
-  public salesDataTimeline!: [Date, number];
-
-  private salesQueryCommand: SalesQuery = {
-    salesSortingParameters: {
-      mustContaiedItems: [],
-      useDataFromTimeframePeriods: [],
-    } as SalesSortingParameters,
+  public timePeriod: TimePeriod = {
+    start: todayDateUtc(),
+    end: AddToDateTimeResolution(todayDateUtc(), -7, this.timeResolution),
   };
 
-  ngOnInit(): void {
-    this.establishmentClient.itemGetAll().subscribe({
-      next: (x) => {
-        this.items = x.map(
-          (x) =>
-            ({
-              id: x.id,
-              name: x.name,
-              selected: false,
-            } as CheckBoxData)
-        );
+  lineChartData: ChartData = {
+    datasets: [
+      {
+        data: [1, 2, 3, 4, 5],
+        label: 'Sale numbers',
+        borderColor: 'blue',
+        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+        // fill: true,
+      } as ChartDataset,
+    ],
+    labels: GetAllFromTimeperiodByTimeResolution(
+      this.timePeriod,
+      this.timeResolution
+    ).map((x) => DateToString(x)),
+  };
+
+  lineChartOptions = {
+    responsive: true,
+  };
+
+  protected items: CheckBoxData[] = [];
+
+  public settingsDialogData: settingsDialogData = {
+    groups: [
+      {
+        title: 'title',
+        items: [new CheckBoxData('1', 'name', false)],
       },
-    });
-    this.getData();
-    console.log('ngOnInit');
+    ],
+  };
+
+  private SalesMeanOverTimeAverageSpendCommand: SalesMeanOverTimeAverageSpend =
+    {
+      timeResolution: TimeResolution.Month,
+      salesSortingParameters: undefined,
+    };
+
+  ngOnInit(): void {
+    this.mapGrafDictionaryToChartDataset();
   }
 
-  possibleGraphs = [
-    {
-      name: 'Average sale',
-      command: {
-        timeResolution: TimeResolution.Month,
-        salesSortingParameters: undefined,
-      } as SalesMeanOverTimeAverageSpend,
+  public grafDictionary: { [key: string]: fecthingAndExtracting } = {
+    SalesMeanOverTimeAverageSpend: {
+      name: 'SalesMeanOverTimeAverageSpend',
+      command: this.SalesMeanOverTimeAverageSpendCommand,
+      fetch: (command: CommandBase) =>
+        this.analysisClient.meanSalesAverageSpend(
+          command as SalesMeanOverTimeAverageSpend
+        ),
+      dataExtractor: (data: ReturnBase) => {
+        const apiReturn = data as SalesMeanQueryReturn;
+        return {
+          data: apiReturn.data.map((x) => x.item1), //Map udover perioden
+          label: 'Sale numbers',
+          borderColor: 'blue',
+        } as ChartDataset;
+      },
+    },
+    NumberOfSalesOverTime: {
+      name: 'NumberOfSalesOverTime',
+
+      command: { salesSortingParameters: undefined } as SalesQuery,
 
       fetch: (command: CommandBase) =>
-        this.analysisClient.meanSales(command as SalesMeanOverTime),
+        this.analysisClient.sales(command as SalesQuery),
 
       dataExtractor: (data: ReturnBase) => {
-        var result = data as SalesMeanQueryReturn;
-
-        var timeResolution = TimeResolution.Month;
-
-        var timePeriod = {
-          start: new Date('2023-01-01'),
-          end: new Date('2023-01-31'),
-        } as TimePeriod;
-
-        var timeline: Date[] = GetAllDatesBetween(timePeriod, timeResolution);
-        var combinedTimeLineAndData: [Date, number][] = [];
-
-        timeline.forEach((x) => {
-          var data = result.data.find(
-            (y) => y.item1 === GetIdentifierOfDate(x, timeResolution)
-          );
-          if (data) {
-            combinedTimeLineAndData.push([x, data.item2 ?? 0]);
-          } else {
-            combinedTimeLineAndData.push([x, 0]);
-          }
-        });
-
-        var sortedCominedTimeAndData = combinedTimeLineAndData.sort();
-
+        const apiReturn = data as SalesQueryReturn;
         return {
-          name: 'Sale numbers',
-          data: sortedCominedTimeAndData.map((x) => x[1]),
-          label: sortedCominedTimeAndData.map((x) => DateToString(x[0])),
-          type: 'bar',
-        } as chartData;
+          data: apiReturn.data.map((x) => x.item2), //Hvor mange falder under samme periode
+          label: 'Sale numbers',
+          borderColor: 'red',
+        } as ChartDataset;
       },
-    } as grafTyper,
-  ];
+    },
+  };
 
-  // muligeGrafer = [
-  //   {
-  //     name: 'Sale numbers',
-  //     command: this.command,
-  //     fetch: (command: CommandBase) =>
-  //       this.analysisClient.meanSales(command as SalesMeanOverTime),
+  public async mapGrafDictionaryToChartDataset() {
+    // Go through all entries in the dictionary
+    for (const key in this.grafDictionary) {
+      if (this.grafDictionary.hasOwnProperty(key)) {
+        const entry = this.grafDictionary[key];
 
-  //     dataExtractor: (data: ReturnBase) => {
-  //       var result = data as SalesMeanQueryReturn;
-  //       return {
-  //         name: 'Sale numbers',
-  //         data: result.data.map((x) => x.value),
-  //         label: result.data.map((x) => DateToString(x.dateTime)),
-  //         type: 'bar',
-  //       } as chartData;
-  //     },
-  //   } as grafTyper,
-  // ];
+        // Fetch data from the api
+        const data = await lastValueFrom(entry.fetch(entry.command));
+        const extractor = entry.dataExtractor(data);
+        console.log('extractor', extractor);
+      }
+    }
+  }
 
-  grafDictionary: { [key: string]: chartData } = {};
+  private GetEstablishmentItems(): Promise<CheckBoxData[]> {
+    return lastValueFrom(
+      this.establishmentClient.itemGetAll().pipe(
+        map((items: any[]) =>
+          items.map(
+            (item: any) =>
+              ({
+                id: item.id,
+                name: item.name,
+                selected: false,
+              } as CheckBoxData)
+          )
+        )
+      )
+    );
+  }
 
-  public getData() {
-    this.possibleGraphs.forEach((endpoint) => {
-      endpoint.fetch!(endpoint.command!).subscribe({
-        next: (x) => {
-          var data = endpoint.dataExtractor!(x);
-          this.grafDictionary[endpoint.name] = data;
-          console.log('data', data);
-        },
-      });
+  AddNewDatasetToCanvas(): void {
+    this.lineChartData.datasets?.push({
+      data: [1, 2, 3, 4, 5],
+      label: 'Sale numbers',
+      borderColor: 'blue',
+      backgroundColor: 'rgba(0, 0, 255, 0.2)',
+      // fill: true,
     });
   }
 
-  openDialog() {
-    console.log('muligeGrafer', this.possibleGraphs);
-    console.log('dic', this.grafDictionary);
-    this;
-    this.createChart();
-    console.log(
-      'list',
-      Object.values(this.grafDictionary).map((x) => ({
-        type: 'line',
-        data: x.data,
-      }))
+  private GetSalesMeanOverTimeAverageSpend() {
+    return lastValueFrom(
+      this.analysisClient
+        .meanSalesAverageSpend(this.SalesMeanOverTimeAverageSpendCommand)
+        .pipe(
+          map((x) => {
+            console.log('x', x);
+            return x;
+          })
+        )
     );
+  }
 
+  async openDialog() {
+    console.log('datasets', this.lineChartData.datasets);
+    const items = await this.GetEstablishmentItems();
+    await this.GetSalesMeanOverTimeAverageSpend();
     const dialogRef = this.dialog.open(DialogCheckboxComponent, {
-      data: this.items,
+      data: this.settingsDialogData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.items = result;
-      console.log('The dialog was closed', this.items);
-      this.salesQueryCommand.salesSortingParameters!.mustContaiedItems =
-        this.items.filter((x) => x.selected).map((x) => x.id);
+      this.lineChartData = {
+        datasets: [
+          {
+            data: [5, 5, 5, 5, 5],
+            label: 'Sale numbers',
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0, 0, 255, 0.2)',
+            fill: true,
+          },
+        ],
+        labels: ['1', '2', '3', '4', '5'],
+      };
     });
-  }
-
-  createChart(): Chart {
-    var ok = this.salesData.map((x) => DateToString(x.timestampPayment));
-
-    return new Chart('canvas', {
-      data: {
-        datasets: Object.values(this.grafDictionary).map((x) => ({
-          label: x.name,
-          type: x.type,
-          data: x.data,
-          borderColor: 'blue',
-          backgroundColor: 'rgba(0, 0, 255, 0.2)',
-          fill: true,
-        })),
-        labels: this.salesData.map((x) => DateToString(x.timestampPayment)),
-      },
-      // options: this.getOptions(),
-    });
-  }
-  private updateChart() {
-    this.chart?.destroy();
-    this.chart = this.createChart();
   }
 }

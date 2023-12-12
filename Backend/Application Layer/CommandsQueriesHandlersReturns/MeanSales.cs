@@ -17,7 +17,7 @@ namespace WebApplication1.CommandHandlers
             //public List<Guid> MustContaiedItems { get; set; } = new List<Guid>();
             //public List<TimePeriod> UseDataFromTimeframePeriods { get; set; } = new List<TimePeriod>();
             public TimeResolution TimeResolution { get; set; }
-            public TimePeriod Timeline { get; set; }
+            public DateTimePeriod Timeline { get; set; }
             //public MeanShiftClusteringAttributes MeanAttributes { get; set; }
         }
 

@@ -28,9 +28,9 @@
   </mat-expansion-panel>
 </mat-accordion> -->
 
-<h2 class="h3">Coffee analysis</h2>
-<div class="accordion__item-content">
-  <canvas id="canvas">{{ chart }}</canvas>
-</div>
-
 <button mat-button (click)="openDialog()">Select items</button>
+
+<app-graph
+  [chartData]="lineChartData"
+  [chartOptions]="lineChartOptions"
+></app-graph>

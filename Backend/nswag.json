@@ -96,7 +96,7 @@
       "generateCloneMethod": false,
       "typeStyle": "Interface",
       "enumStyle": "Enum",
-      "useLeafType": false,
+      "useLeafType": true,
       "classTypes": [],
       "extendedClasses": [
         "MeanShiftClusteringReturn"
@@ -107,7 +107,7 @@
       "excludedParameterNames": [],
       "handleReferences": false,
       "generateTypeCheckFunctions": false,
-      "generateConstructorInterface": true,
+      "generateConstructorInterface": false,
       "convertConstructorInterfaceData": false,
       "importRequiredTypes": true,
       "useGetBaseUrlMethod": false,

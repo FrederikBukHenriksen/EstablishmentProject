@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
@@ -6,38 +7,24 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
     {
         public interface IEstablishmentBuilder : IEntityBuilder<Establishment>
         {
-        IEstablishmentBuilder WithId(Guid id);
         IEstablishmentBuilder WithName(string name);
-        IEstablishmentBuilder WithLocation(Location location);
         IEstablishmentBuilder WithItems(ICollection<Item> items);
         IEstablishmentBuilder WithTables(ICollection<Table> tables);
         IEstablishmentBuilder WithSales(ICollection<Sale> sales);
-        IEstablishmentBuilder UseEntity(Establishment entity);
-    }
+        }
 
         public class EstablishmentBuilder : EntityBuilderBase<Establishment>, IEstablishmentBuilder
         {
-        private IEstablishmentRepository establishmentBuilder;
+        private IEstablishmentRepository establishmentRepository;
 
-        public EstablishmentBuilder([FromServices] IEstablishmentRepository establishmentBuilder)
+        public EstablishmentBuilder([FromServices] IEstablishmentRepository establishmentRepository)
         {
-            this.establishmentBuilder = establishmentBuilder;
-        }
-        public IEstablishmentBuilder WithId(Guid id)
-        {
-            Entity.Id = id;
-            return this;
+            this.establishmentRepository = establishmentRepository;
         }
 
         public IEstablishmentBuilder WithName(string name)
         {
             Entity.Name = name;
-            return this;
-        }
-
-        public IEstablishmentBuilder WithLocation(Location location)
-        {
-            Entity.Location = location;
             return this;
         }
 
@@ -59,17 +46,26 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
             return this;
         }
 
-        public IEstablishmentBuilder UseEntity(Establishment entity)
+        public override bool EntityValidation()
         {
-            Entity = entity;
-            return this;
+            if (!this.doesEstablishmentHaveAName()) throw new System.Exception("Establishment must have a name");
+            if (!this.isItemsInSalesIsAssignedToTheEstablishment()) throw new System.Exception("Items in sales must exist in the establishment");
+            return true;
         }
 
+        private bool doesEstablishmentHaveAName()
+        {
+            return Entity.Name.IsNullOrEmpty();
+        }
 
-        //public override IEntityBuilder<Establishment> CreateNewEntity()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        private bool isItemsInSalesIsAssignedToTheEstablishment()
+        {
+            ICollection<Item> allItemsFromSales = Entity.Sales.SelectMany(sale => sale.SalesItems.Select(saleItem => saleItem.Item)).ToList();
+            ICollection<Item> establishmentItems = Entity.Items;
+            bool establishmentHasAllItems = allItemsFromSales.All(item => establishmentItems.Contains(item));
+            return establishmentHasAllItems;
+
+        }
     }
 }
 

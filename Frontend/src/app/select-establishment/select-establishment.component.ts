@@ -4,6 +4,11 @@ import { AuthenticationClient, Establishment, UserContextClient } from 'api';
 import { HttpInterceptService } from '../services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
+export interface TableOfAccesibleEstablishments {
+  name: string;
+  id: string;
+}
+
 @Component({
   selector: 'app-select-establishment',
   templateUrl: './select-establishment.component.html',
@@ -14,7 +19,10 @@ export class SelectEstablishmentComponent {
   private router = inject(Router);
   private sessionStorageService = inject(SessionStorageService);
 
-  protected accesibleEstablishments: Establishment[] = [];
+  protected accesibleEstablishments: TableOfAccesibleEstablishments[] = [];
+
+  displayedColumns: string[] = ['name', 'actions'];
+  protected dataSource: TableOfAccesibleEstablishments[] = [];
 
   constructor() {
     console.log('select-establishment');
@@ -24,7 +32,18 @@ export class SelectEstablishmentComponent {
   private FetchAccesibleEstablishment() {
     this.userContextClient
       .getAccessibleEstablishments()
-      .subscribe((x) => (this.accesibleEstablishments = x));
+      .subscribe((x) => (this.dataSource = this.mapToListObject(x)));
+  }
+
+  private mapToListObject(
+    input: Establishment[]
+  ): TableOfAccesibleEstablishments[] {
+    return input.map((x) => {
+      return {
+        id: x.id,
+        name: x.name!,
+      };
+    });
   }
 
   protected onSelectEstablishment(establishmentId: string) {

@@ -3,7 +3,6 @@ using WebApplication1.Domain.Entities;
 
 namespace WebApplication1.Domain_Layer.Services.Entity_builders
 {
-
     public interface ISalesItemsBuilder : IEntityBuilder<SalesItems>
     {
         ISalesItemsBuilder WithSale(Sale sale);
@@ -12,12 +11,6 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
     }
     public class SalesItemsBuilder : EntityBuilderBase<SalesItems>, ISalesItemsBuilder
     {
-        //public override IEntityBuilder<SalesItems> UseExistingEntity(SalesItems entity)
-        //{
-        //    this.Entity = entity;
-        //    return this;
-        //}
-
         public ISalesItemsBuilder WithItem(Item item)
         {
             Entity.Item = item;
@@ -34,6 +27,10 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
         {
             Entity.Sale = sale;
             return this;
+        }
+        public override bool EntityValidation()
+        {
+            return true;
         }
     }
 }
