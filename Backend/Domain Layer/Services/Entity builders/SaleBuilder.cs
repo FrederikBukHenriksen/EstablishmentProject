@@ -19,45 +19,67 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
     {
         private IEstablishmentRepository itemRepository;
 
+        private DateTime? builderTimestampArrival = null;
+        private DateTime? builderTimestampPayment = null;
+        private List<SalesItems> builderSalesItems = null;
+        private Table? builderTable = null;
         public SaleBuilder([FromServices] IEstablishmentRepository itemRepository)
         {
             this.itemRepository = itemRepository;
         }
+
+        public override void ReadPropertiesOfEntity(Sale entity)
+        {
+            this.builderTimestampArrival = entity.TimestampArrival;
+            this.builderTimestampPayment = entity.TimestampPayment;
+            this.builderSalesItems = entity.SalesItems;
+            this.builderTable = entity.Table;
+        }
+
+        public override void WritePropertiesOfEntity(Sale Entity)
+        {
+            Entity.TimestampArrival = (DateTime?)this.builderTimestampArrival;
+            Entity.TimestampPayment = (DateTime)this.builderTimestampPayment;
+            Entity.SalesItems = (List<SalesItems>)this.builderSalesItems;
+            Entity.Table = (Table)this.builderTable;
+        }
+
         public ISaleBuilder WithTimestampArrival(DateTime? timestampArrival)
         {
-            Entity.TimestampArrival = timestampArrival;
+            this.builderTimestampArrival = timestampArrival;
             return this;
         }
 
         public ISaleBuilder WithTimestampPayment(DateTime timestampPayment)
         {
-            Entity.TimestampPayment = timestampPayment;
+            this.builderTimestampPayment = timestampPayment;
             return this;
         }
 
         public ISaleBuilder WithTable(Table table)
         {
-            Entity.Table = table;
+            this.builderTable = table;
             return this;
         }
 
         public ISaleBuilder WithSoldItems(List<(Item item, int quantity)> itemsAndQuantities)
         {
             var projectedToSalesItems = itemsAndQuantities.Select(x => new SalesItemsBuilder().WithSale(this.Entity).WithItem(x.item).WithQuantity(x.quantity).Build());
-            Entity.SalesItems = projectedToSalesItems.ToList();
+            this.builderSalesItems = projectedToSalesItems.ToList();
             return this;
         }
 
-        public override bool EntityValidation()
+        public override bool Validation()
         {
             if (!this.DoesSaleHavePaymentTimestamp()) throw new System.Exception("Sale must have a timestamp for payment");
-
             return true;
         }
 
         private bool DoesSaleHavePaymentTimestamp()
         {
-            return Entity.TimestampPayment != null;
+            return builderTimestampPayment != null;
         }
+
+
     }
 }

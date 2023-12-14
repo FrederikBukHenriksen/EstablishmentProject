@@ -37,7 +37,7 @@ namespace WebApplication1.CommandHandlers
 
             var weatherDataStart = this.TimePeriod.Start.Date;
             var weatherDataEnd = this.TimePeriod.End.Date.AddDays(1).AddTicks(-1);
-            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(activeEstablishment.Location.Coordinates, this.TimePeriod.Start, this.TimePeriod.End).Result;
+            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(activeEstablishment.Information.Location.Coordinates, this.TimePeriod.Start, this.TimePeriod.End).Result;
 
             //Arrange
             IEnumerable<Sale> salesWithTimespan = sales.Where(x => x.TimestampArrival >= this.TimePeriod.Start && x.TimestampArrival <= this.TimePeriod.End);

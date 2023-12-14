@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApplication1.Data;
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231213151539_400")]
+    partial class _400
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("InformationId")
+                    b.Property<Guid>("EstablishmentInformationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -60,7 +63,7 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InformationId");
+                    b.HasIndex("EstablishmentInformationId");
 
                     b.ToTable("Establishment");
                 });
@@ -201,7 +204,7 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("InformationId")
+                    b.Property<Guid?>("EstablishmentInformationId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("close")
@@ -215,12 +218,12 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InformationId");
+                    b.HasIndex("EstablishmentInformationId");
 
                     b.ToTable("OpeningHours");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Information", b =>
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -233,7 +236,7 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("information");
+                    b.ToTable("EstablishmentInformation");
                 });
 
             modelBuilder.Entity("WebApplication1.Data.DataModels.SalesItems", b =>
@@ -257,11 +260,13 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Domain.Entities.Establishment", b =>
                 {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Information", "Information")
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", "EstablishmentInformation")
                         .WithMany()
-                        .HasForeignKey("InformationId");
+                        .HasForeignKey("EstablishmentInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Information");
+                    b.Navigation("EstablishmentInformation");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain.Entities.Item", b =>
@@ -343,12 +348,12 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment.OpeningHours", b =>
                 {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Information", null)
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", null)
                         .WithMany("OpeningHours")
-                        .HasForeignKey("InformationId");
+                        .HasForeignKey("EstablishmentInformationId");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Information", b =>
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
                 {
                     b.HasOne("WebApplication1.Domain.Entities.Location", "Location")
                         .WithMany()
@@ -376,7 +381,7 @@ namespace WebApplication1.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Information", b =>
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
                 {
                     b.Navigation("OpeningHours");
                 });

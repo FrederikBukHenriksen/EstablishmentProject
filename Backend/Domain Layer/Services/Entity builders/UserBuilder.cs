@@ -1,39 +1,80 @@
 ﻿using WebApplication1.Domain.Services.Repositories;
+using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Domain.Entities
 {
-    public interface IUserBuilder
+    public interface IUserBuilder : IEntityBuilder<User>
     {
-        User CreateUser(string email, string password, ICollection<UserRole>? userRoles = null);
-    }
-    public class UserBuilder{
+        IUserBuilder WithEmail(string email);
+        IUserBuilder WithPassword(string password);
+        IUserBuilder WithUserRole(Establishment establishment, Role role);
 
-        private readonly IUserRepository userRepository;
+    }
+    public class UserBuilder : EntityBuilderBase<User>, IUserBuilder
+        {
+        private IUserRepository userRepository;
+
+        private string? builderEmail = null;
+        private string? builderPassword = null;
+        private List<UserRole>? builderUserRoles = null;
 
         public UserBuilder(IUserRepository userRepository)
         {
-        this.userRepository = userRepository;
+            this.userRepository = userRepository;
         }
 
-        public User CreateUser(string email, string password, ICollection<UserRole>? userRoles = null)
+        public override void ReadPropertiesOfEntity(User entity)
         {
-            if (!IsEmailValid(email)) throw new ArgumentException("Email is not valid");
-
-            if (!IsEmailUnique(email)) throw new ArgumentException("Email is used");
-
-            if (!IsPasswordValid(password)) throw new ArgumentException("Password is not valid");
-            
-            var user = new User();
-            user.Email = email;
-            user.Password = password;
-            user.UserRoles = userRoles == null ? new List<UserRole>() : userRoles;
-            return user;
+            this.builderEmail = entity.Email;
+            this.builderPassword = entity.Password;
         }
 
-        private static bool IsPasswordValid(string password) => password.Length >= 8;
+        public override void WritePropertiesOfEntity(User Entity)
+        {
+            Entity.Email = (string)this.builderEmail;
+            Entity.Password = (string)this.builderPassword;
+            Entity.UserRoles = (List<UserRole>)this.builderUserRoles;
+        }
 
-        private static bool IsEmailValid(string username) => username.Contains("@");
+        public IUserBuilder WithEmail(string email)
+        {
+            this.builderEmail = email;
+            return this;
+        }
 
-        private bool IsEmailUnique(string username) => this.userRepository.GetAll().Any(u => u.Email == username);
+        public IUserBuilder WithPassword(string password)
+        {
+            this.builderPassword = password;
+            return this;
+        }
+
+        public IUserBuilder WithUserRole(Establishment establishment, Role role)
+        {
+            if (this.builderUserRoles == null)
+            {
+                this.builderUserRoles = new List<UserRole>();
+            }
+            this.builderUserRoles.Add(new UserRole()
+            {
+                Establishment = establishment,
+                Role = role
+            });
+            return this;
+        }
+
+        public override bool Validation()
+        {
+            if(!this.IsEmailValid(builderEmail)) throw new Exception("Email is not valid");
+            if(!this.IsEmailUnique(builderEmail)) throw new Exception("Email is not unique");
+            if(!this.IsPasswordValid(builderPassword)) throw new Exception("Password is not valid");
+            return true;
+        }
+
+        private bool IsPasswordValid(string password) => password.Length >= 8;
+
+        private bool IsEmailValid(string email) => email.Contains("@");
+
+        private bool IsEmailUnique(string email) => this.userRepository.GetAll().Any(u => u.Email == builderEmail);
+
     }
 }

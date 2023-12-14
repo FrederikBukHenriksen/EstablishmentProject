@@ -96,7 +96,7 @@
       "generateCloneMethod": false,
       "typeStyle": "Interface",
       "enumStyle": "Enum",
-      "useLeafType": true,
+      "useLeafType": false,
       "classTypes": [],
       "extendedClasses": [
         "MeanShiftClusteringReturn"

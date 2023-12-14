@@ -9,7 +9,7 @@ namespace WebApplication1.Domain.Entities
         public void Configure(EntityTypeBuilder<Establishment> builder)
         {
             builder.Property(x => x.Name);
-            builder.HasOne(x => x.EstablishmentInformation);
+            builder.HasOne(x => x.Information);
         }
     }
 

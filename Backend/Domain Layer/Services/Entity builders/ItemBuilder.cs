@@ -10,35 +10,50 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
 
     public class ItemBuilder : EntityBuilderBase<Item>, IItemBuilder
     {
+        private string? builderName = null;
+        private double? builderPrice = null;
+
+
+        public override void ReadPropertiesOfEntity(Item entity)
+        {
+            this.builderName = entity.Name;
+            this.builderPrice = entity.Price;
+        }
+
+        public override void WritePropertiesOfEntity(Item entity)
+        {
+            entity.Name = (string)this.builderName;
+            entity.Price = (double)this.builderPrice;
+        }
+
         public IItemBuilder WithName(string name)
         {
-            Entity.Name = name;
+            this.builderName = name;
             return this;
         }
 
         public IItemBuilder WithPrice(double price)
         {
-            Entity.Price = price;
+            this.builderPrice = price;
             return this;
         }
 
-        public override bool EntityValidation()
+        public override bool Validation()
         {
-            if (!this.doesItemHaveAName()) throw new System.Exception("Item must have a name");
-            if (!this.doesItemHavePrice()) throw new System.Exception("Item must have a price");
+            if (!this.doesItemHaveAName()) throw new Exception("Item must have a name");
+            if (!this.doesItemHavePrice()) throw new Exception("Item must have a price");
             return true;
         }
 
         private bool doesItemHavePrice()
         {
-            return Entity.Price > 0;
+            return this.builderPrice >= 0;
         }
 
         private bool doesItemHaveAName()
         {
-            return Entity.Name.IsNullOrEmpty();
+            return !(this.builderName.IsNullOrEmpty());
         }
-
     }
 }
 

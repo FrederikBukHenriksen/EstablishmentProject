@@ -4,6 +4,7 @@ using Namotion.Reflection;
 using System.Reflection;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Entities.Establishment;
 using static WebApplication1.Domain.Entities.UserRole;
 
@@ -19,6 +20,8 @@ namespace WebApplication1.Data
         public DbSet<Establishment> Establishment { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<User> User { get; set; }
+
+        public DbSet<Information> information { get; set; }
         //public DbSet<Sale> Sale { get; set; }
         //public DbSet<UserRole> UserRoles { get; set; }
 

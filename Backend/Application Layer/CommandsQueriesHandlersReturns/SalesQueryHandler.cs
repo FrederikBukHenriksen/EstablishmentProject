@@ -16,7 +16,7 @@ namespace WebApplication1.CommandHandlers
     }
 
     public class SalesQueryReturn : ReturnBase
-    {
+    {   
         public List<(DateTime,int)> data { get; set; }
     }
 

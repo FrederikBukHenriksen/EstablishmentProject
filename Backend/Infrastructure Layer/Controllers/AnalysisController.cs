@@ -33,7 +33,8 @@ namespace WebApplication1.Controllers
         public SalesMeanQueryReturn MeanSalesAverageSpend([FromBody] SalesMeanOverTimeAverageSpend command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
-            return handler.Handle(command);
+            var result = handler.Handle(command);
+            return result;
         }
 
 

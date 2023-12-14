@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Data;
@@ -8,6 +9,7 @@ using WebApplication1.Data.DataModels;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Infrastructure.Data;
 using WebApplication1.Program;
 using WebApplication1.Utils;
 using Xunit.Abstractions;
@@ -46,9 +48,6 @@ namespace WebApplication1.Controllers
                 Establishment estab = haha.WithName("Cafe Frederik").Build();
                 list.Add(estab);
 
-            var lol = factory.EstablishmentBuilder();
-            var ok = lol.WithId(Guid.Parse("00000000-0000-0000-0000-000000000000")).Build();
-            list.Add(ok);
 
             //var heinz = factory.EstablishmentBuilder.UseExistingEntity(estab).Build();
 
@@ -93,69 +92,41 @@ namespace WebApplication1.Controllers
 
 
         [HttpGet]
-        public void SeedDatabase()
+        public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository)
         {
-            User user1 = TestDataFactoryStatic.CreateUser(id: Guid.Parse("00000000-0000-0000-0000-000000000001"), username: "Frederik", password: "1234");
+            var totalDataTimePeriod = new DateTimePeriod(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 12, 30, 23, 0, 0)); //Leave out last day of the year to test null values
+            var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod, TimeResolution.Hour);
+            var openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
+            var timelineDaysWithinOpeningHours = testDataCreatorService.FilterDistrubutionBasedOnOpeningHours(timelineAllDays, openingHours);
 
-            Establishment establishment1 = TestDataFactoryStatic.CreateEstablishment(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Hour, TestDataCreatorService.GetLinearFuncition(0, 1));
+            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Day, TestDataCreatorService.GetLinearFuncition(0, 0));
+            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Month, TestDataCreatorService.GetLinearFuncition(0, 0));
 
-            UserRole userRole1 = TestDataFactoryStatic.CreateUserRole(establishment1, user1, Role.Admin);
+            List<Dictionary<DateTime, int>> allDistributions = new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly };
 
-            Item espresso = TestDataFactoryStatic.CreateItem(id: Guid.Parse("00000000-0000-0000-0000-000000000001"), name: "Espresso");
-            establishment1.Items.Add(espresso);
-            Item sparklingWater = TestDataFactoryStatic.CreateItem(id: Guid.Parse("00000000-0000-0000-0000-000000000002"), name: "Sparkling water");
-            establishment1.Items.Add(sparklingWater);
-            Item bunWithCheese = TestDataFactoryStatic.CreateItem(id: Guid.Parse("00000000-0000-0000-0000-000000000003"), name: "Bun with cheese");
-            establishment1.Items.Add(bunWithCheese);
+            bool doesDictionariesHaveTheSameKeys = allDistributions.All(x => x.Keys.SequenceEqual(allDistributions.First().Keys));
 
-            Sale sale1 = TestDataFactoryStatic.CreateSale(timestampEnd: DateTime.Now.AddHours(-7));
-            Sale sale2 = TestDataFactoryStatic.CreateSale(timestampEnd: DateTime.Now.AddHours(-6));
-            Sale sale3 = TestDataFactoryStatic.CreateSale(timestampEnd: DateTime.Now.AddHours(-5));
-            Sale sale4 = TestDataFactoryStatic.CreateSale(timestampEnd: DateTime.Now.AddHours(-5));
-            Sale sale5 = TestDataFactoryStatic.CreateSale(timestampEnd: DateTime.Now.AddHours(-5));
+            var aggregatedDistribution = testDataCreatorService.AggregateDistributions(allDistributions);
 
-            sale1.SalesItems.Add(new SalesItems
-            {
-                Item = espresso,
-                Quantity = 2,
-            });
+            var water = factoryServiceBuilder.ItemBuilder().WithName("Water").WithPrice(10).Build();
+            var coffee = factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build();
+            var bun = factoryServiceBuilder.ItemBuilder().WithName("Bun").WithPrice(50).Build();
 
-            sale2.SalesItems.Add(new SalesItems
-            {
-                Item = espresso,
-                Quantity = 5,
-            });
+            var salesDistribution = testDataCreatorService.SaleGenerator(new List<(Item, int)> { (coffee, 1), (water, 1) }, aggregatedDistribution);
 
+            var establishment = factoryServiceBuilder
+                .EstablishmentBuilder()
+                .WithName("Cafe Frederik")
+                .WithItems(new List<Item> { coffee, bun, water })
+                .WithSales(salesDistribution)
+                .Build();
 
-            sale3.SalesItems.Add(new SalesItems
-            {
-                Item = espresso,
-                Quantity = 10,
-            });
+            establishmentRepository.Add(establishment);
 
+            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("1234").WithUserRole(establishment,Role.Admin).Build();
 
-            sale4.SalesItems.Add(new SalesItems
-            {
-                Item = espresso,
-                Quantity = 5,
-            });
-
-
-            sale5.SalesItems.Add(new SalesItems
-            {
-                Item = espresso,
-                Quantity = 2,
-            });
-
-            establishment1.Sales.Add(sale1);
-            establishment1.Sales.Add(sale2);
-            establishment1.Sales.Add(sale3);
-            establishment1.Sales.Add(sale4);
-            establishment1.Sales.Add(sale5);
-
-            _establishmentRepository.Add(establishment1);
-            _userRepository.Add(user1);
-            _userRolesRepository.Add(userRole1);
+            userRepository.Add(user);
         }
     }
 }

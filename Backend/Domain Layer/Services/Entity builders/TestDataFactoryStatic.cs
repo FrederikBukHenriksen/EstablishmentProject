@@ -31,7 +31,6 @@ namespace WebApplication1.Program
             var establishment = new Establishment();
             establishment.Id = id == null ? establishment.Id : (Guid)id;
             establishment.Name = name == null ? "Establishment " + establishment.Id : establishment.Name;
-            establishment.Location = new Location();
             return establishment;
         }
 

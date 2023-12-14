@@ -22,15 +22,16 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<UserContextMiddleware>();
             serviceCollection.AddScoped<ISalesService, SalesService>();
             serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-            serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
             //Entity services
             serviceCollection.AddTransient<IEstablishmentBuilder, EstablishmentBuilder>();
             serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
             serviceCollection.AddTransient<IItemBuilder, ItemBuilder>();
+            serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
+
 
             serviceCollection.AddScoped<IFactoryServiceBuilder, FactoryServiceBuilder>();
-            serviceCollection.AddScoped<TestDataCreatorService>();
+            serviceCollection.AddScoped<ITestDataCreatorService,TestDataCreatorService>();
 
 
         }

@@ -2,7 +2,7 @@
 using WebApplication1.Domain.Entities;
 using WebApplication1.Services;
 
-namespace WebApplication1.Controllers
+namespace WebApplication1.ControllersBui
 {
     [ApiController]
     [Route("api/user-context/")]
@@ -11,7 +11,9 @@ namespace WebApplication1.Controllers
         [HttpGet("get-accessible-establishment")]
         public List<Establishment> GetAccessibleEstablishments([FromServices] IUserContextService userContextService)
         {
-            return userContextService.GetAccessibleEstablishments();
+            var establishments = userContextService.GetAccessibleEstablishments();
+            establishments = establishments.Select(x => new Establishment { Id = x.Id, Name = x.Name }).ToList();
+            return establishments;
         }
 
         [HttpPost("get-active-establishment")]

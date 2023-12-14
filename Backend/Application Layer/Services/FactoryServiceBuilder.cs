@@ -12,6 +12,8 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
         IItemBuilder ItemBuilder(Item item);
         ISaleBuilder SaleBuilder();
         ISaleBuilder SaleBuilder(Sale sale);
+        IUserBuilder UserBuilder();
+        IUserBuilder UserBuilder(User user);
     }
 
     public class FactoryServiceBuilder : IFactoryServiceBuilder
@@ -59,8 +61,16 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             return builderService;
         }
 
+        public IUserBuilder UserBuilder()
+        {
+            return serviceProvider.GetRequiredService<IUserBuilder>();
+        }
 
-
-
+        public IUserBuilder UserBuilder(User user)
+        {
+            var builderService = this.UserBuilder();
+            builderService.UseExistingEntity(user);
+            return builderService;
+        }
     }
 }

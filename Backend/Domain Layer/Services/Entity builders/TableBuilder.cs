@@ -9,15 +9,30 @@ namespace WebApplication1.Domain.Entities
 
     public class TableBuilder : EntityBuilderBase<Table>, ITableBuilder
     {
+
+        private string? builderName = null;
+
+        public override void ReadPropertiesOfEntity(Table entity)
+        {
+            this.builderName = entity.Name;
+        }
+
+        public override void WritePropertiesOfEntity(Table Entity)
+        {
+            Entity.Name = (string)this.builderName;
+        }
+
         public ITableBuilder WithName(string name)
         {
-            Entity.Name = name;
+            this.builderName = name;
             return this;
         }
-        public override bool EntityValidation()
+        public override bool Validation()
         {
             return true;
         }
+
+
     }
 }
 

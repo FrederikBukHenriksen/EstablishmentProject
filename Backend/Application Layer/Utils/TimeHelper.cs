@@ -14,13 +14,13 @@ namespace WebApplication1.Utils
         Year,
     }
 
-    public interface ITimestamp<T>
+    public interface ITimePeriod<T>
     {
         T Start { get; set; }
         T End { get; set; }
     }
 
-    public class localDatePeriod : ITimestamp<LocalDate>
+    public class localDatePeriod : ITimePeriod<LocalDate>
     {
         public LocalDate Start { get; set; }
         public LocalDate End { get; set; }
@@ -32,7 +32,7 @@ namespace WebApplication1.Utils
         }
     }
 
-    public class LocalTimePeriod : ITimestamp<LocalTime>
+    public class LocalTimePeriod : ITimePeriod<LocalTime>
     {
         public LocalTime Start { get; set; }
         public LocalTime End { get; set; }
@@ -44,15 +44,27 @@ namespace WebApplication1.Utils
         }
     }
 
-    public class DateTimePeriod : ITimestamp<DateTime>
+    public class LocalDateTime : ITimePeriod<LocalDateTime>
+    {
+        public LocalDateTime Start { get; set; }
+        public LocalDateTime End { get; set; }
+
+        public LocalDateTime(LocalDateTime start, LocalDateTime end)
+        {
+            this.Start = start;
+            this.End = end;
+        }
+    }
+
+    public class DateTimePeriod : ITimePeriod<DateTime>
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
 
         public DateTimePeriod(DateTime start, DateTime end)
         {
-            start = start;
-            end = end;
+           this.Start = start;
+            this.End = end;
         }
     }
 
@@ -156,6 +168,15 @@ namespace WebApplication1.Utils
             return timeline;
         }
 
+        public static LocalDate GetLocalDateFromDateTime(DateTime datetime)
+        {
+            return new LocalDate(datetime.Year, datetime.Month, datetime.Day);
+        }
+
+        public static LocalTime GetLocalTimeFromDateTime(DateTime dateTime)
+        {
+            return new LocalTime(dateTime.Hour, dateTime.Minute, dateTime.Second);
+        }
 
 
         public static int PlainIdentifierBasedOnTimeResolution(this DateTime dateTime, TimeResolution timeResolution)
@@ -174,6 +195,7 @@ namespace WebApplication1.Utils
                     throw new ArgumentOutOfRangeException();
             }
         }
+
 
         public static DateTime GroupForAverage(this DateTime dateTime, TimeResolution timeResolution)
         {

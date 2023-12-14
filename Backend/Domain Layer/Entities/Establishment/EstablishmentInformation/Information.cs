@@ -3,7 +3,7 @@ using WebApplication1.Domain_Layer.Entities.Establishment;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
-    public class EstablishmentInformation : EntityBase
+    public class Information : EntityBase
     {
         public Location? Location { get; set; }
         public ICollection<OpeningHours> OpeningHours { get; set; } = new List<OpeningHours>();

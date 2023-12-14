@@ -9,9 +9,9 @@ import {
   SalesMeanOverTime,
   TimeResolution,
   SalesMeanQueryReturn,
-  TimePeriod,
   SalesQueryReturn,
   SalesQuery,
+  DateTimePeriod,
 } from 'api';
 import { Observable, lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
@@ -52,7 +52,7 @@ export class CreateEstablishmentComponent implements OnInit {
 
   public timeResolution: TimeResolution = TimeResolution.Date;
 
-  public timePeriod: TimePeriod = {
+  public timePeriod: DateTimePeriod = {
     start: todayDateUtc(),
     end: AddToDateTimeResolution(todayDateUtc(), -7, this.timeResolution),
   };

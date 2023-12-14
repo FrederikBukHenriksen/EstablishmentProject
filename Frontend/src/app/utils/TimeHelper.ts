@@ -1,4 +1,4 @@
-import { TimePeriod, TimeResolution } from 'api';
+import { DateTimePeriod, TimeResolution } from 'api';
 
 export function todayDateUtc(): Date {
   return new Date(
@@ -92,7 +92,7 @@ export function ExtractDateByTimeResolution(
 }
 
 export function GetAllDatesBetween(
-  timePeriod: TimePeriod,
+  timePeriod: DateTimePeriod,
   timeResolution: TimeResolution
 ): Date[] {
   var dates: Date[] = [];
