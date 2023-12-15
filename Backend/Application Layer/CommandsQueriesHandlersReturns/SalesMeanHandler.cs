@@ -43,7 +43,7 @@ namespace WebApplication1.CommandHandlers
 
     public class SalesMeanQueryReturn : ReturnBase
     {
-        public List<(int,double?)> Data { get; set; }
+        public Dictionary<int,double?> Data { get; set; }
     }
 
     public class SalesMeanOverTimeQueryHandler : HandlerBase<SalesMeanOverTime, SalesMeanQueryReturn>
@@ -75,7 +75,9 @@ namespace WebApplication1.CommandHandlers
             //Return
             List<(int Key, double? Value)> dictionaryToList = TimeHelper.MapValuesWithDateToTimeResolutionTimeline(avergageData, command.TimeResolution);
 
-            return new SalesMeanQueryReturn { Data = dictionaryToList };
+            var backToDictionary = dictionaryToList.ToDictionary(x => x.Key, x => x.Value);
+
+            return new SalesMeanQueryReturn { Data = backToDictionary };
         }
 
 

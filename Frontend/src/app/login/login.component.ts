@@ -44,7 +44,6 @@ export class LoginComponent implements OnInit {
       },
       next: () => {
         console.log('login successful recived');
-
         this.router.navigate(['/select-establishment']);
       },
     });

@@ -17,7 +17,7 @@ namespace WebApplication1.CommandHandlers
 
     public class SalesQueryReturn : ReturnBase
     {   
-        public List<(DateTime,int)> data { get; set; }
+        public Dictionary<DateTime,int> data { get; set; }
     }
 
     public class SalesQueryHandler : HandlerBase<SalesQuery, SalesQueryReturn>
@@ -49,7 +49,7 @@ namespace WebApplication1.CommandHandlers
 
             //List<(DateTime, IEnumerable<Sale?>)> timelineWithSales = TimeHelper.mapToATimeline(sales, x => x.GetTimeOfSale(), command.TimePeriods, command.TimeResolution).ToList();
             //List<TimeAndValue<int>> res = timelineWithSales.Select(x => new TimeAndValue<int> { dateTime = x.Item1, value = x.Item2.Count() }).ToList();
-            return new SalesQueryReturn { data = salesPerTimeResolution };
+            return new SalesQueryReturn { data = salesPerTimeResolution.ToDictionary(x=>x.Key,x=>x.Item2) };
 
             //return new SalesQueryReturn { Sales = sales.Select(x => new Sale()).ToList() };
         }

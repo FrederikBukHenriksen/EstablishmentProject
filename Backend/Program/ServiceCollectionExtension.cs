@@ -17,6 +17,7 @@ namespace WebApplication1.Program
     {
         public static void AddServices(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<ApplicationDbContext>();    
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();

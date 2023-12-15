@@ -3,6 +3,7 @@ using WebApplication1.CommandHandlers;
 using System;
 using WebApplication1.Application_Layer.Objects;
 using NodaTime;
+using WebApplication1.Domain.Entities;
 
 namespace WebApplication1.Utils
 {
@@ -292,6 +293,27 @@ namespace WebApplication1.Utils
             List<(int Key, double? Value)> dictionaryToList = timelineAsDictionary.Select(x => (x.Key, x.Value)).ToList();
             return dictionaryToList;
         }
+
+        public static Dictionary<DateTime, List<T>> MapObjectsToTimeline<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        {
+            // Create a dictionary with the provided timeline as keys and empty lists as values
+            Dictionary<DateTime, List<T>> timelineAsDictionary = timeline.ToDictionary(x => x, x => new List<T>());
+
+            // Map objects to the timeline
+            foreach (var obj in objects)
+            {
+                var objTime = TimeHelper.TimeResolutionUniqueRounder(extractor(obj), timeResolution);
+
+                if (timelineAsDictionary.ContainsKey(objTime))
+                {
+                    timelineAsDictionary[objTime].Add(obj);
+                }
+            }
+            return timelineAsDictionary;
+        }
+
+
+
 
 
     }

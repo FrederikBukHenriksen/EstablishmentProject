@@ -36,7 +36,7 @@ namespace DMIOpenData
         {
             var parameters = new Dictionary<string, dynamic>
                 {
-                    { "limit", 1000 },
+                    { "limit", 100000 },
                 };
 
                 var url = $"{BaseUrlStation}?api-key={apiKey}&{string.Join("&", parameters.Select(p => $"{p.Key}={p.Value}"))}";
@@ -63,7 +63,7 @@ namespace DMIOpenData
 
             var parameters = new Dictionary<string, dynamic>
                 {
-                    { "limit", 1000 },
+                    { "limit", 100000 },
                     { "stationId", stationId }, //"06181" = Jægersborg
                     { "datetime", $"{startTime.ToString("s")}Z/{endTime.ToString("s")}Z" },
                     { "parameterId", "temp_mean_past1h" },

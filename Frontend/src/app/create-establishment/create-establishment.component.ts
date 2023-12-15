@@ -1,5 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ChartData, ChartDataset, ChartTypeRegistry } from 'chart.js/auto';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import {
+  ChartData,
+  ChartDataset,
+  ChartOptions,
+  ChartTypeRegistry,
+} from 'chart.js/auto';
 import {
   AnalysisClient,
   EstablishmentClient,
@@ -45,37 +50,37 @@ export interface typesOfGarphs {
   templateUrl: './create-establishment.component.html',
   styleUrls: ['./create-establishment.component.scss'],
 })
-export class CreateEstablishmentComponent implements OnInit {
+export class CreateEstablishmentComponent {
   private readonly analysisClient = inject(AnalysisClient);
   private readonly establishmentClient = inject(EstablishmentClient);
   public dialog = inject(MatDialog);
 
   public timeResolution: TimeResolution = TimeResolution.Date;
-
   public timePeriod: DateTimePeriod = {
-    start: todayDateUtc(),
-    end: AddToDateTimeResolution(todayDateUtc(), -7, this.timeResolution),
+    start: new Date('2021-01-01'),
+    end: new Date('2021-12-31-23-59-59'),
   };
+
+  labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   lineChartData: ChartData = {
     datasets: [
       {
-        data: [1, 2, 3, 4, 5],
-        label: 'Sale numbers',
-        borderColor: 'blue',
-        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+        data: [],
+        // label: 'first one',
+        // borderColor: 'blue',
+        // backgroundColor: 'rgba(0, 0, 255, 0.2)',
         // fill: true,
       } as ChartDataset,
     ],
-    labels: GetAllFromTimeperiodByTimeResolution(
-      this.timePeriod,
-      this.timeResolution
-    ).map((x) => DateToString(x)),
+    labels: this.labels,
   };
 
   lineChartOptions = {
-    responsive: true,
-  };
+    legend: {
+      display: false,
+    },
+  } as ChartOptions;
 
   protected items: CheckBoxData[] = [];
 
@@ -88,33 +93,48 @@ export class CreateEstablishmentComponent implements OnInit {
     ],
   };
 
-  private SalesMeanOverTimeAverageSpendCommand: SalesMeanOverTimeAverageSpend =
-    {
-      timeResolution: TimeResolution.Month,
-      salesSortingParameters: undefined,
-    };
-
-  ngOnInit(): void {
-    this.mapGrafDictionaryToChartDataset();
-  }
-
   public grafDictionary: { [key: string]: fecthingAndExtracting } = {
-    SalesMeanOverTimeAverageSpend: {
-      name: 'SalesMeanOverTimeAverageSpend',
-      command: this.SalesMeanOverTimeAverageSpendCommand,
+    SalesOverTime: {
+      name: 'SalesOverTime',
+
+      command: { salesSortingParameters: undefined } as SalesQuery,
+
       fetch: (command: CommandBase) =>
-        this.analysisClient.meanSalesAverageSpend(
-          command as SalesMeanOverTimeAverageSpend
-        ),
+        this.analysisClient.sales(command as SalesQuery),
+
       dataExtractor: (data: ReturnBase) => {
-        const apiReturn = data as SalesMeanQueryReturn;
+        const apiReturn = data as SalesQueryReturn;
         return {
-          data: apiReturn.data.map((x) => x.item1), //Map udover perioden
-          label: 'Sale numbers',
-          borderColor: 'blue',
+          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+          label: 'SalesOverTime',
+          borderColor: 'red',
         } as ChartDataset;
       },
-    },
+    } as fecthingAndExtracting,
+
+    // SalesMeanOverTimeAverageSpend: {
+    //   name: 'SalesMeanOverTimeAverageSpend',
+
+    //   command: {
+    //     timeResolution: TimeResolution.Date,
+    //     salesSortingParameters: undefined,
+    //   } as SalesMeanOverTimeAverageSpend,
+
+    //   fetch: (command: CommandBase) =>
+    //     this.analysisClient.meanSalesAverageSpend(
+    //       command as SalesMeanOverTimeAverageSpend
+    //     ),
+
+    //   dataExtractor: (data: ReturnBase) => {
+    //     const apiReturn = data as SalesMeanQueryReturn;
+    //     var valuesWhichAreInThePeriod;
+    //     return {
+    //       data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+    //       label: 'SalesMeanOverTimeAverageSpend',
+    //       borderColor: 'blue',
+    //     } as ChartDataset;
+    //   },
+    // },
     NumberOfSalesOverTime: {
       name: 'NumberOfSalesOverTime',
 
@@ -126,24 +146,66 @@ export class CreateEstablishmentComponent implements OnInit {
       dataExtractor: (data: ReturnBase) => {
         const apiReturn = data as SalesQueryReturn;
         return {
-          data: apiReturn.data.map((x) => x.item2), //Hvor mange falder under samme periode
+          type: 'bar',
+          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
           label: 'Sale numbers',
-          borderColor: 'red',
         } as ChartDataset;
       },
     },
   };
 
-  public async mapGrafDictionaryToChartDataset() {
-    // Go through all entries in the dictionary
+  public async getCorrelation() {
+    console.log('start on cor');
+
+    var ok = await lastValueFrom(
+      this.analysisClient.correlationCoefficientAndLag()
+    );
+    console.log('ok', ok);
+  }
+
+  public updateChartForGraphComponent() {
+    this.lineChartData = { ...this.lineChartData };
+  }
+
+  // public async mapGrafDictionaryToChartDataset() {
+  //   for (const key in this.grafDictionary) {
+  //     if (this.grafDictionary.hasOwnProperty(key)) {
+  //       const entry = this.grafDictionary[key];
+  //       console.log('Running', entry.name);
+  //       const data = await lastValueFrom(entry.fetch(entry.command));
+  //       console.log('Data', entry.name, data);
+  //       const ChartDataset = entry.dataExtractor(data);
+  //       console.log('Data', entry.name, data, ChartDataset);
+  //       this.lineChartData.datasets?.push(ChartDataset);
+  //       console.log('Data', entry.name, data, ChartDataset, this.lineChartData);
+  //       this.updateChartForGraphComponent();
+  //     }
+  //   }
+  // }
+
+  public async mapGrafDictionaryToChartDatasetv2() {
+    const promises: Promise<void>[] = [];
+
     for (const key in this.grafDictionary) {
       if (this.grafDictionary.hasOwnProperty(key)) {
         const entry = this.grafDictionary[key];
+        console.log('Running', entry.name);
 
-        // Fetch data from the api
-        const data = await lastValueFrom(entry.fetch(entry.command));
-        const extractor = entry.dataExtractor(data);
-        console.log('extractor', extractor);
+        const promise = (async () => {
+          const data = await lastValueFrom(entry.fetch(entry.command));
+          console.log('Data', entry.name, data);
+          const ChartDataset = entry.dataExtractor(data);
+          console.log('Data', entry.name, data, ChartDataset);
+          this.lineChartData.datasets?.push(ChartDataset);
+          console.log(
+            'Data',
+            entry.name,
+            data,
+            ChartDataset,
+            this.lineChartData
+          );
+          this.updateChartForGraphComponent();
+        })();
       }
     }
   }
@@ -165,50 +227,15 @@ export class CreateEstablishmentComponent implements OnInit {
     );
   }
 
-  AddNewDatasetToCanvas(): void {
-    this.lineChartData.datasets?.push({
-      data: [1, 2, 3, 4, 5],
-      label: 'Sale numbers',
-      borderColor: 'blue',
-      backgroundColor: 'rgba(0, 0, 255, 0.2)',
-      // fill: true,
-    });
-  }
-
-  private GetSalesMeanOverTimeAverageSpend() {
-    return lastValueFrom(
-      this.analysisClient
-        .meanSalesAverageSpend(this.SalesMeanOverTimeAverageSpendCommand)
-        .pipe(
-          map((x) => {
-            console.log('x', x);
-            return x;
-          })
-        )
-    );
-  }
-
   async openDialog() {
-    console.log('datasets', this.lineChartData.datasets);
+    const val = await this.getCorrelation();
+
     const items = await this.GetEstablishmentItems();
-    await this.GetSalesMeanOverTimeAverageSpend();
+    // this.mapGrafDictionaryToChartDataset();
+    this.mapGrafDictionaryToChartDatasetv2();
     const dialogRef = this.dialog.open(DialogCheckboxComponent, {
       data: this.settingsDialogData,
     });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      this.lineChartData = {
-        datasets: [
-          {
-            data: [5, 5, 5, 5, 5],
-            label: 'Sale numbers',
-            borderColor: 'blue',
-            backgroundColor: 'rgba(0, 0, 255, 0.2)',
-            fill: true,
-          },
-        ],
-        labels: ['1', '2', '3', '4', '5'],
-      };
-    });
+    dialogRef.afterClosed().subscribe((result) => {});
   }
 }

@@ -17,6 +17,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 import { DialogCheckboxModule } from './dialog-checkbox/dialog.checkbox.component.module';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarComponent],
   imports: [
@@ -33,6 +36,8 @@ import { DialogCheckboxModule } from './dialog-checkbox/dialog.checkbox.componen
     ReactiveFormsModule,
     FormsModule,
     NgChartsModule,
+    MatToolbarModule,
+    MatButtonModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },

@@ -98,9 +98,7 @@
       "enumStyle": "Enum",
       "useLeafType": false,
       "classTypes": [],
-      "extendedClasses": [
-        "MeanShiftClusteringReturn"
-      ],
+      "extendedClasses": [],
       "extensionCode": null,
       "generateDefaultValues": true,
       "excludedTypeNames": [],

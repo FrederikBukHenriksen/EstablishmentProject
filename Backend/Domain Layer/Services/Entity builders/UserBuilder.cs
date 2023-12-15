@@ -1,4 +1,5 @@
-﻿using WebApplication1.Domain.Services.Repositories;
+﻿using System.Data;
+using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Domain.Entities
@@ -7,7 +8,7 @@ namespace WebApplication1.Domain.Entities
     {
         IUserBuilder WithEmail(string email);
         IUserBuilder WithPassword(string password);
-        IUserBuilder WithUserRole(Establishment establishment, Role role);
+        IUserBuilder WithUserRoles(ICollection<(Establishment establishment, Role role)> establishmentAndRole);
 
     }
     public class UserBuilder : EntityBuilderBase<User>, IUserBuilder
@@ -48,20 +49,6 @@ namespace WebApplication1.Domain.Entities
             return this;
         }
 
-        public IUserBuilder WithUserRole(Establishment establishment, Role role)
-        {
-            if (this.builderUserRoles == null)
-            {
-                this.builderUserRoles = new List<UserRole>();
-            }
-            this.builderUserRoles.Add(new UserRole()
-            {
-                Establishment = establishment,
-                Role = role
-            });
-            return this;
-        }
-
         public override bool Validation()
         {
             if(!this.IsEmailValid(builderEmail)) throw new Exception("Email is not valid");
@@ -74,7 +61,20 @@ namespace WebApplication1.Domain.Entities
 
         private bool IsEmailValid(string email) => email.Contains("@");
 
-        private bool IsEmailUnique(string email) => this.userRepository.GetAll().Any(u => u.Email == builderEmail);
+        private bool IsEmailUnique(string email) => !(this.userRepository.GetAll().Any(u => u.Email == builderEmail));
 
+        public IUserBuilder WithUserRoles(ICollection<(Establishment establishment, Role role)> establishmentAndRole)
+        {
+            if (this.builderUserRoles == null)
+            {
+                this.builderUserRoles = new List<UserRole>();
+            }
+            this.builderUserRoles = establishmentAndRole.Select(x => new UserRole
+            {
+                Establishment = x.establishment,
+                Role = x.role
+            }).ToList();
+            return this;
+        }
     }
 }

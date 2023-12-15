@@ -33,8 +33,7 @@ namespace WebApplication1.Controllers
         public SalesMeanQueryReturn MeanSalesAverageSpend([FromBody] SalesMeanOverTimeAverageSpend command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
-            var result = handler.Handle(command);
-            return result;
+            return handler.Handle(command);
         }
 
 
@@ -42,7 +41,7 @@ namespace WebApplication1.Controllers
         //[HttpPost("sales-median")]
         //public GraphDTO MedianSales(GetProductSalesPerDayQuery command,
         //[FromServices] IHandler<GetProductSalesPerDayQuery, GraphDTO> handler
-        //)
+        //)p
         //{
         //    return handler.Execute(command);
         //}
@@ -57,10 +56,11 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost("cross-correlation-with-weather")]
-        public List<(TimeSpan, double)> CorrelationCoefficientAndLag(CorrelationCommand command,
-            [FromServices] IHandler<CorrelationCommand, List<(TimeSpan, double)>> handler)
+        public CorrelationReturn CorrelationCoefficientAndLag([FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
         {
-            return handler.Handle(command);
+            var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1,0,0,0), end: new DateTime(2022, 1,1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
+            var value = handler.Handle(command);
+            return value;
         }
         [Route("clustering/")]
 

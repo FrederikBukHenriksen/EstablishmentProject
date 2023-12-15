@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Domain.Entities;
 using WebApplication1.Services;
 
 namespace WebApplication1.Middelware
@@ -17,11 +18,11 @@ namespace WebApplication1.Middelware
             
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            Guid? userId = _authService.GetUserFromHttp(context);
+            User? user = _authService.GetUserFromHttp(context);
 
-            if (userId != null)
+            if (user != null)
             {
-                _userContextService.SetUser((Guid)userId);
+                _userContextService.SetUser(user);
                 _userContextService.FecthAccesibleEstablishments();
                 _userContextService.FetchActiveEstablishmentFromHttpHeader(context);
             };

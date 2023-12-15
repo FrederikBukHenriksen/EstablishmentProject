@@ -26,32 +26,19 @@ namespace WebApplication1.Program
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-
-
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); //Make postgres use timestamp instead of timestamptz
 
-            string? connectionString = "Host=localhost; Database=EstablishmentProject; Username=postgres; password=postgres";
+            string connectionString = "Host=localhost; Database=EstablishmentProject; Username=postgres; password=postgres";
 
             AddAuthentication(builder);
 
             AddAuthorization(builder);
 
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-
-            if (builder.Environment.IsDevelopment())
-            {
-                AddDatabase(builder, connectionString);
-            }
+            AddDatabase(builder, connectionString);
 
             //Add repository
-            //builder.Services.AddTransient<ApplicationDbContext>();
+            builder.Services.AddTransient<ApplicationDbContext>();
 
-            //    builder.Services.AddControllers()
-            //.AddNewtonsoftJson(options =>
-            //{
-            //    options.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
-
-            //});
 
             builder.Services.AddControllers();
 
@@ -141,10 +128,7 @@ namespace WebApplication1.Program
 
             var scope = app.Services.CreateScope(); //Creates scoped lifetime for the service.
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            //if (dbContext.Database.CanConnect())
-            //{
-                dbContext.Database.Migrate();
-            //}
+            dbContext.Database.Migrate();
             scope.Dispose();
         }
     }

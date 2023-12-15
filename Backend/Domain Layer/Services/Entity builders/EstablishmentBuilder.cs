@@ -68,19 +68,19 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
 
         public override bool Validation()
         {
-            if (!this.doesEstablishmentHaveAName()) throw new System.Exception("Establishment must have a name");
-            if (!this.isItemsInSalesIsAssignedToTheEstablishment()) throw new System.Exception("Items in sales must exist in the establishment");
+            if (!this.doesEstablishmentHaveName(builderName)) throw new System.Exception("Establishment must have a name");
+            if (!this.isItemsInSalesIsAssignedToTheEstablishment(builderSales)) throw new System.Exception("Items in sales must exist in the establishment");
             return true;
         }
 
-        private bool doesEstablishmentHaveAName()
+        private bool doesEstablishmentHaveName(string name)
         {
-            return this.builderName.IsNullOrEmpty();
+            return !name.IsNullOrEmpty();
         }
 
-        private bool isItemsInSalesIsAssignedToTheEstablishment()
+        private bool isItemsInSalesIsAssignedToTheEstablishment(ICollection<Sale> sales)
         {
-            if (!builderSales.IsNullOrEmpty())
+            if (!sales.IsNullOrEmpty())
             {
                 ICollection<Item> allItemsFromSales = builderSales.SelectMany(sale => sale.SalesItems.Select(saleItem => saleItem.Item)).ToList();
                 ICollection<Item> establishmentItems = builderItems;

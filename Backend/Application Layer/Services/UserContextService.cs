@@ -12,69 +12,52 @@ namespace WebApplication1.Services
         public User GetUser();
         public Establishment GetActiveEstablishment();
         public List<Establishment> GetAccessibleEstablishments();
-        public void SetUser(Guid userId);
+        public UserRole GetActiveUserRole();
+        List<UserRole>? GetAllUserRoles();
+        public void SetUser(User? user);
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext);
         public void FecthAccesibleEstablishments();
     }
 
     public class UserContextService : IUserContextService
     {
-        private readonly IUserRepository _userRepository;
         private readonly IUserRolesRepository _userRolesRepository;
         private readonly IEstablishmentRepository _establishmentRepository;
 
         private User? _user = null;
-        private Establishment? _establishment = null;
-        private List<Establishment>? _establishments = null;
+        private Establishment? _activeEstablishment = null;
+        private List<UserRole>? _userRoles = null;
 
-        public UserContextService(IUserRepository userRepository,IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
+        public UserContextService(IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
         {
-            this._userRepository = userRepository;
             this._userRolesRepository = userRolesRepository;
             this._establishmentRepository = establishmentRepository;
         }
 
-        public void SetUser(Guid userId)
+        public void SetUser(User? user)
         {
-            var testGetAll = _userRepository.GetAll();
-            _user = _userRepository.GetById(userId);
-            if (_user == null)
-            {
-                return;
-            }
-        }
-
-        public void FecthAccesibleEstablishments()
-        {
-            _establishments = _userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User.Id == _user.Id).Select(x => x.Establishment).ToList();
+            _user = user;
         }
 
         public User GetUser()
         {
-            if (_user == null)
-            {
-                throw  new NullReferenceException("User is null");
-            }
             return _user;
+        }
+
+        public void FecthAccesibleEstablishments()
+        {
+            this._userRoles = this._userRolesRepository.FindAll(x => x.User == this.GetUser()).ToList();
         }
 
         public Establishment GetActiveEstablishment()
         {
-            return _establishmentRepository.GetAll().First(); // TESTING PURPOSES
-            if (_establishment == null)
-            {
-                throw new NullReferenceException("Active establishment is null");
-            }
-            return _establishment;
+
+            return _activeEstablishment;
         }
 
         public List<Establishment> GetAccessibleEstablishments()
         {
-            if (_establishments == null)
-            {
-                throw new NullReferenceException("Accessible establishments are null");
-            }
-            return _establishments;
+            return _userRoles.Select(x => x.Establishment).ToList();
         }
 
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext)
@@ -84,12 +67,23 @@ namespace WebApplication1.Services
             if (!EstablishmentIdAsString.IsNullOrEmpty())
             {
                 Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);
-                bool UserIsAssociatedWithEstablishment = GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);
-                if (UserIsAssociatedWithEstablishment)
+                bool isUserAssociatedWithEstablishment = GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);
+                if (isUserAssociatedWithEstablishment)
                 {
-                    _establishment = _establishmentRepository.GetById(EstablishmentId);
+                    _activeEstablishment = _establishmentRepository.GetById(EstablishmentId);
                 }
             }
         }
+
+        public List<UserRole>? GetAllUserRoles()
+        {
+            return this._userRoles;
+        }
+
+        public UserRole? GetActiveUserRole()
+        {
+            return this._userRoles.Find(x => x.Establishment == this.GetActiveEstablishment());
+        }
+
     }
 }

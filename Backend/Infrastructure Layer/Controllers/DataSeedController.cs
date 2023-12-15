@@ -124,7 +124,7 @@ namespace WebApplication1.Controllers
 
             establishmentRepository.Add(establishment);
 
-            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("1234").WithUserRole(establishment,Role.Admin).Build();
+            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("1234").WithUserRoles(new List<(Establishment, Role)> { (establishment,Role.Admin) }).Build();
 
             userRepository.Add(user);
         }

@@ -15,8 +15,8 @@ namespace WebApplication1.Services
     public interface IAuthService
     {
         public User Login(string username, string password);
-        public Guid? GetUserFromHttp(HttpContext httpContext);
-        public string GenerateJwtToken(Guid id);
+        public User? GetUserFromHttp(HttpContext httpContext);
+        internal string GenerateJwtToken(Guid id);
     }
 
     public class AuthService : IAuthService
@@ -56,7 +56,7 @@ namespace WebApplication1.Services
             return user;
         }
 
-        public Guid? GetUserFromHttp(HttpContext httpContext)
+        public User? GetUserFromHttp(HttpContext httpContext)
         {
             string? token = httpContext.Request.Cookies["jwt"];
             if (token == null)
@@ -69,7 +69,7 @@ namespace WebApplication1.Services
             {
                 return null;
             }
-            return new Guid(usernameClaim);
+            return user;
         }
 
         private static string? GetClaimValue(string token, string claimType)

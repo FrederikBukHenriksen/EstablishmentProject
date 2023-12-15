@@ -18,13 +18,13 @@ namespace WebApplication1.CommandHandlers
     {
         public SalesSortingParameters? salesSortingParameters { get; set; }
         public abstract List<(Sale, List<double>)> GetData();
-
         public abstract List<double> GetBandwidths();
     }
 
     public class MeanShiftClusteringReturn : ReturnBase
     {
         public List<List<Sale>> clusters { get; set; }
+        public Dictionary<Sale,List<double>> calculations { get; set; }
     }
 
     public class salesClustering : HandlerBase<MeanShiftClusteringCommand, MeanShiftClusteringReturn>
@@ -42,7 +42,8 @@ namespace WebApplication1.CommandHandlers
             List<List<Sale>> clusteredSales = MeanShiftClustering.Cluster(command.GetData(), command.GetBandwidths());
 
             //Return
-            return new MeanShiftClusteringReturn { clusters = clusteredSales };
+
+            return new MeanShiftClusteringReturn { clusters = clusteredSales, calculations = data.ToDictionary(x => x.Item1,x => x.Item2) };
         }
     }
 }

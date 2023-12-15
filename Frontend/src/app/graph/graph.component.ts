@@ -1,10 +1,12 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
   OnInit,
   SimpleChanges,
+  inject,
 } from '@angular/core';
 import {
   Chart,
@@ -23,7 +25,18 @@ export class GraphComponent implements OnInit, OnChanges {
   @Input() chartData!: ChartData;
   @Input() chartOptions!: ChartOptions;
 
-  chart!: Chart;
+  chart: Chart = new Chart('canvas', {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [],
+    },
+    options: {
+      legend: {
+        display: false,
+      },
+    } as ChartOptions,
+  });
   data!: ChartData;
   options!: ChartOptions;
 
@@ -49,7 +62,7 @@ export class GraphComponent implements OnInit, OnChanges {
     const chart = new Chart('canvas', {
       type: 'line',
       data: this.data,
-      // options: this.chartOptions,
+      options: this.options,
     });
     return chart;
   }
