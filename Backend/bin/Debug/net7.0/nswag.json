@@ -20,7 +20,7 @@
       "defaultResponseReferenceTypeNullHandling": "NotNull",
       "generateOriginalParameterNames": true,
       "defaultEnumHandling": "Integer",
-      "flattenInheritanceHierarchy": false,
+      "flattenInheritanceHierarchy": true,
       "generateKnownTypes": true,
       "generateEnumMappingDescription": false,
       "generateXmlObjects": false,

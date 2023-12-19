@@ -112,29 +112,30 @@ export class CreateEstablishmentComponent {
       },
     } as fecthingAndExtracting,
 
-    // SalesMeanOverTimeAverageSpend: {
-    //   name: 'SalesMeanOverTimeAverageSpend',
+    SalesMeanOverTimeAverageSpend: {
+      name: 'SalesMeanOverTimeAverageSpend',
 
-    //   command: {
-    //     timeResolution: TimeResolution.Date,
-    //     salesSortingParameters: undefined,
-    //   } as SalesMeanOverTimeAverageSpend,
+      command: {
+        timeResolution: TimeResolution.Date,
+        salesSortingParameters: undefined,
+        type: 'SalesMeanOverTimeAverageSpend',
+      } as SalesMeanOverTime,
 
-    //   fetch: (command: CommandBase) =>
-    //     this.analysisClient.meanSalesAverageSpend(
-    //       command as SalesMeanOverTimeAverageSpend
-    //     ),
+      fetch: (command: CommandBase) =>
+        this.analysisClient.meanSalesAverageSpend(
+          command as SalesMeanOverTimeAverageSpend
+        ),
 
-    //   dataExtractor: (data: ReturnBase) => {
-    //     const apiReturn = data as SalesMeanQueryReturn;
-    //     var valuesWhichAreInThePeriod;
-    //     return {
-    //       data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
-    //       label: 'SalesMeanOverTimeAverageSpend',
-    //       borderColor: 'blue',
-    //     } as ChartDataset;
-    //   },
-    // },
+      dataExtractor: (data: ReturnBase) => {
+        const apiReturn = data as SalesMeanQueryReturn;
+        var valuesWhichAreInThePeriod;
+        return {
+          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+          label: 'SalesMeanOverTimeAverageSpend',
+          borderColor: 'blue',
+        } as ChartDataset;
+      },
+    },
     NumberOfSalesOverTime: {
       name: 'NumberOfSalesOverTime',
 
@@ -228,7 +229,7 @@ export class CreateEstablishmentComponent {
   }
 
   async openDialog() {
-    const val = await this.getCorrelation();
+    // const val = await this.getCorrelation();
 
     const items = await this.GetEstablishmentItems();
     // this.mapGrafDictionaryToChartDataset();

@@ -21,7 +21,7 @@ namespace WebApplication1.Controllers
             return handler.Handle(command);
         }
 
-        [HttpPost("average-visits")]
+        [HttpPost("average-visits")]    
         public SalesMeanQueryReturn MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
@@ -29,21 +29,19 @@ namespace WebApplication1.Controllers
         }
 
 
-        [HttpPost("average-spend")]
-        public SalesMeanQueryReturn MeanSalesAverageSpend([FromBody] SalesMeanOverTimeAverageSpend command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        [HttpPost("average-spend")] //SalesMeanOverTimeAverageSpend
+        public SalesMeanQueryReturn MeanSalesAverageSpend([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
             return handler.Handle(command);
         }
 
 
-
         //[HttpPost("sales-median")]
-        //public GraphDTO MedianSales(GetProductSalesPerDayQuery command,
-        //[FromServices] IHandler<GetProductSalesPerDayQuery, GraphDTO> handler
-        //)p
+        //public SalesMeanQueryReturn MediainSalesAverageSpend([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        //)
         //{
-        //    return handler.Execute(command);
+        //    return handler.Handle(command);
         //}
 
         //[HttpPost("sales-variance")]

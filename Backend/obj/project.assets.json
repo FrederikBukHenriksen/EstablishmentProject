@@ -8,6 +8,24 @@
           "build/netstandard1.0/coverlet.collector.targets": {}
         }
       },
+      "Fluid.Core/2.2.15": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
+          "Parlot": "0.0.23",
+          "TimeZoneConverter": "3.5.0"
+        },
+        "compile": {
+          "lib/net6.0/Fluid.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Fluid.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -696,6 +714,25 @@
           "lib/netstandard2.0/NJsonSchema.Annotations.dll": {}
         }
       },
+      "NJsonSchema.CodeGeneration/10.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Fluid.Core": "2.2.15",
+          "NJsonSchema": "10.9.0",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Text.Encodings.Web": "5.0.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/NJsonSchema.CodeGeneration.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/NJsonSchema.CodeGeneration.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "NJsonSchema.NewtonsoftJson/11.0.0-preview006": {
         "type": "package",
         "dependencies": {
@@ -894,6 +931,19 @@
         },
         "buildMultiTargeting": {
           "buildCrossTargeting/NSwag.MSBuild.props": {}
+        }
+      },
+      "Parlot/0.0.23": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/Parlot.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/Parlot.dll": {
+            "related": ".xml"
+          }
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -2306,6 +2356,19 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
+      "TimeZoneConverter/3.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/TimeZoneConverter.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/TimeZoneConverter.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "xunit.abstractions/2.0.3": {
         "type": "package",
         "compile": {
@@ -2419,6 +2482,34 @@
         "coverlet-icon.png",
         "coverlet.collector.6.0.0.nupkg.sha512",
         "coverlet.collector.nuspec"
+      ]
+    },
+    "Fluid.Core/2.2.15": {
+      "sha512": "qQdMyknluaQ4+e/TuedqdXK1NBVBAQJs8mru6aaeS1Q57IxMNCX4CaZcfT2MpKB6FJgz08n6XrM43K7iMCCwFg==",
+      "type": "package",
+      "path": "fluid.core/2.2.15",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "fluid.core.2.2.15.nupkg.sha512",
+        "fluid.core.nuspec",
+        "lib/net5.0/Fluid.dll",
+        "lib/net5.0/Fluid.pdb",
+        "lib/net5.0/Fluid.xml",
+        "lib/net6.0/Fluid.dll",
+        "lib/net6.0/Fluid.pdb",
+        "lib/net6.0/Fluid.xml",
+        "lib/netcoreapp3.1/Fluid.dll",
+        "lib/netcoreapp3.1/Fluid.pdb",
+        "lib/netcoreapp3.1/Fluid.xml",
+        "lib/netstandard2.0/Fluid.dll",
+        "lib/netstandard2.0/Fluid.pdb",
+        "lib/netstandard2.0/Fluid.xml",
+        "lib/netstandard2.1/Fluid.dll",
+        "lib/netstandard2.1/Fluid.pdb",
+        "lib/netstandard2.1/Fluid.xml",
+        "logo_64x64.png"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -3580,6 +3671,22 @@
         "njsonschema.annotations.nuspec"
       ]
     },
+    "NJsonSchema.CodeGeneration/10.9.0": {
+      "sha512": "ACo8YoZQF32QHDyGSIvaJ69gRzzNNE3LI+AYhM671bv6DAy0uWzdpqov4GvxpEqJHzhkmPjUgWwpdoH6HtOPIQ==",
+      "type": "package",
+      "path": "njsonschema.codegeneration/10.9.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "NuGetIcon.png",
+        "lib/net461/NJsonSchema.CodeGeneration.dll",
+        "lib/net461/NJsonSchema.CodeGeneration.xml",
+        "lib/netstandard2.0/NJsonSchema.CodeGeneration.dll",
+        "lib/netstandard2.0/NJsonSchema.CodeGeneration.xml",
+        "njsonschema.codegeneration.10.9.0.nupkg.sha512",
+        "njsonschema.codegeneration.nuspec"
+      ]
+    },
     "NJsonSchema.NewtonsoftJson/11.0.0-preview006": {
       "sha512": "LE8JcHj+c7juagtwDI9pvlWzyu+2voPSWK6ZffcjEAbogVAHmpR+nr7Lj8QMobjalsJlQ3vURu7by9Ic9fiXKQ==",
       "type": "package",
@@ -4169,6 +4276,21 @@
         "tools/Win/TimeZoneConverter.dll",
         "tools/Win/YamlDotNet.dll",
         "tools/Win/netstandard.dll"
+      ]
+    },
+    "Parlot/0.0.23": {
+      "sha512": "+Ts7GN++fLX5OOJfmnhzkKWBAovfykfnoZKT844Lnu3a/aNIvQFqdlZ8/b/SY9vE0+ho02/XnzbzWoXddceeDA==",
+      "type": "package",
+      "path": "parlot/0.0.23",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Parlot.dll",
+        "lib/netstandard2.0/Parlot.xml",
+        "lib/netstandard2.1/Parlot.dll",
+        "lib/netstandard2.1/Parlot.xml",
+        "parlot.0.0.23.nupkg.sha512",
+        "parlot.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -7751,6 +7873,33 @@
         "system.xml.xdocument.nuspec"
       ]
     },
+    "TimeZoneConverter/3.5.0": {
+      "sha512": "ziTcQ5rVxRdtWJEnEqhKBukZGuUQregbf5G7QRrFKj6CwBLss5tSz0dlSHy9gzi5M5ES0PNQ0K2ACP/0XVT5Ow==",
+      "type": "package",
+      "path": "timezoneconverter/3.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/TimeZoneConverter.dll",
+        "lib/net35/TimeZoneConverter.xml",
+        "lib/net40/TimeZoneConverter.dll",
+        "lib/net40/TimeZoneConverter.xml",
+        "lib/net45/TimeZoneConverter.dll",
+        "lib/net45/TimeZoneConverter.xml",
+        "lib/net461/TimeZoneConverter.dll",
+        "lib/net461/TimeZoneConverter.xml",
+        "lib/net471/TimeZoneConverter.dll",
+        "lib/net471/TimeZoneConverter.xml",
+        "lib/netstandard1.1/TimeZoneConverter.dll",
+        "lib/netstandard1.1/TimeZoneConverter.xml",
+        "lib/netstandard1.3/TimeZoneConverter.dll",
+        "lib/netstandard1.3/TimeZoneConverter.xml",
+        "lib/netstandard2.0/TimeZoneConverter.dll",
+        "lib/netstandard2.0/TimeZoneConverter.xml",
+        "timezoneconverter.3.5.0.nupkg.sha512",
+        "timezoneconverter.nuspec"
+      ]
+    },
     "xunit.abstractions/2.0.3": {
       "sha512": "pot1I4YOxlWjIb5jmwvvQNbTrZ3lJQ+jUGkGjWE3hEFM0l5gOnBWS+H3qsex68s5cO52g+44vpGzhAt+42vwKg==",
       "type": "package",
@@ -7838,8 +7987,13 @@
       "Microsoft.EntityFrameworkCore >= 7.0.11",
       "Microsoft.EntityFrameworkCore.Tools >= 7.0.11",
       "Microsoft.Extensions.DependencyInjection >= 7.0.0",
+      "NJsonSchema.CodeGeneration >= 10.9.0",
+      "NSwag.Annotations >= 14.0.0-preview009",
       "NSwag.AspNetCore >= 14.0.0-preview009",
       "NSwag.Core >= 14.0.0-preview012",
+      "NSwag.Core.Yaml >= 14.0.0-preview009",
+      "NSwag.Generation >= 14.0.0-preview009",
+      "NSwag.Generation.AspNetCore >= 14.0.0-preview009",
       "NSwag.MSBuild >= 14.0.0-preview012",
       "Newtonsoft.Json >= 13.0.3",
       "Newtonsoft.Json.Bson >= 1.0.2",
@@ -7928,6 +8082,14 @@
             "target": "Package",
             "version": "[7.0.0, )"
           },
+          "NJsonSchema.CodeGeneration": {
+            "target": "Package",
+            "version": "[10.9.0, )"
+          },
+          "NSwag.Annotations": {
+            "target": "Package",
+            "version": "[14.0.0-preview009, )"
+          },
           "NSwag.AspNetCore": {
             "target": "Package",
             "version": "[14.0.0-preview009, )"
@@ -7935,6 +8097,18 @@
           "NSwag.Core": {
             "target": "Package",
             "version": "[14.0.0-preview012, )"
+          },
+          "NSwag.Core.Yaml": {
+            "target": "Package",
+            "version": "[14.0.0-preview009, )"
+          },
+          "NSwag.Generation": {
+            "target": "Package",
+            "version": "[14.0.0-preview009, )"
+          },
+          "NSwag.Generation.AspNetCore": {
+            "target": "Package",
+            "version": "[14.0.0-preview009, )"
           },
           "NSwag.MSBuild": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

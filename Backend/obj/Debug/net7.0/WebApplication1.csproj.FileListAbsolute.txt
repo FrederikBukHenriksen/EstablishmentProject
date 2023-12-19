@@ -144,3 +144,7 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Sw
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\NodaTime.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\NJsonSchema.Annotations.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\NJsonSchema.NewtonsoftJson.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Fluid.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\NJsonSchema.CodeGeneration.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Parlot.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\TimeZoneConverter.dll

@@ -304,7 +304,7 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    meanSalesAverageSpend(command: SalesMeanOverTimeAverageSpend): Observable<SalesMeanQueryReturn> {
+    meanSalesAverageSpend(command: SalesMeanOverTime): Observable<SalesMeanQueryReturn> {
         let url_ = this.baseUrl + "/api/analysis/average-spend";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1103,9 +1103,7 @@ export interface SalesMeanQueryReturn extends ReturnBase {
 export interface SalesMeanOverTime extends CommandBase {
     salesSortingParameters: SalesSortingParameters | undefined;
     timeResolution: TimeResolution;
-}
-
-export interface SalesMeanOverTimeAverageNumberOfSales extends SalesMeanOverTime {
+    discriminator: string;
 }
 
 export interface SalesMeanOverTimeAverageSpend extends SalesMeanOverTime {
