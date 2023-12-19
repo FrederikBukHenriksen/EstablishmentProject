@@ -65,7 +65,15 @@ export class UserContextClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment[];
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Establishment.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -113,7 +121,8 @@ export class UserContextClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Establishment.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -175,7 +184,15 @@ export class WeatherClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment[];
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Establishment.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -241,7 +258,8 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as SalesQueryReturn;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SalesQueryReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -293,7 +311,8 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as SalesMeanQueryReturn;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SalesMeanQueryReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -345,7 +364,8 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as SalesMeanQueryReturn;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SalesMeanQueryReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -393,7 +413,8 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as CorrelationReturn;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CorrelationReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -445,7 +466,8 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MeanShiftClusteringReturn;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = MeanShiftClusteringReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -497,7 +519,8 @@ export class AnalysisClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MeanShiftClusteringReturn;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = MeanShiftClusteringReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -661,7 +684,9 @@ export class AuthenticationClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as boolean;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -709,7 +734,8 @@ export class AuthenticationClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as User;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = User.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -891,7 +917,8 @@ export class EstablishmentClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Establishment.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -939,7 +966,15 @@ export class EstablishmentClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Establishment[];
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Establishment.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -987,7 +1022,15 @@ export class EstablishmentClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Item[];
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Item.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -999,36 +1042,204 @@ export class EstablishmentClient {
     }
 }
 
-export interface EntityBase {
-    id: string;
+export abstract class EntityBase {
+    id!: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): EntityBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'EntityBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
 }
 
-export interface Establishment extends EntityBase {
-    name: string | undefined;
-    information: Information | undefined;
-    items: Item[];
-    tables: Table[];
-    sales: Sale[];
+export class Establishment extends EntityBase {
+    name!: string | undefined;
+    information!: Information | undefined;
+    items!: Item[];
+    tables!: Table[];
+    sales!: Sale[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+            this.information = _data["information"] ? Information.fromJS(_data["information"]) : <any>undefined;
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(Item.fromJS(item));
+            }
+            if (Array.isArray(_data["tables"])) {
+                this.tables = [] as any;
+                for (let item of _data["tables"])
+                    this.tables!.push(Table.fromJS(item));
+            }
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(Sale.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Establishment {
+        data = typeof data === 'object' ? data : {};
+        let result = new Establishment();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["information"] = this.information ? this.information.toJSON() : <any>undefined;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        if (Array.isArray(this.tables)) {
+            data["tables"] = [];
+            for (let item of this.tables)
+                data["tables"].push(item.toJSON());
+        }
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface Information extends EntityBase {
-    location: Location | undefined;
-    openingHours: OpeningHours[];
+export class Information extends EntityBase {
+    location!: Location | undefined;
+    openingHours!: OpeningHours[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.location = _data["location"] ? Location.fromJS(_data["location"]) : <any>undefined;
+            if (Array.isArray(_data["openingHours"])) {
+                this.openingHours = [] as any;
+                for (let item of _data["openingHours"])
+                    this.openingHours!.push(OpeningHours.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Information {
+        data = typeof data === 'object' ? data : {};
+        let result = new Information();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        if (Array.isArray(this.openingHours)) {
+            data["openingHours"] = [];
+            for (let item of this.openingHours)
+                data["openingHours"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface Location extends EntityBase {
-    coordinates: Coordinates;
+export class Location extends EntityBase {
+    coordinates!: Coordinates;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.coordinates = _data["coordinates"] ? Coordinates.fromJS(_data["coordinates"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): Location {
+        data = typeof data === 'object' ? data : {};
+        let result = new Location();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["coordinates"] = this.coordinates ? this.coordinates.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface Coordinates {
-    latitude: number;
-    longitude: number;
+export class Coordinates {
+    latitude!: number;
+    longitude!: number;
+
+    init(_data?: any) {
+        if (_data) {
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
+        }
+    }
+
+    static fromJS(data: any): Coordinates {
+        data = typeof data === 'object' ? data : {};
+        let result = new Coordinates();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
+        return data;
+    }
 }
 
-export interface OpeningHours extends EntityBase {
-    dayOfWeek: DayOfWeek;
-    open: string;
-    close: string;
+export class OpeningHours extends EntityBase {
+    dayOfWeek!: DayOfWeek;
+    open!: string;
+    close!: string;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.open = _data["open"];
+            this.close = _data["close"];
+        }
+    }
+
+    static override fromJS(data: any): OpeningHours {
+        data = typeof data === 'object' ? data : {};
+        let result = new OpeningHours();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["open"] = this.open;
+        data["close"] = this.close;
+        super.toJSON(data);
+        return data;
+    }
 }
 
 export enum DayOfWeek {
@@ -1041,52 +1252,298 @@ export enum DayOfWeek {
     Saturday = 6,
 }
 
-export interface Item extends EntityBase {
-    name: string;
-    price: number;
+export class Item extends EntityBase {
+    name!: string;
+    price!: number;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+            this.price = _data["price"];
+        }
+    }
+
+    static override fromJS(data: any): Item {
+        data = typeof data === 'object' ? data : {};
+        let result = new Item();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["price"] = this.price;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface Table extends EntityBase {
-    name: string;
+export class Table extends EntityBase {
+    name!: string;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+        }
+    }
+
+    static override fromJS(data: any): Table {
+        data = typeof data === 'object' ? data : {};
+        let result = new Table();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface Sale extends EntityBase {
-    establishment: Establishment;
-    timestampArrival: Date | undefined;
-    timestampPayment: Date;
-    salesItems: SalesItems[];
-    table: Table | undefined;
+export class Sale extends EntityBase {
+    establishment!: Establishment;
+    timestampArrival!: Date | undefined;
+    timestampPayment!: Date;
+    salesItems!: SalesItems[];
+    table!: Table | undefined;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
+            this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
+            this.timestampPayment = _data["timestampPayment"] ? new Date(_data["timestampPayment"].toString()) : <any>undefined;
+            if (Array.isArray(_data["salesItems"])) {
+                this.salesItems = [] as any;
+                for (let item of _data["salesItems"])
+                    this.salesItems!.push(SalesItems.fromJS(item));
+            }
+            this.table = _data["table"] ? Table.fromJS(_data["table"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): Sale {
+        data = typeof data === 'object' ? data : {};
+        let result = new Sale();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
+        data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
+        data["timestampPayment"] = this.timestampPayment ? this.timestampPayment.toISOString() : <any>undefined;
+        if (Array.isArray(this.salesItems)) {
+            data["salesItems"] = [];
+            for (let item of this.salesItems)
+                data["salesItems"].push(item.toJSON());
+        }
+        data["table"] = this.table ? this.table.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface SalesItems extends EntityBase {
-    sale: Sale;
-    item: Item;
-    quantity: number;
+export class SalesItems extends EntityBase {
+    sale!: Sale;
+    item!: Item;
+    quantity!: number;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.sale = _data["sale"] ? Sale.fromJS(_data["sale"]) : <any>undefined;
+            this.item = _data["item"] ? Item.fromJS(_data["item"]) : <any>undefined;
+            this.quantity = _data["quantity"];
+        }
+    }
+
+    static override fromJS(data: any): SalesItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesItems();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["sale"] = this.sale ? this.sale.toJSON() : <any>undefined;
+        data["item"] = this.item ? this.item.toJSON() : <any>undefined;
+        data["quantity"] = this.quantity;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface ReturnBase {
+export abstract class ReturnBase {
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): ReturnBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'ReturnBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
 }
 
-export interface SalesQueryReturn extends ReturnBase {
-    data: { [key: string]: number; };
+export class SalesQueryReturn extends ReturnBase {
+    data!: { [key: string]: number; };
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (_data["data"]) {
+                this.data = {} as any;
+                for (let key in _data["data"]) {
+                    if (_data["data"].hasOwnProperty(key))
+                        (<any>this.data)![key] = _data["data"][key];
+                }
+            }
+        }
+    }
+
+    static override fromJS(data: any): SalesQueryReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesQueryReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.data) {
+            data["data"] = {};
+            for (let key in this.data) {
+                if (this.data.hasOwnProperty(key))
+                    (<any>data["data"])[key] = (<any>this.data)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface CommandBase {
+export abstract class CommandBase {
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): CommandBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
 }
 
-export interface SalesQuery extends CommandBase {
-    salesSortingParameters: SalesSortingParameters | undefined;
-    timeResolution: TimeResolution;
+export class SalesQuery extends CommandBase {
+    salesSortingParameters!: SalesSortingParameters | undefined;
+    timeResolution!: TimeResolution;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.timeResolution = _data["timeResolution"];
+        }
+    }
+
+    static override fromJS(data: any): SalesQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesQuery();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        data["timeResolution"] = this.timeResolution;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface SalesSortingParameters {
-    mustContaiedItems: string[] | undefined;
-    useDataFromTimeframePeriods: DateTimePeriod[] | undefined;
+export class SalesSortingParameters {
+    mustContaiedItems!: string[] | undefined;
+    useDataFromTimeframePeriods!: DateTimePeriod[] | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["mustContaiedItems"])) {
+                this.mustContaiedItems = [] as any;
+                for (let item of _data["mustContaiedItems"])
+                    this.mustContaiedItems!.push(item);
+            }
+            if (Array.isArray(_data["useDataFromTimeframePeriods"])) {
+                this.useDataFromTimeframePeriods = [] as any;
+                for (let item of _data["useDataFromTimeframePeriods"])
+                    this.useDataFromTimeframePeriods!.push(DateTimePeriod.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SalesSortingParameters {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesSortingParameters();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.mustContaiedItems)) {
+            data["mustContaiedItems"] = [];
+            for (let item of this.mustContaiedItems)
+                data["mustContaiedItems"].push(item);
+        }
+        if (Array.isArray(this.useDataFromTimeframePeriods)) {
+            data["useDataFromTimeframePeriods"] = [];
+            for (let item of this.useDataFromTimeframePeriods)
+                data["useDataFromTimeframePeriods"].push(item.toJSON());
+        }
+        return data;
+    }
 }
 
-export interface DateTimePeriod {
-    start: Date;
-    end: Date;
+export class DateTimePeriod {
+    start!: Date;
+    end!: Date;
+
+    init(_data?: any) {
+        if (_data) {
+            this.start = _data["start"] ? new Date(_data["start"].toString()) : <any>undefined;
+            this.end = _data["end"] ? new Date(_data["end"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): DateTimePeriod {
+        data = typeof data === 'object' ? data : {};
+        let result = new DateTimePeriod();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["start"] = this.start ? this.start.toISOString() : <any>undefined;
+        data["end"] = this.end ? this.end.toISOString() : <any>undefined;
+        return data;
+    }
 }
 
 export enum TimeResolution {
@@ -1096,53 +1553,351 @@ export enum TimeResolution {
     Year = 3,
 }
 
-export interface SalesMeanQueryReturn extends ReturnBase {
-    data: { [key: string]: number; };
+export class SalesMeanQueryReturn extends ReturnBase {
+    data!: { [key: string]: number; };
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (_data["data"]) {
+                this.data = {} as any;
+                for (let key in _data["data"]) {
+                    if (_data["data"].hasOwnProperty(key))
+                        (<any>this.data)![key] = _data["data"][key];
+                }
+            }
+        }
+    }
+
+    static override fromJS(data: any): SalesMeanQueryReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesMeanQueryReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.data) {
+            data["data"] = {};
+            for (let key in this.data) {
+                if (this.data.hasOwnProperty(key))
+                    (<any>data["data"])[key] = (<any>this.data)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface SalesMeanOverTime extends CommandBase {
-    salesSortingParameters: SalesSortingParameters | undefined;
-    timeResolution: TimeResolution;
-    discriminator: string;
+export class SalesMeanOverTime extends CommandBase {
+    salesSortingParameters!: SalesSortingParameters | undefined;
+    timeResolution!: TimeResolution;
+
+    protected _discriminator: string;
+
+    constructor() {
+        super();
+        this._discriminator = "SalesMeanOverTime";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.timeResolution = _data["timeResolution"];
+        }
+    }
+
+    static override fromJS(data: any): SalesMeanOverTime {
+        data = typeof data === 'object' ? data : {};
+        if (data["discriminator"] === "SalesMeanOverTimeAverageSpend") {
+            let result = new SalesMeanOverTimeAverageSpend();
+            result.init(data);
+            return result;
+        }
+        let result = new SalesMeanOverTime();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["discriminator"] = this._discriminator;
+        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        data["timeResolution"] = this.timeResolution;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface SalesMeanOverTimeAverageSpend extends SalesMeanOverTime {
+export class SalesMeanOverTimeAverageSpend extends SalesMeanOverTime {
+
+    constructor() {
+        super();
+        this._discriminator = "SalesMeanOverTimeAverageSpend";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): SalesMeanOverTimeAverageSpend {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesMeanOverTimeAverageSpend();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface CorrelationReturn extends ReturnBase {
-    lagAndCorrelation: { [key: string]: number; };
+export class CorrelationReturn extends ReturnBase {
+    lagAndCorrelation!: { [key: string]: number; };
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (_data["lagAndCorrelation"]) {
+                this.lagAndCorrelation = {} as any;
+                for (let key in _data["lagAndCorrelation"]) {
+                    if (_data["lagAndCorrelation"].hasOwnProperty(key))
+                        (<any>this.lagAndCorrelation)![key] = _data["lagAndCorrelation"][key];
+                }
+            }
+        }
+    }
+
+    static override fromJS(data: any): CorrelationReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new CorrelationReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.lagAndCorrelation) {
+            data["lagAndCorrelation"] = {};
+            for (let key in this.lagAndCorrelation) {
+                if (this.lagAndCorrelation.hasOwnProperty(key))
+                    (<any>data["lagAndCorrelation"])[key] = (<any>this.lagAndCorrelation)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface MeanShiftClusteringReturn extends ReturnBase {
-    clusters: Sale[][];
-    calculations: { [key: string]: number[]; };
+export class MeanShiftClusteringReturn extends ReturnBase {
+    clusters!: Sale[][];
+    calculations!: { [key: string]: number[]; };
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["clusters"])) {
+                this.clusters = [] as any;
+                for (let item of _data["clusters"])
+                    this.clusters!.push(item);
+            }
+            if (_data["calculations"]) {
+                this.calculations = {} as any;
+                for (let key in _data["calculations"]) {
+                    if (_data["calculations"].hasOwnProperty(key))
+                        (<any>this.calculations)![key] = _data["calculations"][key] !== undefined ? _data["calculations"][key] : [];
+                }
+            }
+        }
+    }
+
+    static override fromJS(data: any): MeanShiftClusteringReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new MeanShiftClusteringReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.clusters)) {
+            data["clusters"] = [];
+            for (let item of this.clusters)
+                data["clusters"].push(item);
+        }
+        if (this.calculations) {
+            data["calculations"] = {};
+            for (let key in this.calculations) {
+                if (this.calculations.hasOwnProperty(key))
+                    (<any>data["calculations"])[key] = (<any>this.calculations)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface MeanShiftClusteringCommand extends CommandBase {
-    salesSortingParameters: SalesSortingParameters | undefined;
+export abstract class MeanShiftClusteringCommand extends CommandBase {
+    salesSortingParameters!: SalesSortingParameters | undefined;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): MeanShiftClusteringCommand {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'MeanShiftClusteringCommand' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
+export class MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): MSC_Sales_TimeOfVisit_LengthOfVisit {
+        data = typeof data === 'object' ? data : {};
+        let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
+export class MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): MSC_Sales_TimeOfVisit_TotalPrice {
+        data = typeof data === 'object' ? data : {};
+        let result = new MSC_Sales_TimeOfVisit_TotalPrice();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface LoginCommand {
-    username: string;
-    password: string;
+export class LoginCommand {
+    username!: string;
+    password!: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.username = _data["username"];
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): LoginCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["username"] = this.username;
+        data["password"] = this.password;
+        return data;
+    }
 }
 
-export interface User extends EntityBase {
-    email: string;
-    password: string;
-    userRoles: UserRole[];
+export class User extends EntityBase {
+    email!: string;
+    password!: string;
+    userRoles!: UserRole[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.email = _data["email"];
+            this.password = _data["password"];
+            if (Array.isArray(_data["userRoles"])) {
+                this.userRoles = [] as any;
+                for (let item of _data["userRoles"])
+                    this.userRoles!.push(UserRole.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["password"] = this.password;
+        if (Array.isArray(this.userRoles)) {
+            data["userRoles"] = [];
+            for (let item of this.userRoles)
+                data["userRoles"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export interface UserRole extends EntityBase {
-    user: User;
-    establishment: Establishment;
-    role: Role;
+export class UserRole extends EntityBase {
+    user!: User;
+    establishment!: Establishment;
+    role!: Role;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
+            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
+            this.role = _data["role"];
+        }
+    }
+
+    static override fromJS(data: any): UserRole {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserRole();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
+        data["role"] = this.role;
+        super.toJSON(data);
+        return data;
+    }
 }
 
 export enum Role {
@@ -1150,7 +1905,22 @@ export enum Role {
     User = 1,
 }
 
-export interface FactoryServiceBuilder {
+export class FactoryServiceBuilder {
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): FactoryServiceBuilder {
+        data = typeof data === 'object' ? data : {};
+        let result = new FactoryServiceBuilder();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
 }
 
 export interface FileResponse {

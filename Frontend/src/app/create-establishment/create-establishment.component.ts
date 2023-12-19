@@ -56,10 +56,10 @@ export class CreateEstablishmentComponent {
   public dialog = inject(MatDialog);
 
   public timeResolution: TimeResolution = TimeResolution.Date;
-  public timePeriod: DateTimePeriod = {
+  public timePeriod = {
     start: new Date('2021-01-01'),
     end: new Date('2021-12-31-23-59-59'),
-  };
+  } as DateTimePeriod;
 
   labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -118,7 +118,6 @@ export class CreateEstablishmentComponent {
       command: {
         timeResolution: TimeResolution.Date,
         salesSortingParameters: undefined,
-        type: 'SalesMeanOverTimeAverageSpend',
       } as SalesMeanOverTime,
 
       fetch: (command: CommandBase) =>
