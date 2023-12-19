@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Utils;
@@ -30,9 +32,10 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost("average-spend")] //SalesMeanOverTimeAverageSpend
-        public SalesMeanQueryReturn MeanSalesAverageSpend([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        public SalesMeanQueryReturn MeanSalesAverageSpend(SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
+
             return handler.Handle(command);
         }
 

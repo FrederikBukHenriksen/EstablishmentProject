@@ -64,6 +64,7 @@ namespace WebApplication1.Services
         {
 
             string EstablishmentIdAsString = httpContext.Request.Headers["EstablishmentId"];
+
             if (!EstablishmentIdAsString.IsNullOrEmpty())
             {
                 Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);

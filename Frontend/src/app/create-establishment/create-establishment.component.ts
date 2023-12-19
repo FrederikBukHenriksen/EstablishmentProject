@@ -94,65 +94,63 @@ export class CreateEstablishmentComponent {
   };
 
   public grafDictionary: { [key: string]: fecthingAndExtracting } = {
-    SalesOverTime: {
-      name: 'SalesOverTime',
-
-      command: { salesSortingParameters: undefined } as SalesQuery,
-
-      fetch: (command: CommandBase) =>
-        this.analysisClient.sales(command as SalesQuery),
-
-      dataExtractor: (data: ReturnBase) => {
-        const apiReturn = data as SalesQueryReturn;
-        return {
-          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
-          label: 'SalesOverTime',
-          borderColor: 'red',
-        } as ChartDataset;
-      },
-    } as fecthingAndExtracting,
-
-    SalesMeanOverTimeAverageSpend: {
-      name: 'SalesMeanOverTimeAverageSpend',
-
-      command: {
-        timeResolution: TimeResolution.Date,
-        salesSortingParameters: undefined,
-      } as SalesMeanOverTime,
-
-      fetch: (command: CommandBase) =>
-        this.analysisClient.meanSalesAverageSpend(
-          command as SalesMeanOverTimeAverageSpend
-        ),
-
-      dataExtractor: (data: ReturnBase) => {
-        const apiReturn = data as SalesMeanQueryReturn;
-        var valuesWhichAreInThePeriod;
-        return {
-          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
-          label: 'SalesMeanOverTimeAverageSpend',
-          borderColor: 'blue',
-        } as ChartDataset;
-      },
-    },
-    NumberOfSalesOverTime: {
-      name: 'NumberOfSalesOverTime',
-
-      command: { salesSortingParameters: undefined } as SalesQuery,
-
-      fetch: (command: CommandBase) =>
-        this.analysisClient.sales(command as SalesQuery),
-
-      dataExtractor: (data: ReturnBase) => {
-        const apiReturn = data as SalesQueryReturn;
-        return {
-          type: 'bar',
-          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
-          label: 'Sale numbers',
-        } as ChartDataset;
-      },
-    },
+    // SalesOverTime: {
+    //   name: 'SalesOverTime',
+    //   command: { salesSortingParameters: undefined } as SalesQuery,
+    //   fetch: (command: CommandBase) =>
+    //     this.analysisClient.sales(command as SalesQuery),
+    //   dataExtractor: (data: ReturnBase) => {
+    //     const apiReturn = data as SalesQueryReturn;
+    //     return {
+    //       data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+    //       label: 'SalesOverTime',
+    //       borderColor: 'red',
+    //     } as ChartDataset;
+    //   },
+    // } as fecthingAndExtracting,
+    // SalesMeanOverTimeAverageSpend: {
+    //   name: 'SalesMeanOverTimeAverageSpend',
+    //   command: {
+    //     timeResolution: TimeResolution.Date,
+    //     salesSortingParameters: undefined,
+    //   } as SalesMeanOverTimeAverageSpend,
+    //   fetch: (command: CommandBase) =>
+    //     this.analysisClient.meanSalesAverageSpend(
+    //       command as SalesMeanOverTimeAverageSpend
+    //     ),
+    //   dataExtractor: (data: ReturnBase) => {
+    //     const apiReturn = data as SalesMeanQueryReturn;
+    //     var valuesWhichAreInThePeriod;
+    //     return {
+    //       data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+    //       label: 'SalesMeanOverTimeAverageSpend',
+    //       borderColor: 'blue',
+    //     } as ChartDataset;
+    //   },
+    // },
+    // NumberOfSalesOverTime: {
+    //   name: 'NumberOfSalesOverTime',
+    //   command: { salesSortingParameters: undefined } as SalesQuery,
+    //   fetch: (command: CommandBase) =>
+    //     this.analysisClient.sales(command as SalesQuery),
+    //   dataExtractor: (data: ReturnBase) => {
+    //     const apiReturn = data as SalesQueryReturn;
+    //     return {
+    //       type: 'bar',
+    //       data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+    //       label: 'Sale numbers',
+    //     } as ChartDataset;
+    //   },
+    // },
   };
+
+  public async tester() {
+    const command = new SalesMeanOverTimeAverageSpend();
+
+    return await lastValueFrom(
+      this.analysisClient.meanSalesAverageSpend(command)
+    );
+  }
 
   public async getCorrelation() {
     console.log('start on cor');
@@ -229,8 +227,8 @@ export class CreateEstablishmentComponent {
 
   async openDialog() {
     // const val = await this.getCorrelation();
-
-    const items = await this.GetEstablishmentItems();
+    const test = await this.tester();
+    // const items = await this.GetEstablishmentItems();
     // this.mapGrafDictionaryToChartDataset();
     this.mapGrafDictionaryToChartDatasetv2();
     const dialogRef = this.dialog.open(DialogCheckboxComponent, {

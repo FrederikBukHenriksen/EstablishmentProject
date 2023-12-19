@@ -1590,7 +1590,7 @@ export class SalesMeanQueryReturn extends ReturnBase {
     }
 }
 
-export class SalesMeanOverTime extends CommandBase {
+export abstract class SalesMeanOverTime extends CommandBase {
     salesSortingParameters!: SalesSortingParameters | undefined;
     timeResolution!: TimeResolution;
 
@@ -1611,19 +1611,17 @@ export class SalesMeanOverTime extends CommandBase {
 
     static override fromJS(data: any): SalesMeanOverTime {
         data = typeof data === 'object' ? data : {};
-        if (data["discriminator"] === "SalesMeanOverTimeAverageSpend") {
+        if (data["$type"] === "SalesMeanOverTimeAverageSpend") {
             let result = new SalesMeanOverTimeAverageSpend();
             result.init(data);
             return result;
         }
-        let result = new SalesMeanOverTime();
-        result.init(data);
-        return result;
+        throw new Error("The abstract class 'SalesMeanOverTime' cannot be instantiated.");
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["discriminator"] = this._discriminator;
+        data["$type"] = this._discriminator;
         data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
         data["timeResolution"] = this.timeResolution;
         super.toJSON(data);
