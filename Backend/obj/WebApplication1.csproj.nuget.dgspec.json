@@ -72,17 +72,17 @@
             },
             "NSwag.AspNetCore": {
               "target": "Package",
-              "version": "[13.20.0, )"
+              "version": "[14.0.0-preview009, )"
             },
             "NSwag.Core": {
               "target": "Package",
-              "version": "[13.20.0, )"
+              "version": "[14.0.0-preview012, )"
             },
             "NSwag.MSBuild": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[13.20.0, )"
+              "version": "[14.0.0-preview012, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
