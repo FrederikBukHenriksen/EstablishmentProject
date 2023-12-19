@@ -9,7 +9,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(IDatabaseContext context) : base(context)
+        public UserRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

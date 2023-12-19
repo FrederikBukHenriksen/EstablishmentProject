@@ -9,7 +9,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
     public class ItemRepository : Repository<Item>, IItemRepository
     {
-        public ItemRepository(IDatabaseContext context) : base(context)
+        public ItemRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

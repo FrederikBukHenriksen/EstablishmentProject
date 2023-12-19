@@ -11,7 +11,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
     public class UserRolesRepository : Repository<UserRole>, IUserRolesRepository
     {
-        public UserRolesRepository(IDatabaseContext context) : base(context)
+        public UserRolesRepository(ApplicationDbContext context) : base(context)
         { }
 
         //Method is needed in the UserContextMiddleware

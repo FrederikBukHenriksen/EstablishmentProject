@@ -14,7 +14,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
     public class SalesRepository : Repository<Sale>, ISalesRepository
     {
-        public SalesRepository(IDatabaseContext context) : base(context)
+        public SalesRepository(ApplicationDbContext context) : base(context)
         {
         }
         public List<Sale> GetSalesFromEstablishment(Establishment establishment)

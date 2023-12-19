@@ -5,7 +5,7 @@
 
     public interface IRepository<TEntity> where TEntity : EntityBase
     {
-        protected IDatabaseContext Context { get; }
+        protected ApplicationDbContext Context { get; }
 
         TEntity? GetById(Guid id);
         public List<TEntity> GetFromIds(List<Guid> ids);

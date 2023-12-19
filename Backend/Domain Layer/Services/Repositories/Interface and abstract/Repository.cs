@@ -13,16 +13,16 @@ namespace WebApplication1.Domain.Services.Repositories
     public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
     {
 
-        public IDatabaseContext context;
+        public ApplicationDbContext context;
         public DbSet<TEntity> set;
 
-        public Repository(IDatabaseContext Context)
+        public Repository(ApplicationDbContext Context)
         {
             context = Context;
             set = context.Set<TEntity>();
         }
 
-        public IDatabaseContext Context { get => context; }
+        public ApplicationDbContext Context { get => context; }
 
         public void Add(TEntity entity)
         {

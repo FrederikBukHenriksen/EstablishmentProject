@@ -22,7 +22,7 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
             serviceCollection.AddScoped<ISalesService, SalesService>();
-            serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            //serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
             //Entity services
             serviceCollection.AddTransient<IEstablishmentBuilder, EstablishmentBuilder>();

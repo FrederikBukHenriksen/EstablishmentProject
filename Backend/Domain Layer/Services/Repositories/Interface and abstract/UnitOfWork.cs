@@ -9,9 +9,9 @@
 
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly IDatabaseContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public UnitOfWork(IDatabaseContext context)
+        public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }

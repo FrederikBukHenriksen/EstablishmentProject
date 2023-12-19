@@ -14,7 +14,7 @@ namespace WebApplication1.Domain.Services.Repositories
     public class EstablishmentRepository : Repository<Establishment>, IEstablishmentRepository
     {
 
-        public EstablishmentRepository(IDatabaseContext context) : base(context)
+        public EstablishmentRepository(ApplicationDbContext context) : base(context)
         {
         }
 
