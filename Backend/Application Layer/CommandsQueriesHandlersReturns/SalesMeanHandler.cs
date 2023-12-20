@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using NJsonSchema.Converters;
+﻿using NJsonSchema.NewtonsoftJson.Converters;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using WebApplication1.CommandsHandlersReturns;
@@ -8,17 +7,25 @@ using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Services;
 using WebApplication1.Utils;
 
+
 namespace WebApplication1.CommandHandlers
 {
-    [KnownType(typeof(SalesMeanOverTimeAverageNumberOfSales))]
+    //[KnownType(typeof(SalesMeanOverTimeAverageNumberOfSales))]
+    //[JsonDerivedType(typeof(SalesMeanOverTimeAverageNumberOfSales), nameof(SalesMeanOverTimeAverageNumberOfSales))]
+    [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
     [KnownType(typeof(SalesMeanOverTimeAverageSpend))]
-
     public abstract class SalesMeanOverTime : CommandBase
     {
         public SalesSortingParameters? salesSortingParameters { get; set; }
         public TimeResolution TimeResolution { get; set; }
         public abstract List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales);
+        //{
+        //    return new List<(int,double)>();
+        //}
     }
+
+    //[JsonDerivedType(typeof(SalesMeanOverTimeAverageSpend), nameof(SalesMeanOverTimeAverageSpend))]
+    //[JsonDerivedType(typeof(SalesMeanOverTimeAverageSpend), nameof(SalesMeanOverTimeAverageSpend))]
 
     public class SalesMeanOverTimeAverageSpend : SalesMeanOverTime
     {

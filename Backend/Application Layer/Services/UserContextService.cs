@@ -46,7 +46,7 @@ namespace WebApplication1.Services
 
         public void FecthAccesibleEstablishments()
         {
-            this._userRoles = this._userRolesRepository.FindAll(x => x.User == this.GetUser()).ToList();
+            this._userRoles = this._userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User == this.GetUser()).ToList();
         }
 
         public Establishment GetActiveEstablishment()
@@ -64,6 +64,7 @@ namespace WebApplication1.Services
         {
 
             string EstablishmentIdAsString = httpContext.Request.Headers["EstablishmentId"];
+
             if (!EstablishmentIdAsString.IsNullOrEmpty())
             {
                 Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);
