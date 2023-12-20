@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.Test.csproj": {}
+    "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.Test.csproj": {
+    "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.Test.csproj",
-        "projectName": "EstablishmentProject.Test",
-        "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.Test.csproj",
+        "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj",
+        "projectName": "EstablishmentProject.test",
+        "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj",
         "packagesPath": "C:\\Users\\Ekste\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\obj\\",
         "projectStyle": "PackageReference",
@@ -28,8 +28,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj": {
-                "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj"
+              "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj": {
+                "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj"
               }
             }
           }
@@ -51,6 +51,14 @@
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.69, )"
+            },
+            "RichardSzalay.MockHttp": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             },
             "System.Net.Http": {
               "target": "Package",
@@ -97,18 +105,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj": {
+    "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj",
+        "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj",
         "projectName": "WebApplication1",
-        "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\WebApplication1.csproj",
+        "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj",
         "packagesPath": "C:\\Users\\Ekste\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\obj\\",
+        "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ekste\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -119,7 +127,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -138,9 +145,21 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "MathNet.Numerics": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[7.0.11, )"
+            },
+            "Microsoft.AspNetCore.JsonPatch": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -156,19 +175,51 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "NJsonSchema.CodeGeneration": {
+              "target": "Package",
+              "version": "[10.9.0, )"
+            },
+            "NSwag.Annotations": {
+              "target": "Package",
+              "version": "[14.0.0-preview009, )"
+            },
             "NSwag.AspNetCore": {
               "target": "Package",
-              "version": "[13.20.0, )"
+              "version": "[14.0.0-preview009, )"
             },
             "NSwag.Core": {
               "target": "Package",
-              "version": "[13.20.0, )"
+              "version": "[14.0.0-preview012, )"
+            },
+            "NSwag.Core.Yaml": {
+              "target": "Package",
+              "version": "[14.0.0-preview009, )"
+            },
+            "NSwag.Generation": {
+              "target": "Package",
+              "version": "[14.0.0-preview009, )"
+            },
+            "NSwag.Generation.AspNetCore": {
+              "target": "Package",
+              "version": "[14.0.0-preview009, )"
             },
             "NSwag.MSBuild": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[13.20.0, )"
+              "version": "[14.0.0-preview012, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "Newtonsoft.Json.Bson": {
+              "target": "Package",
+              "version": "[1.0.2, )"
+            },
+            "NodaTime": {
+              "target": "Package",
+              "version": "[3.1.9, )"
             },
             "Npgsql": {
               "target": "Package",
@@ -181,6 +232,48 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.Annotations": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.Filters": {
+              "target": "Package",
+              "version": "[7.0.12, )"
+            },
+            "Swashbuckle.AspNetCore.Filters.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.12, )"
+            },
+            "Swashbuckle.AspNetCore.Newtonsoft": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.Swagger": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerGen": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerUI": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "xunit.assert": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            },
+            "xunit.extensibility.core": {
+              "target": "Package",
+              "version": "[2.4.2, )"
             }
           },
           "imports": [
@@ -202,7 +295,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

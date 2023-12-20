@@ -1,13 +1,6 @@
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\CoverletSourceRootsMapping
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\appsettings.Development.json
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\appsettings.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\angular.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\package-lock.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\package.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\proxy.conf.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\tsconfig.app.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\tsconfig.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\Frontend\tsconfig.spec.json
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\nswag.json
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\testhost.exe
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject.Test\bin\Debug\net7.0\testhost.dll
@@ -930,12 +923,3 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\o
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\obj\Debug\net7.0\WebApplication1.Test.pdb
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\obj\Debug\net7.0\WebApplication1.Test.genruntimeconfig.cache
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\EstablishmentProject.Test\obj\Debug\net7.0\ref\WebApplication1.Test.dll
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.csproj.AssemblyReference.cache
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\MvcTestingAppManifest.json
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.AssemblyInfoInputs.cache
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.AssemblyInfo.cs
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.csproj.CoreCompileInputs.cache
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.dll
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\refint\WebApplication1.Test.dll
-C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\WebApplication1.Test.pdb
