@@ -141,7 +141,7 @@ namespace WebApplication1.Program
         {
             var scope = app.Services.CreateScope(); //Creates scoped lifetime for the service.
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            //dbContext.Database.Migrate();
+            dbContext.Database.Migrate();
             scope.Dispose();
         }
     }
