@@ -70,7 +70,7 @@
 	</Target>
 	
 	<ItemGroup>
-		<InternalsVisibleTo Include="EstablishmentProject.Test" />
+		<InternalsVisibleTo Include="EstablishmentProject.test" />
 	</ItemGroup>
 	
 	<ItemGroup>

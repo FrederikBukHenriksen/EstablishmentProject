@@ -1,70 +1,150 @@
-﻿using Establishment.Test;
+﻿using EstablishmentProject.Test;
 using Microsoft.AspNetCore.Http;
-using WebApplication1.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
+using System;
+using System.Linq;
+using WebApplication1.Data;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Middelware;
 using WebApplication1.Services;
 
-namespace WebApplication1.Test
+namespace EstablishmentProject.Test
 {
     public class UserContextTest : BaseIntegrationTest
     {
-        private IMiddleware _userContextMiddleware;
+        //Services
+        private UserContextMiddleware _userContextMiddleware;
         private IUserContextService _userContextService;
+        private IFactoryServiceBuilder _factoryServiceBuilder;
+        private IAuthService _authService;
 
-        public UserContextTest(IntegrationTestWebAppFactory factory, IMiddleware userContextMiddleware, IUserContextService userContextService) : base(factory)
+        //Arrange
+        private Establishment establishment1;
+        private Establishment establishment2;
+        private Establishment establishment3;
+        private List<Establishment> allEstablishments;
+
+        private User userFrederik;
+        private User userLydia;
+        private List<User> allUsers;
+
+        public UserContextTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
-            _userContextMiddleware = userContextMiddleware;
-            _userContextService = userContextService;
+            //Services
+            this._authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            this._userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
+            this._userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
+            this._factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
+
+            var database = this.dbContext.Database.GetConnectionString();
+            var ok = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             //Arrange
-            List<User> users = new List<User> {
-                new User()
-                {
-                    Id = new Guid("00000000-0000-0000-0000-000000000000"),
-            Username = "Frederik",
-                    Password = "LydiaErSød"
-                }
-            };
-            dbContext.Set<User>().AddRange(users);
+            establishment1 = _factoryServiceBuilder
+                .EstablishmentBuilder()
+                .WithName("Cafe 1")
+                .Build();
+            establishment2 = _factoryServiceBuilder
+                .EstablishmentBuilder()
+                .WithName("Cafe 2")
+                .Build();
+            allEstablishments = new List<Establishment> { establishment1, establishment2 };
+            dbContext.Set<Establishment>().AddRange(allEstablishments);
+
+            userFrederik = _factoryServiceBuilder
+                .UserBuilder()
+                .WithEmail("Frederik@mail.com")
+                .WithPassword("12345678")
+                .WithUserRoles(new List<(Establishment, Role)> { (establishment1, Role.Admin) })
+                .Build();
+             userLydia = _factoryServiceBuilder
+                .UserBuilder()
+                .WithEmail("Lydia@mail.com")
+                .WithPassword("12345678")
+                .Build();
+            allUsers = new List<User> { userFrederik, userLydia };
+            dbContext.Set<User>().AddRange(allUsers);
+
             dbContext.SaveChanges();
         }
 
-        public static class UserContextData
-        {
-            public static IEnumerable<object[]> Data =>
-                new List<object[]>
-                {
-                    //Correct logins
-                                new object[] { "00000000-0000-0000-0000-000000000000",                 new User()
-                {
-                    Id = new Guid("00000000-0000-0000-0000-000000000000"),
-            Username = "Frederik",
-                    Password = "LydiaErSød"
-                }},
-                };
-        }
-
-        [Theory]
-        [MemberData(nameof(UserContextData.Data), MemberType = typeof(UserContextData))]
-        public async void UserContext(string jwtToken)
+        [Fact]
+        public void valid_user_with_userRole()
         {
             //Arrange
-            //var jwtToken = this._authService.GenerateJwtToken(Guid.Empty);
-            DefaultHttpContext httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer " + jwtToken;
-            httpContext.Response.Cookies.Append("jwt", jwtToken);
+            var jwtToken = _authService.GenerateJwtToken(this.userFrederik.Id);
+            DefaultHttpContext httpMock = new DefaultHttpContext();
+            httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
 
             //Act
-            _userContextMiddleware.InvokeAsync(httpContext, (context) => Task.CompletedTask);
+            _userContextMiddleware.InvokeAsync(httpMock, (context) => Task.CompletedTask); //Send request to middleware
+            User? actualUser = _userContextService.GetUser();
+            List<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
 
-            //Assert
-            User expectedUser = new User()
-            {
-                Id = Guid.Empty,
-                Username = "Frederik",
-                Password = "LydiaErSød"
-            };
-            User? contextUser = _userContextService.GetUser();
-            Assert.Equal(expectedUser, contextUser);
+            //ASSERT
+            User expectedUser = this.userFrederik;
+
+            //Assert user
+            Assert.NotNull(actualUser);
+            Assert.Equal(expectedUser.Id, actualUser.Id);
+
+            //Assert userrole belongs to user
+            Assert.NotNull(actualUserRoles);
+            Assert.True(actualUserRoles.All(x => x.User == expectedUser));
+
+            //Assert users accesible establishment
+            Assert.True(actualUserRoles.All(x => allEstablishments.Contains(x.Establishment)));
+
+            //Assert users roles per establishment
+            Assert.True(actualUserRoles.Any(x => x.Establishment == establishment1 && x.Role == Role.Admin));
+        }
+
+        [Fact]
+        public void valid_user_with_no_userRole() {
+            //ARRANGE
+            var jwtToken = _authService.GenerateJwtToken(this.userLydia.Id);
+            DefaultHttpContext httpMock = new DefaultHttpContext();
+            httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
+
+            //ACT
+            _userContextMiddleware.InvokeAsync(httpMock, (context) => Task.CompletedTask); //Send request to middleware
+            User? actualUser = _userContextService.GetUser();
+            ICollection<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
+
+            //ASSERT
+            User expectedUser = this.userLydia;
+
+            //Assert user
+            Assert.NotNull(actualUser);
+            Assert.Equal(expectedUser.Id, actualUser.Id);
+
+            //Assert userroles
+            Assert.Null(actualUserRoles);
+        }
+
+        [Fact]
+        public void invalid_user_with_no_userRole()
+        {
+            //ARRANGE
+            var jwtToken = _authService.GenerateJwtToken(Guid.Empty);
+            DefaultHttpContext httpMock = new DefaultHttpContext();
+            httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
+
+            //ACT
+            _userContextMiddleware.InvokeAsync(httpMock, (context) => Task.CompletedTask); //Send request to middleware
+            User? actualUser = _userContextService.GetUser();
+            ICollection<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
+
+            //ASSERT
+            
+            //Assert user
+            Assert.Null(actualUser);
+
+            //Assert userroles
+            Assert.Null(actualUserRoles);
 
         }
     }
