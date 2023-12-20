@@ -9674,8 +9674,8 @@
     },
     "WebApplication1/1.0.0": {
       "type": "project",
-      "path": "../EstablishmentProject/Backend/WebApplication1.csproj",
-      "msbuildProject": "../EstablishmentProject/Backend/WebApplication1.csproj"
+      "path": "../Backend/WebApplication1.csproj",
+      "msbuildProject": "../Backend/WebApplication1.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -9699,11 +9699,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj",
+      "projectUniqueName": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\EstablishmentProject.test.csproj",
       "projectName": "EstablishmentProject.test",
-      "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj",
+      "projectPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\EstablishmentProject.test.csproj",
       "packagesPath": "C:\\Users\\Ekste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\obj\\",
+      "outputPath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Ekste\\AppData\\Roaming\\NuGet\\NuGet.Config",

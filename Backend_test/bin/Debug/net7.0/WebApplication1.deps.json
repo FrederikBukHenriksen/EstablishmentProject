@@ -15,8 +15,13 @@
           "Microsoft.EntityFrameworkCore": "7.0.11",
           "Microsoft.EntityFrameworkCore.Tools": "7.0.11",
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
+          "NJsonSchema.CodeGeneration": "10.9.0",
+          "NSwag.Annotations": "14.0.0-preview009",
           "NSwag.AspNetCore": "14.0.0-preview009",
           "NSwag.Core": "14.0.0-preview012",
+          "NSwag.Core.Yaml": "14.0.0-preview009",
+          "NSwag.Generation": "14.0.0-preview009",
+          "NSwag.Generation.AspNetCore": "14.0.0-preview009",
           "NSwag.MSBuild": "14.0.0-preview012",
           "Newtonsoft.Json": "13.0.3",
           "Newtonsoft.Json.Bson": "1.0.2",
@@ -40,6 +45,19 @@
         }
       },
       "coverlet.collector/6.0.0": {},
+      "Fluid.Core/2.2.15": {
+        "dependencies": {
+          "Microsoft.Extensions.FileProviders.Abstractions": "7.0.0",
+          "Parlot": "0.0.23",
+          "TimeZoneConverter": "3.5.0"
+        },
+        "runtime": {
+          "lib/net6.0/Fluid.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "runtime": {
           "lib/net6.0/Humanizer.dll": {
@@ -395,6 +413,20 @@
           }
         }
       },
+      "NJsonSchema.CodeGeneration/10.9.0": {
+        "dependencies": {
+          "Fluid.Core": "2.2.15",
+          "NJsonSchema": "11.0.0-preview008",
+          "Newtonsoft.Json": "13.0.3",
+          "System.Text.Encodings.Web": "7.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NJsonSchema.CodeGeneration.dll": {
+            "assemblyVersion": "10.9.0.0",
+            "fileVersion": "10.9.0.0"
+          }
+        }
+      },
       "NJsonSchema.NewtonsoftJson/11.0.0-preview006": {
         "dependencies": {
           "NJsonSchema": "11.0.0-preview008",
@@ -529,6 +561,14 @@
         }
       },
       "NSwag.MSBuild/14.0.0-preview012": {},
+      "Parlot/0.0.23": {
+        "runtime": {
+          "lib/netstandard2.1/Parlot.dll": {
+            "assemblyVersion": "0.0.23.0",
+            "fileVersion": "0.0.23.0"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
@@ -1247,6 +1287,14 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "TimeZoneConverter/3.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/TimeZoneConverter.dll": {
+            "assemblyVersion": "3.5.0.0",
+            "fileVersion": "3.5.0.0"
+          }
+        }
+      },
       "xunit.abstractions/2.0.3": {
         "runtime": {
           "lib/netstandard2.0/xunit.abstractions.dll": {
@@ -1300,6 +1348,13 @@
       "sha512": "sha512-tW3lsNS+dAEII6YGUX/VMoJjBS1QvsxqJeqLaJXub08y1FSjasFPtQ4UBUsudE9PNrzLjooClMsPtY2cZLdXpQ==",
       "path": "coverlet.collector/6.0.0",
       "hashPath": "coverlet.collector.6.0.0.nupkg.sha512"
+    },
+    "Fluid.Core/2.2.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qQdMyknluaQ4+e/TuedqdXK1NBVBAQJs8mru6aaeS1Q57IxMNCX4CaZcfT2MpKB6FJgz08n6XrM43K7iMCCwFg==",
+      "path": "fluid.core/2.2.15",
+      "hashPath": "fluid.core.2.2.15.nupkg.sha512"
     },
     "Humanizer.Core/2.14.1": {
       "type": "package",
@@ -1588,6 +1643,13 @@
       "path": "njsonschema.annotations/11.0.0-preview008",
       "hashPath": "njsonschema.annotations.11.0.0-preview008.nupkg.sha512"
     },
+    "NJsonSchema.CodeGeneration/10.9.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ACo8YoZQF32QHDyGSIvaJ69gRzzNNE3LI+AYhM671bv6DAy0uWzdpqov4GvxpEqJHzhkmPjUgWwpdoH6HtOPIQ==",
+      "path": "njsonschema.codegeneration/10.9.0",
+      "hashPath": "njsonschema.codegeneration.10.9.0.nupkg.sha512"
+    },
     "NJsonSchema.NewtonsoftJson/11.0.0-preview006": {
       "type": "package",
       "serviceable": true,
@@ -1671,6 +1733,13 @@
       "sha512": "sha512-e9BjN4hkQp7k/NGRtfHzR/tpXtBpOMEM6scpQhhIKzM9SiUgmGKGR/4fZTXq1VHzhL7ol6cBJYA2dSPigRCHcw==",
       "path": "nswag.msbuild/14.0.0-preview012",
       "hashPath": "nswag.msbuild.14.0.0-preview012.nupkg.sha512"
+    },
+    "Parlot/0.0.23": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+Ts7GN++fLX5OOJfmnhzkKWBAovfykfnoZKT844Lnu3a/aNIvQFqdlZ8/b/SY9vE0+ho02/XnzbzWoXddceeDA==",
+      "path": "parlot/0.0.23",
+      "hashPath": "parlot.0.0.23.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",
@@ -2252,6 +2321,13 @@
       "sha512": "sha512-5zJ0XDxAIg8iy+t4aMnQAu0MqVbqyvfoUVl1yDV61xdo3Vth45oA2FoY4pPkxYAH5f8ixpmTqXeEIya95x0aCQ==",
       "path": "system.xml.xdocument/4.3.0",
       "hashPath": "system.xml.xdocument.4.3.0.nupkg.sha512"
+    },
+    "TimeZoneConverter/3.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ziTcQ5rVxRdtWJEnEqhKBukZGuUQregbf5G7QRrFKj6CwBLss5tSz0dlSHy9gzi5M5ES0PNQ0K2ACP/0XVT5Ow==",
+      "path": "timezoneconverter/3.5.0",
+      "hashPath": "timezoneconverter.3.5.0.nupkg.sha512"
     },
     "xunit.abstractions/2.0.3": {
       "type": "package",

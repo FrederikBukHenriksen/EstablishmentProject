@@ -3,7 +3,7 @@ using WebApplication1.Domain.Entities;
 using WebApplication1.Services.Analysis;
 using Xunit;
 
-namespace EstablishmentProject.Test
+namespace EstablishmentProject.test
 {
     public class MeanShiftClusteringTests
     {

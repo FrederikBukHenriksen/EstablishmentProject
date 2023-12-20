@@ -13,42 +13,45 @@ using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Program;
 using Xunit;
 
-namespace EstablishmentProject.Test
+namespace EstablishmentProject.test
 {
     public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
-        public PostgreSqlContainer _dbContainer;
-        public IntegrationTestWebAppFactory()
-        {
-            _dbContainer =
-            new PostgreSqlBuilder()
+        public PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
             .WithImage("postgres:latest")
-            .WithDatabase("test")
+            .WithDatabase("EstablishmentProject")
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();
+
+        public Task InitializeAsync()
+        {
+            return _dbContainer.StartAsync();
         }
 
-        public async Task InitializeAsync()
+        public new Task DisposeAsync()
         {
-            await _dbContainer.StartAsync();
-        }
-
-        async Task IAsyncLifetime.DisposeAsync()
-        {
-            await _dbContainer.StopAsync();
+            return _dbContainer.StopAsync();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(services =>
+            builder.ConfigureTestServices(services =>
             {
-                // Replace the DbContext registration with a version that uses the PostgreSQL container connection string
-                services.RemoveAll(typeof(ApplicationDbContext));
+                var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                if(descriptor is not null)
+                {
+                    services.Remove(descriptor);
+                }
+
                 services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    options.UseNpgsql(_dbContainer.GetConnectionString());
-                });
+                    options.UseNpgsql(_dbContainer.GetConnectionString()
+                        );
+                }
+                );
+            
+            
             });
         }
 

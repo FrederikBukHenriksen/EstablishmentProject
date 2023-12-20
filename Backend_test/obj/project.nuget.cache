@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "f2dZqZBVxoLFdw9ETWZcS2NJJuAwReuOqOB+G3bNPQG5zagWT16kfphHVqjznBTsfgB/OpVShYAGZdYdMZ+Ndw==",
+  "dgSpecHash": "jusNes19+uOK/BrvpAitXDNP5qqOegI9QhgXqMlw2FeywdDpENldqSX2bMo4WoEk2d7TjQwUsLrOdo1fIM6Vpw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject.Test\\EstablishmentProject.test.csproj",
+  "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend_test\\EstablishmentProject.test.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ekste\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",

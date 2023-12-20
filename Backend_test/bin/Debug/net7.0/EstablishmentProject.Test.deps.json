@@ -406,6 +406,22 @@
           "lib/netstandard2.1/Docker.DotNet.X509.dll": {}
         }
       },
+      "Fluid.Core/2.2.15": {
+        "dependencies": {
+          "Microsoft.Extensions.FileProviders.Abstractions": "7.0.0",
+          "Parlot": "0.0.23",
+          "TimeZoneConverter": "3.5.0"
+        },
+        "runtime": {
+          "lib/net6.0/Fluid.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/net6.0/Fluid.dll": {}
+        }
+      },
       "MathNet.Numerics/5.0.0": {
         "runtime": {
           "lib/net6.0/MathNet.Numerics.dll": {
@@ -1279,6 +1295,23 @@
           "lib/netstandard2.0/NJsonSchema.Annotations.dll": {}
         }
       },
+      "NJsonSchema.CodeGeneration/10.9.0": {
+        "dependencies": {
+          "Fluid.Core": "2.2.15",
+          "NJsonSchema": "11.0.0-preview008",
+          "Newtonsoft.Json": "13.0.3",
+          "System.Text.Encodings.Web": "7.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NJsonSchema.CodeGeneration.dll": {
+            "assemblyVersion": "10.9.0.0",
+            "fileVersion": "10.9.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/NJsonSchema.CodeGeneration.dll": {}
+        }
+      },
       "NJsonSchema.NewtonsoftJson/11.0.0-preview006": {
         "dependencies": {
           "NJsonSchema": "11.0.0-preview008",
@@ -1454,6 +1487,17 @@
         },
         "compile": {
           "lib/netstandard2.0/NuGet.Frameworks.dll": {}
+        }
+      },
+      "Parlot/0.0.23": {
+        "runtime": {
+          "lib/netstandard2.1/Parlot.dll": {
+            "assemblyVersion": "0.0.23.0",
+            "fileVersion": "0.0.23.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.1/Parlot.dll": {}
         }
       },
       "RichardSzalay.MockHttp/7.0.0": {
@@ -2256,6 +2300,17 @@
           "lib/netstandard2.1/Testcontainers.PostgreSql.dll": {}
         }
       },
+      "TimeZoneConverter/3.5.0": {
+        "runtime": {
+          "lib/netstandard2.0/TimeZoneConverter.dll": {
+            "assemblyVersion": "3.5.0.0",
+            "fileVersion": "3.5.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/TimeZoneConverter.dll": {}
+        }
+      },
       "xunit/2.4.2": {
         "dependencies": {
           "xunit.analyzers": "1.0.0",
@@ -2345,8 +2400,13 @@
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "7.0.0",
           "Microsoft.EntityFrameworkCore": "7.0.11",
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
+          "NJsonSchema.CodeGeneration": "10.9.0",
+          "NSwag.Annotations": "14.0.0-preview009",
           "NSwag.AspNetCore": "14.0.0-preview009",
           "NSwag.Core": "14.0.0-preview012",
+          "NSwag.Core.Yaml": "14.0.0-preview009",
+          "NSwag.Generation": "14.0.0-preview009",
+          "NSwag.Generation.AspNetCore": "14.0.0-preview009",
           "Newtonsoft.Json": "13.0.3",
           "Newtonsoft.Json.Bson": "1.0.2",
           "NodaTime": "3.1.9",
@@ -4189,6 +4249,13 @@
       "path": "docker.dotnet.x509/3.125.15",
       "hashPath": "docker.dotnet.x509.3.125.15.nupkg.sha512"
     },
+    "Fluid.Core/2.2.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qQdMyknluaQ4+e/TuedqdXK1NBVBAQJs8mru6aaeS1Q57IxMNCX4CaZcfT2MpKB6FJgz08n6XrM43K7iMCCwFg==",
+      "path": "fluid.core/2.2.15",
+      "hashPath": "fluid.core.2.2.15.nupkg.sha512"
+    },
     "MathNet.Numerics/5.0.0": {
       "type": "package",
       "serviceable": true,
@@ -4623,6 +4690,13 @@
       "path": "njsonschema.annotations/11.0.0-preview008",
       "hashPath": "njsonschema.annotations.11.0.0-preview008.nupkg.sha512"
     },
+    "NJsonSchema.CodeGeneration/10.9.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ACo8YoZQF32QHDyGSIvaJ69gRzzNNE3LI+AYhM671bv6DAy0uWzdpqov4GvxpEqJHzhkmPjUgWwpdoH6HtOPIQ==",
+      "path": "njsonschema.codegeneration/10.9.0",
+      "hashPath": "njsonschema.codegeneration.10.9.0.nupkg.sha512"
+    },
     "NJsonSchema.NewtonsoftJson/11.0.0-preview006": {
       "type": "package",
       "serviceable": true,
@@ -4706,6 +4780,13 @@
       "sha512": "sha512-eaiXkUjC4NPcquGWzAGMXjuxvLwc6XGKMptSyOGQeT0X70BUZObuybJFZLA0OfTdueLd3US23NBPTBb6iF3V1Q==",
       "path": "nuget.frameworks/5.11.0",
       "hashPath": "nuget.frameworks.5.11.0.nupkg.sha512"
+    },
+    "Parlot/0.0.23": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+Ts7GN++fLX5OOJfmnhzkKWBAovfykfnoZKT844Lnu3a/aNIvQFqdlZ8/b/SY9vE0+ho02/XnzbzWoXddceeDA==",
+      "path": "parlot/0.0.23",
+      "hashPath": "parlot.0.0.23.nupkg.sha512"
     },
     "RichardSzalay.MockHttp/7.0.0": {
       "type": "package",
@@ -5343,6 +5424,13 @@
       "sha512": "sha512-Z/cpR9hOURxgl8ksarqSInkmmISseXkRRpthTgc2o2XX8ckrIQtOYNqpuJ6Hx7mELzRc6xw0/Xgz7998MMalAw==",
       "path": "testcontainers.postgresql/3.5.0",
       "hashPath": "testcontainers.postgresql.3.5.0.nupkg.sha512"
+    },
+    "TimeZoneConverter/3.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ziTcQ5rVxRdtWJEnEqhKBukZGuUQregbf5G7QRrFKj6CwBLss5tSz0dlSHy9gzi5M5ES0PNQ0K2ACP/0XVT5Ow==",
+      "path": "timezoneconverter/3.5.0",
+      "hashPath": "timezoneconverter.3.5.0.nupkg.sha512"
     },
     "xunit/2.4.2": {
       "type": "package",

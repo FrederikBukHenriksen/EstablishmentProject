@@ -14,7 +14,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 using WebApplication1.Domain.Entities;
 
-namespace EstablishmentProject.Test
+namespace EstablishmentProject.test
 {
     public class DMIOpenDataClientTests : BaseIntegrationTest
     {

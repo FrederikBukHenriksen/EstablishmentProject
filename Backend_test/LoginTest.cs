@@ -1,4 +1,4 @@
-//using EstablishmentProject.Test;
+//using EstablishmentProject.test;
 //using System.Net;
 //using System.Net.Http.Json;
 //using System.Text.RegularExpressions;
@@ -6,7 +6,7 @@
 //using WebApplication1.CommandsHandlersReturns;
 //using WebApplication1.Domain.Entities;
 
-//namespace EstablishmentProject.Test
+//namespace EstablishmentProject.test
 //{
 //    [Collection("Login")]
 //    public class LoginTest : BaseIntegrationTest

@@ -1,4 +1,4 @@
-﻿using EstablishmentProject.Test;
+﻿using EstablishmentProject.test;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -11,7 +11,7 @@ using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Services;
 
-namespace EstablishmentProject.Test
+namespace EstablishmentProject.test
 {
     public class RepositoryTest : BaseIntegrationTest
     {
