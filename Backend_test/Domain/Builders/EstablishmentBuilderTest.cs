@@ -37,9 +37,9 @@ namespace EstablishmentProject.test
         public void WithItems_Should_Set_Items()
         {
             // Arrange
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder();
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
             var itemBuilder = factoryServiceBuilder.ItemBuilder();
-            var items = new List<Item> { itemBuilder.Build() };
+            var items = new List<Item> { itemBuilder.WithName("Coffee").WithPrice(25).Build() };
 
             // Act
             var establishment = establishmentBuilder.WithItems(items).Build();
@@ -52,7 +52,7 @@ namespace EstablishmentProject.test
         public void WithTables_Should_Set_Tables()
         {
             // Arrange
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder();
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
             var tables = new List<Table> { new Table { }, new Table { } }; //TODO USE TABLE BUILDER
 
             // Act
@@ -66,9 +66,9 @@ namespace EstablishmentProject.test
         public void WithSales_Should_Set_Sales()
         {
             // Arrange
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder();
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
             var saleBuilder = factoryServiceBuilder.SaleBuilder();
-            var sales = new List<Sale> { saleBuilder.Build() };
+            var sales = new List<Sale> { saleBuilder.WithTimestampPayment(DateTime.Now).Build() };
 
             // Act
             var establishment = establishmentBuilder.WithSales(sales).Build();
@@ -82,7 +82,7 @@ namespace EstablishmentProject.test
         {
             // Arrange
             var establishmentBuilder1 = factoryServiceBuilder.EstablishmentBuilder();
-            var establishment1 = establishmentBuilder1.Build();
+            var establishment1 = establishmentBuilder1.WithName("Establishment").Build();
 
 
             // Act
@@ -98,11 +98,11 @@ namespace EstablishmentProject.test
         {
             // Arrange
             var establishmentBuilder1 = factoryServiceBuilder.EstablishmentBuilder();
-            var establishment1 = establishmentBuilder1.Build();
+            var establishment1 = establishmentBuilder1.WithName("Establishment 1").Build();
             var establishmentBuilder2 = factoryServiceBuilder.EstablishmentBuilder();
 
             // Act
-            var establishment2 = establishmentBuilder2.Build();
+            var establishment2 = establishmentBuilder2.WithName("Establishment 2").Build();
 
             // Assert
             Assert.NotEqual(establishment1, establishment2);

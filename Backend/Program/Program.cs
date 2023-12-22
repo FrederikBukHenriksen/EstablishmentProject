@@ -27,32 +27,21 @@ namespace WebApplication1.Program
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); //Make postgres use timestamp instead of timestamptz
-
-            string connectionString = "Host=localhost; Database=EstablishmentProject; Username=postgres; password=postgres";
-
             AddAuthentication(builder);
 
             AddAuthorization(builder);
 
-            AddDatabase(builder, connectionString);
+            AddDatabase(builder);
 
             //Add repository
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
-                    //options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
-                    //options.SerializerSettings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
                     options.SerializerSettings.TypeNameHandling = TypeNameHandling.Objects;
                     options.SerializerSettings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
-                    //options.SerializerSettings.Converters.Add(new PolymorphicJsonConverter());
-
                 });
 
-
-
             builder.Services.AddTransient<ApplicationDbContext>();
-
 
             builder.Services.AddControllers();
 
@@ -83,8 +72,12 @@ namespace WebApplication1.Program
             app.Run();
         }
 
-        private static void AddDatabase(WebApplicationBuilder builder, string? connectionString)
+        private static void AddDatabase(WebApplicationBuilder builder)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); //Make postgres use timestamp instead of 'timestamptz'-datatype.
+
+            string connectionString = "Host=localhost; Database=EstablishmentProject; Username=postgres; password=postgres";
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
@@ -134,7 +127,6 @@ namespace WebApplication1.Program
         {
             app.UseMiddleware<UserContextMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-
         }
 
         private static void AutoMigrate(WebApplication app)

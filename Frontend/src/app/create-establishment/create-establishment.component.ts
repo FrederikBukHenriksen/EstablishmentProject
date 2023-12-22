@@ -33,6 +33,7 @@ import {
   GetAllDatesBetween as GetAllFromTimeperiodByTimeResolution,
   todayDateUtc,
 } from '../utils/TimeHelper';
+import { FormControl } from '@angular/forms';
 export interface fecthingAndExtracting {
   name: string;
   command: CommandBase;
@@ -83,6 +84,8 @@ export class CreateEstablishmentComponent {
   } as ChartOptions;
 
   protected items: CheckBoxData[] = [];
+
+  dateControl = new FormControl();
 
   public settingsDialogData: settingsDialogData = {
     groups: [

@@ -10,6 +10,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GraphModule } from '../graph/graph.component.module';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 @NgModule({
   declarations: [CreateEstablishmentComponent],
   imports: [
@@ -25,6 +29,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     GraphModule,
     MatTabsModule,
     MatCheckboxModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
 })
 export class CreateEstablishmentModule {}

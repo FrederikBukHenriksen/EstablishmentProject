@@ -19,6 +19,9 @@ import { NgChartsModule } from 'ng2-charts';
 import { DialogCheckboxModule } from './dialog-checkbox/dialog.checkbox.component.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarComponent],
@@ -38,6 +41,9 @@ import { MatButtonModule } from '@angular/material/button';
     NgChartsModule,
     MatToolbarModule,
     MatButtonModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },
