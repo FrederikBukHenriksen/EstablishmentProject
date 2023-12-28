@@ -3,24 +3,24 @@ using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
-    namespace WebApplication1.Domain.Entities
+namespace WebApplication1.Domain.Entities
+{
+    public interface IEstablishmentBuilder : IEntityBuilder<Establishment>
     {
-        public interface IEstablishmentBuilder : IEntityBuilder<Establishment>
-        {
         IEstablishmentBuilder WithName(string name);
         IEstablishmentBuilder WithItems(ICollection<Item> items);
         IEstablishmentBuilder WithTables(ICollection<Table> tables);
         IEstablishmentBuilder WithSales(ICollection<Sale> sales);
-        }
+    }
 
-        public class EstablishmentBuilder : EntityBuilderBase<Establishment>, IEstablishmentBuilder
-        {
+    public class EstablishmentBuilder : EntityBuilderBase<Establishment>, IEstablishmentBuilder
+    {
         private IEstablishmentRepository establishmentRepository;
 
         private string? builderName = null;
-        private ICollection<Item>? builderItems = null;
-        private ICollection<Table>? builderTables = null;
-        private ICollection<Sale>? builderSales = null;
+        private ICollection<Item> builderItems = new List<Item>();
+        private ICollection<Table> builderTables = new List<Table>();
+        private ICollection<Sale> builderSales = new List<Sale>();
 
         public EstablishmentBuilder([FromServices] IEstablishmentRepository establishmentRepository)
         {
@@ -68,8 +68,8 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
 
         public override bool Validation()
         {
-            if (!this.doesEstablishmentHaveName(builderName)) throw new System.Exception("Establishment must have a name");
-            if (!this.isItemsInSalesIsAssignedToTheEstablishment(builderSales)) throw new System.Exception("Items in sales must exist in the establishment");
+            if (!this.doesEstablishmentHaveName(this.builderName)) throw new System.Exception("Establishment must have a name");
+            if (!this.isItemsInSalesIsAssignedToTheEstablishment(this.builderSales)) throw new System.Exception("Sold items in sales must exist in the establishment");
             return true;
         }
 
@@ -82,11 +82,15 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
         {
             if (!sales.IsNullOrEmpty())
             {
-                ICollection<Item> allItemsFromSales = builderSales.SelectMany(sale => sale.SalesItems.Select(saleItem => saleItem.Item)).ToList();
-                ICollection<Item> establishmentItems = builderItems;
+                ICollection<Item> allItemsFromSales = this.builderSales
+                    .SelectMany(sale => sale?.SalesItems?.Select(saleItem => saleItem?.Item) ?? Enumerable.Empty<Item>())
+                    .ToList() ?? new List<Item>();
+
+                ICollection<Item> establishmentItems = this.builderItems;
                 bool establishmentHasAllItems = allItemsFromSales.All(item => establishmentItems.Contains(item));
                 return establishmentHasAllItems;
-            } else
+            }
+            else
             {
                 return true;
             }

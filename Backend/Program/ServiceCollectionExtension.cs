@@ -1,8 +1,5 @@
-﻿using MathNet.Numerics;
-using WebApplication1.Application_Layer.Services;
+﻿using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
-using WebApplication1.CommandsHandlersReturns;
-using WebApplication1.Data;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
@@ -17,7 +14,8 @@ namespace WebApplication1.Program
     {
         public static void AddServices(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<ApplicationDbContext>();    
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddScoped<ApplicationDbContext>();
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
@@ -32,7 +30,7 @@ namespace WebApplication1.Program
 
 
             serviceCollection.AddScoped<IFactoryServiceBuilder, FactoryServiceBuilder>();
-            serviceCollection.AddScoped<ITestDataCreatorService,TestDataCreatorService>();
+            serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
 
 
         }

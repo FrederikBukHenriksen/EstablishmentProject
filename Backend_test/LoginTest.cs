@@ -1,121 +1,177 @@
-//using EstablishmentProject.test;
-//using System.Net;
-//using System.Net.Http.Json;
-//using System.Text.RegularExpressions;
-//using WebApplication1.CommandHandlers;
-//using WebApplication1.CommandsHandlersReturns;
-//using WebApplication1.Domain.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.RegularExpressions;
+using WebApplication1.CommandHandlers;
+using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Services.Entity_builders;
 
-//namespace EstablishmentProject.test
-//{
-//    [Collection("Login")]
-//    public class LoginTest : BaseIntegrationTest
-//    {
-//        private const string apiLogin = "/api/authentication/Login";
-//        private const string apiIsLoggedIn = "/api/authentication/is-logged-in";
+namespace EstablishmentProject.test
+{
+    [Collection("Login")]
+    public class LoginTest : BaseIntegrationTest
+    {
+        private const string apiLogin = "/api/authentication/login";
+        private const string apiLogout = "/api/authentication/logout";
+        private const string apiIsLoggedIn = "/api/authentication/is-logged-in";
+        private const string apiGetLoggedInUser = "/api/authentication/get-logged-in-user";
 
-//        public LoginTest(IntegrationTestWebAppFactory factory) : base(factory)
-//        {
-//            //Arrange
-//            List<User> users = new List<User> {
-//                new User()
-//                {
-//                    Username = "Frederik",
-//                    Password = "LydiaErSød"
-//                },
-//                new User()
-//                {
-//                    Username = "Lydia",
-//                    Password = "FrederikErSød"
-//                }
-//            };
-//            dbContext.Set<User>().AddRange(users);
-//            dbContext.SaveChanges();
-//        }
+        private IFactoryServiceBuilder factoryServiceBuilder;
 
-//        public static class LoginTestParameterData
-//        {
-//            public static IEnumerable<object[]> Data =>
-//                new List<object[]>
-//                {
-//                    //Correct logins
-//                    new object[] { new LoginCommand { Username = "Frederik", Password = "LydiaErSød" }, HttpStatusCode.OK },
-//                    new object[] { new LoginCommand { Username = "frederik", Password = "LydiaErSød" }, HttpStatusCode.OK },
-//                    //Wrong username and password
-//                    new object[] { new LoginCommand { Username = "Frederik", Password = "LydiaErDum" }, HttpStatusCode.Unauthorized },
-//                    new object[] { new LoginCommand { Username = "Frederikke", Password = "LydiaErSød" }, HttpStatusCode.Unauthorized },
-//                    new object[] { new LoginCommand { Username = "Frederikke", Password = "LydiaErDum" }, HttpStatusCode.Unauthorized },
-//                    //Cross credentials
-//                    new object[] { new LoginCommand { Username = "Frederik", Password = "FrederikErSød"}, HttpStatusCode.Unauthorized },
-//                    //Bad request tests
-//                    new object[] { new LoginCommand { Username = "Frederik", Password = null}, HttpStatusCode.BadRequest },
-//                    new object[] { new LoginCommand { Username = null, Password = "LydiaErSød" }, HttpStatusCode.BadRequest },
-//                    new object[] { new LoginCommand { Username = null, Password = null}, HttpStatusCode.BadRequest },
-//                };
-//        }
+        public LoginTest(IntegrationTestWebAppFactory factory) : base(factory)
+        {
+            factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
 
-//        [Theory]
-//        [MemberData(nameof(LoginTestParameterData.Data), MemberType = typeof(LoginTestParameterData))]
-//        public async void LoginWithCredentials(LoginCommand loginCommand, HttpStatusCode loginExpected)
-//        {
-//            //Act
-//            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
+            List<User> users = new List<User> {
+                factoryServiceBuilder.UserBuilder().WithEmail("frederik@mail.com").WithPassword("hello123").Build(),
+                factoryServiceBuilder.UserBuilder().WithEmail("lydia@mail.com").WithPassword("goodbye123").Build(),
+            };
 
-//            string? jwtToken = null;
-//            try
-//            {
-//                jwtToken = extractJwtToken(loginResponse);
-//                httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
+            dbContext.Set<User>().AddRange(users);
+            dbContext.SaveChanges();
+        }
 
-//            }
-//            catch (Exception e)
-//            {
-//            }
+        [Theory]
+        [InlineData("frederik@mail.com", "hello123")]
+        [InlineData("Frederik@Mail.COM", "hello123")]
+        public async void Login__Success(string username, string password)
+        {
+            //ARRANGE
+            LoginCommand LoginCommand = new LoginCommand
+            {
+                Username = username,
+                Password = password
+            };
 
-//            HttpResponseMessage isLoggedinResponse = await httpClient.GetAsync("/api/authentication/is-logged-in");
+            //ACT
+            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
 
-//            //Assert
-//            switch (loginExpected)
-//            {
-//                case HttpStatusCode.OK:
-//                    Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
-//                    Assert.NotNull(jwtToken);
-//                    Assert.Equal(true, bool.Parse(await isLoggedinResponse.Content.ReadAsStringAsync()));
-//                    break;
-//                case HttpStatusCode.Unauthorized:
-//                    Assert.Equal(HttpStatusCode.Unauthorized, loginResponse.StatusCode);
-//                    Assert.Null(jwtToken);
-//                    Assert.Equal(HttpStatusCode.OK, isLoggedinResponse.StatusCode);
-//                    break;
-//                case HttpStatusCode.BadRequest:
-//                    Assert.Equal(HttpStatusCode.BadRequest, loginResponse.StatusCode);
-//                    Assert.Null(jwtToken);
-//                    break;
-//                default:
-//                    Assert.Fail("No assertion match was found");
-//                    break;
-//            }
-//        }
+            string jwtToken = extractJwtTokenHelper(loginResponse);
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
 
-//        private string extractJwtToken(HttpResponseMessage response)
-//        {
-//            if (!response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? cookieValues))
-//            {
-//                throw new Exception("Set-Cookie header not found in the response.");
-//            }
 
-//            string cookieString = cookieValues.FirstOrDefault();
+            //ASSERT
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+            Assert.NotNull(jwtToken);
 
-//            string pattern = @"jwt=([^;]+)";
-//            Match match = Regex.Match(cookieString, pattern);
+        }
 
-//            if (!match.Success)
-//            {
-//                throw new Exception("JWT token not found in the Set-Cookie header.");
-//            }
+        [Theory]
+        [InlineData("rederik@mail.com", "hello123")] //Wrong username
+        [InlineData("frederik@mail.com", "hallo123")] //Misspelled password
+        [InlineData("frederik@mail.com", "Hallo123")] //Usser case password
+        public async void Login__Failure__Wrong_Credentials(string username, string password)
+        {
+            //ARRANGE
+            LoginCommand LoginCommand = new LoginCommand
+            {
+                Username = username,
+                Password = password
+            };
 
-//            return match.Groups[1].Value;
-//        }
+            //ACT
+            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
 
-//    }
-//}
+            string jwtToken = extractJwtTokenHelper(loginResponse);
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
+
+
+            //ASSERT
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+            Assert.NotNull(jwtToken);
+
+        }
+
+        public async void IsLoggedIn__Success__A_User_Is_Logged_In()
+        {
+            //ARRANGE
+            LoginCommand LoginCommand = new LoginCommand
+            {
+                Username = "frederik@mail.com",
+                Password = "hello123"
+            };
+
+            //ACT
+            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
+
+            HttpResponseMessage isLoggedinResponse = await httpClient.GetAsync(apiIsLoggedIn);
+
+
+            //ASSERT
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, isLoggedinResponse.StatusCode);
+
+            string responseContent = await isLoggedinResponse.Content.ReadAsStringAsync();
+            Assert.Equal("true", responseContent);
+        }
+
+        [Fact]
+        public async void IsLoggedIn__Success__A_User_Is_Not_Logged_in()
+        {
+            //ACT
+            HttpResponseMessage isLoggedinResponse = await httpClient.GetAsync(apiIsLoggedIn);
+
+            //ASSERT
+            Assert.Equal(HttpStatusCode.OK, isLoggedinResponse.StatusCode);
+
+            string responseContent = await isLoggedinResponse.Content.ReadAsStringAsync();
+            Assert.Equal("false", responseContent);
+        }
+
+        [Fact]
+        public async void Logout__Success()
+        {
+            //ARRANGE
+            LoginCommand LoginCommand = new LoginCommand
+            {
+                Username = "frederik@mail.com",
+                Password = "hello123"
+            };
+
+            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
+            HttpResponseMessage isLoggedinResponsePre = await httpClient.GetAsync(apiIsLoggedIn);
+
+            //ACT
+            HttpResponseMessage logoutResponse = await httpClient.GetAsync(apiLogout);
+
+            //ASSERT
+            //Assert the user is logged in
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, isLoggedinResponsePre.StatusCode);
+            string isLoggedinResponsePreContent = await isLoggedinResponsePre.Content.ReadAsStringAsync();
+            Assert.Equal("true", isLoggedinResponsePreContent);
+
+            //Assert the logout has happened
+            Assert.Equal(HttpStatusCode.OK, logoutResponse.StatusCode);
+
+            //Assert the user is logged out
+            HttpResponseMessage isLoggedinResponsePost = await httpClient.GetAsync(apiIsLoggedIn);
+            string isLoggedinResponsePostContent = await isLoggedinResponsePre.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.OK, isLoggedinResponsePost.StatusCode);
+            Assert.Equal("false", isLoggedinResponsePostContent);
+
+
+        }
+
+        private string extractJwtTokenHelper(HttpResponseMessage response)
+        {
+            if (!response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? cookieValues))
+            {
+                throw new Exception("Set-Cookie header not found in the response.");
+            }
+
+            string cookieString = cookieValues.FirstOrDefault();
+
+            string pattern = @"jwt=([^;]+)";
+            Match match = Regex.Match(cookieString, pattern);
+
+            if (!match.Success)
+            {
+                throw new Exception("JWT token not found in the Set-Cookie header.");
+            }
+
+            return match.Groups[1].Value;
+        }
+
+    }
+}

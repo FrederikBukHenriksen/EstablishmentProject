@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Services.Analysis;
-using Xunit;
 
 namespace EstablishmentProject.test
 {
@@ -10,7 +8,7 @@ namespace EstablishmentProject.test
         [Fact]
         public void Cluster_ReturnsCorrectNumberOfClusters()
         {
-               // Arrange
+            // Arrange
             var data = new List<(Sale sale, List<double> values)>()
             {
                 (new Sale(), new List<double>() { 1, 2, 3 }),

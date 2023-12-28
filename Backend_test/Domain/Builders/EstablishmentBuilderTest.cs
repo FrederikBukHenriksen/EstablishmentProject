@@ -1,14 +1,8 @@
-﻿using EstablishmentProject.test;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
-namespace EstablishmentProject.test
+namespace EstablishmentProject.test.Domain.Builders
 {
     public class EstablishmentBuilderTest : BaseIntegrationTest
     {
@@ -63,7 +57,7 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public void WithSales_Should_Set_Sales()
+        public void WithSales__Success()
         {
             // Arrange
             var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
@@ -75,6 +69,48 @@ namespace EstablishmentProject.test
 
             // Assert
             Assert.Equal(sales, establishment.Sales);
+        }
+
+        [Fact]
+        public void WithSales__Success__With_Contained_Item()
+        {
+            // Arrange
+            var coffee = factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build();
+
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment").WithItems(new List<Item> { coffee });
+            var saleBuilder = factoryServiceBuilder.SaleBuilder();
+            var sales = new List<Sale> { saleBuilder.WithSoldItems(new List<(Item item, int quantity)> { (coffee, 1) }).WithTimestampPayment(DateTime.Now).Build() };
+
+            // Act
+            var establishment = establishmentBuilder.WithSales(sales).Build();
+
+            // Assert
+            Assert.Equal(sales, establishment.Sales);
+        }
+
+        [Fact]
+        public void WithSales__Failure__Without_Contained_Item()
+        {
+            // Arrange
+            var coffee = factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build();
+
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
+            var saleBuilder = factoryServiceBuilder.SaleBuilder();
+            var sales = new List<Sale> { saleBuilder.WithSoldItems(new List<(Item item, int quantity)> { (coffee, 1) }).WithTimestampPayment(DateTime.Now).Build() };
+
+            Establishment? establishment = null;
+
+            // Act
+            var exception = Record.Exception(() =>
+            {
+                establishment = establishmentBuilder.WithSales(sales).Build();
+            });
+
+            // Assert
+            Assert.Null(establishment);
+            Assert.NotNull(exception);
+            Assert.IsType(typeof(System.Exception), exception);
+            Assert.Equal("Sold items in sales must exist in the establishment", exception.Message);
         }
 
         [Fact]

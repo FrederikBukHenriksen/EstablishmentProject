@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Services;
@@ -29,11 +27,11 @@ namespace WebApplication1.CommandHandlers
             this.authService = authService;
         }
 
-            public override LoginReturn Handle(LoginCommand command)
-            {
-                User user = authService.Login(command.Username, command.Password);
-                var result = authService.GenerateJwtToken(user.Id);
-                return new LoginReturn { Token = result };
-            }
+        public override LoginReturn Handle(LoginCommand command)
+        {
+            User user = this.authService.Login(command.Username, command.Password);
+            var result = this.authService.GenerateJwtToken(user.Id);
+            return new LoginReturn { Token = result };
+        }
     }
 }

@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Security.Claims;
 using WebApplication1.CommandHandlers;
-using WebApplication1.CommandsHandlersReturns;
-using WebApplication1.Data.DataModels;
-using WebApplication1.Domain.Entities;
 using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
@@ -26,12 +21,12 @@ namespace WebApplication1.Controllers
             {
                 LoginReturn loginReturn = loginCommandHandler.Handle(loginCommand);
                 this.HttpContext.Response.Cookies.Append("jwt", loginReturn.Token, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
-                return Ok();
+                return this.Ok();
             }
             catch (Exception e)
             {
                 //this.HttpContext.Response.StatusCode = 401;
-                return Unauthorized(e);
+                return this.Unauthorized(e);
             }
         }
 
@@ -43,19 +38,11 @@ namespace WebApplication1.Controllers
             return;
         }
 
-
         [AllowAnonymous]
         [HttpGet("is-logged-in")]
         public bool IsLoggedIn([FromServices] IAuthService authenticationService)
         {
             return authenticationService.GetUserFromHttp(this.HttpContext) != null;
-        }
-
-        [AllowAnonymous]
-        [HttpGet("get-logged-in-user")]
-        public User GetLoggedInUser([FromServices] IUserContextService userContextService)
-        {
-            return userContextService.GetUser();
         }
     }
 }
