@@ -1,6 +1,6 @@
 ﻿namespace EstablishmentProject.test
 {
-    public class UnitOfWorkTest
+    public class UnitOfWorkTest : IClassFixture<IntegrationTestWebAppFactory>
     {
     }
 }

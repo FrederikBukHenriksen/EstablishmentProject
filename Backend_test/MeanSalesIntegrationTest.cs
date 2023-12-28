@@ -6,7 +6,7 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
-namespace EstablishmentProject.test
+namespace EstablishmentProject.test.CommandHandlers.MeanSales
 {
     public class MeanSalesIntegrationTest : BaseIntegrationTest
     {
