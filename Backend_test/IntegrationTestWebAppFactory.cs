@@ -1,17 +1,11 @@
-using DotNet.Testcontainers.Builders;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Renci.SshNet;
 using Testcontainers.PostgreSql;
 using WebApplication1.Data;
-using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Program;
-using Xunit;
 
 namespace EstablishmentProject.test
 {
@@ -39,7 +33,7 @@ namespace EstablishmentProject.test
             builder.ConfigureTestServices(services =>
             {
                 var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-                if(descriptor is not null)
+                if (descriptor is not null)
                 {
                     services.Remove(descriptor);
                 }
@@ -50,8 +44,8 @@ namespace EstablishmentProject.test
                         );
                 }
                 );
-            
-            
+
+
             });
         }
 

@@ -1,10 +1,6 @@
-﻿using EstablishmentProject.test;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using System;
-using System.Linq;
 using WebApplication1.Data;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
@@ -34,12 +30,12 @@ namespace EstablishmentProject.test
         public UserContextTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
             //Services
-            this._authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-            this._userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
-            this._userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
-            this._factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
+            _authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            _userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
+            _userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
+            _factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
 
-            var database = this.dbContext.Database.GetConnectionString();
+            var database = dbContext.Database.GetConnectionString();
             var ok = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             //Arrange
@@ -60,11 +56,11 @@ namespace EstablishmentProject.test
                 .WithPassword("12345678")
                 .WithUserRoles(new List<(Establishment, Role)> { (establishment1, Role.Admin) })
                 .Build();
-             userLydia = _factoryServiceBuilder
-                .UserBuilder()
-                .WithEmail("Lydia@mail.com")
-                .WithPassword("12345678")
-                .Build();
+            userLydia = _factoryServiceBuilder
+               .UserBuilder()
+               .WithEmail("Lydia@mail.com")
+               .WithPassword("12345678")
+               .Build();
             allUsers = new List<User> { userFrederik, userLydia };
             dbContext.Set<User>().AddRange(allUsers);
 
@@ -75,7 +71,7 @@ namespace EstablishmentProject.test
         public void valid_user_with_userRole()
         {
             //Arrange
-            var jwtToken = _authService.GenerateJwtToken(this.userFrederik.Id);
+            var jwtToken = _authService.GenerateJwtToken(userFrederik.Id);
             DefaultHttpContext httpMock = new DefaultHttpContext();
             httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
 
@@ -85,7 +81,7 @@ namespace EstablishmentProject.test
             List<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
 
             //ASSERT
-            User expectedUser = this.userFrederik;
+            User expectedUser = userFrederik;
 
             //Assert user
             Assert.NotNull(actualUser);
@@ -103,9 +99,10 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public void valid_user_with_no_userRole() {
+        public void valid_user_with_no_userRole()
+        {
             //ARRANGE
-            var jwtToken = _authService.GenerateJwtToken(this.userLydia.Id);
+            var jwtToken = _authService.GenerateJwtToken(userLydia.Id);
             DefaultHttpContext httpMock = new DefaultHttpContext();
             httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
 
@@ -115,7 +112,7 @@ namespace EstablishmentProject.test
             ICollection<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
 
             //ASSERT
-            User expectedUser = this.userLydia;
+            User expectedUser = userLydia;
 
             //Assert user
             Assert.NotNull(actualUser);
@@ -139,7 +136,7 @@ namespace EstablishmentProject.test
             ICollection<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
 
             //ASSERT
-            
+
             //Assert user
             Assert.Null(actualUser);
 

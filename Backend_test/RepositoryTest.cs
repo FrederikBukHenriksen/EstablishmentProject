@@ -1,15 +1,6 @@
-﻿using EstablishmentProject.test;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebApplication1.Data;
+﻿using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
-using WebApplication1.Services;
 
 namespace EstablishmentProject.test
 {
@@ -164,7 +155,7 @@ namespace EstablishmentProject.test
             var repositoryFetchedEstablishments = _repository.FindAll(x => x.Name == "Common name");
 
             // Assert
-            Assert.Equal(2,repositoryFetchedEstablishments.ToList().Count);
+            Assert.Equal(2, repositoryFetchedEstablishments.ToList().Count);
             Assert.True(databaseFectedEstablishments.Any(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000006")));
             Assert.True(databaseFectedEstablishments.Any(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000007")));
 

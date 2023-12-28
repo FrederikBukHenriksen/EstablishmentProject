@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.RegularExpressions;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
@@ -12,7 +13,7 @@ namespace WebApplication1.Domain.Entities
 
     }
     public class UserBuilder : EntityBuilderBase<User>, IUserBuilder
-        {
+    {
         private IUserRepository userRepository;
 
         private string? builderEmail = null;
@@ -39,7 +40,8 @@ namespace WebApplication1.Domain.Entities
 
         public IUserBuilder WithEmail(string email)
         {
-            this.builderEmail = email;
+            var emailLowerCase = email.ToLower();
+            this.builderEmail = emailLowerCase;
             return this;
         }
 
@@ -51,17 +53,22 @@ namespace WebApplication1.Domain.Entities
 
         public override bool Validation()
         {
-            if(!this.IsEmailValid(builderEmail)) throw new Exception("Email is not valid");
-            if(!this.IsEmailUnique(builderEmail)) throw new Exception("Email is not unique");
-            if(!this.IsPasswordValid(builderPassword)) throw new Exception("Password is not valid");
+            if (!this.IsEmailValid(this.builderEmail)) throw new Exception("Email is not valid");
+            if (!this.IsEmailUnique(this.builderEmail)) throw new Exception("Email is not unique");
+            if (!this.IsPasswordValid(this.builderPassword)) throw new Exception("Password is not valid");
             return true;
         }
 
         private bool IsPasswordValid(string password) => password.Length >= 8;
 
-        private bool IsEmailValid(string email) => email.Contains("@");
+        private bool IsEmailValid(string email)
+        {
+            string pattern = @"^(?i)[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            Regex regex = new Regex(pattern);
+            return regex.IsMatch(email);
+        }
 
-        private bool IsEmailUnique(string email) => !(this.userRepository.GetAll().Any(u => u.Email == builderEmail));
+        private bool IsEmailUnique(string email) => !(this.userRepository.GetAll().Any(u => u.Email == this.builderEmail));
 
         public IUserBuilder WithUserRoles(ICollection<(Establishment establishment, Role role)> establishmentAndRole)
         {

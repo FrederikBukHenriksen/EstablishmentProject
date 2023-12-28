@@ -1,18 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Namotion.Reflection;
-using System.Reflection;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Services.Repositories;
+﻿using WebApplication1.Domain.Entities;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Entities.Establishment;
-using static WebApplication1.Domain.Entities.UserRole;
 
 namespace WebApplication1.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
             this.ChangeTracker.LazyLoadingEnabled = false;
         }
 
@@ -39,7 +34,7 @@ namespace WebApplication1.Data
             modelBuilder.Entity<OpeningHours>()
                 .Property(e => e.open)
                 .HasConversion(
-                    v => new DateTime(1,1,1,v.Hour,v.Minute,v.Second), // Adjust to the desired date
+                    v => new DateTime(1, 1, 1, v.Hour, v.Minute, v.Second), // Adjust to the desired date
                     v => new NodaTime.LocalTime(v.Hour, v.Minute, v.Second)
                 );
 
@@ -62,7 +57,7 @@ namespace WebApplication1.Data
 
             modelBuilder.Entity<Location>()
                 .OwnsOne(l => l.Coordinates);
-                
+
             ;
 
             modelBuilder.ApplyConfiguration(new UserConfiguration());
