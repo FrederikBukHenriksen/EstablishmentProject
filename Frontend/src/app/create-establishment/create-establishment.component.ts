@@ -17,6 +17,7 @@ import {
   SalesQueryReturn,
   SalesQuery,
   DateTimePeriod,
+  MSC_Sales_TimeOfVisit_TotalPrice,
 } from 'api';
 import { Observable, lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
@@ -34,16 +35,23 @@ import {
   todayDateUtc,
 } from '../utils/TimeHelper';
 import { FormControl } from '@angular/forms';
+
 export interface fecthingAndExtracting {
-  name: string;
   command: CommandBase;
   fetch: (command: CommandBase) => Observable<ReturnBase>;
   dataExtractor: (data: ReturnBase) => ChartDataset;
 }
 
+export interface displayingCommands {}
+
 export interface typesOfGarphs {
   name: string;
   configuerable: boolean;
+}
+
+export interface TableOfAccesibleEstablishments {
+  name: string;
+  id: string;
 }
 
 @Component({
@@ -51,12 +59,24 @@ export interface typesOfGarphs {
   templateUrl: './create-establishment.component.html',
   styleUrls: ['./create-establishment.component.scss'],
 })
-export class CreateEstablishmentComponent {
+export class CreateEstablishmentComponent implements OnInit {
   private readonly analysisClient = inject(AnalysisClient);
   private readonly establishmentClient = inject(EstablishmentClient);
   public dialog = inject(MatDialog);
 
-  public timeResolution: TimeResolution = TimeResolution.Date;
+  timeresolutions: { value: TimeResolution; viewValue: string }[] = [
+    { value: TimeResolution.Hour, viewValue: 'Hourly' },
+    { value: TimeResolution.Date, viewValue: 'Daily' },
+    { value: TimeResolution.Month, viewValue: 'Monthly' },
+    { value: TimeResolution.Year, viewValue: 'Yearly' },
+  ];
+
+  protected accesibleEstablishments: TableOfAccesibleEstablishments[] = [];
+
+  displayedColumns: string[] = ['name', 'actions'];
+  protected dataSource: TableOfAccesibleEstablishments[] = [];
+
+  public selectedTimeResolution: TimeResolution = TimeResolution.Hour;
   public timePeriod = {
     start: new Date('2021-01-01'),
     end: new Date('2021-12-31-23-59-59'),
@@ -97,20 +117,19 @@ export class CreateEstablishmentComponent {
   };
 
   public grafDictionary: { [key: string]: fecthingAndExtracting } = {
-    // SalesOverTime: {
-    //   name: 'SalesOverTime',
-    //   command: { salesSortingParameters: undefined } as SalesQuery,
-    //   fetch: (command: CommandBase) =>
-    //     this.analysisClient.sales(command as SalesQuery),
-    //   dataExtractor: (data: ReturnBase) => {
-    //     const apiReturn = data as SalesQueryReturn;
-    //     return {
-    //       data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
-    //       label: 'SalesOverTime',
-    //       borderColor: 'red',
-    //     } as ChartDataset;
-    //   },
-    // } as fecthingAndExtracting,
+    SalesOverTime: {
+      command: { salesSortingParameters: undefined } as SalesQuery,
+      fetch: (command: CommandBase) =>
+        this.analysisClient.sales(command as SalesQuery),
+      dataExtractor: (data: ReturnBase) => {
+        const apiReturn = data as SalesQueryReturn;
+        return {
+          data: Object.keys(apiReturn.data).map((key) => apiReturn.data[key]),
+          label: 'SalesOverTime',
+          borderColor: 'red',
+        } as ChartDataset;
+      },
+    } as fecthingAndExtracting,
     // SalesMeanOverTimeAverageSpend: {
     //   name: 'SalesMeanOverTimeAverageSpend',
     //   command: {
@@ -155,6 +174,32 @@ export class CreateEstablishmentComponent {
     );
   }
 
+  public async tester2() {
+    const command = new MSC_Sales_TimeOfVisit_TotalPrice();
+
+    return await lastValueFrom(
+      this.analysisClient.meanShiftClustering(command)
+    );
+  }
+
+  ngOnInit(): void {
+    this.loadIntoArray();
+  }
+
+  private loadIntoArray() {
+    const keysList: string[] = Object.keys(this.grafDictionary);
+    // const valuesList: fecthingAndExtracting[] = keysList.map(
+    //   (key) => this.grafDictionary[key]
+    // );
+
+    this.dataSource = keysList.map((x) => {
+      return {
+        id: x,
+        name: x,
+      };
+    });
+  }
+
   public async getCorrelation() {
     console.log('start on cor');
 
@@ -190,21 +235,15 @@ export class CreateEstablishmentComponent {
     for (const key in this.grafDictionary) {
       if (this.grafDictionary.hasOwnProperty(key)) {
         const entry = this.grafDictionary[key];
-        console.log('Running', entry.name);
+        console.log('Running');
 
         const promise = (async () => {
           const data = await lastValueFrom(entry.fetch(entry.command));
-          console.log('Data', entry.name, data);
+          console.log('Data', data);
           const ChartDataset = entry.dataExtractor(data);
-          console.log('Data', entry.name, data, ChartDataset);
+          console.log('Data', data, ChartDataset);
           this.lineChartData.datasets?.push(ChartDataset);
-          console.log(
-            'Data',
-            entry.name,
-            data,
-            ChartDataset,
-            this.lineChartData
-          );
+          console.log('Data', data, ChartDataset, this.lineChartData);
           this.updateChartForGraphComponent();
         })();
       }
@@ -230,7 +269,9 @@ export class CreateEstablishmentComponent {
 
   async openDialog() {
     // const val = await this.getCorrelation();
-    const test = await this.tester();
+    // await this.tester();
+    await this.tester2();
+
     // const items = await this.GetEstablishmentItems();
     // this.mapGrafDictionaryToChartDataset();
     this.mapGrafDictionaryToChartDatasetv2();

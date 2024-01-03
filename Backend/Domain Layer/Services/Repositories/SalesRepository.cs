@@ -19,12 +19,12 @@ namespace WebApplication1.Domain.Services.Repositories
         }
         public List<Sale> GetSalesFromEstablishment(Establishment establishment)
         {
-            var res = context
+            var res = this.context
                 .Set<Sale>()
 
-                .Include(x => x.Establishment)
+                ////.Include(x => x.Establishment)
 
-                .Where(x => x.Establishment == establishment)
+                //.Where(x => x.Establishment == establishment)
                 .ToList();
 
             return res;
@@ -32,7 +32,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
         public List<Item> GetSoldItems(Sale sale)
         {
-            var res = context
+            var res = this.context
                 .Set<Sale>()
 
                 .Include(x => x.SalesItems)
@@ -48,7 +48,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
         public Sale IncludeSalesItems(Sale sale)
         {
-            sale.SalesItems = context
+            sale.SalesItems = this.context
                 .Set<Sale>()
                 .Include(x => x.SalesItems)
                 .ThenInclude(x => x.Item)
@@ -65,7 +65,7 @@ namespace WebApplication1.Domain.Services.Repositories
 
             foreach (var sale in sales)
             {
-                Sale updatedSale = IncludeSalesItems(sale);
+                Sale updatedSale = this.IncludeSalesItems(sale);
                 updatedSalesList.Add(updatedSale);
             }
 

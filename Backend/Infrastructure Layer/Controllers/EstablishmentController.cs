@@ -39,7 +39,7 @@ namespace WebApplication1.Controllers
         [FromServices] IEstablishmentRepository establishmentRepository)
         {
             Establishment activeEstablishment = userContextService.GetActiveEstablishment();
-            var res = establishmentRepository.GetItemsOfEstablishment(activeEstablishment.Id)!;
+            var res = establishmentRepository.GetEstablishmentItems(activeEstablishment.Id)!;
             return res;
         }
     }

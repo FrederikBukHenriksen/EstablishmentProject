@@ -13,6 +13,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [CreateEstablishmentComponent],
@@ -32,6 +36,10 @@ import { MatInputModule } from '@angular/material/input';
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    MatTableModule,
+    MatButtonModule,
   ],
 })
 export class CreateEstablishmentModule {}

@@ -1,6 +1,5 @@
 ﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Entities.Establishment;
+
 
 namespace WebApplication1.Data
 {
@@ -8,7 +7,7 @@ namespace WebApplication1.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            this.ChangeTracker.LazyLoadingEnabled = false;
+            //this.ChangeTracker.LazyLoadingEnabled = false;
         }
 
         //Entities
@@ -16,7 +15,7 @@ namespace WebApplication1.Data
         public DbSet<Item> Item { get; set; }
         public DbSet<User> User { get; set; }
 
-        public DbSet<Information> information { get; set; }
+        public DbSet<EstablishmentInformation> information { get; set; }
         //public DbSet<Sale> Sale { get; set; }
         //public DbSet<UserRole> UserRoles { get; set; }
 
@@ -26,7 +25,7 @@ namespace WebApplication1.Data
 
             modelBuilder.Entity<Item>()
                 .HasOne<Establishment>()
-                .WithMany(x => x.Items)
+                .WithMany(x => x.GetItems())
                 .HasForeignKey("EstablishmentId")
                 .IsRequired();
 

@@ -1,17 +1,26 @@
-﻿using WebApplication1.Domain_Layer.Entities;
-
-namespace WebApplication1.Domain.Entities
+﻿namespace WebApplication1.Domain.Entities
 {
-    public class Establishment : EntityBase
+    public partial class Establishment : EntityBase
     {
         public string? Name { get; set; }
-        public Information? Information { get; set; }
-        public ICollection<Item> Items { get; set; } = new List<Item>();
-        public ICollection<Table> Tables { get; set; } = new List<Table>();
-        public ICollection<Sale> Sales { get; set; } = new List<Sale>();
+        public virtual EstablishmentInformation? Information { get; set; }
+        protected virtual ICollection<Item> Items { get; set; } = new List<Item>();
+        public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
+        public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
+
+
+        public void SetName(string name)
+        {
+            this.Name = name;
+        }
+
+
+
+
+
+
 
 
     }
-
 
 }

@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Text.Json.Serialization;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Domain.Entities;
 using WebApplication1.Utils;
-using static WebApplication1.CommandHandlers.MeanSales;
-using static WebApplication1.CommandHandlers.MeanSales.MeanSalesHandler;
 
 namespace WebApplication1.Controllers
 {
@@ -23,7 +18,7 @@ namespace WebApplication1.Controllers
             return handler.Handle(command);
         }
 
-        [HttpPost("average-visits")]    
+        [HttpPost("average-visits")]
         public SalesMeanQueryReturn MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
@@ -59,14 +54,14 @@ namespace WebApplication1.Controllers
         [HttpPost("cross-correlation-with-weather")]
         public CorrelationReturn CorrelationCoefficientAndLag([FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
         {
-            var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1,0,0,0), end: new DateTime(2022, 1,1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
+            var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1, 0, 0, 0), end: new DateTime(2022, 1, 1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
             var value = handler.Handle(command);
             return value;
         }
         [Route("clustering/")]
 
         [HttpPost("mean-shift-clustering")]
-        public MeanShiftClusteringReturn MeanShiftClustering(MeanShiftClusteringCommand command,[FromServices] IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn> handler)
+        public MeanShiftClusteringReturn MeanShiftClustering([FromBody] MeanShiftClusteringCommand command, [FromServices] IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn> handler)
         {
             return handler.Handle(command);
 

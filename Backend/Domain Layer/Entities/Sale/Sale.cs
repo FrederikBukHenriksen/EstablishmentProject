@@ -1,30 +1,46 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.IdentityModel.Tokens;
-using Namotion.Reflection;
 using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Domain.Entities
 {
+    public enum SaleType
+    {
+        EatIn,
+        Delivery,
+        TakeAway,
+    }
+
+    public enum PaymentType
+    {
+        Cash,
+        Mobilepay,
+        Card,
+        Online,
+    }
+
     public class Sale : EntityBase
     {
-        public Establishment Establishment { get; set; }
+        public SaleType SaleType { get; set; }
+        public PaymentType PaymentType { get; set; }
         public DateTime? TimestampArrival { get; set; } = null;
-        public DateTime TimestampPayment { get; set; } 
-        public List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
-        public Table? Table { get; set; } = null;
+        public DateTime TimestampPayment { get; set; }
+
+        public virtual List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
+        public virtual Table? Table { get; set; } = null;
 
         public DateTime GetTimeOfSale()
         {
-            return TimestampPayment;
+            return this.TimestampPayment;
         }
 
         public TimeSpan? GetTimespanOfVisit()
         {
-            if (TimestampArrival == null || TimestampPayment == null)
+            if (this.TimestampArrival == null || this.TimestampPayment == null)
             {
                 return null;
             }
-            return TimestampPayment - TimestampArrival;
+            return this.TimestampPayment - this.TimestampArrival;
         }
 
         public double GetTotalPrice()
@@ -36,7 +52,7 @@ namespace WebApplication1.Domain.Entities
                 {
                     if (!(salesItem == null))
                     {
-                        totalPrice += salesItem.Item.Price * salesItem.Quantity;
+                        totalPrice += salesItem.Item.Price.Value * salesItem.Quantity;
                     }
                 }
             }
@@ -45,11 +61,11 @@ namespace WebApplication1.Domain.Entities
 
         public int? GetNumberOfSoldItems()
         {
-            if (SalesItems == null)
+            if (this.SalesItems == null)
             {
                 return null;
             }
-            return SalesItems.Count();
+            return this.SalesItems.Count();
         }
     }
 

@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebApplication1.Services
 {
@@ -51,7 +48,7 @@ namespace WebApplication1.Services
 
         public User Login(string username, string password)
         {
-            User? user = userRepository.Find(x => ((x.Email.ToLower()) == (username.ToLower())) && x.Password == password);
+            User? user = this.userRepository.Find(x => ((x.Email.ToLower()) == (username.ToLower())) && x.Password == password);
             if (user == null) throw new Exception("User could not be logged in based on the given credentials");
             return user;
         }
@@ -64,7 +61,7 @@ namespace WebApplication1.Services
                 return null;
             }
             string? usernameClaim = GetClaimValue(token, "username");
-            User? user = userRepository.Find(x => x.Id == Guid.Parse(usernameClaim));
+            User? user = this.userRepository.Find(x => x.Id == Guid.Parse(usernameClaim));
             if (usernameClaim == null || user == null)
             {
                 return null;

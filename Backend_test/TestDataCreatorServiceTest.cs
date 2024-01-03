@@ -1,8 +1,6 @@
-﻿using EstablishmentProject.test;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using WebApplication1.Domain.Entities;
-using WebApplication1.Domain_Layer.Entities.Establishment;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
@@ -17,8 +15,8 @@ namespace EstablishmentProject.test
 
         public TestDataCreatorServiceTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
-            this.testDataCreatorService = this.scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
-            this.factoryServiceBuilder = this.scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
+            testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
+            factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
         }
 
         [Fact]
@@ -49,7 +47,7 @@ namespace EstablishmentProject.test
             var DistributionFunction = TestDataCreatorService.GetLinearFuncition(1, 1);
 
             //Act
-            var distribution = this.testDataCreatorService.GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
+            var distribution = testDataCreatorService.GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
 
             //Assert
             Assert.Equal(24 * 7, distribution.Count()); //Correct number of entries
@@ -110,12 +108,12 @@ namespace EstablishmentProject.test
         };
 
             List<(Item, int)> soldItems = new List<(Item, int)> {
-                (this.factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build(), 1),
-                (this.factoryServiceBuilder.ItemBuilder().WithName("Bun").WithPrice(50).Build(), 1)
+                (factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build(), 1),
+                (factoryServiceBuilder.ItemBuilder().WithName("Bun").WithPrice(50).Build(), 1)
             };
 
             //Act
-            List<Sale> sales = this.testDataCreatorService.SaleGenerator(soldItems, distribution);
+            List<Sale> sales = testDataCreatorService.SaleGenerator(soldItems, distribution);
 
             //Assert
             Assert.Equal((1 + 2 + 3 + 4 + 5 + 4 + 3 + 2 + 1) * 2, sales.Count()); //Correct number of entries
@@ -123,7 +121,7 @@ namespace EstablishmentProject.test
             IEnumerable<IGrouping<DateTime, Sale>> groupedBySaleTime = sales.GroupBy(x => x.GetTimeOfSale());
             List<int> salesPerHour = groupedBySaleTime.Select(group => group.Count()).ToList();
             Assert.Equal(18, salesPerHour.Count());
-            Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Key == kv.Key ))); //DateTime in sales distribution match used distribution
+            Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Key == kv.Key))); //DateTime in sales distribution match used distribution
             Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Count() == kv.Value))); //Number of sales per dateTime match used distribution
         }
 
@@ -131,7 +129,7 @@ namespace EstablishmentProject.test
         public void OpeningHoursFilter()
         {
             //Arrange
-            List<DateTime> fullWeekTimeline = TimeHelper.CreateTimelineAsList(new DateTimePeriod(start: new DateTime(2021,1,1), end: new DateTime(2021, 1, 7)),TimeResolution.Hour);
+            List<DateTime> fullWeekTimeline = TimeHelper.CreateTimelineAsList(new DateTimePeriod(start: new DateTime(2021, 1, 1), end: new DateTime(2021, 1, 7)), TimeResolution.Hour);
 
             List<OpeningHours> openingHours = new List<OpeningHours>
             {
@@ -145,10 +143,10 @@ namespace EstablishmentProject.test
             };
 
             //Act
-            List<DateTime> timelineOpeningHours = this.testDataCreatorService.FilterDistrubutionBasedOnOpeningHours(fullWeekTimeline, openingHours);
+            List<DateTime> timelineOpeningHours = testDataCreatorService.FilterDistrubutionBasedOnOpeningHours(fullWeekTimeline, openingHours);
 
             //Assert
-            Dictionary<DayOfWeek,List<DateTime>> groupedByOpenHours = timelineOpeningHours.GroupBy(x => x.DayOfWeek).ToDictionary(x => x.Key, x => x.ToList());
+            Dictionary<DayOfWeek, List<DateTime>> groupedByOpenHours = timelineOpeningHours.GroupBy(x => x.DayOfWeek).ToDictionary(x => x.Key, x => x.ToList());
             foreach (KeyValuePair<DayOfWeek, List<DateTime>> entry in groupedByOpenHours)
             {
                 var resultDayOfWeek = entry.Key;
@@ -208,7 +206,7 @@ namespace EstablishmentProject.test
             };
 
             //Act
-            Dictionary<DateTime, int> aggregatedDistribution = this.testDataCreatorService.AggregateDistributions(new List<Dictionary<DateTime, int>> { distribution1, distribution2, distribution3 });
+            Dictionary<DateTime, int> aggregatedDistribution = testDataCreatorService.AggregateDistributions(new List<Dictionary<DateTime, int>> { distribution1, distribution2, distribution3 });
 
             //Assert
             var expectedValues = new Dictionary<DateTime, int>

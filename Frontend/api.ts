@@ -696,55 +696,6 @@ export class AuthenticationClient {
         }
         return _observableOf(null as any);
     }
-
-    getLoggedInUser(): Observable<User> {
-        let url_ = this.baseUrl + "/api/authentication/get-logged-in-user";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLoggedInUser(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetLoggedInUser(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<User>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<User>;
-        }));
-    }
-
-    protected processGetLoggedInUser(response: HttpResponseBase): Observable<User> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = User.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
 }
 
 @Injectable({
@@ -758,63 +709,6 @@ export class DataSeedClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ?? "";
-    }
-
-    lol(factory: FactoryServiceBuilder): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/test/lol";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(factory);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processLol(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processLol(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
-        }));
-    }
-
-    protected processLol(response: HttpResponseBase): Observable<FileResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
     }
 
     seedDatabase(): Observable<void> {
@@ -844,6 +738,51 @@ export class DataSeedClient {
     }
 
     protected processSeedDatabase(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    test(): Observable<void> {
+        let url_ = this.baseUrl + "/api/test/lol";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processTest(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processTest(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processTest(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1742,6 +1681,13 @@ export class MeanShiftClusteringReturn extends ReturnBase {
 export abstract class MeanShiftClusteringCommand extends CommandBase {
     salesSortingParameters!: SalesSortingParameters | undefined;
 
+    protected _discriminator: string;
+
+    constructor() {
+        super();
+        this._discriminator = "MeanShiftClusteringCommand";
+    }
+
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
@@ -1751,26 +1697,42 @@ export abstract class MeanShiftClusteringCommand extends CommandBase {
 
     static override fromJS(data: any): MeanShiftClusteringCommand {
         data = typeof data === 'object' ? data : {};
+        if (data["$type"] === "MSC_Sales_TimeOfVisit_TotalPrice") {
+            let result = new MSC_Sales_TimeOfVisit_TotalPrice();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "MSC_Sales_TimeOfVisit_LengthOfVisit") {
+            let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
+            result.init(data);
+            return result;
+        }
         throw new Error("The abstract class 'MeanShiftClusteringCommand' cannot be instantiated.");
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["$type"] = this._discriminator;
         data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
 }
 
-export class MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
+export class MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
+
+    constructor() {
+        super();
+        this._discriminator = "MSC_Sales_TimeOfVisit_TotalPrice";
+    }
 
     override init(_data?: any) {
         super.init(_data);
     }
 
-    static override fromJS(data: any): MSC_Sales_TimeOfVisit_LengthOfVisit {
+    static override fromJS(data: any): MSC_Sales_TimeOfVisit_TotalPrice {
         data = typeof data === 'object' ? data : {};
-        let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
+        let result = new MSC_Sales_TimeOfVisit_TotalPrice();
         result.init(data);
         return result;
     }
@@ -1782,15 +1744,20 @@ export class MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringComm
     }
 }
 
-export class MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
+export class MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
+
+    constructor() {
+        super();
+        this._discriminator = "MSC_Sales_TimeOfVisit_LengthOfVisit";
+    }
 
     override init(_data?: any) {
         super.init(_data);
     }
 
-    static override fromJS(data: any): MSC_Sales_TimeOfVisit_TotalPrice {
+    static override fromJS(data: any): MSC_Sales_TimeOfVisit_LengthOfVisit {
         data = typeof data === 'object' ? data : {};
-        let result = new MSC_Sales_TimeOfVisit_TotalPrice();
+        let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
         result.init(data);
         return result;
     }
@@ -1824,99 +1791,6 @@ export class LoginCommand {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
         data["password"] = this.password;
-        return data;
-    }
-}
-
-export class User extends EntityBase {
-    email!: string;
-    password!: string;
-    userRoles!: UserRole[];
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.email = _data["email"];
-            this.password = _data["password"];
-            if (Array.isArray(_data["userRoles"])) {
-                this.userRoles = [] as any;
-                for (let item of _data["userRoles"])
-                    this.userRoles!.push(UserRole.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): User {
-        data = typeof data === 'object' ? data : {};
-        let result = new User();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["email"] = this.email;
-        data["password"] = this.password;
-        if (Array.isArray(this.userRoles)) {
-            data["userRoles"] = [];
-            for (let item of this.userRoles)
-                data["userRoles"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class UserRole extends EntityBase {
-    user!: User;
-    establishment!: Establishment;
-    role!: Role;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
-            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
-            this.role = _data["role"];
-        }
-    }
-
-    static override fromJS(data: any): UserRole {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserRole();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
-        data["role"] = this.role;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export enum Role {
-    Admin = 0,
-    User = 1,
-}
-
-export class FactoryServiceBuilder {
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): FactoryServiceBuilder {
-        data = typeof data === 'object' ? data : {};
-        let result = new FactoryServiceBuilder();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
         return data;
     }
 }

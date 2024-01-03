@@ -1,13 +1,12 @@
 ﻿using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Services.Repositories;
 
 namespace WebApplication1.Domain_Layer.Services.Entity_builders
 {
 
     public interface IFactoryServiceBuilder
     {
-        IEstablishmentBuilder EstablishmentBuilder();
-        IEstablishmentBuilder EstablishmentBuilder(Establishment establishment);
+        IEstablishmentBuilder2 EstablishmentBuilder();
+        IEstablishmentBuilder2 EstablishmentBuilder(Establishment establishment);
         IItemBuilder ItemBuilder();
         IItemBuilder ItemBuilder(Item item);
         ISaleBuilder SaleBuilder();
@@ -25,12 +24,12 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             this.serviceProvider = serviceProvider;
         }
 
-        public IEstablishmentBuilder EstablishmentBuilder()
+        public IEstablishmentBuilder2 EstablishmentBuilder()
         {
-            return serviceProvider.GetRequiredService<IEstablishmentBuilder>();
+            return this.serviceProvider.GetRequiredService<IEstablishmentBuilder2>();
         }
 
-        public IEstablishmentBuilder EstablishmentBuilder(Establishment establishment)
+        public IEstablishmentBuilder2 EstablishmentBuilder(Establishment establishment)
         {
             var builderService = this.EstablishmentBuilder();
             builderService.UseExistingEntity(establishment);
@@ -39,7 +38,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
         public ISaleBuilder SaleBuilder()
         {
-            return serviceProvider.GetRequiredService<ISaleBuilder>();
+            return this.serviceProvider.GetRequiredService<ISaleBuilder>();
         }
 
         public ISaleBuilder SaleBuilder(Sale sale)
@@ -51,7 +50,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
         public IItemBuilder ItemBuilder()
         {
-            return serviceProvider.GetRequiredService<IItemBuilder>();
+            return this.serviceProvider.GetRequiredService<IItemBuilder>();
         }
 
         public IItemBuilder ItemBuilder(Item item)
@@ -63,7 +62,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
         public IUserBuilder UserBuilder()
         {
-            return serviceProvider.GetRequiredService<IUserBuilder>();
+            return this.serviceProvider.GetRequiredService<IUserBuilder>();
         }
 
         public IUserBuilder UserBuilder(User user)

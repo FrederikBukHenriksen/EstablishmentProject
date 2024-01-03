@@ -39,7 +39,7 @@ namespace EstablishmentProject.test.Domain.Builders
             var establishment = establishmentBuilder.WithItems(items).Build();
 
             // Assert
-            Assert.Equal(items, establishment.Items);
+            Assert.Equal(items, establishment.GetItems());
         }
 
         [Fact]

@@ -1,23 +1,10 @@
-using DMIOpenData;
-using MathNet.Numerics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
-using NSwag;
-using System;
-using System.Diagnostics;
-using System.Text;
-using WebApplication1.Middelware;
-using WebApplication1.Services.Analysis;
-using static System.Net.WebRequestMethods;
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using WebApplication1.Application_Layer.Middelware;
 using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters;
+using System.Text;
+using WebApplication1.Application_Layer.Middelware;
+using WebApplication1.Middelware;
 
 namespace WebApplication1.Program
 {
@@ -80,6 +67,7 @@ namespace WebApplication1.Program
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
+                options.UseLazyLoadingProxies();
                 options.UseNpgsql(connectionString);
             });
         }

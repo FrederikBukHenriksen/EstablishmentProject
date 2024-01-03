@@ -1,26 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Namotion.Reflection;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace WebApplication1.Domain.Entities
 {
 
     public class UserRole : EntityBase
     {
-        public User User { get; set; }
-        public Establishment Establishment { get; set; }
+        public virtual User User { get; set; }
+        public virtual Establishment Establishment { get; set; }
         public Role Role { get; set; }
 
         public UserRole()
         {
-            
+
         }
 
         public UserRole(User user, Establishment establishment, Role role)
         {
-            User = user;
-            Establishment = establishment;
-            Role = role;
+            this.User = user;
+            this.Establishment = establishment;
+            this.Role = role;
         }
     }
 

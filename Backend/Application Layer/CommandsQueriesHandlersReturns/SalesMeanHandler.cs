@@ -1,6 +1,5 @@
 ﻿using NJsonSchema.NewtonsoftJson.Converters;
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
@@ -31,7 +30,7 @@ namespace WebApplication1.CommandHandlers
     {
         public override List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
         {
-            IEnumerable<IGrouping<int, Sale>> groupedSales = sales.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.TimestampPayment, TimeResolution));
+            IEnumerable<IGrouping<int, Sale>> groupedSales = sales.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.TimestampPayment, this.TimeResolution));
             return groupedSales.Select(x => (x.Key, x.Average(x => x.GetTotalPrice()))).ToList();
         }
     }
@@ -40,9 +39,9 @@ namespace WebApplication1.CommandHandlers
     {
         public override List<(int timeResolutionIdentifer, double averageValue)> CalcuateAverageOverTime(List<Sale> sales)
         {
-            IEnumerable<IGrouping<DateTime, Sale>> GroupedOnTimeResolutionUnique = sales.GroupBy(x => TimeHelper.GroupForAverage(x.TimestampPayment, TimeResolution));
+            IEnumerable<IGrouping<DateTime, Sale>> GroupedOnTimeResolutionUnique = sales.GroupBy(x => TimeHelper.GroupForAverage(x.TimestampPayment, this.TimeResolution));
             List<(DateTime, double)> ok = GroupedOnTimeResolutionUnique.Select(x => (x.Key, (double)x.Count())).ToList();
-            IEnumerable<IGrouping<int, (DateTime, double)>> secondGrouping = ok.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.Item1, TimeResolution));
+            IEnumerable<IGrouping<int, (DateTime, double)>> secondGrouping = ok.GroupBy(x => TimeHelper.PlainIdentifierBasedOnTimeResolution(x.Item1, this.TimeResolution));
             List<(int Key, double)> ok2 = secondGrouping.Select(x => (x.Key, x.Average(x => x.Item2))).ToList();
             return ok2;
         }
@@ -50,7 +49,7 @@ namespace WebApplication1.CommandHandlers
 
     public class SalesMeanQueryReturn : ReturnBase
     {
-        public Dictionary<int,double?> Data { get; set; }
+        public Dictionary<int, double?> Data { get; set; }
     }
 
     public class SalesMeanOverTimeQueryHandler : HandlerBase<SalesMeanOverTime, SalesMeanQueryReturn>
@@ -64,15 +63,15 @@ namespace WebApplication1.CommandHandlers
             this.establishmentRepository = establishmentRepository;
             this.salesRepository = salesRepository;
             this.userContextService = userContextService;
-        }   
+        }
 
         public override SalesMeanQueryReturn Handle(SalesMeanOverTime command)
         {
             //Fetch
-            Establishment activeEstablishment = userContextService.GetActiveEstablishment();
+            Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
 
-            List<Sale> sales = establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
-            sales = salesRepository.IncludeSalesItems(sales);
+            List<Sale> sales = this.establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
+            sales = this.salesRepository.IncludeSalesItems(sales);
 
             if (command.salesSortingParameters != null) sales = SalesSortingParametersExecute.SortSales(sales, command.salesSortingParameters);
 

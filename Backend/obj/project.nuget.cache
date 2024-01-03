@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "0yEsCJQr73TBHbSd9J6ZDoAn2UGGEFUf1+DvrBdTLaRvl9LzjXwMCAASq/i2mG4Mw3bTyQ62e8tRreM5bouMwQ==",
+  "dgSpecHash": "AHhnKw1WsN8yA887M3WXBeIC8AKajQSNrmFN3IJmrj30RqdsRs5kCiGyhpoY5Us9juV/GPpav92i0vGXs0S9fQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Ekste\\.nuget\\packages\\castle.core\\5.1.0\\castle.core.5.1.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\fluid.core\\2.2.15\\fluid.core.2.2.15.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
@@ -16,6 +17,7 @@
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\7.0.11\\microsoft.entityframeworkcore.abstractions.7.0.11.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\7.0.11\\microsoft.entityframeworkcore.analyzers.7.0.11.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore.design\\7.0.11\\microsoft.entityframeworkcore.design.7.0.11.nupkg.sha512",
+    "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore.proxies\\7.0.11\\microsoft.entityframeworkcore.proxies.7.0.11.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\7.0.11\\microsoft.entityframeworkcore.relational.7.0.11.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\7.0.11\\microsoft.entityframeworkcore.tools.7.0.11.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
@@ -94,6 +96,7 @@
     "C:\\Users\\Ekste\\.nuget\\packages\\system.console\\4.3.0\\system.console.4.3.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\system.diagnostics.debug\\4.3.0\\system.diagnostics.debug.4.3.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.3.0\\system.diagnostics.diagnosticsource.4.3.0.nupkg.sha512",
+    "C:\\Users\\Ekste\\.nuget\\packages\\system.diagnostics.eventlog\\6.0.0\\system.diagnostics.eventlog.6.0.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\system.diagnostics.tools\\4.3.0\\system.diagnostics.tools.4.3.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\system.diagnostics.tracing\\4.3.0\\system.diagnostics.tracing.4.3.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\system.globalization\\4.3.0\\system.globalization.4.3.0.nupkg.sha512",

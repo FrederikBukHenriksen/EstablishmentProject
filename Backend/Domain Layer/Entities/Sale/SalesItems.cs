@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Namotion.Reflection;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApplication1.Domain.Entities;
 
 namespace WebApplication1.Data.DataModels
@@ -8,8 +6,8 @@ namespace WebApplication1.Data.DataModels
 
     public class SalesItems : EntityBase
     {
-        public Sale Sale { get; set; }
-        public Item Item { get; set; }
+        public virtual Sale Sale { get; set; }
+        public virtual Item Item { get; set; }
         public int Quantity { get; set; }
 
         public class SalesItemsConfiguration : IEntityTypeConfiguration<SalesItems>

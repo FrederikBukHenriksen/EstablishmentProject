@@ -36,7 +36,7 @@ namespace WebApplication1.Application_Layer.Services
             {
                 var activeEstablishment = this.userContextService.GetActiveEstablishment();
 
-                List<Item> establishmentItems = establishmentRepository.GetItemsOfEstablishment(activeEstablishment.Id).ToList();
+                List<Item> establishmentItems = establishmentRepository.GetEstablishmentItems(activeEstablishment.Id).ToList();
 
                 sales = establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
 

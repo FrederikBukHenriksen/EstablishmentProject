@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using WebApplication1.Domain.Services.Repositories;
+﻿using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Domain.Entities
@@ -15,21 +13,19 @@ namespace WebApplication1.Domain.Entities
 
     public class EstablishmentBuilder : EntityBuilderBase<Establishment>, IEstablishmentBuilder
     {
-        private IEstablishmentRepository establishmentRepository;
-
         private string? builderName = null;
         private ICollection<Item> builderItems = new List<Item>();
         private ICollection<Table> builderTables = new List<Table>();
         private ICollection<Sale> builderSales = new List<Sale>();
 
-        public EstablishmentBuilder([FromServices] IEstablishmentRepository establishmentRepository)
+        public EstablishmentBuilder()
         {
-            this.establishmentRepository = establishmentRepository;
         }
+
         public override void ReadPropertiesOfEntity(Establishment entity)
         {
             this.builderName = entity.Name;
-            this.builderItems = entity.Items;
+            this.builderItems = entity.GetItems();
             this.builderTables = entity.Tables;
             this.builderSales = entity.Sales;
         }
@@ -37,7 +33,7 @@ namespace WebApplication1.Domain.Entities
         public override void WritePropertiesOfEntity(Establishment Entity)
         {
             Entity.Name = (string)this.builderName;
-            Entity.Items = (ICollection<Item>)this.builderItems;
+            Entity.AddItems((ICollection<Item>)this.builderItems);
             Entity.Tables = (ICollection<Table>)this.builderTables;
             Entity.Sales = (ICollection<Sale>)this.builderSales;
         }

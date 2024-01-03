@@ -1,22 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using WebApplication1.Application_Layer.Services;
-using WebApplication1.CommandHandlers;
-using WebApplication1.Data;
-using WebApplication1.Data.DataModels;
 using WebApplication1.Domain.Entities;
 using WebApplication1.Domain.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Infrastructure.Data;
-using WebApplication1.Program;
 using WebApplication1.Utils;
-using Xunit.Abstractions;
-using static WebApplication1.Utils.SalesHelper;
 
 namespace WebApplication1.Controllers
 {
+
+
+
     [AllowAnonymous]
     [ApiController]
     [Route("api/test")]
@@ -29,67 +25,14 @@ namespace WebApplication1.Controllers
         private IEstablishmentRepository _establishmentRepository;
         private ApplicationDbContext _applicationDbContext;
 
-        public DataSeedController(ISalesService salesService,IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
+        public DataSeedController(ISalesService salesService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
         {
             this.salesService = salesService;
-            _salesRepository = salesRepository;
-            _userRolesRepository = userRolesRepository;
-            _userRepository = userRepository;
-            _establishmentRepository = establishmentRepository;
+            this._salesRepository = salesRepository;
+            this._userRolesRepository = userRolesRepository;
+            this._userRepository = userRepository;
+            this._establishmentRepository = establishmentRepository;
         }
-
-        [HttpGet("lol")]
-        public IActionResult Lol(FactoryServiceBuilder factory) {
-            List<Establishment> list = new List<Establishment>();
-
-            // Resolve the transient service directly
-            //var yourService = serviceProvider.GetRequiredService<IEstablishmentBuilder>();
-            var haha = factory.EstablishmentBuilder();
-                Establishment estab = haha.WithName("Cafe Frederik").Build();
-                list.Add(estab);
-
-
-            //var heinz = factory.EstablishmentBuilder.UseExistingEntity(estab).Build();
-
-
-
-
-
-            // Use yourService instance here
-            //    var e1 = establishmentBuilder.WithName("Cafe Frederik").Build();
-            //    var e2 = establishmentBuilder.Build();
-
-            //var lol = new lolcat();
-
-            //string hello = "guten tag";
-            //try
-            //{
-            //    hello = this.HttpContext.Session.GetString("establishment");
-            //}
-            //catch (System.Exception e)
-            //{
-            //}
-
-            //this.HttpContext.Session.SetString("establishment", "Frederik");
-
-            //Dictionary<SalesAttributes, (Type type, Func<Sale, object> selector)> dic = new Dictionary<SalesAttributes, (Type, Func<Sale, object>)>() 
-            //{
-            //    {SalesAttributes.TimestampArrival, (typeof(DateTime), (Sale sale) => sale.TimestampArrival)},
-            //    {SalesAttributes.TimestampPayment, (typeof(DateTime), (Sale sale) => sale.TimestampPayment)},
-            //};
-
-            //var sale = new Sale();
-            //var att = SalesAttributes.TimestampPayment;
-            //var findDic = dic[att];
-            //Type lol = findDic.type;
-
-            //var hej = salesService.GetAttributeValue(sale, findDic.selector);
-            //var ok = (DateTime)hej;
-
-            return Ok("hello");
-        }
-
-
 
         [HttpGet]
         public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository)
@@ -124,9 +67,16 @@ namespace WebApplication1.Controllers
 
             establishmentRepository.Add(establishment);
 
-            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("1234").WithUserRoles(new List<(Establishment, Role)> { (establishment,Role.Admin) }).Build();
+            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
 
             userRepository.Add(user);
         }
+
+        [HttpGet("lol")]
+        public void test(IEstablishmentRepository establishmentRepository)
+        {
+            var e = establishmentRepository.IncludeItems().GetAll().First();
+        }
+
     }
 }

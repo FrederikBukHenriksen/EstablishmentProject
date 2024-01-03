@@ -1,8 +1,6 @@
 ﻿using NodaTime;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Utils;
 
-namespace WebApplication1.Domain_Layer.Entities.Establishment
+namespace WebApplication1.Domain.Entities
 {
     public class OpeningHours : EntityBase
     {

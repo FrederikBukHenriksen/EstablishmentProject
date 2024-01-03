@@ -1,7 +1,4 @@
-﻿using MathNet.Numerics.Statistics.Mcmc;
-using Microsoft.AspNetCore.Identity;
-using WebApplication1.Domain.Entities;
-using Xunit;
+﻿using WebApplication1.Domain.Entities;
 
 namespace WebApplication1.Domain_Layer.Services.Entity_builders
 {
@@ -15,7 +12,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
     public abstract class EntityBuilderBase<T> : IEntityBuilder<T>
         where T : EntityBase, new()
     {
-        public T? Entity { get ; set; }
+        public T? Entity { get; set; }
 
         public T Build()
         {
@@ -31,7 +28,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
         public IEntityBuilder<T> UseExistingEntity(T entity)
         {
             this.Entity = entity;
-            ReadPropertiesOfEntity(this.Entity);
+            this.ReadPropertiesOfEntity(this.Entity);
             return this;
         }
 
