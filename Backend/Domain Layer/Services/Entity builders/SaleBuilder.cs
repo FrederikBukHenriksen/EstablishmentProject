@@ -69,7 +69,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             return this;
         }
 
-        public override bool Validation()
+        public override bool BuildValidation()
         {
             if (!this.DoesSaleHavePaymentTimestamp()) throw new System.Exception("Sale must have a timestamp for payment");
             return true;

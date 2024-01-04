@@ -5,34 +5,28 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
     public interface IEntityBuilder<T> where T : EntityBase
     {
         public T Build();
-        public bool Validation();
+        public bool BuildValidation();
         internal IEntityBuilder<T> UseExistingEntity(T entity);
     }
 
-    public abstract class EntityBuilderBase<T> : IEntityBuilder<T>
-        where T : EntityBase, new()
+    public abstract class EntityBuilderBase<TEntity> : IEntityBuilder<TEntity>
+        where TEntity : EntityBase, new()
     {
-        public T? Entity { get; set; }
+        protected TEntity Entity { get; set; } = new TEntity();
 
-        public T Build()
+        public TEntity Build()
         {
-            this.Validation();
-            this.Entity ??= new T();
-            this.WritePropertiesOfEntity(this.Entity);
-            return this.Entity;
+            if (this.BuildValidation())
+            {
+                return this.Entity;
+            }
+            throw new System.Exception("Entity did not pass validation");
         }
-        public abstract void WritePropertiesOfEntity(T Entity);
-
-        public abstract bool Validation();
-
-        public IEntityBuilder<T> UseExistingEntity(T entity)
+        public abstract bool BuildValidation();
+        public IEntityBuilder<TEntity> UseExistingEntity(TEntity entity)
         {
             this.Entity = entity;
-            this.ReadPropertiesOfEntity(this.Entity);
             return this;
         }
-
-        public abstract void ReadPropertiesOfEntity(T entity);
-
     }
 }

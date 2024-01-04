@@ -51,7 +51,7 @@ namespace WebApplication1.Domain_Layer.Entities
             return this;
         }
 
-        public override bool Validation()
+        public override bool BuildValidation()
         {
             if (!this.IsEmailValid(this.builderEmail)) throw new Exception("Email is not valid");
             if (!this.IsEmailUnique(this.builderEmail)) throw new Exception("Email is not unique");

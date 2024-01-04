@@ -5,8 +5,8 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
     public interface IFactoryServiceBuilder
     {
-        IEstablishmentBuilder2 EstablishmentBuilder();
-        IEstablishmentBuilder2 EstablishmentBuilder(Establishment establishment);
+        IEstablishmentBuilder EstablishmentBuilder();
+        IEstablishmentBuilder EstablishmentBuilder(Establishment establishment);
         IItemBuilder ItemBuilder();
         IItemBuilder ItemBuilder(Item item);
         ISaleBuilder SaleBuilder();
@@ -24,12 +24,12 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             this.serviceProvider = serviceProvider;
         }
 
-        public IEstablishmentBuilder2 EstablishmentBuilder()
+        public IEstablishmentBuilder EstablishmentBuilder()
         {
-            return this.serviceProvider.GetRequiredService<IEstablishmentBuilder2>();
+            return this.serviceProvider.GetRequiredService<IEstablishmentBuilder>();
         }
 
-        public IEstablishmentBuilder2 EstablishmentBuilder(Establishment establishment)
+        public IEstablishmentBuilder EstablishmentBuilder(Establishment establishment)
         {
             var builderService = this.EstablishmentBuilder();
             builderService.UseExistingEntity(establishment);

@@ -37,7 +37,7 @@ namespace WebApplication1.Domain_Layer.Entities
             return this;
         }
 
-        public override bool Validation()
+        public override bool BuildValidation()
         {
             if (!this.doesItemHaveAName()) throw new Exception("Item must have a name");
             return true;

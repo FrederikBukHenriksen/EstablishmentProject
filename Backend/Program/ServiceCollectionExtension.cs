@@ -1,8 +1,8 @@
 ﻿using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
@@ -24,7 +24,6 @@ namespace WebApplication1.Program
 
             //Entity services
             serviceCollection.AddTransient<IEstablishmentBuilder, EstablishmentBuilder>();
-            serviceCollection.AddTransient<IEstablishmentBuilder2, EstablishmentBuilder2>();
 
             serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
             serviceCollection.AddTransient<IItemBuilder, ItemBuilder>();
