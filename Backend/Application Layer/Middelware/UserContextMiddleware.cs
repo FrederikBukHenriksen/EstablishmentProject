@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services;
 
 namespace WebApplication1.Middelware

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection.Metadata.Ecma335;
 using WebApplication1.Data.DataModels;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace WebApplication1.Domain.Services.Repositories
+namespace WebApplication1.Domain_Layer.Services.Repositories
 {
 
     public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase

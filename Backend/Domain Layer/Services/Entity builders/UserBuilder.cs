@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Text.RegularExpressions;
-using WebApplication1.Domain.Services.Repositories;
+using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
-namespace WebApplication1.Domain.Entities
+namespace WebApplication1.Domain_Layer.Entities
 {
     public interface IUserBuilder : IEntityBuilder<User>
     {

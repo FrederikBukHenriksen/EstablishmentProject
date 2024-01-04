@@ -12,7 +12,7 @@ using DMIOpenData;
 using RichardSzalay.MockHttp;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace EstablishmentProject.test
 {

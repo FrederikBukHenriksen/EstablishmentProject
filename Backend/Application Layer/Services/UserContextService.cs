@@ -2,8 +2,8 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Services.Repositories;
+using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Services
 {

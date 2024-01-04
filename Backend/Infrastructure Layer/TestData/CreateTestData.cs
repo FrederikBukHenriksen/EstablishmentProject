@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Infrastructure.Data
 {

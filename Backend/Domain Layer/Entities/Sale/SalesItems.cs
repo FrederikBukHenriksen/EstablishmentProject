@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Data.DataModels
 {

@@ -1,4 +1,4 @@
-﻿using WebApplication1.Domain.Entities;
+﻿using WebApplication1.Domain_Layer.Entities;
 using MathNet.Numerics.Statistics;
 using System;
 

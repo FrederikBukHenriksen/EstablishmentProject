@@ -1,19 +1,14 @@
-﻿namespace WebApplication1.Domain.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public partial class Establishment
     {
         public void AddSale(Sale sale)
         {
-            if (this.AddSaleValidation(sale))
+            foreach (var salesItem in sale.SalesItems)
             {
-                this.Sales.Add(sale);
+                if (!this.IsItemRegisteredToEstablishment(salesItem.Item)) throw new Exception("Item is not registered to establishment");
             }
-        }
-
-        public bool AddSaleValidation(Sale sale)
-        {
-            if (!sale.SalesItems.All(x => this.IsItemRegisteredToEstablishment(x.Item))) throw new Exception("Sold item from sale is not registered to establishment");
-            return true;
+            this.Sales.Add(sale);
         }
 
         public void RemoveSale(Sale sale)

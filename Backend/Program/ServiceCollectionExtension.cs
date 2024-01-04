@@ -1,7 +1,7 @@
 ﻿using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Services.Repositories;
+using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Middelware;

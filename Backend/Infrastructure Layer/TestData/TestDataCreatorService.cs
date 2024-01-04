@@ -1,5 +1,5 @@
 ﻿using NodaTime;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Infrastructure.Data

@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Domain.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public class User : EntityBase
     {

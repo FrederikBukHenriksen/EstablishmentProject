@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApplication1.Domain_Layer.Entities;
 
-namespace WebApplication1.Domain.Entities
+namespace WebApplication1.Domain_Layer.Entities
 {
     public class Item : EntityBase
     {

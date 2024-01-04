@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace WebApplication1.Domain.Entities
+namespace WebApplication1.Domain_Layer.Entities
 {
 
     public class UserRole : EntityBase

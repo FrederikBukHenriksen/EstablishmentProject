@@ -1,6 +1,6 @@
 ﻿using WebApplication1.Domain_Layer.Services.Entity_builders;
 
-namespace WebApplication1.Domain.Entities
+namespace WebApplication1.Domain_Layer.Entities
 {
     public interface IEstablishmentBuilder2 : IEntityBuilder2<Establishment>
     {

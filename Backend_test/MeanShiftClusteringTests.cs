@@ -1,4 +1,4 @@
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services.Analysis;
 
 namespace EstablishmentProject.test

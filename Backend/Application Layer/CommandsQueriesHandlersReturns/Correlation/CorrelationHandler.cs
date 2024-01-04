@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using WebApplication1.CommandsHandlersReturns;
-using WebApplication1.Domain.Entities;
-using WebApplication1.Domain.Services.Repositories;
+using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Services;
 using WebApplication1.Services.Analysis;
 using WebApplication1.Utils;

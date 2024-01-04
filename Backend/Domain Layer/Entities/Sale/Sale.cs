@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Data.DataModels;
 
-namespace WebApplication1.Domain.Entities
+namespace WebApplication1.Domain_Layer.Entities
 {
     public enum SaleType
     {
@@ -21,13 +21,14 @@ namespace WebApplication1.Domain.Entities
 
     public class Sale : EntityBase
     {
-        public SaleType SaleType { get; set; }
-        public PaymentType PaymentType { get; set; }
+        public SaleType? SaleType { get; set; }
+        public PaymentType? PaymentType { get; set; }
         public DateTime? TimestampArrival { get; set; } = null;
         public DateTime TimestampPayment { get; set; }
-
         public virtual List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
         public virtual Table? Table { get; set; } = null;
+        public virtual Employee? Employee { get; set; }
+
 
         public DateTime GetTimeOfSale()
         {

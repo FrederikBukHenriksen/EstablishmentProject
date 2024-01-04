@@ -1,6 +1,6 @@
-﻿using WebApplication1.Domain.Entities;
+﻿using WebApplication1.Domain_Layer.Entities;
 
-namespace WebApplication1.Domain.Services.Repositories
+namespace WebApplication1.Domain_Layer.Services.Repositories
 {
 
     public interface IEstablishmentRepository : IRepository<Establishment>

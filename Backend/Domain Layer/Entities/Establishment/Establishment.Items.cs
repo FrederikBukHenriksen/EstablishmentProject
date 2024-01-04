@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Domain.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public partial class Establishment
     {
@@ -7,21 +7,18 @@
             this.Items.Add(item);
         }
 
-        public void AddItems(ICollection<Item> items)
-        {
-            foreach (var item in items)
-            {
-                this.AddItem(item);
-            }
-        }
+        //public void AddItems(ICollection<Item> items)
+        //{
+        //    foreach (var item in items)
+        //    {
+        //        this.AddItem(item);
+        //    }
+        //}
 
         public void RemoveItem(Item item)
         {
-            if (!this.IsItemUsedInSales(item))
-            {
-                this.Items.Remove(item);
-            }
-            throw new Exception("Item is used in sales");
+            if (this.IsItemUsedInSales(item)) throw new Exception("Item is used in sales, and therefore cannot be deleted");
+            this.Items.Remove(item);
         }
 
         public ICollection<Item> GetItems()

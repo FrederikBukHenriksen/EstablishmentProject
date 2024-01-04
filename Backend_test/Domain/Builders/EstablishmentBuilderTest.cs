@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace EstablishmentProject.test.Domain.Builders

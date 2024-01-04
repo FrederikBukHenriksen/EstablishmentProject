@@ -1,5 +1,5 @@
 ﻿using WebApplication1.Data.DataModels;
-using WebApplication1.Domain.Entities;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Domain_Layer.Services.Entity_builders
 {
