@@ -1,3 +1,23 @@
-<p>
-  cluster works!
-</p>
+<div *ngFor="let cluster of dataSource">
+  <table mat-table [dataSource]="cluster.elements" class="mat-elevation-z8">
+    <ng-container
+      *ngFor="let key of GetDisplayedColumns()"
+      matColumnDef="{{ key }}"
+    >
+      <th mat-header-cell *matHeaderCellDef>{{ key }}</th>
+      <td mat-cell *matCellDef="let element">{{ element.data[key] }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef>Action</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-button color="primary" (click)="onViewElement(element.id)">
+          Select
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="GetDisplayedColumns()"></tr>
+    <tr mat-row *matRowDef="let row; columns: GetDisplayedColumns()"></tr>
+  </table>
+</div>

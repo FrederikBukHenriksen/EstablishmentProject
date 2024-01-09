@@ -47,7 +47,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             this.builderSale = sale;
             return this;
         }
-        public override bool BuildValidation()
+        public override bool Validation()
         {
             if (builderQuantity <= 0) throw new Exception("Quantity must be larger than zero");
             return true;

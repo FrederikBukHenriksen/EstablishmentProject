@@ -3366,6 +3366,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
+          "Castle.Core": "5.1.1",
           "MathNet.Numerics": "5.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "7.0.11",
           "Microsoft.AspNetCore.JsonPatch": "7.0.0",

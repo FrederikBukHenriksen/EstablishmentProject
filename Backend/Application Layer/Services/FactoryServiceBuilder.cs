@@ -5,10 +5,10 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
     public interface IFactoryServiceBuilder
     {
-        IEstablishmentBuilder EstablishmentBuilder();
-        IEstablishmentBuilder EstablishmentBuilder(Establishment establishment);
-        IItemBuilder ItemBuilder();
-        IItemBuilder ItemBuilder(Item item);
+        IEstablishmentService EstablishmentBuilder();
+        IEstablishmentService EstablishmentBuilder(Establishment establishment);
+        IItemBuilderService ItemBuilder();
+        IItemBuilderService ItemBuilder(Item item);
         ISaleBuilder SaleBuilder();
         ISaleBuilder SaleBuilder(Sale sale);
         IUserBuilder UserBuilder();
@@ -24,12 +24,12 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             this.serviceProvider = serviceProvider;
         }
 
-        public IEstablishmentBuilder EstablishmentBuilder()
+        public IEstablishmentService EstablishmentBuilder()
         {
-            return this.serviceProvider.GetRequiredService<IEstablishmentBuilder>();
+            return this.serviceProvider.GetRequiredService<IEstablishmentService>();
         }
 
-        public IEstablishmentBuilder EstablishmentBuilder(Establishment establishment)
+        public IEstablishmentService EstablishmentBuilder(Establishment establishment)
         {
             var builderService = this.EstablishmentBuilder();
             builderService.UseExistingEntity(establishment);
@@ -48,12 +48,12 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             return builderService;
         }
 
-        public IItemBuilder ItemBuilder()
+        public IItemBuilderService ItemBuilder()
         {
-            return this.serviceProvider.GetRequiredService<IItemBuilder>();
+            return this.serviceProvider.GetRequiredService<IItemBuilderService>();
         }
 
-        public IItemBuilder ItemBuilder(Item item)
+        public IItemBuilderService ItemBuilder(Item item)
         {
             var builderService = this.ItemBuilder();
             builderService.UseExistingEntity(item);

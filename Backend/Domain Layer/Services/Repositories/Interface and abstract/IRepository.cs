@@ -10,7 +10,7 @@
         TEntity? GetById(Guid id);
         public List<TEntity> GetFromIds(List<Guid> ids);
         IEnumerable<TEntity>? GetAll();
-        bool Contains(Expression<Func<TEntity, bool>> predicate);
+        bool Any(Expression<Func<TEntity, bool>> predicate);
         TEntity? Find(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate);
         void Add(TEntity entity);

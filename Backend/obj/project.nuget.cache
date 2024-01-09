@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "AHhnKw1WsN8yA887M3WXBeIC8AKajQSNrmFN3IJmrj30RqdsRs5kCiGyhpoY5Us9juV/GPpav92i0vGXs0S9fQ==",
+  "dgSpecHash": "P++XGU4ebcsDraWEPNfdE838vuuKah1oAJfBPHzjXbJ+nG6OElgatVg8kUEeNSPUgDntHXtHMU+aLJZWzMcCmg==",
   "success": true,
   "projectFilePath": "C:\\Users\\Ekste\\Documents\\GitHub\\EstablishmentProject\\Backend\\WebApplication1.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Ekste\\.nuget\\packages\\castle.core\\5.1.0\\castle.core.5.1.0.nupkg.sha512",
+    "C:\\Users\\Ekste\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\coverlet.collector\\6.0.0\\coverlet.collector.6.0.0.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\fluid.core\\2.2.15\\fluid.core.2.2.15.nupkg.sha512",
     "C:\\Users\\Ekste\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public partial class Establishment
+    public partial class Establishment : EntityBase
     {
         public void AddSale(Sale sale)
         {
@@ -16,9 +16,9 @@
             this.Sales.Remove(sale);
         }
 
-        public ICollection<Sale> GetSales()
+        public List<Sale> GetSales()
         {
-            return this.Sales;
+            return this.Sales.ToList();
         }
 
         //Valdiators

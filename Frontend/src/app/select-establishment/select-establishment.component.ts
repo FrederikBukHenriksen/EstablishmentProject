@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationClient, Establishment, UserContextClient } from 'api';
-import { HttpInterceptService } from '../services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
+import { Establishment, UserContextClient } from 'api';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
 export interface TableOfAccesibleEstablishments {
@@ -32,10 +31,10 @@ export class SelectEstablishmentComponent {
   private FetchAccesibleEstablishment() {
     this.userContextClient
       .getAccessibleEstablishments()
-      .subscribe((x) => (this.dataSource = this.mapToListObject(x)));
+      .subscribe((x) => (this.dataSource = this.mapToTableObjects(x)));
   }
 
-  private mapToListObject(
+  private mapToTableObjects(
     input: Establishment[]
   ): TableOfAccesibleEstablishments[] {
     return input.map((x) => {

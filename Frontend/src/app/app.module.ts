@@ -22,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ClusterModule } from './cluster/cluster.module';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarComponent],
@@ -44,6 +45,7 @@ import { MatInputModule } from '@angular/material/input';
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
+    ClusterModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },

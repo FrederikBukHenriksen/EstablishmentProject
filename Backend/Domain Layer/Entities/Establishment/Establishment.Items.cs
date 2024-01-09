@@ -1,21 +1,13 @@
 ﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public partial class Establishment
+    public partial class Establishment : EntityBase
     {
         public void AddItem(Item item)
         {
             this.Items.Add(item);
         }
 
-        //public void AddItems(ICollection<Item> items)
-        //{
-        //    foreach (var item in items)
-        //    {
-        //        this.AddItem(item);
-        //    }
-        //}
-
-        public void RemoveItem(Item item)
+        internal void RemoveItem(Item item)
         {
             if (this.IsItemUsedInSales(item)) throw new Exception("Item is used in sales, and therefore cannot be deleted");
             this.Items.Remove(item);

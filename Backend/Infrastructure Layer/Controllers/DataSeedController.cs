@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
@@ -56,13 +56,13 @@ namespace WebApplication1.Controllers
             var coffee = factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build();
             var bun = factoryServiceBuilder.ItemBuilder().WithName("Bun").WithPrice(50).Build();
 
-            var salesDistribution = testDataCreatorService.SaleGenerator(new List<(Item, int)> { (coffee, 1), (water, 1) }, aggregatedDistribution);
 
+            var salesDistribution = testDataCreatorService.SaleGenerator(new List<(Item, int)> { (coffee, 1), (water, 1) }, aggregatedDistribution);
             var establishment = factoryServiceBuilder
                 .EstablishmentBuilder()
-                .WithName("Cafe Frederik")
-                .WithItems(new List<Item> { coffee, bun, water })
-                .WithSales(salesDistribution)
+                .SetName("Cafe Frederik")
+                .AddItems(new List<Item> { coffee, bun, water })
+                .AddSales(salesDistribution)
                 .Build();
 
             establishmentRepository.Add(establishment);

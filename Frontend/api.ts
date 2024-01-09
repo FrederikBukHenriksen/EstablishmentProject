@@ -425,8 +425,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    meanShiftClustering(command: MeanShiftClusteringCommand): Observable<MeanShiftClusteringReturn> {
-        let url_ = this.baseUrl + "/api/analysis/clustering";
+    timeOfVisitTotalTimeOfVisit(command: Clustering_TimeOfVisit_LengthOfVisit_Command): Observable<MeanShiftClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/TimeOfVisit_TotalTimeOfVisit";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -443,11 +443,11 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanShiftClustering(response_);
+            return this.processTimeOfVisitTotalTimeOfVisit(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processMeanShiftClustering(response_ as any);
+                    return this.processTimeOfVisitTotalTimeOfVisit(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
                 }
@@ -456,60 +456,7 @@ export class AnalysisClient {
         }));
     }
 
-    protected processMeanShiftClustering(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = MeanShiftClusteringReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    meanShiftClustering2(command: MeanShiftClusteringCommand): Observable<MeanShiftClusteringReturn> {
-        let url_ = this.baseUrl + "/api/analysis/mean-shift-clustering";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanShiftClustering2(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processMeanShiftClustering2(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<MeanShiftClusteringReturn>;
-        }));
-    }
-
-    protected processMeanShiftClustering2(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
+    protected processTimeOfVisitTotalTimeOfVisit(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1004,16 +951,17 @@ export abstract class EntityBase {
 
 export class Establishment extends EntityBase {
     name!: string | undefined;
-    information!: Information | undefined;
+    information!: EstablishmentInformation | undefined;
     items!: Item[];
     tables!: Table[];
     sales!: Sale[];
+    employees!: Employee[];
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.name = _data["name"];
-            this.information = _data["information"] ? Information.fromJS(_data["information"]) : <any>undefined;
+            this.information = _data["information"] ? EstablishmentInformation.fromJS(_data["information"]) : <any>undefined;
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
@@ -1028,6 +976,11 @@ export class Establishment extends EntityBase {
                 this.sales = [] as any;
                 for (let item of _data["sales"])
                     this.sales!.push(Sale.fromJS(item));
+            }
+            if (Array.isArray(_data["employees"])) {
+                this.employees = [] as any;
+                for (let item of _data["employees"])
+                    this.employees!.push(Employee.fromJS(item));
             }
         }
     }
@@ -1058,12 +1011,17 @@ export class Establishment extends EntityBase {
             for (let item of this.sales)
                 data["sales"].push(item.toJSON());
         }
+        if (Array.isArray(this.employees)) {
+            data["employees"] = [];
+            for (let item of this.employees)
+                data["employees"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
 }
 
-export class Information extends EntityBase {
+export class EstablishmentInformation extends EntityBase {
     location!: Location | undefined;
     openingHours!: OpeningHours[];
 
@@ -1079,9 +1037,9 @@ export class Information extends EntityBase {
         }
     }
 
-    static override fromJS(data: any): Information {
+    static override fromJS(data: any): EstablishmentInformation {
         data = typeof data === 'object' ? data : {};
-        let result = new Information();
+        let result = new EstablishmentInformation();
         result.init(data);
         return result;
     }
@@ -1193,13 +1151,13 @@ export enum DayOfWeek {
 
 export class Item extends EntityBase {
     name!: string;
-    price!: number;
+    price!: Price;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.name = _data["name"];
-            this.price = _data["price"];
+            this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
         }
     }
 
@@ -1213,10 +1171,43 @@ export class Item extends EntityBase {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
-        data["price"] = this.price;
+        data["price"] = this.price ? this.price.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
+}
+
+export class Price extends EntityBase {
+    value!: number;
+    currency!: Currency;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.value = _data["value"];
+            this.currency = _data["currency"];
+        }
+    }
+
+    static override fromJS(data: any): Price {
+        data = typeof data === 'object' ? data : {};
+        let result = new Price();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        data["currency"] = this.currency;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export enum Currency {
+    DKK = 0,
+    EUR = 1,
 }
 
 export class Table extends EntityBase {
@@ -1245,16 +1236,19 @@ export class Table extends EntityBase {
 }
 
 export class Sale extends EntityBase {
-    establishment!: Establishment;
+    saleType!: SaleType | undefined;
+    paymentType!: PaymentType | undefined;
     timestampArrival!: Date | undefined;
     timestampPayment!: Date;
     salesItems!: SalesItems[];
     table!: Table | undefined;
+    employee!: Employee | undefined;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
+            this.saleType = _data["saleType"];
+            this.paymentType = _data["paymentType"];
             this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
             this.timestampPayment = _data["timestampPayment"] ? new Date(_data["timestampPayment"].toString()) : <any>undefined;
             if (Array.isArray(_data["salesItems"])) {
@@ -1263,6 +1257,7 @@ export class Sale extends EntityBase {
                     this.salesItems!.push(SalesItems.fromJS(item));
             }
             this.table = _data["table"] ? Table.fromJS(_data["table"]) : <any>undefined;
+            this.employee = _data["employee"] ? Employee.fromJS(_data["employee"]) : <any>undefined;
         }
     }
 
@@ -1275,7 +1270,8 @@ export class Sale extends EntityBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
+        data["saleType"] = this.saleType;
+        data["paymentType"] = this.paymentType;
         data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
         data["timestampPayment"] = this.timestampPayment ? this.timestampPayment.toISOString() : <any>undefined;
         if (Array.isArray(this.salesItems)) {
@@ -1284,9 +1280,23 @@ export class Sale extends EntityBase {
                 data["salesItems"].push(item.toJSON());
         }
         data["table"] = this.table ? this.table.toJSON() : <any>undefined;
+        data["employee"] = this.employee ? this.employee.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
+}
+
+export enum SaleType {
+    EatIn = 0,
+    Delivery = 1,
+    TakeAway = 2,
+}
+
+export enum PaymentType {
+    Cash = 0,
+    Mobilepay = 1,
+    Card = 2,
+    Online = 3,
 }
 
 export class SalesItems extends EntityBase {
@@ -1315,6 +1325,26 @@ export class SalesItems extends EntityBase {
         data["sale"] = this.sale ? this.sale.toJSON() : <any>undefined;
         data["item"] = this.item ? this.item.toJSON() : <any>undefined;
         data["quantity"] = this.quantity;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class Employee extends EntityBase {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): Employee {
+        data = typeof data === 'object' ? data : {};
+        let result = new Employee();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
         super.toJSON(data);
         return data;
     }
@@ -1631,8 +1661,8 @@ export class CorrelationReturn extends ReturnBase {
 }
 
 export class MeanShiftClusteringReturn extends ReturnBase {
-    clusters!: Sale[][];
-    calculations!: { [key: string]: number[]; };
+    clusters!: string[][];
+    calculations!: { [key: string]: { [key: string]: number; }; };
 
     override init(_data?: any) {
         super.init(_data);
@@ -1646,7 +1676,7 @@ export class MeanShiftClusteringReturn extends ReturnBase {
                 this.calculations = {} as any;
                 for (let key in _data["calculations"]) {
                     if (_data["calculations"].hasOwnProperty(key))
-                        (<any>this.calculations)![key] = _data["calculations"][key] !== undefined ? _data["calculations"][key] : [];
+                        (<any>this.calculations)![key] = _data["calculations"][key] !== undefined ? _data["calculations"][key] : {};
                 }
             }
         }
@@ -1678,92 +1708,29 @@ export class MeanShiftClusteringReturn extends ReturnBase {
     }
 }
 
-export abstract class MeanShiftClusteringCommand extends CommandBase {
+export class Clustering_TimeOfVisit_LengthOfVisit_Command extends CommandBase {
     salesSortingParameters!: SalesSortingParameters | undefined;
-
-    protected _discriminator: string;
-
-    constructor() {
-        super();
-        this._discriminator = "MeanShiftClusteringCommand";
-    }
+    id!: string;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.id = _data["id"];
         }
     }
 
-    static override fromJS(data: any): MeanShiftClusteringCommand {
+    static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
         data = typeof data === 'object' ? data : {};
-        if (data["$type"] === "MSC_Sales_TimeOfVisit_TotalPrice") {
-            let result = new MSC_Sales_TimeOfVisit_TotalPrice();
-            result.init(data);
-            return result;
-        }
-        if (data["$type"] === "MSC_Sales_TimeOfVisit_LengthOfVisit") {
-            let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
-            result.init(data);
-            return result;
-        }
-        throw new Error("The abstract class 'MeanShiftClusteringCommand' cannot be instantiated.");
+        let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+        result.init(data);
+        return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["$type"] = this._discriminator;
         data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
-
-    constructor() {
-        super();
-        this._discriminator = "MSC_Sales_TimeOfVisit_TotalPrice";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): MSC_Sales_TimeOfVisit_TotalPrice {
-        data = typeof data === 'object' ? data : {};
-        let result = new MSC_Sales_TimeOfVisit_TotalPrice();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
-
-    constructor() {
-        super();
-        this._discriminator = "MSC_Sales_TimeOfVisit_LengthOfVisit";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): MSC_Sales_TimeOfVisit_LengthOfVisit {
-        data = typeof data === 'object' ? data : {};
-        let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         super.toJSON(data);
         return data;
     }

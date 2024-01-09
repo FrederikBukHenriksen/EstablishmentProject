@@ -27,7 +27,7 @@ namespace WebApplication1.Domain_Layer.Entities
             this.builderName = name;
             return this;
         }
-        public override bool BuildValidation()
+        public override bool Validation()
         {
             return true;
         }

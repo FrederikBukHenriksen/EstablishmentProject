@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
@@ -17,7 +16,11 @@ namespace WebApplication1.Domain_Layer.Entities
 
             builder.HasIndex(e => e.Name).IsUnique();
 
-            builder.Property(e => e.Price).IsRequired();
+            builder.OwnsOne(e => e.Price, priceBuilder =>
+            {
+                priceBuilder.Property(p => p.Value).HasColumnName("PriceValue").IsRequired();
+                priceBuilder.Property(p => p.Currency).HasColumnName("PriceCurrency").IsRequired();
+            });
         }
     }
 }

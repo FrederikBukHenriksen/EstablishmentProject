@@ -3,7 +3,6 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-using WebApplication1.Application_Layer.Middelware;
 using WebApplication1.Middelware;
 
 namespace WebApplication1.Program
@@ -24,7 +23,7 @@ namespace WebApplication1.Program
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.TypeNameHandling = TypeNameHandling.Objects;
+                    options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
                     options.SerializerSettings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
                 });
 
@@ -114,7 +113,6 @@ namespace WebApplication1.Program
         private static void AddMiddleware(WebApplication app)
         {
             app.UseMiddleware<UserContextMiddleware>();
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
         }
 
         private static void AutoMigrate(WebApplication app)

@@ -1,7 +1,6 @@
 ﻿using System.Data;
-using System.Text.RegularExpressions;
-using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
@@ -51,21 +50,10 @@ namespace WebApplication1.Domain_Layer.Entities
             return this;
         }
 
-        public override bool BuildValidation()
+        public override bool Validation()
         {
-            if (!this.IsEmailValid(this.builderEmail)) throw new Exception("Email is not valid");
             if (!this.IsEmailUnique(this.builderEmail)) throw new Exception("Email is not unique");
-            if (!this.IsPasswordValid(this.builderPassword)) throw new Exception("Password is not valid");
             return true;
-        }
-
-        private bool IsPasswordValid(string password) => password.Length >= 8;
-
-        private bool IsEmailValid(string email)
-        {
-            string pattern = @"^(?i)[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-            Regex regex = new Regex(pattern);
-            return regex.IsMatch(email);
         }
 
         private bool IsEmailUnique(string email) => !(this.userRepository.GetAll().Any(u => u.Email == this.builderEmail));
@@ -83,5 +71,6 @@ namespace WebApplication1.Domain_Layer.Entities
             }).ToList();
             return this;
         }
+
     }
 }

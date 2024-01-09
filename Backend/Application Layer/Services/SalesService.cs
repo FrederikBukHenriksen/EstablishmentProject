@@ -3,7 +3,6 @@ using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Services;
 using WebApplication1.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebApplication1.Application_Layer.Services
 {
@@ -27,7 +26,7 @@ namespace WebApplication1.Application_Layer.Services
             this.establishmentRepository = establishmentRepository;
             this.userContextService = userContextService;
         }
-        
+
         public List<Sale> GetSalesWhichContainItems(List<Guid>? mustContaiedItemIds)
         {
             List<Sale> sales = new List<Sale>();
@@ -36,9 +35,9 @@ namespace WebApplication1.Application_Layer.Services
             {
                 var activeEstablishment = this.userContextService.GetActiveEstablishment();
 
-                List<Item> establishmentItems = establishmentRepository.GetEstablishmentItems(activeEstablishment.Id).ToList();
+                List<Item> establishmentItems = this.establishmentRepository.GetEstablishmentItems(activeEstablishment.Id).ToList();
 
-                sales = establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
+                sales = this.establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
 
                 List<Item> mustBeConatineditems = establishmentItems.Where(x => mustContaiedItemIds.Contains(x.Id)).ToList();
 
@@ -55,9 +54,9 @@ namespace WebApplication1.Application_Layer.Services
             {
                 var activeEstablishment = this.userContextService.GetActiveEstablishment();
 
-                List<Table> establishmentTables = establishmentRepository.GetEstablishmentTables(activeEstablishment.Id).ToList();
+                List<Table> establishmentTables = this.establishmentRepository.GetEstablishmentTables(activeEstablishment.Id).ToList();
 
-                sales = establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
+                sales = this.establishmentRepository.GetEstablishmentSales(activeEstablishment.Id).ToList();
 
                 List<Table> possibleTables = establishmentTables.Where(x => allowedTables.Contains(x.Id)).ToList();
 
@@ -67,7 +66,7 @@ namespace WebApplication1.Application_Layer.Services
 
         }
 
-        public object GetAttributeValue(Sale sale, Func<Sale,object> selector)
+        public object GetAttributeValue(Sale sale, Func<Sale, object> selector)
         {
             return selector(sale);
         }

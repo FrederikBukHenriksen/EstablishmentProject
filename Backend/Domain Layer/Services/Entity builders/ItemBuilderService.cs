@@ -3,15 +3,16 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
-    public interface IItemBuilder : IEntityBuilder<Item>
+    public interface IItemBuilderService : IEntityBuilder<Item>
     {
+        IItemBuilderService WithName(string name);
+        IItemBuilderService WithPrice(double price);
     }
 
-    public class ItemBuilder : EntityBuilderBase<Item>, IItemBuilder
+    public class ItemBuilderService : EntityBuilderBase<Item>, IItemBuilderService
     {
         private string? builderName = null;
         private Price? builderPrice = null;
-
 
         public override void ReadPropertiesOfEntity(Item entity)
         {
@@ -25,19 +26,19 @@ namespace WebApplication1.Domain_Layer.Entities
             entity.Price = this.builderPrice;
         }
 
-        public IItemBuilder WithName(string name)
+        public IItemBuilderService WithName(string name)
         {
             this.builderName = name;
             return this;
         }
 
-        public IItemBuilder WithPrice(Price price)
+        public IItemBuilderService WithPrice(double price)
         {
-            this.builderPrice = price;
+            this.builderPrice = new Price(price, Currency.DKK);
             return this;
         }
 
-        public override bool BuildValidation()
+        public override bool Validation()
         {
             if (!this.doesItemHaveAName()) throw new Exception("Item must have a name");
             return true;

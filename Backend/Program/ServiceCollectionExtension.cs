@@ -23,10 +23,10 @@ namespace WebApplication1.Program
             //serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
             //Entity services
-            serviceCollection.AddTransient<IEstablishmentBuilder, EstablishmentBuilder>();
+            serviceCollection.AddTransient<IEstablishmentService, EstablishmentService>();
 
             serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
-            serviceCollection.AddTransient<IItemBuilder, ItemBuilder>();
+            serviceCollection.AddTransient<IItemBuilderService, ItemBuilderService>();
             serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
 
 
@@ -55,9 +55,9 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<CorrelationCommand, CorrelationReturn>, CorrelationHandler>();
             serviceCollection.AddTransient<IHandler<CorrelationGraphCommand, CorrelationGraphReturn>, CorrelationGraphHandler>();
             serviceCollection.AddTransient<IHandler<MeanSalesCommand, MeanSalesReturn>, MeanSalesHandler>();
+            //Clustering
             serviceCollection.AddTransient<IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn>, salesClustering>();
-
-            //commands with service acces:
+            serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, Clustering_TimeOfVisit_TotalPrice_Return>, Clustering_TimeOfVisitVSTotalPrice>();
 
 
 

@@ -1,6 +1,5 @@
 ﻿using WebApplication1.Domain_Layer.Entities;
 
-
 namespace WebApplication1.Data
 {
     public class ApplicationDbContext : DbContext
@@ -8,26 +7,35 @@ namespace WebApplication1.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             //this.ChangeTracker.LazyLoadingEnabled = false;
+            this.ChangeTracker.LazyLoadingEnabled = true;  // Enable lazy loading
         }
 
         //Entities
         public DbSet<Establishment> Establishment { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<Price> Price { get; set; }
+
 
         public DbSet<EstablishmentInformation> information { get; set; }
-        //public DbSet<Sale> Sale { get; set; }
-        //public DbSet<UserRole> UserRoles { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
+            //modelBuilder.ApplyConfiguration(new PriceConfiguration());
+            modelBuilder.ApplyConfiguration(new ItemConfiguration());
 
-            modelBuilder.Entity<Item>()
-                .HasOne<Establishment>()
-                .WithMany(x => x.GetItems())
-                .HasForeignKey("EstablishmentId")
-                .IsRequired();
+
+
+            //modelBuilder.Entity<Item>()
+            //    .HasOne<Establishment>()
+            //    .WithMany(x => x.GetItems())
+            //    .HasForeignKey("EstablishmentId")
+            //    .IsRequired();
 
 
             modelBuilder.Entity<OpeningHours>()
@@ -59,10 +67,8 @@ namespace WebApplication1.Data
 
             ;
 
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
-            modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
-            modelBuilder.ApplyConfiguration(new ItemConfiguration());
+
+
 
         }
 

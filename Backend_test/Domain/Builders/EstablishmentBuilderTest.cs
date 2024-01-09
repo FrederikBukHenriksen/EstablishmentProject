@@ -21,7 +21,7 @@ namespace EstablishmentProject.test.Domain.Builders
             var name = "Test Establishment";
 
             // Act
-            var establishment = establishmentBuilder.WithName(name).Build();
+            var establishment = establishmentBuilder.SetName(name).Build();
 
             // Assert
             Assert.Equal(name, establishment.Name);
@@ -31,12 +31,12 @@ namespace EstablishmentProject.test.Domain.Builders
         public void WithItems_Should_Set_Items()
         {
             // Arrange
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().SetName("Establishment");
             var itemBuilder = factoryServiceBuilder.ItemBuilder();
             var items = new List<Item> { itemBuilder.WithName("Coffee").WithPrice(25).Build() };
 
             // Act
-            var establishment = establishmentBuilder.WithItems(items).Build();
+            var establishment = establishmentBuilder.AddItems(items).Build();
 
             // Assert
             Assert.Equal(items, establishment.GetItems());
@@ -46,11 +46,11 @@ namespace EstablishmentProject.test.Domain.Builders
         public void WithTables_Should_Set_Tables()
         {
             // Arrange
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().SetName("Establishment");
             var tables = new List<Table> { new Table { }, new Table { } }; //TODO USE TABLE BUILDER
 
             // Act
-            var establishment = establishmentBuilder.WithTables(tables).Build();
+            var establishment = establishmentBuilder.AddTables(tables).Build();
 
             // Assert
             Assert.Equal(tables, establishment.Tables);
@@ -60,12 +60,12 @@ namespace EstablishmentProject.test.Domain.Builders
         public void WithSales__Success()
         {
             // Arrange
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().SetName("Establishment");
             var saleBuilder = factoryServiceBuilder.SaleBuilder();
             var sales = new List<Sale> { saleBuilder.WithTimestampPayment(DateTime.Now).Build() };
 
             // Act
-            var establishment = establishmentBuilder.WithSales(sales).Build();
+            var establishment = establishmentBuilder.AddSales(sales).Build();
 
             // Assert
             Assert.Equal(sales, establishment.Sales);
@@ -77,12 +77,12 @@ namespace EstablishmentProject.test.Domain.Builders
             // Arrange
             var coffee = factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build();
 
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment").WithItems(new List<Item> { coffee });
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().SetName("Establishment").AddItems(new List<Item> { coffee });
             var saleBuilder = factoryServiceBuilder.SaleBuilder();
             var sales = new List<Sale> { saleBuilder.WithSoldItems(new List<(Item item, int quantity)> { (coffee, 1) }).WithTimestampPayment(DateTime.Now).Build() };
 
             // Act
-            var establishment = establishmentBuilder.WithSales(sales).Build();
+            var establishment = establishmentBuilder.AddSales(sales).Build();
 
             // Assert
             Assert.Equal(sales, establishment.Sales);
@@ -94,7 +94,7 @@ namespace EstablishmentProject.test.Domain.Builders
             // Arrange
             var coffee = factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build();
 
-            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().WithName("Establishment");
+            var establishmentBuilder = factoryServiceBuilder.EstablishmentBuilder().SetName("Establishment");
             var saleBuilder = factoryServiceBuilder.SaleBuilder();
             var sales = new List<Sale> { saleBuilder.WithSoldItems(new List<(Item item, int quantity)> { (coffee, 1) }).WithTimestampPayment(DateTime.Now).Build() };
 
@@ -103,7 +103,7 @@ namespace EstablishmentProject.test.Domain.Builders
             // Act
             var exception = Record.Exception(() =>
             {
-                establishment = establishmentBuilder.WithSales(sales).Build();
+                establishment = establishmentBuilder.AddSales(sales).Build();
             });
 
             // Assert
@@ -118,7 +118,7 @@ namespace EstablishmentProject.test.Domain.Builders
         {
             // Arrange
             var establishmentBuilder1 = factoryServiceBuilder.EstablishmentBuilder();
-            var establishment1 = establishmentBuilder1.WithName("Establishment").Build();
+            var establishment1 = establishmentBuilder1.SetName("Establishment").Build();
 
 
             // Act
@@ -134,11 +134,11 @@ namespace EstablishmentProject.test.Domain.Builders
         {
             // Arrange
             var establishmentBuilder1 = factoryServiceBuilder.EstablishmentBuilder();
-            var establishment1 = establishmentBuilder1.WithName("Establishment 1").Build();
+            var establishment1 = establishmentBuilder1.SetName("Establishment 1").Build();
             var establishmentBuilder2 = factoryServiceBuilder.EstablishmentBuilder();
 
             // Act
-            var establishment2 = establishmentBuilder2.WithName("Establishment 2").Build();
+            var establishment2 = establishmentBuilder2.SetName("Establishment 2").Build();
 
             // Assert
             Assert.NotEqual(establishment1, establishment2);

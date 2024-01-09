@@ -44,8 +44,8 @@ namespace EstablishmentProject.test.CommandHandlers.MeanSales
 
             var establishment = factoryServiceBuilder
                 .EstablishmentBuilder()
-                .WithItems(new List<Item> { coffee, bun, water })
-                .WithSales(salesDistribution)
+                .AddItems(new List<Item> { coffee, bun, water })
+                .AddSales(salesDistribution)
                 .Build();
 
             dbContext.Add(establishment);

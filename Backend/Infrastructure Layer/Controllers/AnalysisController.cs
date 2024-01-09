@@ -58,10 +58,16 @@ namespace WebApplication1.Controllers
             var value = handler.Handle(command);
             return value;
         }
-        [Route("clustering/")]
 
-        [HttpPost("mean-shift-clustering")]
-        public MeanShiftClusteringReturn MeanShiftClustering([FromBody] MeanShiftClusteringCommand command, [FromServices] IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn> handler)
+        //[HttpGet("mean-shift-clustering")]
+        //public MeanShiftClusteringReturn MeanShiftClustering([FromBody] MeanShiftClusteringCommand command, [FromServices] IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn> handler)
+        //{
+        //    return handler.Handle(command);
+
+        //}
+
+        [HttpPost("TimeOfVisit_TotalPrice")]
+        public Clustering_TimeOfVisit_TotalPrice_Return TimeOfVisitTotalPrice([FromBody] Clustering_TimeOfVisit_TotalPrice_Command command, [FromServices] IHandler<Clustering_TimeOfVisit_TotalPrice_Command, Clustering_TimeOfVisit_TotalPrice_Return> handler)
         {
             return handler.Handle(command);
 

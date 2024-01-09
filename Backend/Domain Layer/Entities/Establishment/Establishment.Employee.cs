@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public partial class Establishment
+    public partial class Establishment : EntityBase
     {
         public void AddEmployee(Employee employee)
         {

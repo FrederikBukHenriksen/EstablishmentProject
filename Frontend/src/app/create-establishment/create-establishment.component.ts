@@ -17,7 +17,6 @@ import {
   SalesQueryReturn,
   SalesQuery,
   DateTimePeriod,
-  MSC_Sales_TimeOfVisit_TotalPrice,
 } from 'api';
 import { Observable, lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
@@ -175,11 +174,10 @@ export class CreateEstablishmentComponent implements OnInit {
   }
 
   public async tester2() {
-    const command = new MSC_Sales_TimeOfVisit_TotalPrice();
-
-    return await lastValueFrom(
-      this.analysisClient.meanShiftClustering(command)
-    );
+    // const command = new MSC_Sales_TimeOfVisit_TotalPrice();
+    // return await lastValueFrom(
+    //   this.analysisClient.meanShiftClustering(command)
+    // );
   }
 
   ngOnInit(): void {
@@ -269,8 +267,8 @@ export class CreateEstablishmentComponent implements OnInit {
 
   async openDialog() {
     // const val = await this.getCorrelation();
-    // await this.tester();
-    await this.tester2();
+    await this.tester();
+    // await this.tester2();
 
     // const items = await this.GetEstablishmentItems();
     // this.mapGrafDictionaryToChartDataset();

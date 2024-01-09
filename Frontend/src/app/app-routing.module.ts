@@ -12,6 +12,7 @@ import { CreateEstablishmentComponent } from './create-establishment/create-esta
 import { AuthenticationClient } from 'api';
 import { map } from 'rxjs';
 import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
+import { ClusterComponent } from './cluster/cluster.component';
 
 // const authGuard =
 //   (roles: string[]) =>
@@ -35,8 +36,11 @@ const routes: Routes = [
 
   {
     path: 'create-establishment',
-    // canActivate: [authGuard(['Admin'])],
     component: CreateEstablishmentComponent,
+  },
+  {
+    path: 'cluster',
+    component: ClusterComponent,
   },
 ];
 
