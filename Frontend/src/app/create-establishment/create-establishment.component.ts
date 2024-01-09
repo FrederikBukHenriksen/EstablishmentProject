@@ -248,22 +248,22 @@ export class CreateEstablishmentComponent implements OnInit {
     }
   }
 
-  private GetEstablishmentItems(): Promise<CheckBoxData[]> {
-    return lastValueFrom(
-      this.establishmentClient.itemGetAll().pipe(
-        map((items: any[]) =>
-          items.map(
-            (item: any) =>
-              ({
-                id: item.id,
-                name: item.name,
-                selected: false,
-              } as CheckBoxData)
-          )
-        )
-      )
-    );
-  }
+  // private GetEstablishmentItems(): Promise<CheckBoxData[]> {
+  //   return lastValueFrom(
+  //     this.establishmentClient.itemGetAll().pipe(
+  //       map((items: any[]) =>
+  //         items.map(
+  //           (item: any) =>
+  //             ({
+  //               id: item.id,
+  //               name: item.name,
+  //               selected: false,
+  //             } as CheckBoxData)
+  //         )
+  //       )
+  //     )
+  //   );
+  // }
 
   async openDialog() {
     // const val = await this.getCorrelation();

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services;
 
 namespace WebApplication1.ControllersBui
@@ -8,18 +7,18 @@ namespace WebApplication1.ControllersBui
     [Route("api/user-context/")]
     public class UserContextController : ControllerBase
     {
-        [HttpGet("get-accessible-establishment")]
-        public List<Establishment> GetAccessibleEstablishments([FromServices] IUserContextService userContextService)
+        [HttpGet("get-accessible-establishments")]
+        public List<Guid> GetAccessibleEstablishments([FromServices] IUserContextService userContextService)
         {
             var establishments = userContextService.GetAccessibleEstablishments();
-            establishments = establishments.Select(x => new Establishment { Id = x.Id, Name = x.Name }).ToList();
-            return establishments;
+            List<Guid> list = establishments.Select(x => x.Id).ToList();
+            return list;
         }
 
         [HttpPost("get-active-establishment")]
-        public Establishment GetActiveEstablishment([FromServices] IUserContextService userContextService)
+        public Guid GetActiveEstablishment([FromServices] IUserContextService userContextService)
         {
-            return userContextService.GetActiveEstablishment();
+            return userContextService.GetActiveEstablishment().Id;
         }
     }
 }

@@ -26,17 +26,7 @@ namespace WebApplication1.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
-            //modelBuilder.ApplyConfiguration(new PriceConfiguration());
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
-
-
-
-            //modelBuilder.Entity<Item>()
-            //    .HasOne<Establishment>()
-            //    .WithMany(x => x.GetItems())
-            //    .HasForeignKey("EstablishmentId")
-            //    .IsRequired();
-
 
             modelBuilder.Entity<OpeningHours>()
                 .Property(e => e.open)
@@ -53,14 +43,6 @@ namespace WebApplication1.Data
                 );
 
 
-            //modelBuilder.Entity<Location>(entity =>
-            //{
-            //    entity.OwnsOne(l => l.Coordinates, coordinates =>
-            //    { 
-            //        coordinates.Property(c => c.Latitude).HasColumnName("Latitude");
-            //        coordinates.Property(c => c.Longitude).HasColumnName("Longitude");
-            //    });
-            //});
 
             modelBuilder.Entity<Location>()
                 .OwnsOne(l => l.Coordinates);

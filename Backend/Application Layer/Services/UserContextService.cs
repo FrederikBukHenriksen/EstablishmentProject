@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 
@@ -36,12 +33,12 @@ namespace WebApplication1.Services
 
         public void SetUser(User? user)
         {
-            _user = user;
+            this._user = user;
         }
 
         public User GetUser()
         {
-            return _user;
+            return this._user;
         }
 
         public void FecthAccesibleEstablishments()
@@ -52,12 +49,12 @@ namespace WebApplication1.Services
         public Establishment GetActiveEstablishment()
         {
 
-            return _activeEstablishment;
+            return this._activeEstablishment;
         }
 
         public List<Establishment> GetAccessibleEstablishments()
         {
-            return _userRoles.Select(x => x.Establishment).ToList();
+            return this._userRoles.Select(x => x.Establishment).ToList();
         }
 
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext)
@@ -68,10 +65,10 @@ namespace WebApplication1.Services
             if (!EstablishmentIdAsString.IsNullOrEmpty())
             {
                 Guid EstablishmentId = Guid.Parse(EstablishmentIdAsString);
-                bool isUserAssociatedWithEstablishment = GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);
+                bool isUserAssociatedWithEstablishment = this.GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);
                 if (isUserAssociatedWithEstablishment)
                 {
-                    _activeEstablishment = _establishmentRepository.GetById(EstablishmentId);
+                    this._activeEstablishment = this._establishmentRepository.GetById(EstablishmentId);
                 }
             }
         }

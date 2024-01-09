@@ -25,6 +25,7 @@ namespace WebApplication1.Program
                 {
                     options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
                     options.SerializerSettings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
             builder.Services.AddTransient<ApplicationDbContext>();

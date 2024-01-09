@@ -7,7 +7,6 @@ namespace WebApplication1.Domain_Layer.Entities
         public void Configure(EntityTypeBuilder<Establishment> builder)
         {
             builder.Property(x => x.Name);
-
         }
     }
 

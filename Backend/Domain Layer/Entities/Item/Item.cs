@@ -6,6 +6,7 @@ namespace WebApplication1.Domain_Layer.Entities
     {
         public string Name { get; set; }
         public Price Price { get; set; }
+        public virtual Establishment Establishment { get; set; }
     }
 
     public class ItemConfiguration : IEntityTypeConfiguration<Item>
@@ -21,6 +22,11 @@ namespace WebApplication1.Domain_Layer.Entities
                 priceBuilder.Property(p => p.Value).HasColumnName("PriceValue").IsRequired();
                 priceBuilder.Property(p => p.Currency).HasColumnName("PriceCurrency").IsRequired();
             });
+
+            //builder.HasOne<Establishment>()
+            //.WithMany(x => x.Items)
+            //.HasForeignKey("EstablishmentId")
+            //.IsRequired();
         }
     }
 }

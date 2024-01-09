@@ -9,38 +9,56 @@ namespace WebApplication1.Controllers
     [Route("api/establishment/")]
     public class EstablishmentController : ControllerBase
     {
-        private readonly IEstablishmentRepository _establishmentRepository;
-        private readonly IUserContextService _userContextService;
+        private IEstablishmentRepository _establishmentRepository;
+        private IUserContextService _userContextService;
 
         public EstablishmentController(
             IEstablishmentRepository establishmentRepository,
             IUserContextService userContextService
             )
         {
-            _establishmentRepository = establishmentRepository;
-            _userContextService = userContextService;
+            this._establishmentRepository = establishmentRepository;
+            this._userContextService = userContextService;
         }
 
-        [HttpGet]
-        [Route("get")]
-        public Establishment? Get(Guid establishmentId)
+        [HttpGet("get")]
+        public ActionResult<EstablishmentDTO> GetEstablishment(Guid establishmentId)
         {
-            return _establishmentRepository.Find(x => x.Id == establishmentId);
+            List<UserRole> userRoles = this._userContextService.GetAllUserRoles().ToList();
+
+            if (userRoles.Any(userRole => userRole.Establishment.Id == establishmentId))
+            {
+                Establishment establishment = this._establishmentRepository.GetById(establishmentId);
+                return new EstablishmentDTO(this._establishmentRepository.GetAll().First());
+            }
+            else
+            {
+                return this.Unauthorized();
+            }
+            return this.NotFound();
         }
 
-        [Route("get-all")]
-        public List<Establishment>? GetAll()
+        [HttpPost("get-multiple")]
+        public ActionResult<List<EstablishmentDTO>> GetEstablishments(List<Guid> establishmentIds)
         {
-            return _userContextService.GetAccessibleEstablishments().ToList();
+            List<UserRole> userRoles = this._userContextService.GetAllUserRoles().ToList();
+
+            List<EstablishmentDTO> establishments = new List<EstablishmentDTO>();
+
+            foreach (Guid establishmentId in establishmentIds)
+            {
+                if (userRoles.Any(userRole => userRole.Establishment.Id == establishmentId))
+                {
+                    Establishment establishment = this._establishmentRepository.GetById(establishmentId);
+                    establishments.Add(new EstablishmentDTO(establishment));
+                }
+                else
+                {
+                    return this.Unauthorized();
+                }
+            }
+            return establishments;
         }
 
-        [HttpGet("items/get-all")]
-        public ICollection<Item> ItemGetAll([FromServices] IUserContextService userContextService,
-        [FromServices] IEstablishmentRepository establishmentRepository)
-        {
-            Establishment activeEstablishment = userContextService.GetActiveEstablishment();
-            var res = establishmentRepository.GetEstablishmentItems(activeEstablishment.Id)!;
-            return res;
-        }
     }
 }

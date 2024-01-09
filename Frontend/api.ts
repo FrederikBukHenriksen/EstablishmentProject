@@ -28,8 +28,8 @@ export class UserContextClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getAccessibleEstablishments(): Observable<Establishment[]> {
-        let url_ = this.baseUrl + "/api/user-context/get-accessible-establishment";
+    getAccessibleEstablishments(): Observable<string[]> {
+        let url_ = this.baseUrl + "/api/user-context/get-accessible-establishments";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -48,14 +48,14 @@ export class UserContextClient {
                 try {
                     return this.processGetAccessibleEstablishments(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[]>;
+                    return _observableThrow(e) as any as Observable<string[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment[]>;
+                return _observableThrow(response_) as any as Observable<string[]>;
         }));
     }
 
-    protected processGetAccessibleEstablishments(response: HttpResponseBase): Observable<Establishment[]> {
+    protected processGetAccessibleEstablishments(response: HttpResponseBase): Observable<string[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -69,7 +69,7 @@ export class UserContextClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(Establishment.fromJS(item));
+                    result200!.push(item);
             }
             else {
                 result200 = <any>null;
@@ -84,7 +84,7 @@ export class UserContextClient {
         return _observableOf(null as any);
     }
 
-    getActiveEstablishment(): Observable<Establishment> {
+    getActiveEstablishment(): Observable<string> {
         let url_ = this.baseUrl + "/api/user-context/get-active-establishment";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -104,14 +104,14 @@ export class UserContextClient {
                 try {
                     return this.processGetActiveEstablishment(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment>;
+                    return _observableThrow(e) as any as Observable<string>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment>;
+                return _observableThrow(response_) as any as Observable<string>;
         }));
     }
 
-    protected processGetActiveEstablishment(response: HttpResponseBase): Observable<Establishment> {
+    protected processGetActiveEstablishment(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -122,7 +122,8 @@ export class UserContextClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Establishment.fromJS(resultData200);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -425,8 +426,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    timeOfVisitTotalTimeOfVisit(command: Clustering_TimeOfVisit_LengthOfVisit_Command): Observable<MeanShiftClusteringReturn> {
-        let url_ = this.baseUrl + "/api/analysis/TimeOfVisit_TotalTimeOfVisit";
+    timeOfVisitTotalPrice(command: Clustering_TimeOfVisit_TotalPrice_Command): Observable<Clustering_TimeOfVisit_TotalPrice_Return> {
+        let url_ = this.baseUrl + "/api/analysis/TimeOfVisit_TotalPrice";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -443,20 +444,20 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processTimeOfVisitTotalTimeOfVisit(response_);
+            return this.processTimeOfVisitTotalPrice(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processTimeOfVisitTotalTimeOfVisit(response_ as any);
+                    return this.processTimeOfVisitTotalPrice(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
+                    return _observableThrow(e) as any as Observable<Clustering_TimeOfVisit_TotalPrice_Return>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<MeanShiftClusteringReturn>;
+                return _observableThrow(response_) as any as Observable<Clustering_TimeOfVisit_TotalPrice_Return>;
         }));
     }
 
-    protected processTimeOfVisitTotalTimeOfVisit(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
+    protected processTimeOfVisitTotalPrice(response: HttpResponseBase): Observable<Clustering_TimeOfVisit_TotalPrice_Return> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -467,7 +468,7 @@ export class AnalysisClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = MeanShiftClusteringReturn.fromJS(resultData200);
+            result200 = Clustering_TimeOfVisit_TotalPrice_Return.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -762,7 +763,7 @@ export class EstablishmentClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    get(establishmentId: string | undefined): Observable<Establishment> {
+    getEstablishment(establishmentId: string | undefined): Observable<EstablishmentDTO> {
         let url_ = this.baseUrl + "/api/establishment/get?";
         if (establishmentId === null)
             throw new Error("The parameter 'establishmentId' cannot be null.");
@@ -780,20 +781,20 @@ export class EstablishmentClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+            return this.processGetEstablishment(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(response_ as any);
+                    return this.processGetEstablishment(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment>;
+                    return _observableThrow(e) as any as Observable<EstablishmentDTO>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment>;
+                return _observableThrow(response_) as any as Observable<EstablishmentDTO>;
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<Establishment> {
+    protected processGetEstablishment(response: HttpResponseBase): Observable<EstablishmentDTO> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -804,7 +805,7 @@ export class EstablishmentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Establishment.fromJS(resultData200);
+            result200 = EstablishmentDTO.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -815,34 +816,38 @@ export class EstablishmentClient {
         return _observableOf(null as any);
     }
 
-    getAll(): Observable<Establishment[] | null> {
-        let url_ = this.baseUrl + "/api/establishment/get-all";
+    getEstablishments(establishmentIds: string[]): Observable<EstablishmentDTO[]> {
+        let url_ = this.baseUrl + "/api/establishment/get-multiple";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(establishmentIds);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEstablishments(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAll(response_ as any);
+                    return this.processGetEstablishments(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[] | null>;
+                    return _observableThrow(e) as any as Observable<EstablishmentDTO[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment[] | null>;
+                return _observableThrow(response_) as any as Observable<EstablishmentDTO[]>;
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<Establishment[] | null> {
+    protected processGetEstablishments(response: HttpResponseBase): Observable<EstablishmentDTO[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -856,7 +861,7 @@ export class EstablishmentClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(Establishment.fromJS(item));
+                    result200!.push(EstablishmentDTO.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -870,9 +875,27 @@ export class EstablishmentClient {
         }
         return _observableOf(null as any);
     }
+}
 
-    itemGetAll(): Observable<Item[]> {
-        let url_ = this.baseUrl + "/api/establishment/items/get-all";
+@Injectable({
+    providedIn: 'root'
+})
+export class SaleClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getSale(saleId: string | undefined): Observable<SaleDTO> {
+        let url_ = this.baseUrl + "/api/establishment/sales/get-sale?";
+        if (saleId === null)
+            throw new Error("The parameter 'saleId' cannot be null.");
+        else if (saleId !== undefined)
+            url_ += "saleId=" + encodeURIComponent("" + saleId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -885,20 +908,73 @@ export class EstablishmentClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processItemGetAll(response_);
+            return this.processGetSale(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processItemGetAll(response_ as any);
+                    return this.processGetSale(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Item[]>;
+                    return _observableThrow(e) as any as Observable<SaleDTO>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Item[]>;
+                return _observableThrow(response_) as any as Observable<SaleDTO>;
         }));
     }
 
-    protected processItemGetAll(response: HttpResponseBase): Observable<Item[]> {
+    protected processGetSale(response: HttpResponseBase): Observable<SaleDTO> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SaleDTO.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getSales(saleIds: string[]): Observable<SaleDTO[]> {
+        let url_ = this.baseUrl + "/api/establishment/sales/get-sales";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(saleIds);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSales(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSales(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SaleDTO[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SaleDTO[]>;
+        }));
+    }
+
+    protected processGetSales(response: HttpResponseBase): Observable<SaleDTO[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -912,7 +988,7 @@ export class EstablishmentClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(Item.fromJS(item));
+                    result200!.push(SaleDTO.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1152,12 +1228,14 @@ export enum DayOfWeek {
 export class Item extends EntityBase {
     name!: string;
     price!: Price;
+    establishment!: Establishment;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.name = _data["name"];
             this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
+            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
         }
     }
 
@@ -1172,6 +1250,7 @@ export class Item extends EntityBase {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["price"] = this.price ? this.price.toJSON() : <any>undefined;
+        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -1236,6 +1315,7 @@ export class Table extends EntityBase {
 }
 
 export class Sale extends EntityBase {
+    establishment!: Establishment;
     saleType!: SaleType | undefined;
     paymentType!: PaymentType | undefined;
     timestampArrival!: Date | undefined;
@@ -1247,6 +1327,7 @@ export class Sale extends EntityBase {
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
             this.saleType = _data["saleType"];
             this.paymentType = _data["paymentType"];
             this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
@@ -1270,6 +1351,7 @@ export class Sale extends EntityBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
         data["saleType"] = this.saleType;
         data["paymentType"] = this.paymentType;
         data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
@@ -1660,9 +1742,8 @@ export class CorrelationReturn extends ReturnBase {
     }
 }
 
-export class MeanShiftClusteringReturn extends ReturnBase {
+export class Clustering_TimeOfVisit_TotalPrice_Return extends ReturnBase {
     clusters!: string[][];
-    calculations!: { [key: string]: { [key: string]: number; }; };
 
     override init(_data?: any) {
         super.init(_data);
@@ -1672,19 +1753,12 @@ export class MeanShiftClusteringReturn extends ReturnBase {
                 for (let item of _data["clusters"])
                     this.clusters!.push(item);
             }
-            if (_data["calculations"]) {
-                this.calculations = {} as any;
-                for (let key in _data["calculations"]) {
-                    if (_data["calculations"].hasOwnProperty(key))
-                        (<any>this.calculations)![key] = _data["calculations"][key] !== undefined ? _data["calculations"][key] : {};
-                }
-            }
         }
     }
 
-    static override fromJS(data: any): MeanShiftClusteringReturn {
+    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Return {
         data = typeof data === 'object' ? data : {};
-        let result = new MeanShiftClusteringReturn();
+        let result = new Clustering_TimeOfVisit_TotalPrice_Return();
         result.init(data);
         return result;
     }
@@ -1696,19 +1770,12 @@ export class MeanShiftClusteringReturn extends ReturnBase {
             for (let item of this.clusters)
                 data["clusters"].push(item);
         }
-        if (this.calculations) {
-            data["calculations"] = {};
-            for (let key in this.calculations) {
-                if (this.calculations.hasOwnProperty(key))
-                    (<any>data["calculations"])[key] = (<any>this.calculations)[key];
-            }
-        }
         super.toJSON(data);
         return data;
     }
 }
 
-export class Clustering_TimeOfVisit_LengthOfVisit_Command extends CommandBase {
+export class Clustering_TimeOfVisit_TotalPrice_Command extends CommandBase {
     salesSortingParameters!: SalesSortingParameters | undefined;
     id!: string;
 
@@ -1720,9 +1787,9 @@ export class Clustering_TimeOfVisit_LengthOfVisit_Command extends CommandBase {
         }
     }
 
-    static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
+    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
         data = typeof data === 'object' ? data : {};
-        let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+        let result = new Clustering_TimeOfVisit_TotalPrice_Command();
         result.init(data);
         return result;
     }
@@ -1758,6 +1825,117 @@ export class LoginCommand {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
         data["password"] = this.password;
+        return data;
+    }
+}
+
+export class EstablishmentDTO {
+    id!: string;
+    name!: string;
+    items!: string[];
+    tables!: string[];
+    sales!: string[];
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(item);
+            }
+            if (Array.isArray(_data["tables"])) {
+                this.tables = [] as any;
+                for (let item of _data["tables"])
+                    this.tables!.push(item);
+            }
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): EstablishmentDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new EstablishmentDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item);
+        }
+        if (Array.isArray(this.tables)) {
+            data["tables"] = [];
+            for (let item of this.tables)
+                data["tables"].push(item);
+        }
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item);
+        }
+        return data;
+    }
+}
+
+export class SaleDTO {
+    id!: string;
+    saleType!: SaleType | undefined;
+    paymentType!: PaymentType | undefined;
+    timestampArrival!: Date | undefined;
+    timestampPayment!: Date;
+    salesItems!: string[];
+    table!: string | undefined;
+    employee!: string | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.saleType = _data["saleType"];
+            this.paymentType = _data["paymentType"];
+            this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
+            this.timestampPayment = _data["timestampPayment"] ? new Date(_data["timestampPayment"].toString()) : <any>undefined;
+            if (Array.isArray(_data["salesItems"])) {
+                this.salesItems = [] as any;
+                for (let item of _data["salesItems"])
+                    this.salesItems!.push(item);
+            }
+            this.table = _data["table"];
+            this.employee = _data["employee"];
+        }
+    }
+
+    static fromJS(data: any): SaleDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SaleDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["saleType"] = this.saleType;
+        data["paymentType"] = this.paymentType;
+        data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
+        data["timestampPayment"] = this.timestampPayment ? this.timestampPayment.toISOString() : <any>undefined;
+        if (Array.isArray(this.salesItems)) {
+            data["salesItems"] = [];
+            for (let item of this.salesItems)
+                data["salesItems"].push(item);
+        }
+        data["table"] = this.table;
+        data["employee"] = this.employee;
         return data;
     }
 }

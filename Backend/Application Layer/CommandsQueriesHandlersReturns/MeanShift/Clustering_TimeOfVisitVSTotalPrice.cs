@@ -16,7 +16,7 @@ namespace WebApplication1.CommandHandlers
     public class Clustering_TimeOfVisit_TotalPrice_Return : ReturnBase
     {
         public List<List<Guid>> clusters { get; set; }
-        public Dictionary<Guid, Dictionary<string, double>> calculations { get; set; }
+        //public Dictionary<Guid, Dictionary<string, double>> calculations { get; set; }
     }
 
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, Clustering_TimeOfVisit_TotalPrice_Return>
@@ -39,10 +39,9 @@ namespace WebApplication1.CommandHandlers
 
             //Arrange
             List<(Sale sale, Dictionary<string, double>)> saleDataAttributes = sales
-                .Where(sale => sale.GetTimespanOfVisit() != null)
                 .Select(sale => (
                     entity: sale,
-                    values: new Dictionary<string, double> { { "TimeOfVisit", sale.GetTimeOfSale().Second }, { "LengthOfVisit", ((TimeSpan)sale.GetTimespanOfVisit()).Seconds } }
+                    values: new Dictionary<string, double> { { "TimeOfVisit", sale.GetTimeOfSale().Second }, { "TotalPrice", sale.GetTotalPrice() } }
                     ))
                 .ToList();
 
@@ -54,11 +53,10 @@ namespace WebApplication1.CommandHandlers
             List<List<Sale>> clusteredSales = MeanShiftClustering.Cluster(saleData, bandwith);
 
             //Return
-
             return new Clustering_TimeOfVisit_TotalPrice_Return
             {
                 clusters = clusteredSales.Select(innerList => innerList.Select(sale => sale.Id).ToList()).ToList(),
-                calculations = saleDataAttributes.ToDictionary(x => x.Item1.Id, x => x.Item2)
+                //calculations = saleDataAttributes.ToDictionary(x => x.Item1.Id, x => x.Item2)
             };
         }
     }
