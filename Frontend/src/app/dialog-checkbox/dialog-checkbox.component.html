@@ -1,21 +1,41 @@
-<div *ngFor="let groups of data">
-  <div *ngFor="let group of groups.groups">
-    <h2>{{ group.title }}</h2>
-    <div *ngFor="let input of group.items">
-      {{ input.id }}
-      <div *ngIf="input; instanceof: CheckBoxData">
-        <mat-checkbox [(ngModel)]="input.selected">
-          {{ input.name }}
-        </mat-checkbox>
-      </div>
+<form [formGroup]="myFormGroup" (ngSubmit)="onOkClick()">
+  <div *ngFor="let input of data">
+    {{ input.title }}
+    <div *ngIf="getType(input) == 'CheckBox'">
+      <input
+        [formControlName]="input.id"
+        type="checkbox"
+        name="itemCheckbox"
+        [value]="input.id"
+      />
     </div>
-  </div>
 
-  <!-- <mat-tab-group>
-  <mat-tab label="First"> Content 1 </mat-tab>
-  <mat-tab label="Second"> Content 2 </mat-tab>
-  <mat-tab label="Third"> Content 3 </mat-tab>
-</mat-tab-group> -->
+    <div *ngIf="getType(input) == 'DropDownMultipleSelects'">
+      <mat-form-field>
+        <mat-label>Items</mat-label>
+        <mat-select [formControlName]="input.id" multiple>
+          <mat-option *ngFor="let item of input.options" [value]="item">{{
+            item
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="getType(input) == 'DatePicker'">
+      <mat-form-field>
+        <input
+          matInput
+          [formControlName]="input.id"
+          [matDatepicker]="picker"
+          placeholder="{{ input.placeholder }}"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <!-- </mat-tab-group> -->
+  </div>
 
   <button mat-button (click)="onOkClick()">OK</button>
   <!-- <input
@@ -26,4 +46,4 @@
   />
   />
   {{ item.name }} -->
-</div>
+</form>

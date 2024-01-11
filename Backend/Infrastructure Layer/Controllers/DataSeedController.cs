@@ -10,9 +10,6 @@ using WebApplication1.Utils;
 
 namespace WebApplication1.Controllers
 {
-
-
-
     [AllowAnonymous]
     [ApiController]
     [Route("api/test")]
@@ -35,7 +32,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository)
+        public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             var totalDataTimePeriod = new DateTimePeriod(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 12, 30, 23, 0, 0)); //Leave out last day of the year to test null values
             var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod, TimeResolution.Hour);
@@ -58,6 +55,23 @@ namespace WebApplication1.Controllers
 
 
             var salesDistribution = testDataCreatorService.SaleGenerator(new List<(Item, int)> { (coffee, 1), (water, 1) }, aggregatedDistribution);
+
+            Random random = new Random();
+
+            foreach (var sale in salesDistribution)
+            {
+                int randomNumber = random.Next(2);
+                if (randomNumber == 0)
+                {
+                    sale.TimestampArrival = sale.TimestampPayment.AddMinutes(-60);
+                }
+                else
+                {
+                    sale.TimestampArrival = sale.TimestampPayment.AddMinutes(-30);
+
+                }
+            }
+
             var establishment = factoryServiceBuilder
                 .EstablishmentBuilder()
                 .SetName("Cafe Frederik")
@@ -65,17 +79,25 @@ namespace WebApplication1.Controllers
                 .AddSales(salesDistribution)
                 .Build();
 
-            establishmentRepository.Add(establishment);
 
             var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
 
-            userRepository.Add(user);
+
+            using (var uow = unitOfWork)
+            {
+                uow.establishmentRepository.Add(establishment);
+                uow.userRepository.Add(user);
+
+            }
         }
 
         [HttpGet("lol")]
-        public void test(IEstablishmentRepository establishmentRepository)
+        public void test(IEstablishmentRepository establishmentRepository, IUnitOfWork unitOfWork)
         {
-            var e = establishmentRepository.IncludeItems().GetAll().First();
+            using (var uow = unitOfWork)
+            {
+                var ee = uow.establishmentRepository.GetAll().First();
+            }
         }
 
     }

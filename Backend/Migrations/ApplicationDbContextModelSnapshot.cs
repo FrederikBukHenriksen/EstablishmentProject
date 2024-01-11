@@ -168,7 +168,7 @@ namespace WebApplication1.Migrations
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EstablishmentId")
+                    b.Property<Guid>("EstablishmentId")
                         .HasColumnType("uuid");
 
                     b.Property<int?>("PaymentType")
@@ -309,7 +309,7 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Item", b =>
                 {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", "Establishment")
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
                         .WithMany("Items")
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -335,8 +335,6 @@ namespace WebApplication1.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("Id");
                         });
-
-                    b.Navigation("Establishment");
 
                     b.Navigation("Price")
                         .IsRequired();
@@ -380,15 +378,19 @@ namespace WebApplication1.Migrations
                         .WithMany()
                         .HasForeignKey("EmployeeId");
 
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", "Establishment")
                         .WithMany("Sales")
-                        .HasForeignKey("EstablishmentId");
+                        .HasForeignKey("EstablishmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Table", "Table")
                         .WithMany()
                         .HasForeignKey("TableId");
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Establishment");
 
                     b.Navigation("Table");
                 });

@@ -45,7 +45,7 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         public IEstablishmentRepository IncludeItems()
         {
-            this.set.Include(x => x.Tables);
+            this.set.Include(x => x.Items);
             return this;
         }
 

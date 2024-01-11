@@ -6,23 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class _1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Establishment",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Establishment", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Location",
                 columns: table => new
@@ -41,13 +29,84 @@ namespace WebApplication1.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "information",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_information", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_information_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Establishment",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    InformationId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Establishment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Establishment_information_InformationId",
+                        column: x => x.InformationId,
+                        principalTable: "information",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OpeningHours",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    dayOfWeek = table.Column<int>(type: "integer", nullable: false),
+                    open = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    close = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    EstablishmentInformationId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OpeningHours", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OpeningHours_information_EstablishmentInformationId",
+                        column: x => x.EstablishmentInformationId,
+                        principalTable: "information",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employee",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    EstablishmentId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employee", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Employee_Establishment_EstablishmentId",
+                        column: x => x.EstablishmentId,
+                        principalTable: "Establishment",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -56,7 +115,6 @@ namespace WebApplication1.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<double>(type: "double precision", nullable: false),
                     EstablishmentId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -75,8 +133,8 @@ namespace WebApplication1.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    EstablishmentId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    EstablishmentId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -85,8 +143,7 @@ namespace WebApplication1.Migrations
                         name: "FK_Table_Establishment_EstablishmentId",
                         column: x => x.EstablishmentId,
                         principalTable: "Establishment",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -116,18 +173,45 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Price",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PriceValue = table.Column<double>(type: "double precision", nullable: false),
+                    PriceCurrency = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Price", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Price_Item_Id",
+                        column: x => x.Id,
+                        principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sale",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EstablishmentId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TimestampStart = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    TimestampEnd = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TableId = table.Column<Guid>(type: "uuid", nullable: true)
+                    SaleType = table.Column<int>(type: "integer", nullable: true),
+                    PaymentType = table.Column<int>(type: "integer", nullable: true),
+                    TimestampArrival = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    TimestampPayment = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    TableId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sale", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sale_Employee_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employee",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Sale_Establishment_EstablishmentId",
                         column: x => x.EstablishmentId,
@@ -168,6 +252,21 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employee_EstablishmentId",
+                table: "Employee",
+                column: "EstablishmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Establishment_InformationId",
+                table: "Establishment",
+                column: "InformationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_information_LocationId",
+                table: "information",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Item_EstablishmentId",
                 table: "Item",
                 column: "EstablishmentId");
@@ -177,6 +276,16 @@ namespace WebApplication1.Migrations
                 table: "Item",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OpeningHours_EstablishmentInformationId",
+                table: "OpeningHours",
+                column: "EstablishmentInformationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sale_EmployeeId",
+                table: "Sale",
+                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sale_EstablishmentId",
@@ -204,9 +313,9 @@ namespace WebApplication1.Migrations
                 column: "EstablishmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Username",
+                name: "IX_User_Email",
                 table: "User",
-                column: "Username",
+                column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -224,7 +333,10 @@ namespace WebApplication1.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "OpeningHours");
+
+            migrationBuilder.DropTable(
+                name: "Price");
 
             migrationBuilder.DropTable(
                 name: "SalesItems");
@@ -242,10 +354,19 @@ namespace WebApplication1.Migrations
                 name: "User");
 
             migrationBuilder.DropTable(
+                name: "Employee");
+
+            migrationBuilder.DropTable(
                 name: "Table");
 
             migrationBuilder.DropTable(
                 name: "Establishment");
+
+            migrationBuilder.DropTable(
+                name: "information");
+
+            migrationBuilder.DropTable(
+                name: "Location");
         }
     }
 }

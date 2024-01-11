@@ -2,6 +2,12 @@
 
 namespace WebApplication1.Data
 {
+
+    public interface IDbContext
+    {
+
+    }
+
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -27,6 +33,8 @@ namespace WebApplication1.Data
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
+
+
 
             modelBuilder.Entity<OpeningHours>()
                 .Property(e => e.open)

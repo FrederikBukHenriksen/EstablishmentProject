@@ -26,7 +26,7 @@ namespace WebApplication1.Controllers
         {
             var activeEstablishment = this.userContextService.GetActiveEstablishment();
             var sale = this.salesRepository.GetById(saleId);
-            if (sale.Establishment == activeEstablishment)
+            if (sale.Establishment.Id == activeEstablishment.Id)
             {
                 return new SaleDTO(sale);
             }
@@ -43,7 +43,7 @@ namespace WebApplication1.Controllers
             foreach (Guid saleId in saleIds)
             {
                 var sale = sales.FirstOrDefault(sale => sale.Id == saleId);
-                if (sale.Establishment == activeEstablishment)
+                if (sale.Establishment.Id == activeEstablishment.Id)
                 {
                     salesDTO.Add(new SaleDTO(sale));
                 }

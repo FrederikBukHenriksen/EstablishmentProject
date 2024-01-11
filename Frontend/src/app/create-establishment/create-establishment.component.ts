@@ -23,9 +23,8 @@ import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
 
 import { MatDialog } from '@angular/material/dialog';
 import {
-  CheckBoxData,
+  CheckBox,
   DialogCheckboxComponent,
-  settingsDialogData,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import {
   AddToDateTimeResolution,
@@ -102,18 +101,9 @@ export class CreateEstablishmentComponent implements OnInit {
     },
   } as ChartOptions;
 
-  protected items: CheckBoxData[] = [];
+  protected items: CheckBox[] = [];
 
   dateControl = new FormControl();
-
-  public settingsDialogData: settingsDialogData = {
-    groups: [
-      {
-        title: 'title',
-        items: [new CheckBoxData('1', 'name', false)],
-      },
-    ],
-  };
 
   public grafDictionary: { [key: string]: fecthingAndExtracting } = {
     SalesOverTime: {
@@ -267,14 +257,14 @@ export class CreateEstablishmentComponent implements OnInit {
 
   async openDialog() {
     // const val = await this.getCorrelation();
-    await this.tester();
+    // await this.tester();
     // await this.tester2();
 
     // const items = await this.GetEstablishmentItems();
     // this.mapGrafDictionaryToChartDataset();
-    this.mapGrafDictionaryToChartDatasetv2();
+    // this.mapGrafDictionaryToChartDatasetv2();
     const dialogRef = this.dialog.open(DialogCheckboxComponent, {
-      data: this.settingsDialogData,
+      // data: this.settingsDialogData,
     });
     dialogRef.afterClosed().subscribe((result) => {});
   }

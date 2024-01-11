@@ -43,7 +43,7 @@ namespace WebApplication1.Services
 
         public void FecthAccesibleEstablishments()
         {
-            this._userRoles = this._userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User == this.GetUser()).ToList();
+            this._userRoles = this._userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User.Id == this.GetUser().Id).ToList();
         }
 
         public Establishment GetActiveEstablishment()

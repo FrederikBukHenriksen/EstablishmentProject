@@ -21,13 +21,11 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         public void Add(TEntity entity)
         {
             this.set.Add(entity);
-            this.context.SaveChanges();
         }
 
         public void AddRange(IEnumerable<TEntity> entities)
         {
             this.set.AddRange(entities);
-            this.context.SaveChanges();
         }
 
         public bool Any(Expression<Func<TEntity, bool>> predicate)
@@ -69,13 +67,11 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         public void Remove(TEntity entity)
         {
             this.set.Remove(entity);
-            this.context.SaveChanges();
         }
 
         public void Update(TEntity entity)
         {
             this.set.Update(entity);
-            this.context.SaveChanges();
         }
 
 

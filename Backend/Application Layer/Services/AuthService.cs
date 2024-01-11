@@ -52,7 +52,6 @@ namespace WebApplication1.Services
             if (user == null) throw new Exception("User could not be logged in based on the given credentials");
             return user;
         }
-
         public User? GetUserFromHttp(HttpContext httpContext)
         {
             string? token = httpContext.Request.Cookies["jwt"];
