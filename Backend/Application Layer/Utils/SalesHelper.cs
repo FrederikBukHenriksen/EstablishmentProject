@@ -1,8 +1,5 @@
-﻿using WebApplication1.Domain_Layer.Entities;
-using static WebApplication1.Utils.SalesHelper;
-using WebApplication1.Data.DataModels;
-using static WebApplication1.CommandHandlers.MeanSales.MeanSalesHandler;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Utils
 {

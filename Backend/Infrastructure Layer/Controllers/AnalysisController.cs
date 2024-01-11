@@ -48,7 +48,7 @@ namespace WebApplication1.Controllers
         //)
         //{
         //    return handler.Execute(command);
-        //}
+        //} 
 
 
         [HttpPost("cross-correlation-with-weather")]
@@ -66,10 +66,21 @@ namespace WebApplication1.Controllers
 
         //}
 
-        [HttpPost("TimeOfVisit_TotalPrice")]
-        public Clustering_TimeOfVisit_TotalPrice_Return TimeOfVisitTotalPrice([FromBody] Clustering_TimeOfVisit_TotalPrice_Command command, [FromServices] IHandler<Clustering_TimeOfVisit_TotalPrice_Command, Clustering_TimeOfVisit_TotalPrice_Return> handler)
+        [HttpPost("Clustering")]
+        public ClusteringReturn TimeOfVisitTotalPrice(
+            [FromBody] ClusteringCommand command,
+            [FromServices] IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> handler_TimeOfVisit_TotalPrice,
+            [FromServices] IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn> handler_TimeOfVisit_LengthOfVisit)
         {
-            return handler.Handle(command);
+            if (command is Clustering_TimeOfVisit_TotalPrice_Command)
+            {
+                return handler_TimeOfVisit_TotalPrice.Handle((Clustering_TimeOfVisit_TotalPrice_Command)command);
+            }
+            if (command is Clustering_TimeOfVisit_LengthOfVisit_Command)
+            {
+                return handler_TimeOfVisit_LengthOfVisit.Handle((Clustering_TimeOfVisit_LengthOfVisit_Command)command);
+            }
+            throw new Exception();
 
         }
     }

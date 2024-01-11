@@ -14,8 +14,8 @@ namespace WebApplication1.Program
     {
         public static void AddServices(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-            serviceCollection.AddScoped<ApplicationDbContext>();
+            serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
+            serviceCollection.AddTransient<ApplicationDbContext>();
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, UserContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
@@ -57,7 +57,9 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<MeanSalesCommand, MeanSalesReturn>, MeanSalesHandler>();
             //Clustering
             serviceCollection.AddTransient<IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn>, salesClustering>();
-            serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, Clustering_TimeOfVisit_TotalPrice_Return>, Clustering_TimeOfVisitVSTotalPrice>();
+            serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>, Clustering_TimeOfVisitVSTotalPrice>();
+            serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>, Clustering_TimeOfVisitVSLengthOfVisit>();
+
 
 
 

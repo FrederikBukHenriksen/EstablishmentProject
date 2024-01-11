@@ -25,6 +25,9 @@ namespace WebApplication1.CommandHandlers
             this.serviceProvider = serviceProvider;
         }
     }
+
+
+
     public class MSC_Sales_TimeOfVisit_LengthOfVisit : MeanShiftClusteringCommand
     {
         //private List<Sale> sales;

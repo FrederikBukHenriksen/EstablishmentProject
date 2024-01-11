@@ -426,8 +426,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    timeOfVisitTotalPrice(command: Clustering_TimeOfVisit_TotalPrice_Command): Observable<Clustering_TimeOfVisit_TotalPrice_Return> {
-        let url_ = this.baseUrl + "/api/analysis/TimeOfVisit_TotalPrice";
+    timeOfVisitTotalPrice(command: ClusteringCommand): Observable<ClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Clustering";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -450,14 +450,14 @@ export class AnalysisClient {
                 try {
                     return this.processTimeOfVisitTotalPrice(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Clustering_TimeOfVisit_TotalPrice_Return>;
+                    return _observableThrow(e) as any as Observable<ClusteringReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Clustering_TimeOfVisit_TotalPrice_Return>;
+                return _observableThrow(response_) as any as Observable<ClusteringReturn>;
         }));
     }
 
-    protected processTimeOfVisitTotalPrice(response: HttpResponseBase): Observable<Clustering_TimeOfVisit_TotalPrice_Return> {
+    protected processTimeOfVisitTotalPrice(response: HttpResponseBase): Observable<ClusteringReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -468,7 +468,7 @@ export class AnalysisClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Clustering_TimeOfVisit_TotalPrice_Return.fromJS(resultData200);
+            result200 = ClusteringReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1228,14 +1228,12 @@ export enum DayOfWeek {
 export class Item extends EntityBase {
     name!: string;
     price!: Price;
-    establishment!: Establishment;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.name = _data["name"];
             this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
-            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
         }
     }
 
@@ -1250,7 +1248,6 @@ export class Item extends EntityBase {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["price"] = this.price ? this.price.toJSON() : <any>undefined;
-        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -1742,7 +1739,7 @@ export class CorrelationReturn extends ReturnBase {
     }
 }
 
-export class Clustering_TimeOfVisit_TotalPrice_Return extends ReturnBase {
+export class ClusteringReturn extends ReturnBase {
     clusters!: string[][];
 
     override init(_data?: any) {
@@ -1756,9 +1753,9 @@ export class Clustering_TimeOfVisit_TotalPrice_Return extends ReturnBase {
         }
     }
 
-    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Return {
+    static override fromJS(data: any): ClusteringReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new Clustering_TimeOfVisit_TotalPrice_Return();
+        let result = new ClusteringReturn();
         result.init(data);
         return result;
     }
@@ -1775,15 +1772,54 @@ export class Clustering_TimeOfVisit_TotalPrice_Return extends ReturnBase {
     }
 }
 
-export class Clustering_TimeOfVisit_TotalPrice_Command extends CommandBase {
+export abstract class ClusteringCommand extends CommandBase {
+
+    protected _discriminator: string;
+
+    constructor() {
+        super();
+        this._discriminator = "ClusteringCommand";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): ClusteringCommand {
+        data = typeof data === 'object' ? data : {};
+        if (data["$type"] === "Clustering_TimeOfVisit_TotalPrice_Command") {
+            let result = new Clustering_TimeOfVisit_TotalPrice_Command();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "Clustering_TimeOfVisit_LengthOfVisit_Command") {
+            let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+            result.init(data);
+            return result;
+        }
+        throw new Error("The abstract class 'ClusteringCommand' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["$type"] = this._discriminator;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
     salesSortingParameters!: SalesSortingParameters | undefined;
-    id!: string;
+
+    constructor() {
+        super();
+        this._discriminator = "Clustering_TimeOfVisit_TotalPrice_Command";
+    }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-            this.id = _data["id"];
         }
     }
 
@@ -1797,7 +1833,36 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends CommandBase {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        data["id"] = this.id;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand {
+    salesSortingParameters!: SalesSortingParameters | undefined;
+
+    constructor() {
+        super();
+        this._discriminator = "Clustering_TimeOfVisit_LengthOfVisit_Command";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
+        data = typeof data === 'object' ? data : {};
+        let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }

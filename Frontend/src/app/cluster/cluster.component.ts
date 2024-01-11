@@ -1,41 +1,38 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   AnalysisClient,
+  ClusteringReturn,
   Clustering_TimeOfVisit_TotalPrice_Command,
-  Clustering_TimeOfVisit_TotalPrice_Return,
-  CommandBase,
-  Establishment,
-  ReturnBase,
   SaleClient,
   SaleDTO,
-  UserContextClient,
 } from 'api';
-import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import { Observable, lastValueFrom } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
+import { getAverageTimeOfDay } from './cluster.model';
 
-export interface Attribute {
+export interface ITableModel {
+  id: string;
+  data: TableData[];
+}
+
+export interface TableData {
   title: string;
   value: string;
 }
 
-export interface Cluster {
-  attributes: Attribute[];
+export abstract class TableDataBase implements TableData {
+  title!: string;
+  value!: string;
 }
 
-export interface UserData {
-  id: string;
-  name: string;
-  age: number;
-}
+export interface Cluster_TimeOfVisit_TotalPrice_Table extends ITableModel {}
 
 export interface ClusterFecthingAndExtracting {
   command: Clustering_TimeOfVisit_TotalPrice_Command;
   fetch: (
     command: Clustering_TimeOfVisit_TotalPrice_Command
-  ) => Observable<Clustering_TimeOfVisit_TotalPrice_Return>;
-  dataExtractor: (data: Clustering_TimeOfVisit_TotalPrice_Return) => string[][];
+  ) => Observable<ClusteringReturn>;
+  dataExtractor: (data: ClusteringReturn) => string[][];
 }
 
 @Component({
@@ -47,127 +44,94 @@ export class ClusterComponent implements OnInit {
   private analysisClient = inject(AnalysisClient);
   private saleClient = inject(SaleClient);
 
-  protected users = [
-    { id: '1', name: 'John Doe', age: 25 },
-    { id: '2', name: 'Jane Smith', age: 30 },
-  ] as UserData[];
-
-  clusterList: Cluster[] = [
-    {
-      attributes: [
-        {
-          title: 'Entries',
-          value: '1',
-        },
-        {
-          title: 'property2',
-          value: '2',
-        },
-      ],
-    },
-    {
-      attributes: [
-        {
-          title: 'Entries',
-          value: '3',
-        },
-        {
-          title: 'property2',
-          value: '4',
-        },
-      ],
-    },
-  ] as Cluster[];
-  salesIdClustered: string[][] = [];
-  salesClustered: SaleDTO[][] = [];
+  MSalesIdClustered: string[][] = [];
+  MSalesClustered: SaleDTO[][] = [];
 
   ngOnInit(): void {
     this.fetchSalesClustered();
   }
 
-  private lavDisplayedCols() {
-    var displayedColumnsv2: Attribute[][] = this.clusterList.map(
-      (cluster) => cluster.attributes
-    );
+  dataSource = new MatTableDataSource<Cluster_TimeOfVisit_TotalPrice_Table>();
 
-    var allTitlesFromList: string[] = displayedColumnsv2.flatMap((item) =>
-      item.map((item) => item.title)
-    );
-
-    var onlyKeepUniqueOnes = Array.from(new Set(allTitlesFromList));
-
-    return onlyKeepUniqueOnes;
+  protected GetColumns(): string[] {
+    var columns = this.dataSource.data[0].data.map((item) => item.title);
+    return columns;
   }
 
-  displayedColumns: string[] = Array.from(
-    new Set(this.users.flatMap((item) => Object.keys(item)))
-  );
-  displayedColumnsv2 = this.lavDisplayedCols();
-
-  dataSource = new MatTableDataSource<UserData>(this.users);
-  dataSourcev2 = new MatTableDataSource<Cluster>(this.clusterList);
+  protected GetRowValue(
+    row: Cluster_TimeOfVisit_TotalPrice_Table,
+    title: string
+  ): string {
+    var tableData = row.data.find((item) => item.title == title) as TableData;
+    return tableData.value;
+  }
 
   private async fetchSalesClustered() {
     var command = this.FetchDictionary['BasicCluster'].command;
     var fetch = this.FetchDictionary['BasicCluster'].fetch(command);
     var extractor = this.FetchDictionary['BasicCluster'].dataExtractor;
 
-    this.salesIdClustered = extractor(await lastValueFrom(fetch));
-    var flattenClusters: string[] = this.salesIdClustered.reduce(
+    this.MSalesIdClustered = extractor(await lastValueFrom(fetch));
+    var flattenClusters: string[] = this.MSalesIdClustered.reduce(
       (flatArray, innerArray) => flatArray.concat(innerArray),
       []
     );
     var sales = await lastValueFrom(this.saleClient.getSales(flattenClusters));
-    this.salesClustered = this.mapSaleArray(this.salesIdClustered, sales);
-    this.clusterList = this.fromSalesDTOtoClusterElement();
-    console.log('OK', this.lavDisplayedCols());
+
+    this.MSalesClustered = this.putSalesIntoClusters(
+      this.MSalesIdClustered,
+      sales
+    );
+    this.dataSource.data = this.SaleDTOtoCluster_TimeOfVisit_TotalPrice_Table(
+      this.MSalesClustered
+    );
   }
 
-  private mapSaleArray(stringArray: string[][], sales: SaleDTO[]): SaleDTO[][] {
+  private SaleDTOtoCluster_TimeOfVisit_TotalPrice_Table = (
+    saleDTOclusters: SaleDTO[][]
+  ): Cluster_TimeOfVisit_TotalPrice_Table[] => {
+    return saleDTOclusters.map((cluster, index) => {
+      return {
+        id: cluster[0].id.toString(),
+        data: [
+          {
+            title: 'Cluster nummer',
+            value: index.toString(),
+          },
+          {
+            title: 'Number of sales',
+            value: cluster.length.toString(),
+          },
+          {
+            title: 'Time of visit',
+            value: getAverageTimeOfDay(
+              cluster.map((sale) => sale.timestampPayment)
+            ),
+          },
+          {
+            title: 'Total price',
+            value: '200',
+          },
+        ],
+      };
+    });
+  };
+
+  private putSalesIntoClusters(
+    stringArray: string[][],
+    sales: SaleDTO[]
+  ): SaleDTO[][] {
     return stringArray.map((innerArray) =>
       innerArray.map((id) => sales.find((sale) => sale.id === id)!)
     );
   }
 
-  protected fromSalesDTOtoClusterElement(): Cluster[] {
-    var saleDTOclusters = this.salesClustered;
-    return saleDTOclusters.map((cluster) => {
-      var lol: Attribute[] = [
-        {
-          title: 'Entries',
-          value: cluster.length.toString(),
-        },
-        {
-          title: 'property2',
-          value: this.averageTime(
-            cluster.map((sale) => sale.timestampPayment)
-          ).toString(),
-        },
-      ];
-      return { attributes: lol } as Cluster;
-    });
-  }
-
-  getClusters(): Cluster[] {
-    return this.fromSalesDTOtoClusterElement();
-  }
-
-  protected averageTime(dateArray: Date[]): Date {
-    const totalMilliseconds = dateArray.reduce(
-      (acc, date) => acc + date.getTime(),
-      0
-    );
-    const averageMilliseconds = totalMilliseconds / dateArray.length;
-    const averageDate = new Date(averageMilliseconds);
-    return averageDate;
-  }
-
-  public FetchDictionary: { [key: string]: ClusterFecthingAndExtracting } = {
+  private FetchDictionary: { [key: string]: ClusterFecthingAndExtracting } = {
     BasicCluster: {
-      command: { id: 'hello' } as Clustering_TimeOfVisit_TotalPrice_Command,
+      command: new Clustering_TimeOfVisit_TotalPrice_Command(),
       fetch: (command: Clustering_TimeOfVisit_TotalPrice_Command) =>
         this.analysisClient.timeOfVisitTotalPrice(command),
-      dataExtractor: (data: Clustering_TimeOfVisit_TotalPrice_Return) => {
+      dataExtractor: (data: ClusteringReturn) => {
         return data.clusters;
       },
     },
