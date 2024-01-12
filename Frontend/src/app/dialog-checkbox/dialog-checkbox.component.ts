@@ -96,6 +96,21 @@ export class Slider extends SettingsDataBase {
   }
 }
 
+export interface TableModel {
+  columns: string[];
+  elements: TableEntry[];
+}
+
+export interface TableEntry {
+  id: string;
+}
+
+export interface TableElement {}
+
+export class TableButton implements TableElement {
+  hejhej: string = 'LETS FUCKING GOOO';
+}
+
 @Component({
   selector: 'app-dialog-checkbox',
   templateUrl: './dialog-checkbox.component.html',
@@ -112,6 +127,8 @@ export class DialogCheckboxComponent implements OnInit {
     this.myFormGroup = new FormGroup({});
   }
 
+  public lol1: TableElement[] = [new TableButton(), new TableButton()];
+
   ngOnInit(): void {
     const formControls: any = {};
     console.log('data', this.data);
@@ -120,6 +137,8 @@ export class DialogCheckboxComponent implements OnInit {
     });
     this.myFormGroup = this.fb.group(formControls);
     console.log('formgroup', this.myFormGroup);
+    var element = (this.lol1[0] as TableButton).hejhej;
+    console.log('element', element);
   }
 
   onOkClick(): void {

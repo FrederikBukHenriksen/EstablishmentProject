@@ -17,6 +17,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { TableModule } from '../table/table.module';
 
 @NgModule({
   declarations: [CreateEstablishmentComponent],
@@ -30,7 +31,6 @@ import { MatButtonModule } from '@angular/material/button';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    GraphModule,
     MatTabsModule,
     MatCheckboxModule,
     MatDatepickerModule,
@@ -40,6 +40,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatTableModule,
     MatButtonModule,
+    GraphModule,
+    TableModule,
   ],
 })
 export class CreateEstablishmentModule {}

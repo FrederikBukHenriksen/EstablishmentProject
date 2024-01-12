@@ -1,26 +1,17 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import {
-  ChartData,
-  ChartDataset,
-  ChartOptions,
-  ChartTypeRegistry,
-} from 'chart.js/auto';
+import { Component, OnInit, inject } from '@angular/core';
+import { ChartData, ChartDataset, ChartOptions } from 'chart.js/auto';
 import {
   AnalysisClient,
   EstablishmentClient,
   CommandBase,
   ReturnBase,
   SalesMeanOverTimeAverageSpend,
-  SalesMeanOverTime,
   TimeResolution,
-  SalesMeanQueryReturn,
   SalesQueryReturn,
   SalesQuery,
   DateTimePeriod,
-  LoginCommand,
 } from 'api';
 import { Observable, lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
 
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -31,13 +22,14 @@ import {
   SettingsData,
   Slider,
 } from '../dialog-checkbox/dialog-checkbox.component';
+import { FormControl } from '@angular/forms';
 import {
-  AddToDateTimeResolution,
-  DateToString,
-  GetAllDatesBetween as GetAllFromTimeperiodByTimeResolution,
-  todayDateUtc,
-} from '../utils/TimeHelper';
-import { FormControl, FormGroup } from '@angular/forms';
+  TableButton,
+  TableElement,
+  TableEntry,
+  TableModel,
+  TableString,
+} from '../table/table.component';
 
 export interface fecthingAndExtracting {
   command: CommandBase;
@@ -73,6 +65,19 @@ export class CreateEstablishmentComponent implements OnInit {
     { value: TimeResolution.Month, viewValue: 'Monthly' },
     { value: TimeResolution.Year, viewValue: 'Yearly' },
   ];
+
+  public tableModel: TableModel = {
+    columns: ['button1', 'button2'],
+    elements: [
+      {
+        id: '1',
+        elements: [
+          new TableButton('button1', () => this.openDialog()),
+          new TableString('button2', 'gutentag'),
+        ] as TableElement[],
+      },
+    ],
+  };
 
   protected accesibleEstablishments: TableOfAccesibleEstablishments[] = [];
 
@@ -162,7 +167,6 @@ export class CreateEstablishmentComponent implements OnInit {
 
   public async tester() {
     const command = new SalesMeanOverTimeAverageSpend();
-
     return await lastValueFrom(
       this.analysisClient.meanSalesAverageSpend(command)
     );
@@ -224,7 +228,6 @@ export class CreateEstablishmentComponent implements OnInit {
 
   public async mapGrafDictionaryToChartDatasetv2() {
     const promises: Promise<void>[] = [];
-
     for (const key in this.grafDictionary) {
       if (this.grafDictionary.hasOwnProperty(key)) {
         const entry = this.grafDictionary[key];
@@ -275,9 +278,6 @@ export class CreateEstablishmentComponent implements OnInit {
     });
     await dialogRef.afterClosed().subscribe((formValues) => {
       console.log('formValues', formValues);
-      // console.log('lolcat1', formValues.results['1LOL']);
-      // console.log('lolcat2', formValues.results['2HEJ']);
-      // console.log('lolcat3', formValues.results['3NEJ']);
     });
   }
 }

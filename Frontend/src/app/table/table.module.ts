@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
+  declarations: [TableComponent],
   imports: [
     CommonModule,
     MatTableModule,
@@ -13,6 +14,6 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     MatButtonModule,
   ],
-  declarations: [TableComponent],
+  exports: [TableComponent],
 })
 export class TableModule {}

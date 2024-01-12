@@ -28,6 +28,8 @@
   </mat-expansion-panel>
 </mat-accordion> -->
 
+<app-table [tableModel]="tableModel"></app-table>
+
 <button mat-button (click)="openDialog()">Select items</button>
 
 <app-graph
@@ -69,7 +71,7 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>Action</th>
     <td mat-cell *matCellDef="let element">
-      <button>Select</button>
+      <button (click)="openDialog()">Select</button>
     </td>
   </ng-container>
 
