@@ -10,6 +10,17 @@
       />
     </div>
 
+    <div *ngIf="getType(input) == 'DropDown'">
+      <mat-form-field>
+        <mat-label>Items</mat-label>
+        <mat-select [formControlName]="input.id">
+          <mat-option *ngFor="let item of input.options" [value]="item">{{
+            item
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <div *ngIf="getType(input) == 'DropDownMultipleSelects'">
       <mat-form-field>
         <mat-label>Items</mat-label>
@@ -32,6 +43,19 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
+    </div>
+
+    <div *ngIf="getType(input) == 'Slider'">
+      <mat-slider
+        showTickMarks
+        discrete
+        min="{{ input.slider.min }}"
+        max="{{ input.slider.max }}"
+        step="{{ input.slider.step }}"
+        [formControlName]="input.id"
+      >
+        <input matSliderThumb [formControlName]="input.id" />
+      </mat-slider>
     </div>
 
     <!-- </mat-tab-group> -->

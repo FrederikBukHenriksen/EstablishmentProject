@@ -17,6 +17,7 @@ import {
   SalesQueryReturn,
   SalesQuery,
   DateTimePeriod,
+  LoginCommand,
 } from 'api';
 import { Observable, lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
@@ -24,7 +25,11 @@ import { map } from 'rxjs/operators'; // Import map from 'rxjs/operators'
 import { MatDialog } from '@angular/material/dialog';
 import {
   CheckBox,
+  DatePicker,
   DialogCheckboxComponent,
+  DropDownMultipleSelects,
+  SettingsData,
+  Slider,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import {
   AddToDateTimeResolution,
@@ -32,7 +37,7 @@ import {
   GetAllDatesBetween as GetAllFromTimeperiodByTimeResolution,
   todayDateUtc,
 } from '../utils/TimeHelper';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 export interface fecthingAndExtracting {
   command: CommandBase;
@@ -255,17 +260,24 @@ export class CreateEstablishmentComponent implements OnInit {
   //   );
   // }
 
-  async openDialog() {
-    // const val = await this.getCorrelation();
-    // await this.tester();
-    // await this.tester2();
+  public dataBackup: SettingsData[] = [
+    new DatePicker('1LOL').withTitle('Sales from:'),
+    new DatePicker('2HEJ').withTitle('Sales until:'),
+    new DropDownMultipleSelects('3NEJ', ['a', 'b', 'c']).withTitle(
+      'Select:'
+    ) as SettingsData,
+    new Slider('4NEJ', 0, 100, 1).withTitle('Select:'),
+  ];
 
-    // const items = await this.GetEstablishmentItems();
-    // this.mapGrafDictionaryToChartDataset();
-    // this.mapGrafDictionaryToChartDatasetv2();
+  async openDialog() {
     const dialogRef = this.dialog.open(DialogCheckboxComponent, {
-      // data: this.settingsDialogData,
+      data: this.dataBackup,
     });
-    dialogRef.afterClosed().subscribe((result) => {});
+    await dialogRef.afterClosed().subscribe((formValues) => {
+      console.log('formValues', formValues);
+      // console.log('lolcat1', formValues.results['1LOL']);
+      // console.log('lolcat2', formValues.results['2HEJ']);
+      // console.log('lolcat3', formValues.results['3NEJ']);
+    });
   }
 }

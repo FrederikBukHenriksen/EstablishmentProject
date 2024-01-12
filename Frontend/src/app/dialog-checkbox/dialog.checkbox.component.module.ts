@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
   declarations: [DialogCheckboxComponent],
@@ -24,6 +25,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatSliderModule,
   ],
 })
 export class DialogCheckboxModule {}
