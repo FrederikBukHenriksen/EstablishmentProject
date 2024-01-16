@@ -1,5 +1,7 @@
-﻿using WebApplication1.Application_Layer.Services;
+﻿using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
+using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
+using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Domain_Layer.Services.Repositories;
@@ -17,14 +19,17 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddTransient<ApplicationDbContext>();
             serviceCollection.AddScoped<IAuthService, AuthService>();
-            serviceCollection.AddScoped<IUserContextService, UserContextService>();
+            serviceCollection.AddScoped<IUserContextService, ContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
+            serviceCollection.AddTransient<IHandlerService, HandlerService>();
+
+            serviceCollection.AddScoped<VerifyEstablishmentCommandService>();
+
             serviceCollection.AddScoped<ISalesService, SalesService>();
             //serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
             //Entity services
             serviceCollection.AddTransient<IEstablishmentService, EstablishmentService>();
-
             serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
             serviceCollection.AddTransient<IItemBuilderService, ItemBuilderService>();
             serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
@@ -59,6 +64,13 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn>, salesClustering>();
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>, Clustering_TimeOfVisitVSTotalPrice>();
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>, Clustering_TimeOfVisitVSLengthOfVisit>();
+
+
+            //Establishment
+            serviceCollection.AddTransient<IHandler<GetEstablishmentCommand, GetEstablishmentReturn>, GetEstablishmentHandler>();
+            serviceCollection.AddTransient<IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn>, GetMultipleEstablishmentsHandler>();
+
+
 
 
 

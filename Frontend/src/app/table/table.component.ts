@@ -1,4 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 
 export interface TableModel {
   columns: string[];
@@ -21,21 +28,65 @@ export interface TableElement {
 
 export class TableButton implements TableElement {
   id: string;
+  text: string;
   onClick!: () => void;
 
-  constructor(id: string, onClick: () => void) {
+  constructor(id: string, text: string, onClick: () => void) {
     this.id = id;
+    this.text = text;
     this.onClick = onClick;
+  }
+}
+
+export class TableCheckBox implements TableElement {
+  id: string;
+  value: boolean;
+  action!: (value: boolean) => void;
+
+  constructor(id: string, value: boolean, action: (value: boolean) => void) {
+    this.id = id;
+    this.value = value;
+    this.action = action;
+  }
+}
+
+export class TableMenu implements TableElement {
+  id: string;
+  text: string;
+  options: TableMenuElement[];
+
+  constructor(id: string, text: string, options: TableMenuElement[]) {
+    this.id = id;
+    this.text = text;
+    this.options = options;
+  }
+}
+
+export class TableMenuElement {
+  text: string;
+  action!: () => void;
+
+  constructor(text: string, action: () => void) {
+    this.text = text;
+    this.action = action;
   }
 }
 
 export class TableString implements TableElement {
   id: string;
-  value: string;
+  text: string;
 
   constructor(id: string, value: string) {
     this.id = id;
-    this.value = value;
+    this.text = value;
+  }
+}
+
+export class TableInput implements TableElement {
+  id: string;
+
+  constructor(id: string) {
+    this.id = id;
   }
 }
 
@@ -43,29 +94,20 @@ export class TableString implements TableElement {
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush, // Make sure you really need this
 })
-export class TableComponent implements OnInit {
+export class TableComponent {
   @Input() public tableModel!: TableModel;
-  // displayedColumns: string[] = ['button1', 'button2'];
 
-  // public tableEntries: TableEntry[] = [
-  //   {
-  //     id: 'Hello',
-  //     elements: [
-  //       new TableButton('button1', () => console.log('knap')),
-  //       new TableString('button2', 'gutentag'),
-  //     ],
-  //   },
-  // ];
-
-  handleButtonClick() {
-    console.log('Button clicked!');
-    // Add your logic here
-  }
   constructor() {}
 
-  ngOnInit() {
-    console.log('tablemodel', this.tableModel);
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+    if (changes['tableModel']) {
+      this.tableModel = changes['tableModel'].currentValue;
+      this.tableModel.columns = [...this.tableModel.columns];
+      this.tableModel.elements = [...this.tableModel.elements];
+    }
   }
 
   protected GetClassName(input: any) {
@@ -86,20 +128,12 @@ export class TableComponent implements OnInit {
     ) as TableElement;
   }
 
-  public GetTableString(tableElement: TableElement): TableString {
+  public CastToTableString(tableElement: TableElement): TableString {
     return tableElement as TableString;
   }
 
-  public GetTableButton(tableElement: TableElement): TableButton {
+  public CastToTableButton(tableElement: TableElement): TableButton {
     return tableElement as TableButton;
-  }
-
-  public GetAction(tableElement: TableElement): void {
-    if (tableElement instanceof TableButton) {
-      var casted = tableElement as TableButton;
-      console.log('action', casted);
-      casted.onClick;
-    }
   }
 
   protected getTypeOfTableElement(element: TableElement): string {
@@ -108,5 +142,17 @@ export class TableComponent implements OnInit {
 
   protected GetColumns() {
     return this.tableModel.columns;
+  }
+  public CastToTableCheckbox(tableElement: TableElement): TableCheckBox {
+    return tableElement as TableCheckBox;
+  }
+
+  //Table Menu
+  public CastToTableMenu(tableElement: TableElement): TableMenu {
+    return tableElement as TableMenu;
+  }
+
+  public GetTableMenuElements(tableMenu: TableMenu): TableMenuElement[] {
+    return tableMenu.options;
   }
 }

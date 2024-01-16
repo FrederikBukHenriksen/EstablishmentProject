@@ -15,13 +15,16 @@ import {
 import { MatTabsModule } from '@angular/material/tabs';
 import { CommandBase } from 'api';
 
+export interface DialogConfig {
+  dialogElements: SettingsData[];
+}
+
 export interface SettingsData {
   id: string;
   title: string;
   value: any;
   placeholder: string;
   selected: boolean | undefined;
-  options: string[];
   slider: { min: number; max: number; step: number };
   FormControl: FormControl;
   FormValidator: Validators[];
@@ -35,7 +38,6 @@ export abstract class SettingsDataBase implements SettingsData {
   placeholder: string = '';
   selected: boolean | undefined = undefined;
   title: string = '';
-  options: string[] = [];
   FormControl = new FormControl();
   FormValidator = [];
   slider = { min: 0, max: 0, step: 0 };
@@ -64,18 +66,33 @@ export class TextInputField extends SettingsDataBase {
 }
 
 export class DropDownMultipleSelects extends SettingsDataBase {
-  constructor(id: string, options: string[]) {
+  options: DropDownOption[];
+  constructor(id: string, title: string, options: DropDownOption[]) {
     super(id);
+    this.title = title;
     this.options = options;
     this.value = [];
   }
 }
 
 export class DropDown extends SettingsDataBase {
-  constructor(id: string, options: string[]) {
+  options: DropDownOption[];
+  constructor(id: string, title: string, options: DropDownOption[]) {
     super(id);
+    this.title = title;
     this.options = options;
     this.value = [];
+  }
+}
+
+export class DropDownOption extends SettingsDataBase {
+  name!: string;
+  constructor(name: string, value: string, selected: boolean) {
+    var id = '';
+    super(id);
+    this.value = value;
+    this.name = name;
+    this.selected = selected;
   }
 }
 
@@ -131,20 +148,20 @@ export class DialogCheckboxComponent implements OnInit {
 
   ngOnInit(): void {
     const formControls: any = {};
-    console.log('data', this.data);
     this.data.forEach((control) => {
       formControls[control.id] = new FormControl(control.value);
     });
     this.myFormGroup = this.fb.group(formControls);
-    console.log('formgroup', this.myFormGroup);
-    var element = (this.lol1[0] as TableButton).hejhej;
-    console.log('element', element);
   }
 
   onOkClick(): void {
     console.log(this.myFormGroup);
     if (this.myFormGroup.valid) {
-      this.dialogRef.close({ results: this.myFormGroup.value });
+      const valuesAsDictionary: { [key: string]: any } = {
+        ...this.myFormGroup.value,
+      };
+
+      this.dialogRef.close(valuesAsDictionary);
     } else {
       console.log('Form is invalid. Please check the inputs.');
     }
@@ -152,5 +169,17 @@ export class DialogCheckboxComponent implements OnInit {
 
   getType(input: SettingsData): string {
     return input.constructor.name;
+  }
+
+  //Dropdown
+  GetDropdownOptions(input: SettingsData): DropDownOption[] {
+    switch (this.getType(input)) {
+      case 'DropDownMultipleSelects':
+        return (input as DropDownMultipleSelects).options;
+      case 'DropDown':
+        return (input as DropDown).options;
+      default:
+        return [];
+    }
   }
 }

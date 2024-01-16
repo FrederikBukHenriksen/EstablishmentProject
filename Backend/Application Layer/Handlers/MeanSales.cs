@@ -4,8 +4,6 @@ using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Services;
 using WebApplication1.Utils;
-using static WebApplication1.CommandHandlers.MeanSales.MeanSalesHandler;
-using static WebApplication1.Utils.SalesHelper;
 
 namespace WebApplication1.CommandHandlers
 {
@@ -54,13 +52,13 @@ namespace WebApplication1.CommandHandlers
                 this.establishmentRepository = establishmentRepository;
                 this.salesRepository = salesRepository;
             }
-            
+
             public override MeanSalesReturn Handle(MeanSalesCommand command)
             {
-                Establishment activeEstablishment = userContextService.GetActiveEstablishment();
+                Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
 
-                List<Sale> sales = establishmentRepository.GetEstablishmentSales(userContextService.GetActiveEstablishment().Id).ToList();
-                sales = salesRepository.IncludeSalesItems(sales);
+                List<Sale> sales = this.establishmentRepository.GetEstablishmentSales(this.userContextService.GetActiveEstablishment().Id).ToList();
+                sales = this.salesRepository.IncludeSalesItems(sales);
                 //sales.Add(TestDataFactory.CreateSale(timestampEnd: DateTime.Now.AddYears(-1).AddDays(-1)));
                 //sales.Add(TestDataFactory.CreateSale(timestampEnd: DateTime.Now.AddYears(-1).AddDays(-1)));
                 //sales.Add(TestDataFactory.CreateSale(timestampEnd: DateTime.Now.AddYears(-1).AddDays(-1)));
@@ -96,15 +94,15 @@ namespace WebApplication1.CommandHandlers
                     var find = averageApplied.Any(x => x.dateTimeIdentifier == timelineDateTimeIdentifier);
                     //foreach (var (dateTimeIdentifier, average) in averageApplied)
                     //{
-                        if (find)
-                        //if (dateTimeIdentifier == timelineDateTimeIdentifier)
-                        {
-                            res.Add(new TimeAndValue<double?> { dateTime = time, value = (double?) averageApplied.Find(x => x.dateTimeIdentifier == timelineDateTimeIdentifier).values });
-                        }
-                        else
-                        {
-                            res.Add(new TimeAndValue<double?> { dateTime = time, value = null });
-                        }
+                    if (find)
+                    //if (dateTimeIdentifier == timelineDateTimeIdentifier)
+                    {
+                        res.Add(new TimeAndValue<double?> { dateTime = time, value = (double?)averageApplied.Find(x => x.dateTimeIdentifier == timelineDateTimeIdentifier).values });
+                    }
+                    else
+                    {
+                        res.Add(new TimeAndValue<double?> { dateTime = time, value = null });
+                    }
                     //}
                 }
                 return new MeanSalesReturn { Data = res };

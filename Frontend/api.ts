@@ -763,38 +763,38 @@ export class EstablishmentClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getEstablishment(establishmentId: string | undefined): Observable<EstablishmentDTO> {
-        let url_ = this.baseUrl + "/api/establishment/get?";
-        if (establishmentId === null)
-            throw new Error("The parameter 'establishmentId' cannot be null.");
-        else if (establishmentId !== undefined)
-            url_ += "establishmentId=" + encodeURIComponent("" + establishmentId) + "&";
+    getEstablishment(command: GetEstablishmentCommand): Observable<GetEstablishmentReturn> {
+        let url_ = this.baseUrl + "/api/establishment/get";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processGetEstablishment(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
                     return this.processGetEstablishment(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<EstablishmentDTO>;
+                    return _observableThrow(e) as any as Observable<GetEstablishmentReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<EstablishmentDTO>;
+                return _observableThrow(response_) as any as Observable<GetEstablishmentReturn>;
         }));
     }
 
-    protected processGetEstablishment(response: HttpResponseBase): Observable<EstablishmentDTO> {
+    protected processGetEstablishment(response: HttpResponseBase): Observable<GetEstablishmentReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -805,7 +805,7 @@ export class EstablishmentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = EstablishmentDTO.fromJS(resultData200);
+            result200 = GetEstablishmentReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -816,11 +816,11 @@ export class EstablishmentClient {
         return _observableOf(null as any);
     }
 
-    getEstablishments(establishmentIds: string[]): Observable<EstablishmentDTO[]> {
+    getEstablishments(command: GetMultipleEstablishmentsCommand): Observable<GetMultipleEstablishmentsReturn> {
         let url_ = this.baseUrl + "/api/establishment/get-multiple";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(establishmentIds);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -840,14 +840,81 @@ export class EstablishmentClient {
                 try {
                     return this.processGetEstablishments(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<EstablishmentDTO[]>;
+                    return _observableThrow(e) as any as Observable<GetMultipleEstablishmentsReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<EstablishmentDTO[]>;
+                return _observableThrow(response_) as any as Observable<GetMultipleEstablishmentsReturn>;
         }));
     }
 
-    protected processGetEstablishments(response: HttpResponseBase): Observable<EstablishmentDTO[]> {
+    protected processGetEstablishments(response: HttpResponseBase): Observable<GetMultipleEstablishmentsReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetMultipleEstablishmentsReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ItemClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getItems(itemsId: string[]): Observable<ItemDTO[]> {
+        let url_ = this.baseUrl + "/api/establishment/sales/get-items";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(itemsId);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetItems(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetItems(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ItemDTO[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ItemDTO[]>;
+        }));
+    }
+
+    protected processGetItems(response: HttpResponseBase): Observable<ItemDTO[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -861,7 +928,7 @@ export class EstablishmentClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(EstablishmentDTO.fromJS(item));
+                    result200!.push(ItemDTO.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -943,11 +1010,11 @@ export class SaleClient {
         return _observableOf(null as any);
     }
 
-    getSales(saleIds: string[]): Observable<SaleDTO[]> {
+    getSales(command: GetSalesCommand): Observable<GetSalesReturn> {
         let url_ = this.baseUrl + "/api/establishment/sales/get-sales";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(saleIds);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -967,14 +1034,14 @@ export class SaleClient {
                 try {
                     return this.processGetSales(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<SaleDTO[]>;
+                    return _observableThrow(e) as any as Observable<GetSalesReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<SaleDTO[]>;
+                return _observableThrow(response_) as any as Observable<GetSalesReturn>;
         }));
     }
 
-    protected processGetSales(response: HttpResponseBase): Observable<SaleDTO[]> {
+    protected processGetSales(response: HttpResponseBase): Observable<GetSalesReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -985,14 +1052,61 @@ export class SaleClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(SaleDTO.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = GetSalesReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getAverageSales(command: GetSalesCommand): Observable<boolean> {
+        let url_ = this.baseUrl + "/api/establishment/sales";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAverageSales(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAverageSales(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<boolean>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<boolean>;
+        }));
+    }
+
+    protected processGetAverageSales(response: HttpResponseBase): Observable<boolean> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1228,12 +1342,14 @@ export enum DayOfWeek {
 export class Item extends EntityBase {
     name!: string;
     price!: Price;
+    establishmentId!: string;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.name = _data["name"];
             this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
+            this.establishmentId = _data["establishmentId"];
         }
     }
 
@@ -1248,6 +1364,7 @@ export class Item extends EntityBase {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["price"] = this.price ? this.price.toJSON() : <any>undefined;
+        data["establishmentId"] = this.establishmentId;
         super.toJSON(data);
         return data;
     }
@@ -1527,15 +1644,45 @@ export class SalesQuery extends CommandBase {
 }
 
 export class SalesSortingParameters {
-    mustContaiedItems!: string[] | undefined;
+    mustContainSomeItems!: string[] | undefined;
+    mustContainAllItems!: string[] | undefined;
+    mustContainSomeTables!: string[] | undefined;
+    mustContainAllTables!: string[] | undefined;
+    mustContainSomeEmployees!: string[] | undefined;
+    mustContainAllEmployees!: string[] | undefined;
     useDataFromTimeframePeriods!: DateTimePeriod[] | undefined;
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["mustContaiedItems"])) {
-                this.mustContaiedItems = [] as any;
-                for (let item of _data["mustContaiedItems"])
-                    this.mustContaiedItems!.push(item);
+            if (Array.isArray(_data["mustContainSomeItems"])) {
+                this.mustContainSomeItems = [] as any;
+                for (let item of _data["mustContainSomeItems"])
+                    this.mustContainSomeItems!.push(item);
+            }
+            if (Array.isArray(_data["mustContainAllItems"])) {
+                this.mustContainAllItems = [] as any;
+                for (let item of _data["mustContainAllItems"])
+                    this.mustContainAllItems!.push(item);
+            }
+            if (Array.isArray(_data["mustContainSomeTables"])) {
+                this.mustContainSomeTables = [] as any;
+                for (let item of _data["mustContainSomeTables"])
+                    this.mustContainSomeTables!.push(item);
+            }
+            if (Array.isArray(_data["mustContainAllTables"])) {
+                this.mustContainAllTables = [] as any;
+                for (let item of _data["mustContainAllTables"])
+                    this.mustContainAllTables!.push(item);
+            }
+            if (Array.isArray(_data["mustContainSomeEmployees"])) {
+                this.mustContainSomeEmployees = [] as any;
+                for (let item of _data["mustContainSomeEmployees"])
+                    this.mustContainSomeEmployees!.push(item);
+            }
+            if (Array.isArray(_data["mustContainAllEmployees"])) {
+                this.mustContainAllEmployees = [] as any;
+                for (let item of _data["mustContainAllEmployees"])
+                    this.mustContainAllEmployees!.push(item);
             }
             if (Array.isArray(_data["useDataFromTimeframePeriods"])) {
                 this.useDataFromTimeframePeriods = [] as any;
@@ -1554,10 +1701,35 @@ export class SalesSortingParameters {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.mustContaiedItems)) {
-            data["mustContaiedItems"] = [];
-            for (let item of this.mustContaiedItems)
-                data["mustContaiedItems"].push(item);
+        if (Array.isArray(this.mustContainSomeItems)) {
+            data["mustContainSomeItems"] = [];
+            for (let item of this.mustContainSomeItems)
+                data["mustContainSomeItems"].push(item);
+        }
+        if (Array.isArray(this.mustContainAllItems)) {
+            data["mustContainAllItems"] = [];
+            for (let item of this.mustContainAllItems)
+                data["mustContainAllItems"].push(item);
+        }
+        if (Array.isArray(this.mustContainSomeTables)) {
+            data["mustContainSomeTables"] = [];
+            for (let item of this.mustContainSomeTables)
+                data["mustContainSomeTables"].push(item);
+        }
+        if (Array.isArray(this.mustContainAllTables)) {
+            data["mustContainAllTables"] = [];
+            for (let item of this.mustContainAllTables)
+                data["mustContainAllTables"].push(item);
+        }
+        if (Array.isArray(this.mustContainSomeEmployees)) {
+            data["mustContainSomeEmployees"] = [];
+            for (let item of this.mustContainSomeEmployees)
+                data["mustContainSomeEmployees"].push(item);
+        }
+        if (Array.isArray(this.mustContainAllEmployees)) {
+            data["mustContainAllEmployees"] = [];
+            for (let item of this.mustContainAllEmployees)
+                data["mustContainAllEmployees"].push(item);
         }
         if (Array.isArray(this.useDataFromTimeframePeriods)) {
             data["useDataFromTimeframePeriods"] = [];
@@ -1894,6 +2066,31 @@ export class LoginCommand {
     }
 }
 
+export class GetEstablishmentReturn extends ReturnBase {
+    establishmentDTO!: EstablishmentDTO;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentDTO = _data["establishmentDTO"] ? EstablishmentDTO.fromJS(_data["establishmentDTO"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentDTO"] = this.establishmentDTO ? this.establishmentDTO.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
 export class EstablishmentDTO {
     id!: string;
     name!: string;
@@ -1953,6 +2150,129 @@ export class EstablishmentDTO {
     }
 }
 
+export class GetEstablishmentCommand extends CommandBase {
+    establishmentId!: string;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetMultipleEstablishmentsReturn extends ReturnBase {
+    establishmentDTOs!: EstablishmentDTO[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["establishmentDTOs"])) {
+                this.establishmentDTOs = [] as any;
+                for (let item of _data["establishmentDTOs"])
+                    this.establishmentDTOs!.push(EstablishmentDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetMultipleEstablishmentsReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetMultipleEstablishmentsReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.establishmentDTOs)) {
+            data["establishmentDTOs"] = [];
+            for (let item of this.establishmentDTOs)
+                data["establishmentDTOs"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetMultipleEstablishmentsCommand extends CommandBase {
+    establishmentId!: string;
+    establishmentIds!: string[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["establishmentIds"])) {
+                this.establishmentIds = [] as any;
+                for (let item of _data["establishmentIds"])
+                    this.establishmentIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetMultipleEstablishmentsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetMultipleEstablishmentsCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.establishmentIds)) {
+            data["establishmentIds"] = [];
+            for (let item of this.establishmentIds)
+                data["establishmentIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class ItemDTO {
+    id!: string;
+    name!: string;
+    price!: Price;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ItemDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ItemDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["price"] = this.price ? this.price.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
 export class SaleDTO {
     id!: string;
     saleType!: SaleType | undefined;
@@ -2001,6 +2321,75 @@ export class SaleDTO {
         }
         data["table"] = this.table;
         data["employee"] = this.employee;
+        return data;
+    }
+}
+
+export class GetSalesReturn extends ReturnBase {
+    sales!: SaleDTO[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(SaleDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetSalesReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetSalesCommand extends CommandBase {
+    sortingParameters!: SalesSortingParameters | undefined;
+    salesIds!: string[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.sortingParameters = _data["sortingParameters"] ? SalesSortingParameters.fromJS(_data["sortingParameters"]) : <any>undefined;
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetSalesCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["sortingParameters"] = this.sortingParameters ? this.sortingParameters.toJSON() : <any>undefined;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
+        super.toJSON(data);
         return data;
     }
 }

@@ -15,9 +15,9 @@ namespace WebApplication1.CommandHandlers
         public DateTime EndDate { get; set; }
     }
 
-    public class CorrelationGraphReturn
+    public class CorrelationGraphReturn : ReturnBase
     {
-        public ICollection<(DateTime,double)>? PrimaryGraph { get; set; }
+        public ICollection<(DateTime, double)>? PrimaryGraph { get; set; }
         public ICollection<(DateTime, double)>? SecondaryGraph { get; set; }
     }
 
@@ -28,7 +28,7 @@ namespace WebApplication1.CommandHandlers
         private IEstablishmentRepository establishmentRepository;
         private ISalesRepository salesRepository;
 
-        public CorrelationGraphHandler(IUserContextService userContextService,IEstablishmentRepository establishmentRepository, ISalesRepository salesRepository)
+        public CorrelationGraphHandler(IUserContextService userContextService, IEstablishmentRepository establishmentRepository, ISalesRepository salesRepository)
         {
             this.weatherApi = new DmiWeatherApi();
             this.userContextService = userContextService;
@@ -42,7 +42,7 @@ namespace WebApplication1.CommandHandlers
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
 
             //Get sales data
-            IEnumerable<Sale> sales = establishmentRepository.GetEstablishmentSales(establishment.Id);
+            IEnumerable<Sale> sales = this.establishmentRepository.GetEstablishmentSales(establishment.Id);
 
             IEnumerable<Sale> salesWithTimespan = sales.Where(x => x.TimestampArrival >= command.StartDate && x.TimestampArrival <= command.EndDate);
 
@@ -52,12 +52,12 @@ namespace WebApplication1.CommandHandlers
             //Get weather data
             var weatherDataStart = command.StartDate.Date;
             var weatherDataEnd = command.EndDate.Date.AddDays(1).AddTicks(-1);
-            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(coordinates, command.StartDate, command.EndDate).Result;
+            List<(DateTime, double)> temperaturePerHour = this.weatherApi.GetMeanTemperaturePerHour(coordinates, command.StartDate, command.EndDate).Result;
 
             var spearman = CrossCorrelation.DoAnalysis(numberOfSalesPerHour, temperaturePerHour);
 
             return new CorrelationGraphReturn();
-            
+
         }
     }
 }

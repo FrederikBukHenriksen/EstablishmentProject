@@ -6,7 +6,12 @@ namespace WebApplication1.Utils
 
     public class SalesSortingParameters
     {
-        public List<Guid>? MustContaiedItems { get; set; }
+        public List<Guid>? MustContainSomeItems { get; set; }
+        public List<Guid>? MustContainAllItems { get; set; }
+        public List<Guid>? MustContainSomeTables { get; set; }
+        public List<Guid>? MustContainAllTables { get; set; }
+        public List<Guid>? MustContainSomeEmployees { get; set; }
+        public List<Guid>? MustContainAllEmployees { get; set; }
         public List<DateTimePeriod>? UseDataFromTimeframePeriods { get; set; }
     }
 
@@ -18,9 +23,9 @@ namespace WebApplication1.Utils
             {
                 sales = SalesHelper.SortSalesByTimePeriods(sales, salesSortingParameters.UseDataFromTimeframePeriods);
             }
-            if (!salesSortingParameters.MustContaiedItems.IsNullOrEmpty())
+            if (!salesSortingParameters.MustContainSomeItems.IsNullOrEmpty())
             {
-                sales = SalesHelper.SortSalesByItems(sales, salesSortingParameters.MustContaiedItems);
+                sales = SalesHelper.SortSalesByItems(sales, salesSortingParameters.MustContainSomeItems);
             }
             return sales;
         }
@@ -52,7 +57,6 @@ namespace WebApplication1.Utils
         {
             return sales.Where(sale => mustContainedItems.All(item => sale.SalesItems.Any(x => x.Item == item))).ToList();
         }
-
         public static List<Sale> SortSalesByTables(this List<Sale> sales, List<Table> possibleTables)
         {
             return sales.Where(sale => possibleTables.Contains(sale.Table)).ToList();

@@ -1,9 +1,4 @@
-﻿using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using WebApplication1.CommandHandlers;
-using System;
-using WebApplication1.Application_Layer.Objects;
-using NodaTime;
-using WebApplication1.Domain_Layer.Entities;
+﻿using NodaTime;
 
 namespace WebApplication1.Utils
 {
@@ -64,7 +59,7 @@ namespace WebApplication1.Utils
 
         public DateTimePeriod(DateTime start, DateTime end)
         {
-           this.Start = start;
+            this.Start = start;
             this.End = end;
         }
     }
@@ -81,7 +76,7 @@ namespace WebApplication1.Utils
         public static DateTime LocalDateAndLocalTimeToDateTime(LocalDate localDate, LocalTime localTime)
         {
             return new DateTime(localDate.Year, localDate.Month, localDate.Day, localTime.Hour, localTime.Minute, localTime.Second);
-        }   
+        }
 
         public static bool IsWithinPeriod_StartAndEndIndluded<T>(T timestamp, T start, T end) where T : IComparable<T>
         {
@@ -143,7 +138,8 @@ namespace WebApplication1.Utils
 
         public static List<DateTime> CreateTimelineAsList(DateTimePeriod timePeriod, TimeResolution resolution)
         {
-            Func<DateTime, DateTime> res = x => {
+            Func<DateTime, DateTime> res = x =>
+            {
                 switch (resolution)
                 {
                     case TimeResolution.Hour:
@@ -203,11 +199,11 @@ namespace WebApplication1.Utils
             switch (timeResolution)
             {
                 case TimeResolution.Hour:
-                    return new DateTime(1,1,dateTime.Day,0,0,0).AddHours(dateTime.Hour);
+                    return new DateTime(1, 1, dateTime.Day, 0, 0, 0).AddHours(dateTime.Hour);
                 case TimeResolution.Date:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day,0,0,0);
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
                 case TimeResolution.Month:
-                    return new DateTime(dateTime.Year, dateTime.Month, 1,0,0,0);
+                    return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0);
                 case TimeResolution.Year:
                     throw new ArgumentException("Year is not supported for this method");
                 default:
@@ -222,7 +218,7 @@ namespace WebApplication1.Utils
                 case TimeResolution.Hour:
                     return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day).AddHours(dateTime.Hour);
                 case TimeResolution.Date:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);   
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
                 case TimeResolution.Month:
                     return new DateTime(dateTime.Year, dateTime.Month, 1);
                 case TimeResolution.Year:
@@ -261,7 +257,8 @@ namespace WebApplication1.Utils
 
         public static IEnumerable<int> GetTimelineForTimeResolution(TimeResolution timeResolution)
         {
-            switch (timeResolution) {
+            switch (timeResolution)
+            {
                 case TimeResolution.Hour:
                     return Enumerable.Range(0, 24);
                 case TimeResolution.Date:

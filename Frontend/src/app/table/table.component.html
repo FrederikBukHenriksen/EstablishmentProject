@@ -3,25 +3,63 @@
     <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
 
     <td mat-cell *matCellDef="let element">
-      <!-- Check the type of element and render different content accordingly -->
       <ng-container
-        *ngIf="
-          getTypeOfTableElement(GetRowElement(element, column)) ===
-            'TableButton';
-          else otherContent
-        "
+        [ngSwitch]="getTypeOfTableElement(GetRowElement(element, column))"
       >
-        <button
-          (click)="GetTableButton(GetRowElement(element, column)).onClick()"
-        >
-          Fak off
-        </button>
+        <ng-container *ngSwitchCase="'TableButton'">
+          <button
+            mat-button
+            (click)="
+              CastToTableButton(GetRowElement(element, column)).onClick()
+            "
+          >
+            {{ CastToTableButton(GetRowElement(element, column)).text }}
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableString'">
+          {{ CastToTableString(GetRowElement(element, column)).text }}
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableInput'">
+          <input type="text" />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableCheckBox'">
+          <input
+            type="checkbox"
+            [(ngModel)]="
+              CastToTableCheckbox(GetRowElement(element, column)).value
+            "
+            (change)="
+              CastToTableCheckbox(GetRowElement(element, column)).action(
+                CastToTableCheckbox(GetRowElement(element, column)).value
+              )
+            "
+          />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableMenu'">
+          <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              *ngFor="
+                let menuItem of GetTableMenuElements(
+                  CastToTableMenu(GetRowElement(element, column))
+                )
+              "
+              (click)="menuItem.action()"
+            >
+              {{ menuItem.text }}
+            </button>
+          </mat-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchDefault> default </ng-container>
       </ng-container>
 
-      <ng-template #otherContent>
-        {{ GetTableString(GetRowElement(element, column)).value }}
-        <!-- Render content for other types -->
-      </ng-template>
+      <!-- Add more ng-container blocks as needed for additional types -->
     </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="GetColumns()"></tr>

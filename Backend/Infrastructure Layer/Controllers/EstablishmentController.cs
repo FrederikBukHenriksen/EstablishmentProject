@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
-using WebApplication1.Services;
+using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
+using WebApplication1.CommandHandlers;
+using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Controllers
 {
@@ -9,55 +9,23 @@ namespace WebApplication1.Controllers
     [Route("api/establishment/")]
     public class EstablishmentController : ControllerBase
     {
-        private IEstablishmentRepository _establishmentRepository;
-        private IUserContextService _userContextService;
+        private IHandlerService handlerService;
 
-        public EstablishmentController(
-            IEstablishmentRepository establishmentRepository,
-            IUserContextService userContextService
-            )
+        public EstablishmentController([FromServices] IHandlerService handlerService)
         {
-            this._establishmentRepository = establishmentRepository;
-            this._userContextService = userContextService;
+            this.handlerService = handlerService;
         }
 
-        [HttpGet("get")]
-        public ActionResult<EstablishmentDTO> GetEstablishment(Guid establishmentId)
+        [HttpPost("get")]
+        public GetEstablishmentReturn GetEstablishment([FromBody] GetEstablishmentCommand command, [FromServices] IHandler<GetEstablishmentCommand, GetEstablishmentReturn> handler)
         {
-            List<UserRole> userRoles = this._userContextService.GetAllUserRoles().ToList();
-
-            if (userRoles.Any(userRole => userRole.Establishment.Id == establishmentId))
-            {
-                Establishment establishment = this._establishmentRepository.GetById(establishmentId);
-                return new EstablishmentDTO(this._establishmentRepository.GetAll().First());
-            }
-            else
-            {
-                return this.Unauthorized();
-            }
-            return this.NotFound();
+            return this.handlerService.Service(handler, command);
         }
 
         [HttpPost("get-multiple")]
-        public ActionResult<List<EstablishmentDTO>> GetEstablishments(List<Guid> establishmentIds)
+        public ActionResult<GetMultipleEstablishmentsReturn> GetEstablishments([FromBody] GetMultipleEstablishmentsCommand command, [FromServices] IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn> handler)
         {
-            List<UserRole> userRoles = this._userContextService.GetAllUserRoles().ToList();
-
-            List<EstablishmentDTO> establishments = new List<EstablishmentDTO>();
-
-            foreach (Guid establishmentId in establishmentIds)
-            {
-                if (userRoles.Any(userRole => userRole.Establishment.Id == establishmentId))
-                {
-                    Establishment establishment = this._establishmentRepository.GetById(establishmentId);
-                    establishments.Add(new EstablishmentDTO(establishment));
-                }
-                else
-                {
-                    return this.Unauthorized();
-                }
-            }
-            return establishments;
+            return handler.Handle(command);
         }
 
     }

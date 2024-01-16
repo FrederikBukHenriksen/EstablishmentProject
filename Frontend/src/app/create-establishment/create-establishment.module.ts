@@ -18,7 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { TableModule } from '../table/table.module';
-
+import { MatMenuModule } from '@angular/material/menu';
 @NgModule({
   declarations: [CreateEstablishmentComponent],
   imports: [
@@ -42,6 +42,7 @@ import { TableModule } from '../table/table.module';
     MatButtonModule,
     GraphModule,
     TableModule,
+    MatMenuModule,
   ],
 })
 export class CreateEstablishmentModule {}

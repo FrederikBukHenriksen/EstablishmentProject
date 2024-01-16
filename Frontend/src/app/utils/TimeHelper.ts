@@ -18,7 +18,7 @@ export function CreateDate(
   minute: number,
   second: number
 ): Date {
-  return new Date(Date.UTC(year, month, day, hour, minute, second));
+  return new Date(year, month, day, hour, minute, second);
 }
 
 export function DateToString(dateTime: Date): string {
@@ -91,20 +91,32 @@ export function ExtractDateByTimeResolution(
   }
 }
 
-export function GetAllDatesBetween(
-  timePeriod: DateTimePeriod,
-  timeResolution: TimeResolution
-): Date[] {
-  var dates: Date[] = [];
+// export function GetAllDatesBetween(
+//   timePeriod: DateTimePeriod,
+//   timeResolution: TimeResolution
+// ): Date[] {
+//   var dates: Date[] = [];
 
-  var startDate = ExtractDateByTimeResolution(timePeriod.start, timeResolution);
-  var endDate = ExtractDateByTimeResolution(timePeriod.end, timeResolution);
+//   var startDate = ExtractDateByTimeResolution(timePeriod.start, timeResolution);
+//   var endDate = ExtractDateByTimeResolution(timePeriod.end, timeResolution);
 
-  while (startDate <= endDate) {
-    dates.push(startDate);
-    startDate = AddToDateTimeResolution(startDate, 1, timeResolution);
+//   while (startDate <= endDate) {
+//     dates.push(startDate);
+//     startDate = AddToDateTimeResolution(startDate, 1, timeResolution);
+//   }
+//   return dates;
+// }
+
+export function GetAllDatesInPeriod(startDate: Date, endDate: Date): Date[] {
+  const timeline: Date[] = [];
+  let currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    timeline.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
   }
-  return dates;
+
+  return timeline;
 }
 
 export function CreateTimelineOfObjects<T>(
@@ -148,7 +160,7 @@ export function groupObjectsByTimeResolution<T>(
 
   list.forEach((obj) => {
     const key = ExtractDateByTimeResolution(DateSelector(obj), resolution);
-
+    console.log('key', key);
     if (!groupedObjects.has(key)) {
       groupedObjects.set(key, []);
     }
@@ -157,4 +169,42 @@ export function groupObjectsByTimeResolution<T>(
   });
 
   return groupedObjects;
+}
+
+export function groupByTimeResolution<T>(
+  items: T[],
+  getDate: (item: T) => Date,
+  timeResolution: TimeResolution
+): Map<string, T[]> {
+  const groupedMap = new Map<string, T[]>();
+
+  items.forEach((item) => {
+    const date = getDate(item);
+    let key: string;
+
+    switch (timeResolution) {
+      case TimeResolution.Hour:
+        key = date.toISOString().slice(0, 13); // Group by hour
+        break;
+      case TimeResolution.Date:
+        key = date.toISOString().slice(0, 10); // Group by date
+        break;
+      case TimeResolution.Month:
+        key = date.toISOString().slice(0, 7); // Group by month
+        break;
+      case TimeResolution.Year:
+        key = date.toISOString().slice(0, 4); // Group by year
+        break;
+      default:
+        throw new Error('Invalid TimeResolution');
+    }
+
+    if (!groupedMap.has(key)) {
+      groupedMap.set(key, []);
+    }
+
+    groupedMap.get(key)!.push(item);
+  });
+
+  return groupedMap;
 }

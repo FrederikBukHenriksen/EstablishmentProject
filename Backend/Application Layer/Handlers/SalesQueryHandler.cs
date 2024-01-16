@@ -1,7 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
-using WebApplication1.Application_Layer.Objects;
-using WebApplication1.CommandsHandlersReturns;
+﻿using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Services;
@@ -16,8 +13,8 @@ namespace WebApplication1.CommandHandlers
     }
 
     public class SalesQueryReturn : ReturnBase
-    {   
-        public Dictionary<DateTime,int> data { get; set; }
+    {
+        public Dictionary<DateTime, int> data { get; set; }
     }
 
     public class SalesQueryHandler : HandlerBase<SalesQuery, SalesQueryReturn>
@@ -31,15 +28,15 @@ namespace WebApplication1.CommandHandlers
             this.establishmentRepository = establishmentRepository;
             this.salesRepository = salesRepository;
             this.userContextService = userContextService;
-        }   
+        }
 
-        public override SalesQueryReturn Handle(SalesQuery command) 
+        public override SalesQueryReturn Handle(SalesQuery command)
         {
-            Establishment activeEstablishment = userContextService.GetActiveEstablishment();
+            Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
 
-            List<Sale> sales = establishmentRepository.GetEstablishmentSales(userContextService.GetActiveEstablishment().Id).ToList();
-            sales = salesRepository.IncludeSalesItems(sales);
- 
+            List<Sale> sales = this.establishmentRepository.GetEstablishmentSales(this.userContextService.GetActiveEstablishment().Id).ToList();
+            sales = this.salesRepository.IncludeSalesItems(sales);
+
             //Sort by items
             if (command.salesSortingParameters != null) sales = SalesSortingParametersExecute.SortSales(sales, command.salesSortingParameters);
 
@@ -49,7 +46,7 @@ namespace WebApplication1.CommandHandlers
 
             //List<(DateTime, IEnumerable<Sale?>)> timelineWithSales = TimeHelper.mapToATimeline(sales, x => x.GetTimeOfSale(), command.TimePeriods, command.TimeResolution).ToList();
             //List<TimeAndValue<int>> res = timelineWithSales.Select(x => new TimeAndValue<int> { dateTime = x.Item1, value = x.Item2.Count() }).ToList();
-            return new SalesQueryReturn { data = salesPerTimeResolution.ToDictionary(x=>x.Key,x=>x.Item2) };
+            return new SalesQueryReturn { data = salesPerTimeResolution.ToDictionary(x => x.Key, x => x.Item2) };
 
             //return new SalesQueryReturn { Sales = sales.Select(x => new Sale()).ToList() };
         }

@@ -3,6 +3,7 @@ import {
   AnalysisClient,
   ClusteringReturn,
   Clustering_TimeOfVisit_TotalPrice_Command,
+  GetSalesCommand,
   SaleClient,
   SaleDTO,
 } from 'api';
@@ -76,11 +77,13 @@ export class ClusterComponent implements OnInit {
       (flatArray, innerArray) => flatArray.concat(innerArray),
       []
     );
-    var sales = await lastValueFrom(this.saleClient.getSales(flattenClusters));
+    var sales = await lastValueFrom(
+      this.saleClient.getSales({ salesIds: flattenClusters } as GetSalesCommand)
+    );
 
     this.MSalesClustered = this.putSalesIntoClusters(
       this.MSalesIdClustered,
-      sales
+      sales.sales
     );
     this.dataSource.data = this.SaleDTOtoCluster_TimeOfVisit_TotalPrice_Table(
       this.MSalesClustered

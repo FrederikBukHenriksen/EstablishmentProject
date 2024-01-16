@@ -69,18 +69,12 @@ namespace WebApplication1.Controllers
         [HttpPost("Clustering")]
         public ClusteringReturn TimeOfVisitTotalPrice(
             [FromBody] ClusteringCommand command,
-            [FromServices] IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> handler_TimeOfVisit_TotalPrice,
-            [FromServices] IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn> handler_TimeOfVisit_LengthOfVisit)
+            [FromServices] IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> handler_TimeOfVisit_TotalPrice)
         {
-            if (command is Clustering_TimeOfVisit_TotalPrice_Command)
-            {
-                return handler_TimeOfVisit_TotalPrice.Handle((Clustering_TimeOfVisit_TotalPrice_Command)command);
-            }
-            if (command is Clustering_TimeOfVisit_LengthOfVisit_Command)
-            {
-                return handler_TimeOfVisit_LengthOfVisit.Handle((Clustering_TimeOfVisit_LengthOfVisit_Command)command);
-            }
-            throw new Exception();
+
+            return handler_TimeOfVisit_TotalPrice.Handle((Clustering_TimeOfVisit_TotalPrice_Command)command);
+
+
 
         }
     }

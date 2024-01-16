@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Domain_Layer.Exceptions;
 using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Services
@@ -9,14 +10,16 @@ namespace WebApplication1.Services
         public User GetUser();
         public Establishment GetActiveEstablishment();
         public List<Establishment> GetAccessibleEstablishments();
+        public List<Guid> GetAccessibleEstablishmentsIds();
         public UserRole GetActiveUserRole();
         List<UserRole>? GetAllUserRoles();
         public void SetUser(User? user);
+        public Establishment TrySetActiveEstablishment(Guid establishmentId);
         public void FetchActiveEstablishmentFromHttpHeader(HttpContext httpContext);
         public void FecthAccesibleEstablishments();
     }
 
-    public class UserContextService : IUserContextService
+    public class ContextService : IUserContextService
     {
         private readonly IUserRolesRepository _userRolesRepository;
         private readonly IEstablishmentRepository _establishmentRepository;
@@ -25,7 +28,7 @@ namespace WebApplication1.Services
         private Establishment? _activeEstablishment = null;
         private List<UserRole>? _userRoles = null;
 
-        public UserContextService(IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
+        public ContextService(IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
         {
             this._userRolesRepository = userRolesRepository;
             this._establishmentRepository = establishmentRepository;
@@ -38,6 +41,10 @@ namespace WebApplication1.Services
 
         public User GetUser()
         {
+            if (this._user == null)
+            {
+                throw new NotFound();
+            }
             return this._user;
         }
 
@@ -48,12 +55,19 @@ namespace WebApplication1.Services
 
         public Establishment GetActiveEstablishment()
         {
-
+            if (this._activeEstablishment == null)
+            {
+                throw new NotFound();
+            }
             return this._activeEstablishment;
         }
 
         public List<Establishment> GetAccessibleEstablishments()
         {
+            if (this._userRoles == null)
+            {
+                throw new NotFound();
+            }
             return this._userRoles.Select(x => x.Establishment).ToList();
         }
 
@@ -75,13 +89,37 @@ namespace WebApplication1.Services
 
         public List<UserRole>? GetAllUserRoles()
         {
+            if (this._userRoles == null)
+            {
+                throw new NotFound();
+            }
             return this._userRoles;
         }
 
         public UserRole? GetActiveUserRole()
         {
+            if (this._userRoles == null)
+            {
+                throw new NotFound();
+            }
             return this._userRoles.Find(x => x.Establishment == this.GetActiveEstablishment());
         }
 
+
+        public Establishment TrySetActiveEstablishment(Guid establishmentId)
+        {
+            var accessibleEstablishments = this.GetAccessibleEstablishments();
+            if (accessibleEstablishments.Any(x => x.Id == establishmentId))
+            {
+                return accessibleEstablishments.Find(x => x.Id == establishmentId);
+            }
+            throw new Unauthorised();
+
+        }
+
+        public List<Guid> GetAccessibleEstablishmentsIds()
+        {
+            return this.GetAccessibleEstablishments().Select(x => x.Id).ToList();
+        }
     }
 }

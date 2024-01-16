@@ -4,6 +4,7 @@ import { TableComponent } from './table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [TableComponent],
@@ -13,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatMenuModule,
   ],
   exports: [TableComponent],
 })

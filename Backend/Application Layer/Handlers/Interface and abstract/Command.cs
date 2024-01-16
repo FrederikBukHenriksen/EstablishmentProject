@@ -7,4 +7,8 @@
     {
     }
 
+    public interface IEstablishmentCommandField : ICommand
+    {
+        public Guid EstablishmentId { get; set; }
+    }
 }

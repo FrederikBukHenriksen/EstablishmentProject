@@ -14,9 +14,11 @@
       <mat-form-field>
         <mat-label>Items</mat-label>
         <mat-select [formControlName]="input.id">
-          <mat-option *ngFor="let item of input.options" [value]="item">{{
-            item
-          }}</mat-option>
+          <mat-option
+            *ngFor="let item of GetDropdownOptions(input)"
+            [value]="item.id"
+            >{{ item.name }}</mat-option
+          >
         </mat-select>
       </mat-form-field>
     </div>
@@ -25,9 +27,11 @@
       <mat-form-field>
         <mat-label>Items</mat-label>
         <mat-select [formControlName]="input.id" multiple>
-          <mat-option *ngFor="let item of input.options" [value]="item">{{
-            item
-          }}</mat-option>
+          <mat-option
+            *ngFor="let item of GetDropdownOptions(input)"
+            [value]="item.id"
+            >{{ item.name }}</mat-option
+          >
         </mat-select>
       </mat-form-field>
     </div>

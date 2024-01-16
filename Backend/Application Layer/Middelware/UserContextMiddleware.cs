@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.DependencyInjection;
-using WebApplication1.Domain_Layer.Entities;
+﻿using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services;
 
 namespace WebApplication1.Middelware
@@ -12,19 +10,19 @@ namespace WebApplication1.Middelware
 
         public UserContextMiddleware(IAuthService authService, IUserContextService userContextService)
         {
-            _authService = authService;
-            _userContextService = userContextService;
+            this._authService = authService;
+            this._userContextService = userContextService;
         }
-            
+
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            User? user = _authService.GetUserFromHttp(context);
+            User? user = this._authService.GetUserFromHttp(context);
 
             if (user != null)
             {
-                _userContextService.SetUser(user);
-                _userContextService.FecthAccesibleEstablishments();
-                _userContextService.FetchActiveEstablishmentFromHttpHeader(context);
+                this._userContextService.SetUser(user);
+                this._userContextService.FecthAccesibleEstablishments();
+                this._userContextService.FetchActiveEstablishmentFromHttpHeader(context);
             };
             return next(context);
         }

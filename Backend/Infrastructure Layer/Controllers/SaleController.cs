@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure_Layer.DataTransferObjects;
 using WebApplication1.Services;
+using WebApplication1.Utils;
 
 namespace WebApplication1.Controllers
 {
@@ -34,26 +36,39 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("get-sales")]
-        public ActionResult<List<SaleDTO>> GetSales(List<Guid> saleIds)
+        public ActionResult<GetSalesReturn> GetSales([FromBody] GetSalesCommand command)
         {
             var activeEstablishment = this.userContextService.GetActiveEstablishment();
             var sales = this.salesRepository.GetAll().ToList();
+            sales = SalesSortingParametersExecute.SortSales(sales, command.SortingParameters);
             List<SaleDTO> salesDTO = new List<SaleDTO>();
 
-            foreach (Guid saleId in saleIds)
+            foreach (Guid saleId in command.SalesIds)
             {
-                var sale = sales.FirstOrDefault(sale => sale.Id == saleId);
-                if (sale.Establishment.Id == activeEstablishment.Id)
+                var sale = sales.Find(x => x.Id == saleId);
+                if (sale != null)
                 {
-                    salesDTO.Add(new SaleDTO(sale));
+
+                    if (sale.Establishment.Id == activeEstablishment.Id)
+                    {
+                        salesDTO.Add(new SaleDTO(sale));
+                    }
+                    else
+                    {
+                        return this.Unauthorized();
+                    }
                 }
-                else
-                {
-                    return this.Unauthorized();
-                }
+
             }
-            return salesDTO;
+            return new GetSalesReturn { Sales = salesDTO };
         }
+
+        [HttpPost]
+        public ActionResult<bool> GetAverageSales([FromBody] GetSalesCommand command)
+        {
+            return true;
+        }
+
 
     }
 }
