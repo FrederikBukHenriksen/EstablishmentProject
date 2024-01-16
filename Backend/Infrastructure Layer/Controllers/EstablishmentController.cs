@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
 using WebApplication1.CommandHandlers;
@@ -16,17 +17,18 @@ namespace WebApplication1.Controllers
             this.handlerService = handlerService;
         }
 
+        [Authorize]
         [HttpPost("get")]
         public async Task<GetEstablishmentReturn> GetEstablishment([FromBody] GetEstablishmentCommand command, [FromServices] IHandler<GetEstablishmentCommand, GetEstablishmentReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }
 
+        [Authorize]
         [HttpPost("get-multiple")]
         public async Task<GetMultipleEstablishmentsReturn> GetEstablishments([FromBody] GetMultipleEstablishmentsCommand command, [FromServices] IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn> handler)
         {
-            return await handler.Handle(command);
+            return await this.handlerService.Service(handler, command);
         }
-
     }
 }

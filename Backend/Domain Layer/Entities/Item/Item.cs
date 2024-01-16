@@ -4,9 +4,9 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public class Item : EntityBase
     {
+        public Guid EstablishmentId { get; set; }
         public string Name { get; set; }
         public Price Price { get; set; }
-        public Guid EstablishmentId { get; set; }
     }
 
     public class ItemConfiguration : IEntityTypeConfiguration<Item>

@@ -24,12 +24,12 @@ export class HttpInterceptService implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const modifiedRequest = request.clone({
-      setHeaders: {
-        EstablishmentId: this.ActiveEstablishmentId,
-      },
-    });
+    // const modifiedRequest = request.clone({
+    //   setHeaders: {
+    //     EstablishmentId: this.ActiveEstablishmentId,
+    //   },
+    // });
 
-    return next.handle(modifiedRequest);
+    return next.handle(request);
   }
 }

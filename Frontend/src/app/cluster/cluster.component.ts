@@ -68,26 +68,24 @@ export class ClusterComponent implements OnInit {
   }
 
   private async fetchSalesClustered() {
-    var command = this.FetchDictionary['BasicCluster'].command;
-    var fetch = this.FetchDictionary['BasicCluster'].fetch(command);
-    var extractor = this.FetchDictionary['BasicCluster'].dataExtractor;
-
-    this.MSalesIdClustered = extractor(await lastValueFrom(fetch));
-    var flattenClusters: string[] = this.MSalesIdClustered.reduce(
-      (flatArray, innerArray) => flatArray.concat(innerArray),
-      []
-    );
-    var sales = await lastValueFrom(
-      this.saleClient.getSales({ salesIds: flattenClusters } as GetSalesCommand)
-    );
-
-    this.MSalesClustered = this.putSalesIntoClusters(
-      this.MSalesIdClustered,
-      sales.sales
-    );
-    this.dataSource.data = this.SaleDTOtoCluster_TimeOfVisit_TotalPrice_Table(
-      this.MSalesClustered
-    );
+    // var command = this.FetchDictionary['BasicCluster'].command;
+    // var fetch = this.FetchDictionary['BasicCluster'].fetch(command);
+    // var extractor = this.FetchDictionary['BasicCluster'].dataExtractor;
+    // this.MSalesIdClustered = extractor(await lastValueFrom(fetch));
+    // var flattenClusters: string[] = this.MSalesIdClustered.reduce(
+    //   (flatArray, innerArray) => flatArray.concat(innerArray),
+    //   []
+    // );
+    // var sales = await lastValueFrom(
+    //   this.saleClient.getSales({ salesIds: flattenClusters } as GetSalesCommand)
+    // );
+    // this.MSalesClustered = this.putSalesIntoClusters(
+    //   this.MSalesIdClustered,
+    //   sales.sales
+    // );
+    // this.dataSource.data = this.SaleDTOtoCluster_TimeOfVisit_TotalPrice_Table(
+    //   this.MSalesClustered
+    // );
   }
 
   private SaleDTOtoCluster_TimeOfVisit_TotalPrice_Table = (

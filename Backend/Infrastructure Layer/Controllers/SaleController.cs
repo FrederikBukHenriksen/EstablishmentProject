@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales;
-using WebApplication1.Domain_Layer.Services.Repositories;
-using WebApplication1.Infrastructure_Layer.DataTransferObjects;
-using WebApplication1.Services;
-using WebApplication1.Utils;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
+using WebApplication1.Application_Layer.Handlers.SalesHandlers;
+using WebApplication1.CommandHandlers;
+using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Controllers
 {
@@ -11,64 +11,30 @@ namespace WebApplication1.Controllers
     [Route("api/establishment/sales")]
     public class SaleController : ControllerBase
     {
-        private ISalesRepository salesRepository;
-        private IUserContextService userContextService;
+        private IHandlerService handlerService;
 
-        public SaleController(
-            ISalesRepository establishmentRepository,
-            IUserContextService userContextService
-            )
+        public SaleController([FromServices] IHandlerService handlerService)
         {
-            this.salesRepository = establishmentRepository;
-            this.userContextService = userContextService;
+            this.handlerService = handlerService;
         }
 
-        [HttpGet("get-sale")]
-        public ActionResult<SaleDTO> GetSale(Guid saleId)
+        [Authorize]
+        [HttpPost("get-salesDTO")]
+        public async Task<GetSalesDTOReturn> GetSalesDTO([FromBody] Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers.GetSalesDTOCommand command, [FromServices] IHandler<Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers.GetSalesDTOCommand, GetSalesDTOReturn> handler)
         {
-            var activeEstablishment = this.userContextService.GetActiveEstablishment();
-            var sale = this.salesRepository.GetById(saleId);
-            if (sale.Establishment.Id == activeEstablishment.Id)
-            {
-                return new SaleDTO(sale);
-            }
-            return this.Unauthorized();
+            return await this.handlerService.Service(handler, command);
         }
 
-        [HttpPost("get-sales")]
-        public ActionResult<GetSalesReturn> GetSales([FromBody] GetSalesCommand command)
+        [HttpPost("find")]
+        public async Task<GetSalesReturn> GetSales([FromBody] GetSalesCommand command, [FromServices] IHandler<GetSalesCommand, GetSalesReturn> handler)
         {
-            var activeEstablishment = this.userContextService.GetActiveEstablishment();
-            var sales = this.salesRepository.GetAll().ToList();
-            sales = SalesSortingParametersExecute.SortSales(sales, command.SortingParameters);
-            List<SaleDTO> salesDTO = new List<SaleDTO>();
-
-            foreach (Guid saleId in command.SalesIds)
-            {
-                var sale = sales.Find(x => x.Id == saleId);
-                if (sale != null)
-                {
-
-                    if (sale.Establishment.Id == activeEstablishment.Id)
-                    {
-                        salesDTO.Add(new SaleDTO(sale));
-                    }
-                    else
-                    {
-                        return this.Unauthorized();
-                    }
-                }
-
-            }
-            return new GetSalesReturn { Sales = salesDTO };
+            return await this.handlerService.Service(handler, command);
         }
 
-        [HttpPost]
-        public ActionResult<bool> GetAverageSales([FromBody] GetSalesCommand command)
+        [HttpPost("statistics")]
+        public async Task<SalesStatisticsReturn> SaleStaticstics([FromBody] SalesStatisticsCommand command, [FromServices] IHandler<SalesStatisticsCommand, SalesStatisticsReturn> handler)
         {
-            return true;
+            return await this.handlerService.Service(handler, command);
         }
-
-
     }
 }

@@ -1,6 +1,4 @@
-﻿using WebApplication1.Domain_Layer.Entities;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public class ItemCategory : EntityBase
     {

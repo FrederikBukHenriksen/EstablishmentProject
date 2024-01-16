@@ -6,7 +6,7 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers
 {
-    public class GetEstablishmentCommand : CommandBase, IEstablishmentCommandField
+    public class GetEstablishmentCommand : CommandBase, ICmdField_EstablishmentId
     {
         public Guid EstablishmentId { get; set; }
     }

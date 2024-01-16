@@ -18,12 +18,12 @@ namespace WebApplication1.CommandHandlers
 
     public class Clustering_TimeOfVisit_TotalPrice_Command : ClusteringCommand
     {
-        public SalesSortingParameters? salesSortingParameters { get; set; }
+        public SalesSorting? salesSortingParameters { get; set; }
     }
 
     public class Clustering_TimeOfVisit_LengthOfVisit_Command : ClusteringCommand
     {
-        public SalesSortingParameters? salesSortingParameters { get; set; }
+        public SalesSorting? salesSortingParameters { get; set; }
     }
 
     public class ClusteringReturn : ReturnBase

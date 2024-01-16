@@ -7,8 +7,24 @@
     {
     }
 
-    public interface IEstablishmentCommandField : ICommand
+    public interface ICmdField_EstablishmentId
     {
         public Guid EstablishmentId { get; set; }
+    }
+
+    public interface ICmdField_EstablishmentIds
+    {
+        public List<Guid> EstablishmentIds { get; set; }
+    }
+
+    public interface ICmdField_SalesIds : ICmdField_EstablishmentId
+    {
+        public List<Guid> SalesIds { get; set; }
+    }
+
+    public interface ICmdField_ItemsId : ICmdField_EstablishmentId
+    {
+        public List<Guid> ItemsIds { get; set; }
+
     }
 }

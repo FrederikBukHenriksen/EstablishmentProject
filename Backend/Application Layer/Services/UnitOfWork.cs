@@ -7,6 +7,9 @@ namespace WebApplication1.Application_Layer.Services
     {
         IEstablishmentRepository establishmentRepository { get; }
         IUserRepository userRepository { get; }
+        ISalesRepository salesRepository { get; }
+
+        IItemRepository itemRepository { get; }
     }
 
     public class UnitOfWork : IUnitOfWork
@@ -26,6 +29,22 @@ namespace WebApplication1.Application_Layer.Services
             get
             {
                 return new UserRepository(this.dbContext);
+            }
+        }
+
+        public ISalesRepository salesRepository
+        {
+            get
+            {
+                return new SalesRepository(this.dbContext);
+            }
+        }
+
+        public IItemRepository itemRepository
+        {
+            get
+            {
+                return new ItemRepository(this.dbContext);
             }
         }
 

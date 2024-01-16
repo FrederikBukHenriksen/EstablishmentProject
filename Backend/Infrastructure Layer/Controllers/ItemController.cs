@@ -1,49 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Domain_Layer.Services.Repositories;
-using WebApplication1.Infrastructure_Layer.DataTransferObjects;
-using WebApplication1.Services;
+using WebApplication1.Application_Layer.Handlers.ItemHandler;
+using WebApplication1.CommandHandlers;
+using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Controllers
 {
     [ApiController]
-    [Route("api/establishment/sales")]
+    [Route("api/establishment/item")]
     public class ItemController : ControllerBase
     {
-        private ISalesRepository salesRepository;
-        private IUserContextService userContextService;
-        private IItemRepository itemRepository;
+        private IHandlerService handlerService;
 
-        public ItemController(
-            ISalesRepository establishmentRepository,
-            IUserContextService userContextService,
-            IItemRepository itemRepository
-            )
+        public ItemController([FromServices] IHandlerService handlerService)
         {
-            this.salesRepository = establishmentRepository;
-            this.userContextService = userContextService;
-            this.itemRepository = itemRepository;
+            this.handlerService = handlerService;
         }
 
-        [HttpPost("get-items")]
-        public ActionResult<List<ItemDTO>> GetItems(List<Guid> itemsId)
+        [HttpPost("get")]
+        public async Task<GetItemDTOReturn> GetItems([FromBody] GetItemDTOCommand command, IHandler<GetItemDTOCommand, GetItemDTOReturn> handler)
         {
-            var activeEstablishment = this.userContextService.GetActiveEstablishment();
-            var items = this.itemRepository.GetAll().ToList();
-            List<ItemDTO> salesDTO = new List<ItemDTO>();
-
-            foreach (Guid itemId in itemsId)
-            {
-                var item = items.FirstOrDefault(item => item.Id == itemId);
-                if (item.EstablishmentId == activeEstablishment.Id)
-                {
-                    salesDTO.Add(new ItemDTO(item));
-                }
-                else
-                {
-                    return this.Unauthorized();
-                }
-            }
-            return salesDTO;
+            return await this.handlerService.Service(handler, command);
         }
 
     }

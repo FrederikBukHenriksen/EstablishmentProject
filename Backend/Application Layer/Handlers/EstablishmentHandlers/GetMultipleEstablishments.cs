@@ -6,9 +6,8 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers
 {
-    public class GetMultipleEstablishmentsCommand : CommandBase, IEstablishmentCommandField
+    public class GetMultipleEstablishmentsCommand : CommandBase, ICmdField_EstablishmentIds
     {
-        public Guid EstablishmentId { get; set; }
         public List<Guid> EstablishmentIds { get; set; }
     }
 

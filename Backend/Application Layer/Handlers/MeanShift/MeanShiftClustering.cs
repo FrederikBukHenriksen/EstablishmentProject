@@ -1,5 +1,4 @@
 ﻿using NJsonSchema.NewtonsoftJson.Converters;
-using System.Runtime.Serialization;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
@@ -10,14 +9,14 @@ using WebApplication1.Utils;
 namespace WebApplication1.CommandHandlers
 {
     [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
-    [KnownType(typeof(MSC_Sales_TimeOfVisit_LengthOfVisit))]
+    //[KnownType(typeof(MSC_Sales_TimeOfVisit_LengthOfVisit))]
     //[KnownType(typeof(MSC_Sales_TimeOfVisit_TotalPrice))]
 
 
     public abstract class MeanShiftClusteringCommand : CommandBase
     {
         protected IServiceProvider serviceProvider;
-        public SalesSortingParameters? salesSortingParameters { get; set; }
+        public SalesSorting? salesSortingParameters { get; set; }
         public abstract List<(Sale, Dictionary<string, double>)> GetData();
         public abstract List<double> GetBandwidths();
         public void setServiceProvider(IServiceProvider serviceProvider)
@@ -28,28 +27,28 @@ namespace WebApplication1.CommandHandlers
 
 
 
-    public class MSC_Sales_TimeOfVisit_LengthOfVisit : MeanShiftClusteringCommand
-    {
-        //private List<Sale> sales;
+    //public class MSC_Sales_TimeOfVisit_LengthOfVisit : MeanShiftClusteringCommand
+    //{
+    //    //private List<Sale> sales;
 
-        public override List<(Sale, Dictionary<string, double>)> GetData()
-        {
-            List<Sale> sales = this.serviceProvider.GetService<ISalesRepository>().GetSalesFromEstablishment(this.serviceProvider.GetService<IUserContextService>().GetActiveEstablishment());
-            List<(Sale sale, Dictionary<string, double>)> SalesWithValues = sales
-                .Select(sale => (
-                    entity: sale,
-                    values: new Dictionary<string, double> { { "TimeOfSaleSecond", sale.GetTimeOfSale().Second }, { "TotalPrice", sale.GetTotalPrice() } }
-                    ))
-                .ToList();
+    //    public override List<(Sale, Dictionary<string, double>)> GetData()
+    //    {
+    //        List<Sale> sales = this.serviceProvider.GetService<ISalesRepository>().GetSalesFromEstablishment(this.serviceProvider.GetService<IUserContextService>().GetActiveEstablishment());
+    //        List<(Sale sale, Dictionary<string, double>)> SalesWithValues = sales
+    //            .Select(sale => (
+    //                entity: sale,
+    //                values: new Dictionary<string, double> { { "TimeOfSaleSecond", sale.GetTimeOfSale().Second }, { "TotalPrice", sale.GetTotalPrice() } }
+    //                ))
+    //            .ToList();
 
-            return SalesWithValues;
-        }
+    //        return SalesWithValues;
+    //    }
 
-        public override List<double> GetBandwidths()
-        {
-            return new List<double> { 1, 1 };
-        }
-    }
+    //    public override List<double> GetBandwidths()
+    //    {
+    //        return new List<double> { 1, 1 };
+    //    }
+    //}
 
     //public class MSC_Sales_TimeOfVisit_TotalPrice : MeanShiftClusteringCommand
     //{
@@ -94,7 +93,7 @@ namespace WebApplication1.CommandHandlers
         public override async Task<MeanShiftClusteringReturn> Handle(MeanShiftClusteringCommand command)
         {
             //Arrange   
-            command.setServiceProvider(this.serviceProvider);
+            //command.setServiceProvider(this.serviceProvider);
             List<(Sale, Dictionary<string, double>)> saleDataAttributes = command.GetData();
             List<(Sale, List<double>)> saleData = saleDataAttributes.Select(x => (x.Item1, x.Item2.Select(y => y.Value).ToList())).ToList();
 

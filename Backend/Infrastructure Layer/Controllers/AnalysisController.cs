@@ -8,32 +8,15 @@ namespace WebApplication1.Controllers
     [Route("api/analysis/")]
     public class AnalysisController
     {
-        [HttpPost("sales")]
-        public async Task<SalesQueryReturn> SalesAsync(SalesQuery command,
-            [FromServices] IHandler<SalesQuery, SalesQueryReturn> handler
-            )
-        {
-            //var ok = new SalesQuery { TimePeriod = new Utils.TimePeriod(start: DateTime.Now.AddDays(-7), end: DateTime.Now), TimeResolution = Utils.TimeResolution.Date };
-            //command.salesSortingParameters.MustContaiedItems = new System.Collections.Generic.List<System.Guid> { new System.Guid("00000000-0000-0000-0000-000000000002") };
-            return await handler.Handle(command);
-        }
-
-        [HttpPost("average-visits")]
-        public async Task<SalesMeanQueryReturn> MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
-        )
-        {
-            return await handler.Handle(command);
-        }
-
-
-        [HttpPost("average-spend")] //SalesMeanOverTimeAverageSpend
-        public async Task<SalesMeanQueryReturn> MeanSalesAverageSpend(SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
-        )
-        {
-
-            return await handler.Handle(command);
-        }
-
+        //[HttpPost("sales")]
+        //public async Task<SalesQueryReturn> SalesAsync(SalesQuery command,
+        //    [FromServices] IHandler<SalesQuery, SalesQueryReturn> handler
+        //    )
+        //{
+        //    //var ok = new SalesQuery { TimePeriod = new Utils.TimePeriod(start: DateTime.Now.AddDays(-7), end: DateTime.Now), TimeResolution = Utils.TimeResolution.Date };
+        //    //command.salesSortingParameters.MustContaiedItems = new System.Collections.Generic.List<System.Guid> { new System.Guid("00000000-0000-0000-0000-000000000002") };
+        //    return await handler.Handle(command);
+        //}
 
         //[HttpPost("sales-median")]
         //public SalesMeanQueryReturn MediainSalesAverageSpend([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler

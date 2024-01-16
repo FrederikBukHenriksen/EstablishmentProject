@@ -9,11 +9,16 @@ import {
   DateTimePeriod,
   ItemClient,
   UserContextClient,
-  SalesSortingParameters,
   SaleClient,
-  GetSalesCommand,
   GetSalesReturn,
   SaleDTO,
+  GetEstablishmentCommand,
+  GetItemDTOCommand,
+  SalesStatisticsCommand,
+  GetSalesDTOCommand,
+  GetSalesCommand,
+  SalesStatisticNumber,
+  SalesStatisticsReturn,
 } from 'api';
 import { lastValueFrom } from 'rxjs';
 
@@ -39,21 +44,17 @@ import {
   CreateDate,
   groupByTimeResolution,
 } from '../utils/TimeHelper';
+import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
 export interface Collector {
   id: string;
   dialogFunctionality: DialogFunctionality;
-  dataFunctionality: DataFunctionality;
   graphFunctionality: GraphFunctionality;
 }
 
 export interface DialogFunctionality {
-  dialogBuilder: (command?: CommandBase) => Promise<DialogConfig>;
-  commandBuilder: (dic: { [key: string]: any }) => Promise<CommandBase>;
-}
-
-export interface DataFunctionality {
-  fetch: (command: CommandBase) => Promise<ReturnBase>;
+  dialogBuilder: () => Promise<DialogConfig>;
+  commandBuilder: (dic: { [key: string]: any }) => Promise<ReturnBase>;
 }
 
 export interface GraphFunctionality {
@@ -70,6 +71,8 @@ export class CreateEstablishmentComponent implements OnInit {
   private readonly establishmentClient = inject(EstablishmentClient);
   private readonly itemClient = inject(ItemClient);
   private readonly saleClient = inject(SaleClient);
+  private readonly sessionStorageService = inject(SessionStorageService);
+
   public dialog = inject(MatDialog);
 
   public createdCollectors: Collector[] = [];
@@ -95,34 +98,29 @@ export class CreateEstablishmentComponent implements OnInit {
       return {
         id: id,
         dialogFunctionality: {
-          dialogBuilder: async (
-            command?: CommandBase
-          ): Promise<DialogConfig> => {
+          dialogBuilder: async (): Promise<DialogConfig> => {
             var dropdownItems: DropDownOption[] = [];
 
-            var activeEstablishment = await lastValueFrom(
-              this.userContextClient.getActiveEstablishment()
-            );
-            var establishment = await lastValueFrom(
-              this.establishmentClient.getEstablishment(activeEstablishment)
-            );
-            var establishmentItems = await lastValueFrom(
-              this.itemClient.getItems(establishment.items)
+            var establishmentId =
+              this.sessionStorageService.getActiveEstablishment();
+
+            var GetEstablishmentDTORetrun = await lastValueFrom(
+              this.establishmentClient.getEstablishment({
+                establishmentId: establishmentId,
+              } as GetEstablishmentCommand)
             );
 
-            dropdownItems = establishmentItems.map((item) => {
+            var GetItemDTOReturn = await lastValueFrom(
+              this.itemClient.getItems({
+                establishmentId: establishmentId,
+                itemsIds: GetEstablishmentDTORetrun.establishmentDTO.items,
+              } as GetItemDTOCommand)
+            );
+
+            dropdownItems = GetItemDTOReturn.items.map((item) => {
               return new DropDownOption(item.name, item.id, false);
             });
 
-            if (command) {
-              var getSalesCommand = command as GetSalesCommand;
-              var selectedItems =
-                getSalesCommand.sortingParameters?.mustContainSomeItems ?? [];
-              dropdownItems = dropdownItems.map((item) => {
-                item.selected = selectedItems.includes(item.value);
-                return item;
-              });
-            }
             var dialogConfig: DialogConfig = {
               dialogElements: [
                 new DropDownMultipleSelects(
@@ -136,42 +134,46 @@ export class CreateEstablishmentComponent implements OnInit {
           },
           commandBuilder: async (dictionary: {
             [key: string]: any;
-          }): Promise<CommandBase> => {
-            var activeEstablishment = await lastValueFrom(
-              this.userContextClient.getActiveEstablishment()
+          }): Promise<ReturnBase> => {
+            var establishmentId =
+              this.sessionStorageService.getActiveEstablishment();
+
+            var salesIds: GetSalesReturn = await lastValueFrom(
+              this.saleClient.getSales({
+                establishmentId: establishmentId,
+                salesSortingParameters: {
+                  mustContainSomeItems: dictionary['items'],
+                  useDataFromTimeframePeriods: [
+                    this.timePeriod,
+                  ] as DateTimePeriod[],
+                },
+              } as GetSalesCommand)
             );
-            var establishment = await lastValueFrom(
-              this.establishmentClient.getEstablishment(activeEstablishment)
+
+            var numberOfSales: SalesStatisticsReturn = await lastValueFrom(
+              this.saleClient.saleStaticstics({
+                establishmentId: establishmentId,
+                salesIds: salesIds.sales,
+                timePeriod: this.timePeriod,
+                timeResolution: this.selectedTimeResolution,
+              } as SalesStatisticNumber)
             );
-            return {
-              salesIds: establishment.sales,
-              sortingParameters: {
-                mustContainSomeItems: dictionary['items'],
-                useDataFromTimeframePeriods: [
-                  this.timePeriod,
-                ] as DateTimePeriod[],
-              } as SalesSortingParameters,
-            } as GetSalesCommand;
-          },
-        },
-        dataFunctionality: {
-          fetch: async (command: CommandBase): Promise<ReturnBase> => {
-            return await lastValueFrom(
-              this.saleClient.getSales(command as GetSalesCommand)
-            );
+
+            return numberOfSales;
           },
         },
         graphFunctionality: {
           graphBuilder: (data: ReturnBase) => {
-            var getSalesReturn = data as GetSalesReturn;
+            var getSalesReturn = data as SalesStatisticsReturn;
             return {
-              data: Array.from(
-                groupByTimeResolution(
-                  getSalesReturn.sales,
-                  (x: SaleDTO) => x.timestampPayment,
-                  this.selectedTimeResolution
-                )
-              ).map((x) => x[1].length),
+              // data: Array.from(
+              //   groupByTimeResolution(
+              //     getSalesReturn.sales,
+              //     (x: SaleDTO) => x.timestampPayment,
+              //     this.selectedTimeResolution
+              //   )
+              // ).map((x) => x[1].length),
+              data: [],
               label: 'first one',
               borderColor: 'blue',
               backgroundColor: 'rgba(0, 0, 255, 0.2)',
@@ -210,27 +212,14 @@ export class CreateEstablishmentComponent implements OnInit {
   }
 
   public async activate(collection: Collector) {
-    //build dialog
     var dialog = await collection.dialogFunctionality.dialogBuilder();
-    //open dialog
-    console.log('act, dialog', dialog);
     var inputDictionary = await this.openCommandDialog(dialog);
-    console.log('act, inputDictionary', inputDictionary);
-    //build command
-    var command: CommandBase =
-      await collection.dialogFunctionality.commandBuilder(inputDictionary);
-    console.log('act, command', command);
-    //save command
-    this.commandsDictionary[
-      collection.dialogFunctionality.commandBuilder.name
-    ] = command;
-    console.log('act, commandsDictionary', this.commandsDictionary);
-    //fetch data
-    var data: ReturnBase = await collection.dataFunctionality.fetch(command);
-    console.log('act, data', data);
-    //build graph
+
+    var data: ReturnBase = await collection.dialogFunctionality.commandBuilder(
+      inputDictionary
+    );
+
     var graph: ChartDataset = collection.graphFunctionality.graphBuilder(data);
-    console.log('act, graph', graph);
     this.lineChartData.datasets.push(graph);
     this.updateChartForGraphComponent();
   }

@@ -4,6 +4,7 @@ import {
   Establishment,
   EstablishmentClient,
   EstablishmentDTO,
+  GetMultipleEstablishmentsCommand,
   UserContextClient,
 } from 'api';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
@@ -46,17 +47,19 @@ export class SelectEstablishmentComponent {
   }
 
   private async FetchAccesibleEstablishment() {
-    var accEstablishmentsId = await lastValueFrom(
+    var accessibleEstablishmentsId = await lastValueFrom(
       this.userContextClient.getAccessibleEstablishments()
     );
-    console.log('ids', accEstablishmentsId);
 
-    var establishments = await lastValueFrom(
-      this.establishmentClient.getEstablishments(accEstablishmentsId)
+    var accessibleEstablishmentDTOs = await lastValueFrom(
+      this.establishmentClient.getEstablishments({
+        establishmentIds: accessibleEstablishmentsId,
+      } as GetMultipleEstablishmentsCommand)
     );
-    console.log('establishments', establishments);
 
-    this.dataSource = this.mapToTableObjects(establishments);
+    this.dataSource = this.mapToTableObjects(
+      accessibleEstablishmentDTOs.establishmentDTOs
+    );
   }
 
   private mapToTableObjects(

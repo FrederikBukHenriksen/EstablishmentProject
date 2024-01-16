@@ -218,165 +218,6 @@ export class AnalysisClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    sales(command: SalesQuery): Observable<SalesQueryReturn> {
-        let url_ = this.baseUrl + "/api/analysis/sales";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSales(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSales(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SalesQueryReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SalesQueryReturn>;
-        }));
-    }
-
-    protected processSales(response: HttpResponseBase): Observable<SalesQueryReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SalesQueryReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    meanSales(command: SalesMeanOverTime): Observable<SalesMeanQueryReturn> {
-        let url_ = this.baseUrl + "/api/analysis/average-visits";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanSales(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processMeanSales(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SalesMeanQueryReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SalesMeanQueryReturn>;
-        }));
-    }
-
-    protected processMeanSales(response: HttpResponseBase): Observable<SalesMeanQueryReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SalesMeanQueryReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    meanSalesAverageSpend(command: SalesMeanOverTime): Observable<SalesMeanQueryReturn> {
-        let url_ = this.baseUrl + "/api/analysis/average-spend";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanSalesAverageSpend(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processMeanSalesAverageSpend(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SalesMeanQueryReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SalesMeanQueryReturn>;
-        }));
-    }
-
-    protected processMeanSalesAverageSpend(response: HttpResponseBase): Observable<SalesMeanQueryReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SalesMeanQueryReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
     correlationCoefficientAndLag(): Observable<CorrelationReturn> {
         let url_ = this.baseUrl + "/api/analysis/cross-correlation-with-weather";
         url_ = url_.replace(/[?&]$/, "");
@@ -883,11 +724,11 @@ export class ItemClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getItems(itemsId: string[]): Observable<ItemDTO[]> {
-        let url_ = this.baseUrl + "/api/establishment/sales/get-items";
+    getItems(command: GetItemDTOCommand): Observable<GetItemDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(itemsId);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -907,14 +748,14 @@ export class ItemClient {
                 try {
                     return this.processGetItems(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ItemDTO[]>;
+                    return _observableThrow(e) as any as Observable<GetItemDTOReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ItemDTO[]>;
+                return _observableThrow(response_) as any as Observable<GetItemDTOReturn>;
         }));
     }
 
-    protected processGetItems(response: HttpResponseBase): Observable<ItemDTO[]> {
+    protected processGetItems(response: HttpResponseBase): Observable<GetItemDTOReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -925,14 +766,7 @@ export class ItemClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ItemDTO.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = GetItemDTOReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -957,38 +791,38 @@ export class SaleClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getSale(saleId: string | undefined): Observable<SaleDTO> {
-        let url_ = this.baseUrl + "/api/establishment/sales/get-sale?";
-        if (saleId === null)
-            throw new Error("The parameter 'saleId' cannot be null.");
-        else if (saleId !== undefined)
-            url_ += "saleId=" + encodeURIComponent("" + saleId) + "&";
+    getSalesDTO(command: GetSalesDTOCommand): Observable<GetSalesDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/sales/get-salesDTO";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetSale(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSalesDTO(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetSale(response_ as any);
+                    return this.processGetSalesDTO(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<SaleDTO>;
+                    return _observableThrow(e) as any as Observable<GetSalesDTOReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<SaleDTO>;
+                return _observableThrow(response_) as any as Observable<GetSalesDTOReturn>;
         }));
     }
 
-    protected processGetSale(response: HttpResponseBase): Observable<SaleDTO> {
+    protected processGetSalesDTO(response: HttpResponseBase): Observable<GetSalesDTOReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -999,7 +833,7 @@ export class SaleClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SaleDTO.fromJS(resultData200);
+            result200 = GetSalesDTOReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1011,7 +845,7 @@ export class SaleClient {
     }
 
     getSales(command: GetSalesCommand): Observable<GetSalesReturn> {
-        let url_ = this.baseUrl + "/api/establishment/sales/get-sales";
+        let url_ = this.baseUrl + "/api/establishment/sales/find";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1063,8 +897,8 @@ export class SaleClient {
         return _observableOf(null as any);
     }
 
-    getAverageSales(command: GetSalesCommand): Observable<boolean> {
-        let url_ = this.baseUrl + "/api/establishment/sales";
+    saleStaticstics(command: SalesStatisticsCommand): Observable<SalesStatisticsReturn> {
+        let url_ = this.baseUrl + "/api/establishment/sales/statistics";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1081,20 +915,20 @@ export class SaleClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAverageSales(response_);
+            return this.processSaleStaticstics(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAverageSales(response_ as any);
+                    return this.processSaleStaticstics(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<boolean>;
+                    return _observableThrow(e) as any as Observable<SalesStatisticsReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<boolean>;
+                return _observableThrow(response_) as any as Observable<SalesStatisticsReturn>;
         }));
     }
 
-    protected processGetAverageSales(response: HttpResponseBase): Observable<boolean> {
+    protected processSaleStaticstics(response: HttpResponseBase): Observable<SalesStatisticsReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1105,8 +939,7 @@ export class SaleClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = SalesStatisticsReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1340,16 +1173,16 @@ export enum DayOfWeek {
 }
 
 export class Item extends EntityBase {
+    establishmentId!: string;
     name!: string;
     price!: Price;
-    establishmentId!: string;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.establishmentId = _data["establishmentId"];
             this.name = _data["name"];
             this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
-            this.establishmentId = _data["establishmentId"];
         }
     }
 
@@ -1362,9 +1195,9 @@ export class Item extends EntityBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
         data["name"] = this.name;
         data["price"] = this.price ? this.price.toJSON() : <any>undefined;
-        data["establishmentId"] = this.establishmentId;
         super.toJSON(data);
         return data;
     }
@@ -1429,7 +1262,7 @@ export class Table extends EntityBase {
 }
 
 export class Sale extends EntityBase {
-    establishment!: Establishment;
+    establishmentId!: string;
     saleType!: SaleType | undefined;
     paymentType!: PaymentType | undefined;
     timestampArrival!: Date | undefined;
@@ -1441,7 +1274,7 @@ export class Sale extends EntityBase {
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
+            this.establishmentId = _data["establishmentId"];
             this.saleType = _data["saleType"];
             this.paymentType = _data["paymentType"];
             this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
@@ -1465,7 +1298,7 @@ export class Sale extends EntityBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
+        data["establishmentId"] = this.establishmentId;
         data["saleType"] = this.saleType;
         data["paymentType"] = this.paymentType;
         data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
@@ -1562,37 +1395,70 @@ export abstract class ReturnBase {
     }
 }
 
-export class SalesQueryReturn extends ReturnBase {
-    data!: { [key: string]: number; };
+export class CorrelationReturn extends ReturnBase {
+    lagAndCorrelation!: { [key: string]: number; };
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            if (_data["data"]) {
-                this.data = {} as any;
-                for (let key in _data["data"]) {
-                    if (_data["data"].hasOwnProperty(key))
-                        (<any>this.data)![key] = _data["data"][key];
+            if (_data["lagAndCorrelation"]) {
+                this.lagAndCorrelation = {} as any;
+                for (let key in _data["lagAndCorrelation"]) {
+                    if (_data["lagAndCorrelation"].hasOwnProperty(key))
+                        (<any>this.lagAndCorrelation)![key] = _data["lagAndCorrelation"][key];
                 }
             }
         }
     }
 
-    static override fromJS(data: any): SalesQueryReturn {
+    static override fromJS(data: any): CorrelationReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesQueryReturn();
+        let result = new CorrelationReturn();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (this.data) {
-            data["data"] = {};
-            for (let key in this.data) {
-                if (this.data.hasOwnProperty(key))
-                    (<any>data["data"])[key] = (<any>this.data)[key];
+        if (this.lagAndCorrelation) {
+            data["lagAndCorrelation"] = {};
+            for (let key in this.lagAndCorrelation) {
+                if (this.lagAndCorrelation.hasOwnProperty(key))
+                    (<any>data["lagAndCorrelation"])[key] = (<any>this.lagAndCorrelation)[key];
             }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class ClusteringReturn extends ReturnBase {
+    clusters!: string[][];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["clusters"])) {
+                this.clusters = [] as any;
+                for (let item of _data["clusters"])
+                    this.clusters!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): ClusteringReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new ClusteringReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.clusters)) {
+            data["clusters"] = [];
+            for (let item of this.clusters)
+                data["clusters"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -1615,21 +1481,60 @@ export abstract class CommandBase {
     }
 }
 
-export class SalesQuery extends CommandBase {
-    salesSortingParameters!: SalesSortingParameters | undefined;
-    timeResolution!: TimeResolution;
+export abstract class ClusteringCommand extends CommandBase {
+
+    protected _discriminator: string;
+
+    constructor() {
+        super();
+        this._discriminator = "ClusteringCommand";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): ClusteringCommand {
+        data = typeof data === 'object' ? data : {};
+        if (data["$type"] === "Clustering_TimeOfVisit_TotalPrice_Command") {
+            let result = new Clustering_TimeOfVisit_TotalPrice_Command();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "Clustering_TimeOfVisit_LengthOfVisit_Command") {
+            let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+            result.init(data);
+            return result;
+        }
+        throw new Error("The abstract class 'ClusteringCommand' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["$type"] = this._discriminator;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
+    salesSortingParameters!: SalesSorting | undefined;
+
+    constructor() {
+        super();
+        this._discriminator = "Clustering_TimeOfVisit_TotalPrice_Command";
+    }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-            this.timeResolution = _data["timeResolution"];
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSorting.fromJS(_data["salesSortingParameters"]) : <any>undefined;
         }
     }
 
-    static override fromJS(data: any): SalesQuery {
+    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesQuery();
+        let result = new Clustering_TimeOfVisit_TotalPrice_Command();
         result.init(data);
         return result;
     }
@@ -1637,13 +1542,12 @@ export class SalesQuery extends CommandBase {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        data["timeResolution"] = this.timeResolution;
         super.toJSON(data);
         return data;
     }
 }
 
-export class SalesSortingParameters {
+export class SalesSorting {
     mustContainSomeItems!: string[] | undefined;
     mustContainAllItems!: string[] | undefined;
     mustContainSomeTables!: string[] | undefined;
@@ -1692,9 +1596,9 @@ export class SalesSortingParameters {
         }
     }
 
-    static fromJS(data: any): SalesSortingParameters {
+    static fromJS(data: any): SalesSorting {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesSortingParameters();
+        let result = new SalesSorting();
         result.init(data);
         return result;
     }
@@ -1766,252 +1670,8 @@ export class DateTimePeriod {
     }
 }
 
-export enum TimeResolution {
-    Hour = 0,
-    Date = 1,
-    Month = 2,
-    Year = 3,
-}
-
-export class SalesMeanQueryReturn extends ReturnBase {
-    data!: { [key: string]: number; };
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (_data["data"]) {
-                this.data = {} as any;
-                for (let key in _data["data"]) {
-                    if (_data["data"].hasOwnProperty(key))
-                        (<any>this.data)![key] = _data["data"][key];
-                }
-            }
-        }
-    }
-
-    static override fromJS(data: any): SalesMeanQueryReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesMeanQueryReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.data) {
-            data["data"] = {};
-            for (let key in this.data) {
-                if (this.data.hasOwnProperty(key))
-                    (<any>data["data"])[key] = (<any>this.data)[key];
-            }
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export abstract class SalesMeanOverTime extends CommandBase {
-    salesSortingParameters!: SalesSortingParameters | undefined;
-    timeResolution!: TimeResolution;
-
-    protected _discriminator: string;
-
-    constructor() {
-        super();
-        this._discriminator = "SalesMeanOverTime";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-            this.timeResolution = _data["timeResolution"];
-        }
-    }
-
-    static override fromJS(data: any): SalesMeanOverTime {
-        data = typeof data === 'object' ? data : {};
-        if (data["$type"] === "SalesMeanOverTimeAverageSpend") {
-            let result = new SalesMeanOverTimeAverageSpend();
-            result.init(data);
-            return result;
-        }
-        throw new Error("The abstract class 'SalesMeanOverTime' cannot be instantiated.");
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["$type"] = this._discriminator;
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        data["timeResolution"] = this.timeResolution;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class SalesMeanOverTimeAverageSpend extends SalesMeanOverTime {
-
-    constructor() {
-        super();
-        this._discriminator = "SalesMeanOverTimeAverageSpend";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): SalesMeanOverTimeAverageSpend {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesMeanOverTimeAverageSpend();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class CorrelationReturn extends ReturnBase {
-    lagAndCorrelation!: { [key: string]: number; };
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (_data["lagAndCorrelation"]) {
-                this.lagAndCorrelation = {} as any;
-                for (let key in _data["lagAndCorrelation"]) {
-                    if (_data["lagAndCorrelation"].hasOwnProperty(key))
-                        (<any>this.lagAndCorrelation)![key] = _data["lagAndCorrelation"][key];
-                }
-            }
-        }
-    }
-
-    static override fromJS(data: any): CorrelationReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new CorrelationReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.lagAndCorrelation) {
-            data["lagAndCorrelation"] = {};
-            for (let key in this.lagAndCorrelation) {
-                if (this.lagAndCorrelation.hasOwnProperty(key))
-                    (<any>data["lagAndCorrelation"])[key] = (<any>this.lagAndCorrelation)[key];
-            }
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class ClusteringReturn extends ReturnBase {
-    clusters!: string[][];
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["clusters"])) {
-                this.clusters = [] as any;
-                for (let item of _data["clusters"])
-                    this.clusters!.push(item);
-            }
-        }
-    }
-
-    static override fromJS(data: any): ClusteringReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new ClusteringReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.clusters)) {
-            data["clusters"] = [];
-            for (let item of this.clusters)
-                data["clusters"].push(item);
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export abstract class ClusteringCommand extends CommandBase {
-
-    protected _discriminator: string;
-
-    constructor() {
-        super();
-        this._discriminator = "ClusteringCommand";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): ClusteringCommand {
-        data = typeof data === 'object' ? data : {};
-        if (data["$type"] === "Clustering_TimeOfVisit_TotalPrice_Command") {
-            let result = new Clustering_TimeOfVisit_TotalPrice_Command();
-            result.init(data);
-            return result;
-        }
-        if (data["$type"] === "Clustering_TimeOfVisit_LengthOfVisit_Command") {
-            let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
-            result.init(data);
-            return result;
-        }
-        throw new Error("The abstract class 'ClusteringCommand' cannot be instantiated.");
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["$type"] = this._discriminator;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
-    salesSortingParameters!: SalesSortingParameters | undefined;
-
-    constructor() {
-        super();
-        this._discriminator = "Clustering_TimeOfVisit_TotalPrice_Command";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
-        data = typeof data === 'object' ? data : {};
-        let result = new Clustering_TimeOfVisit_TotalPrice_Command();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
 export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand {
-    salesSortingParameters!: SalesSortingParameters | undefined;
+    salesSortingParameters!: SalesSorting | undefined;
 
     constructor() {
         super();
@@ -2021,7 +1681,7 @@ export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringComm
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSorting.fromJS(_data["salesSortingParameters"]) : <any>undefined;
         }
     }
 
@@ -2209,13 +1869,11 @@ export class GetMultipleEstablishmentsReturn extends ReturnBase {
 }
 
 export class GetMultipleEstablishmentsCommand extends CommandBase {
-    establishmentId!: string;
     establishmentIds!: string[];
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.establishmentId = _data["establishmentId"];
             if (Array.isArray(_data["establishmentIds"])) {
                 this.establishmentIds = [] as any;
                 for (let item of _data["establishmentIds"])
@@ -2233,11 +1891,43 @@ export class GetMultipleEstablishmentsCommand extends CommandBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["establishmentId"] = this.establishmentId;
         if (Array.isArray(this.establishmentIds)) {
             data["establishmentIds"] = [];
             for (let item of this.establishmentIds)
                 data["establishmentIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetItemDTOReturn extends ReturnBase {
+    items!: ItemDTO[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(ItemDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
@@ -2269,6 +1959,75 @@ export class ItemDTO {
         data["id"] = this.id;
         data["name"] = this.name;
         data["price"] = this.price ? this.price.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export class GetItemDTOCommand extends CommandBase {
+    establishmentId!: string;
+    itemsIds!: string[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["itemsIds"])) {
+                this.itemsIds = [] as any;
+                for (let item of _data["itemsIds"])
+                    this.itemsIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemDTOCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemDTOCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.itemsIds)) {
+            data["itemsIds"] = [];
+            for (let item of this.itemsIds)
+                data["itemsIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetSalesDTOReturn extends ReturnBase {
+    sales!: SaleDTO[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(SaleDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetSalesDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item.toJSON());
+        }
+        super.toJSON(data);
         return data;
     }
 }
@@ -2325,8 +2084,44 @@ export class SaleDTO {
     }
 }
 
+export class GetSalesDTOCommand extends CommandBase {
+    establishmentId!: string;
+    salesIds!: string[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetSalesDTOCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesDTOCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
 export class GetSalesReturn extends ReturnBase {
-    sales!: SaleDTO[];
+    sales!: string[];
 
     override init(_data?: any) {
         super.init(_data);
@@ -2334,7 +2129,7 @@ export class GetSalesReturn extends ReturnBase {
             if (Array.isArray(_data["sales"])) {
                 this.sales = [] as any;
                 for (let item of _data["sales"])
-                    this.sales!.push(SaleDTO.fromJS(item));
+                    this.sales!.push(item);
             }
         }
     }
@@ -2351,7 +2146,7 @@ export class GetSalesReturn extends ReturnBase {
         if (Array.isArray(this.sales)) {
             data["sales"] = [];
             for (let item of this.sales)
-                data["sales"].push(item.toJSON());
+                data["sales"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -2359,18 +2154,14 @@ export class GetSalesReturn extends ReturnBase {
 }
 
 export class GetSalesCommand extends CommandBase {
-    sortingParameters!: SalesSortingParameters | undefined;
-    salesIds!: string[];
+    establishmentId!: string;
+    salesSortingParameters!: SalesSorting;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.sortingParameters = _data["sortingParameters"] ? SalesSortingParameters.fromJS(_data["sortingParameters"]) : <any>undefined;
-            if (Array.isArray(_data["salesIds"])) {
-                this.salesIds = [] as any;
-                for (let item of _data["salesIds"])
-                    this.salesIds!.push(item);
-            }
+            this.establishmentId = _data["establishmentId"];
+            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSorting.fromJS(_data["salesSortingParameters"]) : <any>undefined;
         }
     }
 
@@ -2383,12 +2174,130 @@ export class GetSalesCommand extends CommandBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["sortingParameters"] = this.sortingParameters ? this.sortingParameters.toJSON() : <any>undefined;
+        data["establishmentId"] = this.establishmentId;
+        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class SalesStatisticsReturn extends ReturnBase {
+    data!: { [key: string]: number; };
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (_data["data"]) {
+                this.data = {} as any;
+                for (let key in _data["data"]) {
+                    if (_data["data"].hasOwnProperty(key))
+                        (<any>this.data)![key] = _data["data"][key];
+                }
+            }
+        }
+    }
+
+    static override fromJS(data: any): SalesStatisticsReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesStatisticsReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.data) {
+            data["data"] = {};
+            for (let key in this.data) {
+                if (this.data.hasOwnProperty(key))
+                    (<any>data["data"])[key] = (<any>this.data)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export abstract class SalesStatisticsCommand extends CommandBase {
+    establishmentId!: string;
+    salesIds!: string[];
+    timePeriod!: DateTimePeriod;
+    timeResolution!: TimeResolution;
+
+    protected _discriminator: string;
+
+    constructor() {
+        super();
+        this._discriminator = "SalesStatisticsCommand";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+            this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
+            this.timeResolution = _data["timeResolution"];
+        }
+    }
+
+    static override fromJS(data: any): SalesStatisticsCommand {
+        data = typeof data === 'object' ? data : {};
+        if (data["$type"] === "SalesStatisticNumber") {
+            let result = new SalesStatisticNumber();
+            result.init(data);
+            return result;
+        }
+        throw new Error("The abstract class 'SalesStatisticsCommand' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["$type"] = this._discriminator;
+        data["establishmentId"] = this.establishmentId;
         if (Array.isArray(this.salesIds)) {
             data["salesIds"] = [];
             for (let item of this.salesIds)
                 data["salesIds"].push(item);
         }
+        data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
+        data["timeResolution"] = this.timeResolution;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export enum TimeResolution {
+    Hour = 0,
+    Date = 1,
+    Month = 2,
+    Year = 3,
+}
+
+export class SalesStatisticNumber extends SalesStatisticsCommand {
+
+    constructor() {
+        super();
+        this._discriminator = "SalesStatisticNumber";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): SalesStatisticNumber {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesStatisticNumber();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
         super.toJSON(data);
         return data;
     }

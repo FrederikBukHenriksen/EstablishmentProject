@@ -21,7 +21,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
     public class Sale : EntityBase
     {
-        public virtual Establishment Establishment { get; set; }
+        public Guid EstablishmentId { get; set; }
         public SaleType? SaleType { get; set; }
         public PaymentType? PaymentType { get; set; }
         public DateTime? TimestampArrival { get; set; } = null;

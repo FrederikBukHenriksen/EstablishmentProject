@@ -15,17 +15,23 @@ namespace WebApplication1.Application_Layer.Services
 
         public void VerifyEstablishment(ICommand command)
         {
-            if (command is IEstablishmentCommandField)
+            var accesibleEstablishmentsIds = this.userContextService.GetAccessibleEstablishmentsIds();
+            if (command is ICmdField_EstablishmentId)
             {
-                Guid establishmentId = (command as IEstablishmentCommandField).EstablishmentId;
-                var test = this.userContextService.GetAccessibleEstablishmentsIds();
-                var testUser = this.userContextService.GetUser();
-                if (!this.userContextService.GetAccessibleEstablishmentsIds().Any(x => x == establishmentId))
+                Guid establishmentId = (command as ICmdField_EstablishmentId).EstablishmentId;
+                if (!accesibleEstablishmentsIds.Contains(establishmentId))
                 {
                     throw new Unauthorised();
                 }
             }
-
+            if (command is ICmdField_EstablishmentIds)
+            {
+                List<Guid> establishmentId = (command as ICmdField_EstablishmentIds).EstablishmentIds;
+                if (!establishmentId.All(x => accesibleEstablishmentsIds.Contains(x)))
+                {
+                    throw new Unauthorised();
+                }
+            }
         }
     }
 }
