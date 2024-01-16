@@ -26,7 +26,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Estab
             this.unitOfWork = unitOfWork;
         }
 
-        public override GetMultipleEstablishmentsReturn Handle(GetMultipleEstablishmentsCommand command)
+        public override async Task<GetMultipleEstablishmentsReturn> Handle(GetMultipleEstablishmentsCommand command)
         {
             List<Establishment> establishment = this.unitOfWork.establishmentRepository.GetAll().Where(x => command.EstablishmentIds.Any(y => y == x.Id)).ToList();
             List<EstablishmentDTO> establishmentDTO = establishment.Select(x => new EstablishmentDTO(x)).ToList();

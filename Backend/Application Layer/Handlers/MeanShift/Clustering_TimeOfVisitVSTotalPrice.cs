@@ -40,7 +40,7 @@ namespace WebApplication1.CommandHandlers
             this.userContextService = userContextService;
         }
 
-        public override ClusteringReturn Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
+        public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
         {
             //Fetch
             List<Sale> sales = this.userContextService.GetActiveEstablishment().GetSales();
@@ -75,7 +75,7 @@ namespace WebApplication1.CommandHandlers
             this.userContextService = userContextService;
         }
 
-        public override ClusteringReturn Handle(Clustering_TimeOfVisit_LengthOfVisit_Command command)
+        public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_LengthOfVisit_Command command)
         {
             //Fetch
             List<Sale> sales = this.userContextService.GetActiveEstablishment().GetSales();

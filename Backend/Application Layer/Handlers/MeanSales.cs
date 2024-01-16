@@ -53,7 +53,7 @@ namespace WebApplication1.CommandHandlers
                 this.salesRepository = salesRepository;
             }
 
-            public override MeanSalesReturn Handle(MeanSalesCommand command)
+            public override async Task<MeanSalesReturn> Handle(MeanSalesCommand command)
             {
                 Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
 

@@ -32,7 +32,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weath
             this.weatherApi = weatherApi;
         }
 
-        public override GetTemperatureReturn Handle(GetTemperatureCommand command)
+        public override async Task<GetTemperatureReturn> Handle(GetTemperatureCommand command)
         {
             ////Arrange
             //Establishment establisment = command.EstablishmentId != null ? this.contextService.TrySetActiveEstablishment((Guid)command.EstablishmentId) : this.contextService.GetActiveEstablishment();

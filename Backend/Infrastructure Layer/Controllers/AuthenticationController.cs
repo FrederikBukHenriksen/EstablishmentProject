@@ -12,14 +12,14 @@ namespace WebApplication1.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult LogIn(
+        public async Task<IActionResult> LogIn(
             [FromBody] LoginCommand loginCommand,
             [FromServices] IHandler<LoginCommand, LoginReturn> loginCommandHandler
             )
         {
             try
             {
-                LoginReturn loginReturn = loginCommandHandler.Handle(loginCommand);
+                LoginReturn loginReturn = await loginCommandHandler.Handle(loginCommand);
                 this.HttpContext.Response.Cookies.Append("jwt", loginReturn.Token, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
                 return this.Ok();
             }

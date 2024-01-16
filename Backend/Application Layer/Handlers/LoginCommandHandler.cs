@@ -27,7 +27,7 @@ namespace WebApplication1.CommandHandlers
             this.authService = authService;
         }
 
-        public override LoginReturn Handle(LoginCommand command)
+        public override async Task<LoginReturn> Handle(LoginCommand command)
         {
             User user = this.authService.Login(command.Username, command.Password);
             var result = this.authService.GenerateJwtToken(user.Id);

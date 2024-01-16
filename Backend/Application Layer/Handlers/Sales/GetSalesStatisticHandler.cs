@@ -43,7 +43,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales
             this.contextService = contextService;
         }
 
-        public override GetSalesStatisticsReturn Handle(GetSalesStatisticsCommand command)
+        public override async Task<GetSalesStatisticsReturn> Handle(GetSalesStatisticsCommand command)
         {
             //Arrange
             Domain_Layer.Entities.Establishment establisment = command.EstablishmentId != null ? this.contextService.TrySetActiveEstablishment((Guid)command.EstablishmentId) : this.contextService.GetActiveEstablishment();

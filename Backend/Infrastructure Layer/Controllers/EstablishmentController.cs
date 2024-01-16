@@ -17,15 +17,15 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("get")]
-        public GetEstablishmentReturn GetEstablishment([FromBody] GetEstablishmentCommand command, [FromServices] IHandler<GetEstablishmentCommand, GetEstablishmentReturn> handler)
+        public async Task<GetEstablishmentReturn> GetEstablishment([FromBody] GetEstablishmentCommand command, [FromServices] IHandler<GetEstablishmentCommand, GetEstablishmentReturn> handler)
         {
-            return this.handlerService.Service(handler, command);
+            return await this.handlerService.Service(handler, command);
         }
 
         [HttpPost("get-multiple")]
-        public ActionResult<GetMultipleEstablishmentsReturn> GetEstablishments([FromBody] GetMultipleEstablishmentsCommand command, [FromServices] IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn> handler)
+        public async Task<GetMultipleEstablishmentsReturn> GetEstablishments([FromBody] GetMultipleEstablishmentsCommand command, [FromServices] IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn> handler)
         {
-            return handler.Handle(command);
+            return await handler.Handle(command);
         }
 
     }

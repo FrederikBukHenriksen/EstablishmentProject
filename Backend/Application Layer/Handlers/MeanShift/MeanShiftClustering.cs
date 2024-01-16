@@ -91,7 +91,7 @@ namespace WebApplication1.CommandHandlers
             this.serviceProvider = serviceProvider;
         }
 
-        public override MeanShiftClusteringReturn Handle(MeanShiftClusteringCommand command)
+        public override async Task<MeanShiftClusteringReturn> Handle(MeanShiftClusteringCommand command)
         {
             //Arrange   
             command.setServiceProvider(this.serviceProvider);

@@ -9,29 +9,29 @@ namespace WebApplication1.Controllers
     public class AnalysisController
     {
         [HttpPost("sales")]
-        public SalesQueryReturn Sales(SalesQuery command,
+        public async Task<SalesQueryReturn> SalesAsync(SalesQuery command,
             [FromServices] IHandler<SalesQuery, SalesQueryReturn> handler
             )
         {
             //var ok = new SalesQuery { TimePeriod = new Utils.TimePeriod(start: DateTime.Now.AddDays(-7), end: DateTime.Now), TimeResolution = Utils.TimeResolution.Date };
             //command.salesSortingParameters.MustContaiedItems = new System.Collections.Generic.List<System.Guid> { new System.Guid("00000000-0000-0000-0000-000000000002") };
-            return handler.Handle(command);
+            return await handler.Handle(command);
         }
 
         [HttpPost("average-visits")]
-        public SalesMeanQueryReturn MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        public async Task<SalesMeanQueryReturn> MeanSales([FromBody] SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
-            return handler.Handle(command);
+            return await handler.Handle(command);
         }
 
 
         [HttpPost("average-spend")] //SalesMeanOverTimeAverageSpend
-        public SalesMeanQueryReturn MeanSalesAverageSpend(SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
+        public async Task<SalesMeanQueryReturn> MeanSalesAverageSpend(SalesMeanOverTime command, [FromServices] IHandler<SalesMeanOverTime, SalesMeanQueryReturn> handler
         )
         {
 
-            return handler.Handle(command);
+            return await handler.Handle(command);
         }
 
 
@@ -52,11 +52,11 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost("cross-correlation-with-weather")]
-        public CorrelationReturn CorrelationCoefficientAndLag([FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
+        public async Task<CorrelationReturn> CorrelationCoefficientAndLag([FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
         {
             var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1, 0, 0, 0), end: new DateTime(2022, 1, 1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
             var value = handler.Handle(command);
-            return value;
+            return await value;
         }
 
         //[HttpGet("mean-shift-clustering")]
@@ -67,12 +67,12 @@ namespace WebApplication1.Controllers
         //}
 
         [HttpPost("Clustering")]
-        public ClusteringReturn TimeOfVisitTotalPrice(
+        public async Task<ClusteringReturn> TimeOfVisitTotalPrice(
             [FromBody] ClusteringCommand command,
             [FromServices] IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> handler_TimeOfVisit_TotalPrice)
         {
 
-            return handler_TimeOfVisit_TotalPrice.Handle((Clustering_TimeOfVisit_TotalPrice_Command)command);
+            return await handler_TimeOfVisit_TotalPrice.Handle((Clustering_TimeOfVisit_TotalPrice_Command)command);
 
 
 

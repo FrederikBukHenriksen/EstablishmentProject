@@ -6,9 +6,9 @@ namespace WebApplication1.CommandsHandlersReturns
 {
     public interface IHandlerService
     {
-        //Return Service<Command, Return>(IHandler<Command, Return> handler, Command command)
-        //    where Command : ICommand
-        //    where Return : IReturn;
+        Task<Return> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
+            where Command : ICommand
+            where Return : IReturn;
     }
 
     public class HandlerService : IHandlerService
@@ -20,14 +20,14 @@ namespace WebApplication1.CommandsHandlersReturns
             this.verifyEstablishmentCommandService = verifyEstablishmentCommandService;
         }
 
-        public Return ServiceSync<Command, Return>(IHandler<Command, Return> handler, Command command)
+        public async Task<Return> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
             where Command : ICommand
             where Return : IReturn
         {
             this.verifyEstablishmentCommandService.VerifyEstablishment(command);
             try
             {
-                return handler.Handle(command);
+                return await handler.Handle(command);
             }
             catch (Exception e)
             {

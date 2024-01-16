@@ -36,7 +36,7 @@ namespace WebApplication1.CommandHandlers
             this.salesRepository = salesRepository;
         }
 
-        public override CorrelationGraphReturn Handle(CorrelationGraphCommand command)
+        public override async Task<CorrelationGraphReturn> Handle(CorrelationGraphCommand command)
         {
             Establishment establishment = this.userContextService.GetActiveEstablishment();
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };

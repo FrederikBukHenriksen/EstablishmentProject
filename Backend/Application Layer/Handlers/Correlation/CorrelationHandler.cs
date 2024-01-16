@@ -1,13 +1,10 @@
 ﻿using DMIOpenData;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Services;
 using WebApplication1.Services.Analysis;
 using WebApplication1.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebApplication1.CommandHandlers
 {
@@ -19,29 +16,29 @@ namespace WebApplication1.CommandHandlers
         //public abstract (List<(DateTime dateTime1, double value1)> variable1, List<(DateTime dateTime2, double value2)> variable2) GetData();
     }
 
-//    public class COR_Sales_Temperature : CorrelationCommand
-//{
+    //    public class COR_Sales_Temperature : CorrelationCommand
+    //{
 
-//        public override (List<(DateTime dateTime1, double value1)> variable1, List<(DateTime dateTime2, double value2)> variable2) GetData()
-//        {
-//            //Fetch
-//            Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
-//            IEnumerable<Sale> sales = salesRepository.GetSalesFromEstablishment(activeEstablishment);
+    //        public override (List<(DateTime dateTime1, double value1)> variable1, List<(DateTime dateTime2, double value2)> variable2) GetData()
+    //        {
+    //            //Fetch
+    //            Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
+    //            IEnumerable<Sale> sales = salesRepository.GetSalesFromEstablishment(activeEstablishment);
 
-//            var weatherDataStart = this.TimePeriod.Start.Date;
-//            var weatherDataEnd = this.TimePeriod.End.Date.AddDays(1).AddTicks(-1);
-//            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(activeEstablishment.Information.Location.Coordinates, this.TimePeriod.Start, this.TimePeriod.End).Result;
+    //            var weatherDataStart = this.TimePeriod.Start.Date;
+    //            var weatherDataEnd = this.TimePeriod.End.Date.AddDays(1).AddTicks(-1);
+    //            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(activeEstablishment.Information.Location.Coordinates, this.TimePeriod.Start, this.TimePeriod.End).Result;
 
-//            //Arrange
-//            IEnumerable<Sale> salesWithTimespan = sales.Where(x => x.TimestampArrival >= this.TimePeriod.Start && x.TimestampArrival <= this.TimePeriod.End);
+    //            //Arrange
+    //            IEnumerable<Sale> salesWithTimespan = sales.Where(x => x.TimestampArrival >= this.TimePeriod.Start && x.TimestampArrival <= this.TimePeriod.End);
 
-//            IEnumerable<IGrouping<int, Sale>> salesGroupedByHour = salesWithTimespan.GroupBy(x => x.TimestampPayment.Hour);
-//            List<(DateTime, double)> numberOfSalesPerHour = salesGroupedByHour.Select(x => (x.First().TimestampPayment, (double)x.Count())).ToList();
+    //            IEnumerable<IGrouping<int, Sale>> salesGroupedByHour = salesWithTimespan.GroupBy(x => x.TimestampPayment.Hour);
+    //            List<(DateTime, double)> numberOfSalesPerHour = salesGroupedByHour.Select(x => (x.First().TimestampPayment, (double)x.Count())).ToList();
 
-//            //Return
-//            return (numberOfSalesPerHour, temperaturePerHour);
-//        }
-//    }
+    //            //Return
+    //            return (numberOfSalesPerHour, temperaturePerHour);
+    //        }
+    //    }
 
     public class CorrelationReturn : ReturnBase
     {
@@ -64,13 +61,13 @@ namespace WebApplication1.CommandHandlers
             this.salesRepository = salesRepository;
         }
 
-        public override CorrelationReturn Handle(CorrelationCommand command)
+        public override async Task<CorrelationReturn> Handle(CorrelationCommand command)
         {
             Establishment establishment = this.userContextService.GetActiveEstablishment();
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
 
             //Get sales data
-            IEnumerable<Sale> sales = establishmentRepository.GetEstablishmentSales(establishment.Id);
+            IEnumerable<Sale> sales = this.establishmentRepository.GetEstablishmentSales(establishment.Id);
 
             var dateTimeList = TimeHelper.CreateTimelineAsList(command.TimePeriod, command.TimeResolution);
 
@@ -80,13 +77,13 @@ namespace WebApplication1.CommandHandlers
                 .ToDictionary(kv => kv.Key, kv => kv.Value.Count);
 
             List<(DateTime, double)> listOfDateTimeAndCounts = numberOfSalesForTheDateTimeKey
-                .Select(kv => (kv.Key, (double) kv.Value))
+                .Select(kv => (kv.Key, (double)kv.Value))
                 .ToList();
 
             //Get weather data
             var weatherDataStart = command.TimePeriod.Start.Date;
             var weatherDataEnd = command.TimePeriod.End.Date.AddDays(1).AddTicks(-1);
-            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(coordinates, command.TimePeriod.Start, command.TimePeriod.End).Result;
+            List<(DateTime, double)> temperaturePerHour = this.weatherApi.GetMeanTemperaturePerHour(coordinates, command.TimePeriod.Start, command.TimePeriod.End).Result;
             Dictionary<DateTime, List<(DateTime, double)>> tempMappedToTimeline = TimeHelper.MapObjectsToTimeline(temperaturePerHour, x => x.Item1, dateTimeList, command.TimeResolution);
 
             Dictionary<DateTime, double> averages = tempMappedToTimeline.ToDictionary(

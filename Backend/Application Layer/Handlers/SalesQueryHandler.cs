@@ -30,7 +30,7 @@ namespace WebApplication1.CommandHandlers
             this.userContextService = userContextService;
         }
 
-        public override SalesQueryReturn Handle(SalesQuery command)
+        public async override Task<SalesQueryReturn> Handle(SalesQuery command)
         {
             Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
 

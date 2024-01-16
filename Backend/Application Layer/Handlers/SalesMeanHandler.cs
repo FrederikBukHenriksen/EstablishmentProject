@@ -65,7 +65,7 @@ namespace WebApplication1.CommandHandlers
             this.userContextService = userContextService;
         }
 
-        public override SalesMeanQueryReturn Handle(SalesMeanOverTime command)
+        public override async Task<SalesMeanQueryReturn> Handle(SalesMeanOverTime command)
         {
             //Fetch
             Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
