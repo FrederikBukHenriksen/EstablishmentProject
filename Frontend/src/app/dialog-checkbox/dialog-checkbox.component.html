@@ -10,6 +10,15 @@
       />
     </div>
 
+    <div *ngIf="getType(input) == 'TextInputField'">
+      <input
+        [formControlName]="input.id"
+        type="text"
+        name="itemCheckbox"
+        [value]="input.id"
+      />
+    </div>
+
     <div *ngIf="getType(input) == 'DropDown'">
       <mat-form-field>
         <mat-label>Items</mat-label>

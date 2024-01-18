@@ -56,9 +56,6 @@ namespace WebApplication1.Controllers
         {
 
             return await handler_TimeOfVisit_TotalPrice.Handle((Clustering_TimeOfVisit_TotalPrice_Command)command);
-
-
-
         }
     }
 }

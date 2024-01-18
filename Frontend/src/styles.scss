@@ -1,4 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+//General styles
+
+.title_and_filter {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.vr {
+  background-color: black;
+  width: 2px;
+}
+
+//Accordion styles
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+  h1 {
+    margin-bottom: 0px !important;
+  }
+
+  h2 {
+    margin-bottom: 0px !important;
+  }
+
+  h3 {
+    margin-bottom: 0px !important;
+  }
+
+  &__item {
+    padding: 10px;
+    border-radius: 0px !important;
+    box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, 0.08) !important;
+
+    &-header {
+    }
+
+    &-wrapper {
+    }
+
+    &-content {
+      margin-top: 10px;
+    }
+  }
+}
+
+//Remove margin upon opening the acoordion
+.mat-expansion-panel-spacing {
+  margin: 0px !important;
+}
+
+//Remove bottom padding when the accordion is open
+::ng-deep .mat-expansion-panel-body {
+  padding-bottom: 0px !important;
+}
+
+.block {
+  &-element {
+    background-color: red;
+  }
+}

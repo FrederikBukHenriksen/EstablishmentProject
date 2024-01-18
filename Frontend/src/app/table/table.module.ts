@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [TableComponent],
@@ -15,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
     ReactiveFormsModule,
     MatButtonModule,
     MatMenuModule,
+    MatPaginatorModule,
   ],
   exports: [TableComponent],
 })

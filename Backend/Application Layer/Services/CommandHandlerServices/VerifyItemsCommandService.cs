@@ -14,7 +14,7 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 
         public void VerifyItems(ICommand command)
         {
-            if (command is ICmdField_SalesIds)
+            if (command is ICmdField_ItemsId)
             {
                 Guid establishmentId = (command as ICmdField_ItemsId).EstablishmentId;
                 List<Guid> itemsIds = (command as ICmdField_ItemsId).ItemsIds;

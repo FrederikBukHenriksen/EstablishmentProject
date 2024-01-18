@@ -10,8 +10,6 @@ namespace WebApplication1.Utils
         public List<Guid>? MustContainAllItems { get; set; }
         public List<Guid>? MustContainSomeTables { get; set; }
         public List<Guid>? MustContainAllTables { get; set; }
-        public List<Guid>? MustContainSomeEmployees { get; set; }
-        public List<Guid>? MustContainAllEmployees { get; set; }
         public List<DateTimePeriod>? UseDataFromTimeframePeriods { get; set; }
     }
 

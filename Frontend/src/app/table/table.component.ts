@@ -1,11 +1,16 @@
 import {
+  AfterViewChecked,
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Input,
   OnInit,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 export interface TableModel {
   columns: string[];
@@ -18,7 +23,7 @@ export interface TableCol {
 }
 
 export interface TableEntry {
-  id: string;
+  id: any;
   elements: TableElement[];
 }
 
@@ -96,10 +101,27 @@ export class TableInput implements TableElement {
   styleUrls: ['./table.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush, // Make sure you really need this
 })
-export class TableComponent {
+export class TableComponent implements AfterViewInit {
   @Input() public tableModel!: TableModel;
+  @Input() public addPaginator: boolean = false;
 
-  constructor() {}
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  dataSource!: MatTableDataSource<TableEntry>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngAfterViewInit() {
+    // Initialize MatTableDataSource with elements array
+    this.dataSource = new MatTableDataSource(this.tableModel.elements);
+
+    // If you want to add pagination
+    if (this.addPaginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    console.log('table, ngAfterViewInit', this.dataSource);
+    console.log('table, ngAfterViewInit', this.dataSource.data);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log(changes);
@@ -107,6 +129,9 @@ export class TableComponent {
       this.tableModel = changes['tableModel'].currentValue;
       this.tableModel.columns = [...this.tableModel.columns];
       this.tableModel.elements = [...this.tableModel.elements];
+      this.dataSource.data = this.tableModel.elements;
+      console.log('table, ngOnChanges', this.tableModel);
+      this.cdr.detectChanges();
     }
   }
 

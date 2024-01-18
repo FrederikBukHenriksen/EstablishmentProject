@@ -1482,6 +1482,8 @@ export abstract class CommandBase {
 }
 
 export abstract class ClusteringCommand extends CommandBase {
+    establishmentId!: string;
+    salesIds!: string[];
 
     protected _discriminator: string;
 
@@ -1492,6 +1494,14 @@ export abstract class ClusteringCommand extends CommandBase {
 
     override init(_data?: any) {
         super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+        }
     }
 
     static override fromJS(data: any): ClusteringCommand {
@@ -1512,13 +1522,19 @@ export abstract class ClusteringCommand extends CommandBase {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["$type"] = this._discriminator;
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
         super.toJSON(data);
         return data;
     }
 }
 
 export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
-    salesSortingParameters!: SalesSorting | undefined;
+    lolcat!: number | undefined;
 
     constructor() {
         super();
@@ -1528,7 +1544,7 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSorting.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.lolcat = _data["lolcat"];
         }
     }
 
@@ -1541,137 +1557,13 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        data["lolcat"] = this.lolcat;
         super.toJSON(data);
         return data;
     }
 }
 
-export class SalesSorting {
-    mustContainSomeItems!: string[] | undefined;
-    mustContainAllItems!: string[] | undefined;
-    mustContainSomeTables!: string[] | undefined;
-    mustContainAllTables!: string[] | undefined;
-    mustContainSomeEmployees!: string[] | undefined;
-    mustContainAllEmployees!: string[] | undefined;
-    useDataFromTimeframePeriods!: DateTimePeriod[] | undefined;
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["mustContainSomeItems"])) {
-                this.mustContainSomeItems = [] as any;
-                for (let item of _data["mustContainSomeItems"])
-                    this.mustContainSomeItems!.push(item);
-            }
-            if (Array.isArray(_data["mustContainAllItems"])) {
-                this.mustContainAllItems = [] as any;
-                for (let item of _data["mustContainAllItems"])
-                    this.mustContainAllItems!.push(item);
-            }
-            if (Array.isArray(_data["mustContainSomeTables"])) {
-                this.mustContainSomeTables = [] as any;
-                for (let item of _data["mustContainSomeTables"])
-                    this.mustContainSomeTables!.push(item);
-            }
-            if (Array.isArray(_data["mustContainAllTables"])) {
-                this.mustContainAllTables = [] as any;
-                for (let item of _data["mustContainAllTables"])
-                    this.mustContainAllTables!.push(item);
-            }
-            if (Array.isArray(_data["mustContainSomeEmployees"])) {
-                this.mustContainSomeEmployees = [] as any;
-                for (let item of _data["mustContainSomeEmployees"])
-                    this.mustContainSomeEmployees!.push(item);
-            }
-            if (Array.isArray(_data["mustContainAllEmployees"])) {
-                this.mustContainAllEmployees = [] as any;
-                for (let item of _data["mustContainAllEmployees"])
-                    this.mustContainAllEmployees!.push(item);
-            }
-            if (Array.isArray(_data["useDataFromTimeframePeriods"])) {
-                this.useDataFromTimeframePeriods = [] as any;
-                for (let item of _data["useDataFromTimeframePeriods"])
-                    this.useDataFromTimeframePeriods!.push(DateTimePeriod.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SalesSorting {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesSorting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.mustContainSomeItems)) {
-            data["mustContainSomeItems"] = [];
-            for (let item of this.mustContainSomeItems)
-                data["mustContainSomeItems"].push(item);
-        }
-        if (Array.isArray(this.mustContainAllItems)) {
-            data["mustContainAllItems"] = [];
-            for (let item of this.mustContainAllItems)
-                data["mustContainAllItems"].push(item);
-        }
-        if (Array.isArray(this.mustContainSomeTables)) {
-            data["mustContainSomeTables"] = [];
-            for (let item of this.mustContainSomeTables)
-                data["mustContainSomeTables"].push(item);
-        }
-        if (Array.isArray(this.mustContainAllTables)) {
-            data["mustContainAllTables"] = [];
-            for (let item of this.mustContainAllTables)
-                data["mustContainAllTables"].push(item);
-        }
-        if (Array.isArray(this.mustContainSomeEmployees)) {
-            data["mustContainSomeEmployees"] = [];
-            for (let item of this.mustContainSomeEmployees)
-                data["mustContainSomeEmployees"].push(item);
-        }
-        if (Array.isArray(this.mustContainAllEmployees)) {
-            data["mustContainAllEmployees"] = [];
-            for (let item of this.mustContainAllEmployees)
-                data["mustContainAllEmployees"].push(item);
-        }
-        if (Array.isArray(this.useDataFromTimeframePeriods)) {
-            data["useDataFromTimeframePeriods"] = [];
-            for (let item of this.useDataFromTimeframePeriods)
-                data["useDataFromTimeframePeriods"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export class DateTimePeriod {
-    start!: Date;
-    end!: Date;
-
-    init(_data?: any) {
-        if (_data) {
-            this.start = _data["start"] ? new Date(_data["start"].toString()) : <any>undefined;
-            this.end = _data["end"] ? new Date(_data["end"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): DateTimePeriod {
-        data = typeof data === 'object' ? data : {};
-        let result = new DateTimePeriod();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["start"] = this.start ? this.start.toISOString() : <any>undefined;
-        data["end"] = this.end ? this.end.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
 export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand {
-    salesSortingParameters!: SalesSorting | undefined;
 
     constructor() {
         super();
@@ -1680,9 +1572,6 @@ export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringComm
 
     override init(_data?: any) {
         super.init(_data);
-        if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSorting.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-        }
     }
 
     static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
@@ -1694,7 +1583,6 @@ export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringComm
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -2181,6 +2069,107 @@ export class GetSalesCommand extends CommandBase {
     }
 }
 
+export class SalesSorting {
+    mustContainSomeItems!: string[] | undefined;
+    mustContainAllItems!: string[] | undefined;
+    mustContainSomeTables!: string[] | undefined;
+    mustContainAllTables!: string[] | undefined;
+    useDataFromTimeframePeriods!: DateTimePeriod[] | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["mustContainSomeItems"])) {
+                this.mustContainSomeItems = [] as any;
+                for (let item of _data["mustContainSomeItems"])
+                    this.mustContainSomeItems!.push(item);
+            }
+            if (Array.isArray(_data["mustContainAllItems"])) {
+                this.mustContainAllItems = [] as any;
+                for (let item of _data["mustContainAllItems"])
+                    this.mustContainAllItems!.push(item);
+            }
+            if (Array.isArray(_data["mustContainSomeTables"])) {
+                this.mustContainSomeTables = [] as any;
+                for (let item of _data["mustContainSomeTables"])
+                    this.mustContainSomeTables!.push(item);
+            }
+            if (Array.isArray(_data["mustContainAllTables"])) {
+                this.mustContainAllTables = [] as any;
+                for (let item of _data["mustContainAllTables"])
+                    this.mustContainAllTables!.push(item);
+            }
+            if (Array.isArray(_data["useDataFromTimeframePeriods"])) {
+                this.useDataFromTimeframePeriods = [] as any;
+                for (let item of _data["useDataFromTimeframePeriods"])
+                    this.useDataFromTimeframePeriods!.push(DateTimePeriod.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SalesSorting {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesSorting();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.mustContainSomeItems)) {
+            data["mustContainSomeItems"] = [];
+            for (let item of this.mustContainSomeItems)
+                data["mustContainSomeItems"].push(item);
+        }
+        if (Array.isArray(this.mustContainAllItems)) {
+            data["mustContainAllItems"] = [];
+            for (let item of this.mustContainAllItems)
+                data["mustContainAllItems"].push(item);
+        }
+        if (Array.isArray(this.mustContainSomeTables)) {
+            data["mustContainSomeTables"] = [];
+            for (let item of this.mustContainSomeTables)
+                data["mustContainSomeTables"].push(item);
+        }
+        if (Array.isArray(this.mustContainAllTables)) {
+            data["mustContainAllTables"] = [];
+            for (let item of this.mustContainAllTables)
+                data["mustContainAllTables"].push(item);
+        }
+        if (Array.isArray(this.useDataFromTimeframePeriods)) {
+            data["useDataFromTimeframePeriods"] = [];
+            for (let item of this.useDataFromTimeframePeriods)
+                data["useDataFromTimeframePeriods"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export class DateTimePeriod {
+    start!: Date;
+    end!: Date;
+
+    init(_data?: any) {
+        if (_data) {
+            this.start = _data["start"] ? new Date(_data["start"].toString()) : <any>undefined;
+            this.end = _data["end"] ? new Date(_data["end"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): DateTimePeriod {
+        data = typeof data === 'object' ? data : {};
+        let result = new DateTimePeriod();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["start"] = this.start ? this.start.toISOString() : <any>undefined;
+        data["end"] = this.end ? this.end.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
 export class SalesStatisticsReturn extends ReturnBase {
     data!: { [key: string]: number; };
 
@@ -2221,7 +2210,8 @@ export class SalesStatisticsReturn extends ReturnBase {
 export abstract class SalesStatisticsCommand extends CommandBase {
     establishmentId!: string;
     salesIds!: string[];
-    timePeriod!: DateTimePeriod;
+    start!: Date;
+    end!: Date;
     timeResolution!: TimeResolution;
 
     protected _discriminator: string;
@@ -2240,7 +2230,8 @@ export abstract class SalesStatisticsCommand extends CommandBase {
                 for (let item of _data["salesIds"])
                     this.salesIds!.push(item);
             }
-            this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
+            this.start = _data["start"] ? new Date(_data["start"].toString()) : <any>undefined;
+            this.end = _data["end"] ? new Date(_data["end"].toString()) : <any>undefined;
             this.timeResolution = _data["timeResolution"];
         }
     }
@@ -2264,7 +2255,8 @@ export abstract class SalesStatisticsCommand extends CommandBase {
             for (let item of this.salesIds)
                 data["salesIds"].push(item);
         }
-        data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
+        data["start"] = this.start ? this.start.toISOString() : <any>undefined;
+        data["end"] = this.end ? this.end.toISOString() : <any>undefined;
         data["timeResolution"] = this.timeResolution;
         super.toJSON(data);
         return data;

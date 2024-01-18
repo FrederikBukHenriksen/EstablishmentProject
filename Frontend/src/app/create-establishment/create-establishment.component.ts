@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ChartData, ChartDataset, ChartOptions } from 'chart.js/auto';
 import {
-  AnalysisClient,
   EstablishmentClient,
   CommandBase,
   ReturnBase,
@@ -11,11 +10,8 @@ import {
   UserContextClient,
   SaleClient,
   GetSalesReturn,
-  SaleDTO,
   GetEstablishmentCommand,
   GetItemDTOCommand,
-  SalesStatisticsCommand,
-  GetSalesDTOCommand,
   GetSalesCommand,
   SalesStatisticNumber,
   SalesStatisticsReturn,
@@ -28,21 +24,20 @@ import {
   DialogConfig,
   DropDownMultipleSelects,
   DropDownOption,
+  TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import {
   TableElement,
   TableEntry,
-  TableInput,
   TableMenu,
   TableMenuElement,
   TableModel,
   TableString,
 } from '../table/table.component';
 import {
-  GetAllDatesInPeriod,
-  CreateTimelineOfObjects,
   CreateDate,
-  groupByTimeResolution,
+  GetTimeLineWithTimeResolution,
+  UTCDATE,
 } from '../utils/TimeHelper';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
@@ -53,12 +48,15 @@ export interface Collector {
 }
 
 export interface DialogFunctionality {
-  dialogBuilder: () => Promise<DialogConfig>;
+  dialogBuilder: (command?: CommandBase) => Promise<DialogConfig>;
   commandBuilder: (dic: { [key: string]: any }) => Promise<ReturnBase>;
 }
 
 export interface GraphFunctionality {
-  graphBuilder: (data: ReturnBase) => ChartDataset;
+  graphBuilder: (
+    data: ReturnBase,
+    visuals?: { [key: string]: any }
+  ) => ChartDataset;
 }
 
 @Component({
@@ -79,19 +77,24 @@ export class CreateEstablishmentComponent implements OnInit {
   public commandsDictionary: { [key: string]: CommandBase } = {};
   public returnsDictionary: { [key: string]: ReturnBase } = {};
 
-  public createCommandOptions: { name: string; collection: string }[] = [
-    { name: 'Sale numbers', collection: 'SalesOverTime' },
+  public createCommandOptions: { collection: string }[] = [
+    { collection: 'SalesOverTime' },
   ];
 
-  public createCommand(item: { name: string; collection: string }) {
-    var collector = this.collector[item.collection];
-    this.createdCollectors.push(collector('1'));
-    var tableEntry = this.createTableElement(item.name, item.collection);
+  public createCommand(collectionName: string) {
+    var generatedRandomId = Math.random().toString(36).substring(7);
+
+    var collection = this.collector[collectionName](generatedRandomId);
+    this.createdCollectors.push(collection);
+
+    var tableEntry = this.createTableElement('lolcat type', collection);
     this.tableModel.elements.push(tableEntry);
 
-    console.log('tableModel', this.tableModel);
     this.updateTable();
   }
+
+  public activeEstablishment =
+    this.sessionStorageService.getActiveEstablishment();
 
   public collector: Record<string, (id: string) => Collector> = {
     SalesOverTime: (id: string) => {
@@ -123,6 +126,7 @@ export class CreateEstablishmentComponent implements OnInit {
 
             var dialogConfig: DialogConfig = {
               dialogElements: [
+                new TextInputField('2', 'Name', ''),
                 new DropDownMultipleSelects(
                   '1',
                   'Items which must be included',
@@ -135,8 +139,8 @@ export class CreateEstablishmentComponent implements OnInit {
           commandBuilder: async (dictionary: {
             [key: string]: any;
           }): Promise<ReturnBase> => {
-            var establishmentId =
-              this.sessionStorageService.getActiveEstablishment();
+            var establishmentId: string =
+              this.sessionStorageService.getActiveEstablishment()!;
 
             var salesIds: GetSalesReturn = await lastValueFrom(
               this.saleClient.getSales({
@@ -150,30 +154,24 @@ export class CreateEstablishmentComponent implements OnInit {
               } as GetSalesCommand)
             );
 
+            var ok = new SalesStatisticNumber();
+            ok.establishmentId = establishmentId;
+            ok.salesIds = salesIds.sales;
+            ok.start = this.timePeriod.start;
+            ok.end = this.timePeriod.end;
+            ok.timeResolution = this.selectedTimeResolution;
             var numberOfSales: SalesStatisticsReturn = await lastValueFrom(
-              this.saleClient.saleStaticstics({
-                establishmentId: establishmentId,
-                salesIds: salesIds.sales,
-                timePeriod: this.timePeriod,
-                timeResolution: this.selectedTimeResolution,
-              } as SalesStatisticNumber)
+              this.saleClient.saleStaticstics(ok)
             );
-
             return numberOfSales;
           },
         },
         graphFunctionality: {
-          graphBuilder: (data: ReturnBase) => {
+          graphBuilder: (data: ReturnBase, visuals: { [key: string]: any }) => {
             var getSalesReturn = data as SalesStatisticsReturn;
+
             return {
-              // data: Array.from(
-              //   groupByTimeResolution(
-              //     getSalesReturn.sales,
-              //     (x: SaleDTO) => x.timestampPayment,
-              //     this.selectedTimeResolution
-              //   )
-              // ).map((x) => x[1].length),
-              data: [],
+              data: Object.values(getSalesReturn.data),
               label: 'first one',
               borderColor: 'blue',
               backgroundColor: 'rgba(0, 0, 255, 0.2)',
@@ -186,7 +184,7 @@ export class CreateEstablishmentComponent implements OnInit {
   };
 
   public tableModel: TableModel = {
-    columns: ['Command name', 'Comment', 'Command settings'],
+    columns: ['Name', 'Type', 'Command settings'],
     elements: [],
   };
 
@@ -194,24 +192,22 @@ export class CreateEstablishmentComponent implements OnInit {
     this.createdCollectors.filter((x) => x.id !== collectionId);
   }
 
-  public createTableElement(name: string, key: string): TableEntry {
-    var id = '1';
+  public createTableElement(name: string, collection: Collector): TableEntry {
     return {
-      id: name,
+      id: collection.id,
       elements: [
-        new TableString('Command name', name),
-        new TableInput('Comment'),
+        new TableString('Type', collection.id),
+        new TableString('Name', 'Brunch items'),
         new TableMenu('Command settings', 'Command', [
           new TableMenuElement('Update', async () => {
-            var collection: Collector = this.collector[key](id);
-            this.activate(collection);
+            this.onUpdateCommand(collection);
           }),
         ] as TableMenuElement[]),
       ] as TableElement[],
     };
   }
 
-  public async activate(collection: Collector) {
+  public async onUpdateCommand(collection: Collector) {
     var dialog = await collection.dialogFunctionality.dialogBuilder();
     var inputDictionary = await this.openCommandDialog(dialog);
 
@@ -221,7 +217,7 @@ export class CreateEstablishmentComponent implements OnInit {
 
     var graph: ChartDataset = collection.graphFunctionality.graphBuilder(data);
     this.lineChartData.datasets.push(graph);
-    this.updateChartForGraphComponent();
+    this.updateChart();
   }
 
   public selectedTimeResolution: TimeResolution = TimeResolution.Date;
@@ -231,7 +227,11 @@ export class CreateEstablishmentComponent implements OnInit {
   } as DateTimePeriod;
 
   // labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  labels = GetAllDatesInPeriod(this.timePeriod.start, this.timePeriod.end);
+  labels = GetTimeLineWithTimeResolution(
+    this.timePeriod.start,
+    this.timePeriod.end,
+    this.selectedTimeResolution
+  );
 
   lineChartData: ChartData = {
     datasets: [
@@ -253,9 +253,30 @@ export class CreateEstablishmentComponent implements OnInit {
   } as ChartOptions;
 
   ngOnInit(): void {
+    console.log('test1', CreateDate(2021, 1, 1, 0, 0, 0).toISOString());
     console.log(
-      'dates',
-      GetAllDatesInPeriod(this.timePeriod.start, this.timePeriod.end)
+      'test2',
+      GetTimeLineWithTimeResolution(
+        this.timePeriod.start,
+        this.timePeriod.end,
+        this.selectedTimeResolution
+      )
+    );
+    console.log('test3', UTCDATE(new Date(Date.UTC(2021, 0, 1))));
+    // console.log(
+    //   'dates',
+    //   GetAllDatesInPeriod(this.timePeriod.start, this.timePeriod.end)
+    // );
+    console.log('test4', new Date(Date.UTC(2021, 0, 1)));
+    console.log('test5', new Date(Date.UTC(2021, 0, 1)).toISOString());
+    console.log('test6', new Date(Date.UTC(2021, 0, 1)).toUTCString());
+    console.log(
+      'test7',
+      GetTimeLineWithTimeResolution(
+        this.timePeriod.start,
+        this.timePeriod.end,
+        this.selectedTimeResolution
+      ).map((x) => x.toISOString())
     );
   }
 
@@ -263,7 +284,7 @@ export class CreateEstablishmentComponent implements OnInit {
     this.tableModel = { ...this.tableModel };
   }
 
-  public updateChartForGraphComponent() {
+  public updateChart() {
     this.lineChartData = { ...this.lineChartData };
   }
 

@@ -10,12 +10,13 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales
 {
     [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
     [KnownType(typeof(SalesStatisticNumber))]
-
     public abstract class SalesStatisticsCommand : CommandBase, ICmdField_SalesIds
     {
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; }
-        public DateTimePeriod TimePeriod { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+
         public TimeResolution TimeResolution { get; set; }
         public abstract Dictionary<DateTime, double> Calculation(IEnumerable<Sale> sales, DateTimePeriod period, TimeResolution timeResolution);
     }
@@ -55,7 +56,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales
 
 
             //Act
-            Dictionary<DateTime, double> result = command.Calculation(sales, command.TimePeriod, command.TimeResolution);
+            Dictionary<DateTime, double> result = command.Calculation(sales, new DateTimePeriod(command.Start, command.End), command.TimeResolution);
 
             //Return
             return new SalesStatisticsReturn { data = result };

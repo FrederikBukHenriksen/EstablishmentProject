@@ -9,23 +9,35 @@ export function todayDateUtc(): Date {
     )
   );
 }
-
 export function CreateDate(
   year: number,
   month: number,
   day: number,
-  hour: number,
-  minute: number,
-  second: number
+  hours: number,
+  minutes: number,
+  seconds: number
 ): Date {
-  return new Date(year, month, day, hour, minute, second);
+  return new Date(Date.UTC(year, month, day, hours, minutes, seconds));
 }
+
+// new Date('2021-01-01T00:00:00');
 
 export function DateToString(dateTime: Date): string {
   return new Date(dateTime).toLocaleString('da-DK', {
     hour: 'numeric',
     minute: 'numeric',
   });
+}
+
+export function UTCDATE(date1: Date) {
+  return new Date(
+    date1.getUTCFullYear(),
+    date1.getUTCMonth(),
+    date1.getUTCDate(),
+    date1.getUTCHours(),
+    date1.getUTCMinutes(),
+    date1.getUTCSeconds()
+  );
 }
 
 export function AddToDateTimeResolution(
@@ -43,6 +55,22 @@ export function AddToDateTimeResolution(
     case TimeResolution.Year:
       return new Date(date.setFullYear(date.getFullYear() + value));
   }
+}
+
+export function GetTimeLineWithTimeResolution(
+  start: Date,
+  end: Date,
+  timeResolution: TimeResolution
+): Date[] {
+  const timeline: Date[] = [];
+  let currentDate = new Date(start);
+
+  while (currentDate <= end) {
+    timeline.push(new Date(currentDate));
+    currentDate = AddToDateTimeResolution(currentDate, 1, timeResolution);
+  }
+
+  return timeline;
 }
 
 export function GetIdentifierOfDate(
@@ -91,22 +119,6 @@ export function ExtractDateByTimeResolution(
   }
 }
 
-// export function GetAllDatesBetween(
-//   timePeriod: DateTimePeriod,
-//   timeResolution: TimeResolution
-// ): Date[] {
-//   var dates: Date[] = [];
-
-//   var startDate = ExtractDateByTimeResolution(timePeriod.start, timeResolution);
-//   var endDate = ExtractDateByTimeResolution(timePeriod.end, timeResolution);
-
-//   while (startDate <= endDate) {
-//     dates.push(startDate);
-//     startDate = AddToDateTimeResolution(startDate, 1, timeResolution);
-//   }
-//   return dates;
-// }
-
 export function GetAllDatesInPeriod(startDate: Date, endDate: Date): Date[] {
   const timeline: Date[] = [];
   let currentDate = new Date(startDate);
@@ -138,11 +150,18 @@ export function CreateTimelineOfObjects<T>(
 
   while (startDate <= endDateInput) {
     if (!timeline.has(startDate)) {
-      timeline.set(startDate, []);
+      timeline.set(new Date(startDate), []); //Create clone of date, so the updated Date object is not added to the map
     }
-
-    if (groupedObjects.has(startDate)) {
-      timeline.set(startDate, groupedObjects.get(startDate)!);
+    var test = ExtractDateByTimeResolution(groupedObjects[1].date, resolution);
+    var test1 = ExtractDateByTimeResolution(startDate, resolution);
+    var test3 = test == test1;
+    var matchFromGroupedObjects = groupedObjects.find(
+      (x) =>
+        ExtractDateByTimeResolution(x.date, resolution) ==
+        ExtractDateByTimeResolution(startDate, resolution)
+    );
+    if (matchFromGroupedObjects) {
+      timeline.set(new Date(startDate), matchFromGroupedObjects.objects);
     }
 
     startDate = AddToDateTimeResolution(startDate, 1, resolution);
@@ -155,17 +174,26 @@ export function groupObjectsByTimeResolution<T>(
   list: T[],
   DateSelector: (x: T) => Date,
   resolution: TimeResolution
-): Map<Date, T[]> {
-  const groupedObjects = new Map<Date, T[]>();
+): Array<{ date: Date; objects: T[] }> {
+  const groupedObjects: Array<{ date: Date; objects: T[] }> = [];
 
   list.forEach((obj) => {
-    const key = ExtractDateByTimeResolution(DateSelector(obj), resolution);
-    console.log('key', key);
-    if (!groupedObjects.has(key)) {
-      groupedObjects.set(key, []);
-    }
+    const key = new Date(
+      ExtractDateByTimeResolution(DateSelector(obj), resolution)
+    );
 
-    groupedObjects.get(key)?.push(obj);
+    // Check if there's an existing entry for the key
+    const existingEntry = groupedObjects.find(
+      (entry) => entry.date.getTime() === key.getTime()
+    );
+
+    if (existingEntry) {
+      // Add the object to the existing entry
+      existingEntry.objects.push(obj);
+    } else {
+      // Create a new entry
+      groupedObjects.push({ date: key, objects: [obj] });
+    }
   });
 
   return groupedObjects;

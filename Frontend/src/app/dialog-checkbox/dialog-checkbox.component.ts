@@ -59,8 +59,17 @@ export class CheckBox extends SettingsDataBase {
 }
 
 export class TextInputField extends SettingsDataBase {
-  constructor(id: string, value: string) {
+  constructor(id: string, title: string, value: string) {
     super(id);
+    this.title = title;
+    this.value = value;
+  }
+}
+
+export class ButtonField extends SettingsDataBase {
+  constructor(id: string, title: string, value: string) {
+    super(id);
+    this.title = title;
     this.value = value;
   }
 }
@@ -107,8 +116,15 @@ export class DatePicker extends SettingsDataBase {
 export class Slider extends SettingsDataBase {
   override value = this.FormControl.value;
 
-  constructor(id: string, min: number, max: number, step: number) {
+  constructor(
+    id: string,
+    title: string,
+    min: number,
+    max: number,
+    step: number
+  ) {
     super(id);
+    this.title = title;
     this.slider = { min, max, step };
   }
 }
@@ -123,10 +139,6 @@ export interface TableEntry {
 }
 
 export interface TableElement {}
-
-export class TableButton implements TableElement {
-  hejhej: string = 'LETS FUCKING GOOO';
-}
 
 @Component({
   selector: 'app-dialog-checkbox',
@@ -143,8 +155,6 @@ export class DialogCheckboxComponent implements OnInit {
   ) {
     this.myFormGroup = new FormGroup({});
   }
-
-  public lol1: TableElement[] = [new TableButton(), new TableButton()];
 
   ngOnInit(): void {
     const formControls: any = {};

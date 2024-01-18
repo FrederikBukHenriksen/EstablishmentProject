@@ -1,5 +1,6 @@
-<table mat-table [dataSource]="tableModel.elements">
+<table mat-table [dataSource]="dataSource">
   <ng-container *ngFor="let column of GetColumns()" [matColumnDef]="column">
+    {{ column }}
     <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
 
     <td mat-cell *matCellDef="let element">
@@ -65,3 +66,11 @@
   <tr mat-header-row *matHeaderRowDef="GetColumns()"></tr>
   <tr mat-row *matRowDef="let row; columns: GetColumns()"></tr>
 </table>
+
+<div *ngIf="addPaginator">
+  <mat-paginator
+    [pageSize]="10"
+    showFirstLastButtons
+    aria-label="Select page of items"
+  ></mat-paginator>
+</div>

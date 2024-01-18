@@ -1,10 +1,9 @@
 ﻿using NJsonSchema.NewtonsoftJson.Converters;
 using System.Runtime.Serialization;
+using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Services;
 using WebApplication1.Services.Analysis;
-using WebApplication1.Utils;
 
 namespace WebApplication1.CommandHandlers
 {
@@ -12,18 +11,20 @@ namespace WebApplication1.CommandHandlers
     [KnownType(typeof(Clustering_TimeOfVisit_TotalPrice_Command))]
     [KnownType(typeof(Clustering_TimeOfVisit_LengthOfVisit_Command))]
 
-    public abstract class ClusteringCommand : CommandBase
+    public abstract class ClusteringCommand : CommandBase, ICmdField_SalesIds
     {
+        public Guid EstablishmentId { get; set; }
+        public List<Guid> SalesIds { get; set; }
     }
 
     public class Clustering_TimeOfVisit_TotalPrice_Command : ClusteringCommand
     {
-        public SalesSorting? salesSortingParameters { get; set; }
+        public int? LOLCAT { get; set; }
     }
 
     public class Clustering_TimeOfVisit_LengthOfVisit_Command : ClusteringCommand
     {
-        public SalesSorting? salesSortingParameters { get; set; }
+        //public SalesSorting? salesSortingParameters { get; set; }
     }
 
     public class ClusteringReturn : ReturnBase
@@ -33,17 +34,17 @@ namespace WebApplication1.CommandHandlers
 
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>
     {
-        private IUserContextService userContextService;
+        private IUnitOfWork unitOfWork;
 
-        public Clustering_TimeOfVisitVSTotalPrice(IUserContextService userContextService)
+        public Clustering_TimeOfVisitVSTotalPrice(IUnitOfWork unitOfWork)
         {
-            this.userContextService = userContextService;
+            this.unitOfWork = unitOfWork;
         }
 
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
         {
             //Fetch
-            List<Sale> sales = this.userContextService.GetActiveEstablishment().GetSales();
+            List<Sale> sales = this.unitOfWork.salesRepository.GetFromIds(command.SalesIds);
 
             //Arrange
             List<(Sale sale, List<double>)> saleData = sales
@@ -68,17 +69,17 @@ namespace WebApplication1.CommandHandlers
 
     public class Clustering_TimeOfVisitVSLengthOfVisit : HandlerBase<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>
     {
-        private IUserContextService userContextService;
+        private IUnitOfWork unitOfWork;
 
-        public Clustering_TimeOfVisitVSLengthOfVisit(IUserContextService userContextService)
+        public Clustering_TimeOfVisitVSLengthOfVisit(IUnitOfWork unitOfWork)
         {
-            this.userContextService = userContextService;
+            this.unitOfWork = unitOfWork;
         }
 
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_LengthOfVisit_Command command)
         {
             //Fetch
-            List<Sale> sales = this.userContextService.GetActiveEstablishment().GetSales();
+            List<Sale> sales = this.unitOfWork.salesRepository.GetFromIds(command.SalesIds);
 
             List<(Sale sale, List<double>)> saleData = sales
                 .Where(sale => sale.GetTimespanOfVisit != null)

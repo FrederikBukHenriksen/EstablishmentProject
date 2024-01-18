@@ -1,26 +1,34 @@
-<app-graph
-  [chartData]="lineChartData"
-  [chartOptions]="lineChartOptions"
-></app-graph>
+<div class="title_and_filter">
+  <h1>Sales statistics</h1>
+  <div class="vr"></div>
+  <button mat-button>Filter sales</button>
+</div>
 
-<mat-accordion class="accordion" multi>
-  <mat-expansion-panel class="accordion__item">
-    <mat-expansion-panel-header class="accordion__item-header">
-      <mat-panel-title> <h2 class="h3">Commands</h2></mat-panel-title>
-    </mat-expansion-panel-header>
-    <hr />
+<mat-accordion class="accordion">
+  <mat-expansion-panel
+    class="accordion__item"
+    expanded="true"
+    disabled="true"
+    hideToggle="true"
+  >
     <div class="accordion__item-content">
-      <button mat-button [matMenuTriggerFor]="menu">Add commands</button>
+      <app-graph
+        [chartData]="lineChartData"
+        [chartOptions]="lineChartOptions"
+      ></app-graph>
+      <hr />
+
+      <app-table [tableModel]="tableModel"></app-table>
+      <button mat-raised-button [matMenuTriggerFor]="menu">Add commands</button>
       <mat-menu #menu="matMenu">
         <button
           mat-menu-item
           *ngFor="let menuItem of createCommandOptions"
-          (click)="createCommand(menuItem)"
+          (click)="createCommand(menuItem.collection)"
         >
-          {{ menuItem.name }}
+          {{ menuItem.collection }}
         </button>
       </mat-menu>
-      <app-table [tableModel]="tableModel"></app-table>
     </div>
   </mat-expansion-panel>
 </mat-accordion>

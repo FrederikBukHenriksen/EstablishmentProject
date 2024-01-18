@@ -31,7 +31,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales
 
         public async override Task<GetSalesDTOReturn> Handle(GetSalesDTOCommand command)
         {
-            List<Sale> sales = this.salesRepository.FindAll(x => x.EstablishmentId == command.EstablishmentId).ToList();
+            List<Sale> sales = this.salesRepository.GetFromIds(command.SalesIds);
             sales = sales.Where(x => command.SalesIds.Contains(x.Id)).ToList();
             List<SaleDTO> salesDTO = sales.Select(x => new SaleDTO(x)).ToList();
 
