@@ -1434,6 +1434,7 @@ export class CorrelationReturn extends ReturnBase {
 
 export class ClusteringReturn extends ReturnBase {
     clusters!: string[][];
+    calculationValues!: ValueTupleOfGuidAndListOfDouble[];
 
     override init(_data?: any) {
         super.init(_data);
@@ -1442,6 +1443,11 @@ export class ClusteringReturn extends ReturnBase {
                 this.clusters = [] as any;
                 for (let item of _data["clusters"])
                     this.clusters!.push(item);
+            }
+            if (Array.isArray(_data["calculationValues"])) {
+                this.calculationValues = [] as any;
+                for (let item of _data["calculationValues"])
+                    this.calculationValues!.push(ValueTupleOfGuidAndListOfDouble.fromJS(item));
             }
         }
     }
@@ -1460,7 +1466,46 @@ export class ClusteringReturn extends ReturnBase {
             for (let item of this.clusters)
                 data["clusters"].push(item);
         }
+        if (Array.isArray(this.calculationValues)) {
+            data["calculationValues"] = [];
+            for (let item of this.calculationValues)
+                data["calculationValues"].push(item.toJSON());
+        }
         super.toJSON(data);
+        return data;
+    }
+}
+
+export class ValueTupleOfGuidAndListOfDouble {
+    item1!: string;
+    item2!: number[] | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"];
+            if (Array.isArray(_data["item2"])) {
+                this.item2 = [] as any;
+                for (let item of _data["item2"])
+                    this.item2!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfGuidAndListOfDouble {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfGuidAndListOfDouble();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1;
+        if (Array.isArray(this.item2)) {
+            data["item2"] = [];
+            for (let item of this.item2)
+                data["item2"].push(item);
+        }
         return data;
     }
 }
@@ -1534,7 +1579,6 @@ export abstract class ClusteringCommand extends CommandBase {
 }
 
 export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
-    lolcat!: number | undefined;
 
     constructor() {
         super();
@@ -1543,9 +1587,6 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
 
     override init(_data?: any) {
         super.init(_data);
-        if (_data) {
-            this.lolcat = _data["lolcat"];
-        }
     }
 
     static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
@@ -1557,7 +1598,6 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["lolcat"] = this.lolcat;
         super.toJSON(data);
         return data;
     }

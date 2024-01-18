@@ -13,6 +13,7 @@ import {
   GetSalesDTOReturn,
   SaleDTO,
   SalesSorting,
+  ValueTupleOfGuidAndListOfDouble,
 } from 'api';
 import { Observable, from } from 'rxjs';
 import { SaleClient, GetSalesReturn, GetSalesCommand } from 'api';
@@ -26,6 +27,7 @@ import {
 import { TableModel, TableEntry, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import { MatDialog } from '@angular/material/dialog';
+import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
 
 export interface ClusterFecthingAndExtracting {
   command: () => Promise<Clustering_TimeOfVisit_TotalPrice_Command>;
@@ -36,6 +38,13 @@ export interface ClusterFecthingAndExtracting {
   dataExtractor: (data: ClusteringReturn) => Promise<string[][]>;
   clusterTableBuilder: (data: SaleDTO[][]) => Promise<TableModel>;
   saleTableBuilder: (data: SaleDTO[][]) => Promise<TableModel[]>;
+  clusterGraphBuilder: (data: ClusteringReturn) => Promise<
+    {
+      chartType: ChartType;
+      chartData: ChartData;
+      chartOptions: ChartOptions;
+    }[]
+  >;
 }
 
 @Component({
@@ -51,6 +60,61 @@ export class ClusterComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef) {}
 
+  chartOptions: ChartOptions = {
+    responsive: true,
+    scales: {
+      x: {
+        type: 'linear', // Use 'linear' for numerical data
+        position: 'bottom',
+      },
+
+      y: {
+        type: 'linear', // Use 'linear' for numerical data
+        position: 'left',
+      },
+    },
+  };
+
+  chartType: ChartType = 'scatter';
+
+  // chartData: ChartData = {
+  //   datasets: [
+  //     {
+  //       label: 'Data Points',
+  //       data: [
+  //         { x: 10, y: 20 },
+  //         { x: 15, y: 25 },
+  //         { x: 20, y: 30 },
+  //       ],
+  //       backgroundColor: 'rgba(75, 192, 192, 0.8)',
+  //       borderColor: 'rgba(75, 192, 192, 1)',
+  //       pointRadius: 5,
+  //       pointHoverRadius: 8,
+  //     },
+  //   ],
+  // };
+
+  lineChartOptions = {
+    options: {
+      scales: {
+        xAxes: [
+          {
+            type: 'linear', // or 'category' depending on your data type
+            position: 'bottom',
+            // other configurations
+          },
+        ],
+        yAxes: [
+          {
+            type: 'linear',
+            position: 'left',
+            // other configurations
+          },
+        ],
+      },
+    },
+  } as ChartOptions;
+
   MSalesIdClustered: string[][] = [];
   MSalesClustered: SaleDTO[][] = [];
 
@@ -61,6 +125,20 @@ export class ClusterComponent implements OnInit {
 
   protected TemperatureSaleTableModel: Observable<TableModel[]> =
     new Observable<TableModel[]>();
+
+  protected TemperatureSaleGraphModels: Observable<
+    {
+      chartType: ChartType;
+      chartData: ChartData;
+      chartOptions: ChartOptions;
+    }[]
+  > = new Observable<
+    {
+      chartType: ChartType;
+      chartData: ChartData;
+      chartOptions: ChartOptions;
+    }[]
+  >();
 
   public activeEstablishment =
     this.sessionStorageService.getActiveEstablishment();
@@ -88,6 +166,16 @@ export class ClusterComponent implements OnInit {
     var command = await dic.command();
 
     var clusteringReturn = await lastValueFrom(dic.fetch(command));
+    var graphs = await dic.clusterGraphBuilder(clusteringReturn);
+    console.log('graphs', graphs);
+    var hej: Observable<
+      {
+        chartType: ChartType;
+        chartData: ChartData;
+        chartOptions: ChartOptions;
+      }[]
+    > = from([graphs]);
+    this.TemperatureSaleGraphModels = hej;
     var clusteringData = await dic.dataExtractor(clusteringReturn);
 
     var saleDTOs: SaleDTO[] = (
@@ -140,7 +228,6 @@ export class ClusterComponent implements OnInit {
         var saleIds = (await this.fetchSales()).sales;
 
         var commandIns = new Clustering_TimeOfVisit_TotalPrice_Command();
-        commandIns.lolcat = 1;
         commandIns.establishmentId = this.activeEstablishment!;
         commandIns.salesIds = saleIds;
         return commandIns;
@@ -201,6 +288,75 @@ export class ClusterComponent implements OnInit {
           columns: ['Cluster number', 'Number of sales'],
           elements: tableEntries,
         } as TableModel;
+      },
+      clusterGraphBuilder: async (data: ClusteringReturn) => {
+        //axis calc
+        // var calculationValues: number[][] = data.calculationValues.map(
+        //   (x) => x.item2 as number[]
+        // );
+        // var minMaxValuesTimeOfDay: { min: number; max: number } = {
+        //   min: Math.min(...calculationValues.map((x) => x[0])),
+        //   max: Math.max(...calculationValues.map((x) => x[0])),
+        // };
+        // var minMaxValuesTotalSpend: { min: number; max: number } = {
+        //   min: Math.min(...calculationValues.map((x) => x[1])),
+        //   max: Math.max(...calculationValues.map((x) => x[1])),
+        // };
+
+        var points: { x: number; y: number }[][] = data.clusters.map(
+          (cluster) =>
+            cluster.map((saleId) => {
+              var caluationData = data.calculationValues.find(
+                (x) => x.item1 === saleId
+              )!.item2 as number[];
+
+              return {
+                x: caluationData[0],
+                y: caluationData[1],
+              } as { x: number; y: number };
+            })
+        );
+
+        var scatterChartData: ChartDataset[] = points.map((cluster, index) => {
+          return {
+            data: cluster,
+            // data: [
+            //   {
+            //     x: -10,
+            //     y: 0,
+            //   },
+            //   {
+            //     x: 0,
+            //     y: 10,
+            //   },
+            //   {
+            //     x: 10,
+            //     y: 5,
+            //   },
+            //   {
+            //     x: 0.5,
+            //     y: 5.5,
+            //   },
+            // ],
+            label: `Cluster ${index}`,
+            backgroundColor: 'rgba(0, 0, 255, 0.2)',
+          } as ChartDataset;
+        });
+
+        var graphs: {
+          chartType: ChartType;
+          chartData: ChartData;
+          chartOptions: ChartOptions;
+        }[] = [
+          {
+            chartType: 'scatter',
+            chartData: {
+              datasets: scatterChartData,
+            },
+            chartOptions: this.lineChartOptions,
+          },
+        ];
+        return graphs;
       },
     },
   };

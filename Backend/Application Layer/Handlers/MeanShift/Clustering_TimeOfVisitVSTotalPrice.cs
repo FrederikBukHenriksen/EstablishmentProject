@@ -13,23 +13,45 @@ namespace WebApplication1.CommandHandlers
 
     public abstract class ClusteringCommand : CommandBase, ICmdField_SalesIds
     {
+        public ClusteringCommand(
+            Guid establishmentId,
+            List<Guid> salesIds
+            )
+        {
+            this.EstablishmentId = establishmentId;
+            this.SalesIds = salesIds;
+
+        }
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; }
     }
 
     public class Clustering_TimeOfVisit_TotalPrice_Command : ClusteringCommand
     {
-        public int? LOLCAT { get; set; }
+        public Clustering_TimeOfVisit_TotalPrice_Command(Guid establishmentId, List<Guid> salesIds) : base(establishmentId, salesIds)
+        {
+        }
     }
 
     public class Clustering_TimeOfVisit_LengthOfVisit_Command : ClusteringCommand
     {
-        //public SalesSorting? salesSortingParameters { get; set; }
+        public Clustering_TimeOfVisit_LengthOfVisit_Command(Guid establishmentId, List<Guid> salesIds) : base(establishmentId, salesIds)
+        {
+        }
     }
 
     public class ClusteringReturn : ReturnBase
     {
-        public List<List<Guid>> clusters { get; set; }
+
+        public ClusteringReturn(
+            List<List<Guid>> clusters,
+            List<(Guid id, List<double> values)> calculationValues)
+        {
+            this.clusters = clusters;
+            this.calculationValues = calculationValues;
+        }
+        public List<List<Guid>> clusters { get; }
+        public List<(Guid id, List<double> values)> calculationValues { get; }
     }
 
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>
@@ -47,12 +69,14 @@ namespace WebApplication1.CommandHandlers
             List<Sale> sales = this.unitOfWork.salesRepository.GetFromIds(command.SalesIds);
 
             //Arrange
-            List<(Sale sale, List<double>)> saleData = sales
+            List<(Sale sale, List<double> values)> saleData = sales
                 .Select(sale => (
                     entity: sale,
                     values: new List<double> { sale.GetTimeOfSale().TimeOfDay.TotalMinutes, sale.GetTotalPrice() }
                     ))
                 .ToList();
+
+            List<(Guid Id, List<double> values)> calculationValues = saleData.Select(x => (x.sale.Id, x.values)).ToList();
 
             var bandwith = new List<double> { 1, 35 };
 
@@ -60,10 +84,12 @@ namespace WebApplication1.CommandHandlers
             List<List<Sale>> clusteredSales = MeanShiftClustering.Cluster(saleData, bandwith);
 
             //Return
-            return new ClusteringReturn
-            {
-                clusters = clusteredSales.Select(innerList => innerList.Select(sale => sale.Id).ToList()).ToList()
-            };
+            var ok = saleData.Select(x => (x.sale.Id, x.values)).ToList();
+            return new ClusteringReturn(
+                clusters: clusteredSales.Select(innerList => innerList.Select(sale => sale.Id).ToList()).ToList(),
+                calculationValues: calculationValues
+                );
+
         }
     }
 
@@ -81,7 +107,7 @@ namespace WebApplication1.CommandHandlers
             //Fetch
             List<Sale> sales = this.unitOfWork.salesRepository.GetFromIds(command.SalesIds);
 
-            List<(Sale sale, List<double>)> saleData = sales
+            List<(Sale sale, List<double> values)> saleData = sales
                 .Where(sale => sale.GetTimespanOfVisit != null)
                 .Select(sale => (
                     entity: sale,
@@ -96,9 +122,11 @@ namespace WebApplication1.CommandHandlers
 
             //Return
             return new ClusteringReturn
-            {
-                clusters = clusteredSales.Select(innerList => innerList.Select(sale => sale.Id).ToList()).ToList(),
-            };
+            (
+                clusters: clusteredSales.Select(innerList => innerList.Select(sale => sale.Id).ToList()).ToList(),
+                calculationValues: saleData.Select(x => (x.sale.Id, x.values)).ToList()
+
+            );
         }
     }
 

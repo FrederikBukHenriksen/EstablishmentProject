@@ -1,3 +1,18 @@
+<!-- <div
+  *ngFor="let graphModel of TemperatureSaleGraphModels | async; let i = index"
+>
+  <app-graph
+    [chartType]="chartType"
+    [chartData]="graphModel.chartData"
+    [chartOptions]="chartOptions"
+  ></app-graph>
+</div> -->
+
+<!-- <app-graph
+  [chartType]="chartType"
+  [chartData]="chartData"
+  [chartOptions]="chartOptions"
+></app-graph> -->
 <h1>Sales statistics</h1>
 
 <mat-accordion class="accordion" multi>
@@ -14,7 +29,7 @@
           <mat-panel-title>Clustered sales data</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-accordion class="accordion" multi>
-          <div
+          <!-- <div
             *ngFor="
               let tableModel of TemperatureSaleTableModel | async;
               let i = index
@@ -28,6 +43,30 @@
                 [tableModel]="tableModel"
                 [addPaginator]="true"
               ></app-table>
+            </mat-expansion-panel>
+          </div> -->
+        </mat-accordion>
+      </mat-expansion-panel>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Clustered Sales data plotted</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-accordion class="accordion" multi>
+          <div
+            *ngFor="
+              let graphModel of TemperatureSaleGraphModels | async;
+              let i = index
+            "
+          >
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Time of sale vs. Spend</mat-panel-title>
+              </mat-expansion-panel-header>
+              <app-graph
+                [chartType]="chartType"
+                [chartData]="graphModel.chartData"
+                [chartOptions]="chartOptions"
+              ></app-graph>
             </mat-expansion-panel>
           </div>
         </mat-accordion>
