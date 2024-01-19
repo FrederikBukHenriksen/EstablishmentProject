@@ -194,6 +194,7 @@ export class ClusterComponent implements OnInit {
 
     this.TemperatureTableModel = await dic.clusterTableBuilder(saleDTOClusters);
     var output = dic.saleTableBuilder(saleDTOClusters);
+    console.log('output', await output);
     this.TemperatureSaleTableModel = from(output);
     this.TemperatureTableModel = { ...this.TemperatureTableModel };
     this.cdr.detectChanges();

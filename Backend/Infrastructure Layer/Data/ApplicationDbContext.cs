@@ -1,4 +1,5 @@
 ﻿using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Infrastructure_Layer.Data.EntityTypeConfiguration;
 
 namespace WebApplication1.Data
 {
@@ -14,6 +15,7 @@ namespace WebApplication1.Data
         {
             //this.ChangeTracker.LazyLoadingEnabled = false;
             this.ChangeTracker.LazyLoadingEnabled = true;  // Enable lazy loading
+
         }
 
         //Entities
@@ -32,6 +34,7 @@ namespace WebApplication1.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
+            modelBuilder.ApplyConfiguration(new SaleConfiguration());
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
 
 

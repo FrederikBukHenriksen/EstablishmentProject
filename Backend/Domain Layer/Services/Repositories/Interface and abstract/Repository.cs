@@ -18,58 +18,59 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         public ApplicationDbContext Context { get => this.context; }
 
-        public void Add(TEntity entity)
+        public virtual void Add(TEntity entity)
         {
             this.set.Add(entity);
         }
 
-        public void AddRange(IEnumerable<TEntity> entities)
+        public virtual void AddRange(IEnumerable<TEntity> entities)
         {
             this.set.AddRange(entities);
         }
 
-        public bool Any(Expression<Func<TEntity, bool>> predicate)
+        public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
             return this.set.Any(predicate);
         }
 
-        public TEntity? Find(Expression<Func<TEntity, bool>> predicate)
+        public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
             return this.set.Where(predicate).FirstOrDefault();
         }
 
-        public IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate)
+        public virtual IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate)
         {
             return this.set.Where(predicate).AsEnumerable();
         }
 
-        public bool HasAny(Expression<Func<TEntity, bool>> predicate)
+        public virtual bool HasAny(Expression<Func<TEntity, bool>> predicate)
         {
             return this.set.Any(predicate);
         }
 
-        public TEntity? GetById(Guid id)
+        public virtual TEntity? GetById(Guid id)
         {
             return this.set.Find(id);
 
         }
 
-        public IEnumerable<TEntity>? GetAll()
+        public virtual IEnumerable<TEntity>? GetAll()
         {
             return this.set.AsEnumerable();
         }
 
-        public List<TEntity> GetFromIds(List<Guid> ids)
+        public virtual List<TEntity> GetFromIds(List<Guid> ids)
         {
-            return this.set.Where(x => ids.Contains(x.Id)).ToList();
+            return this.set.Where(x => ids.Any(y => y == x.Id)).ToList();
         }
 
-        public void Remove(TEntity entity)
+
+        public virtual void Remove(TEntity entity)
         {
             this.set.Remove(entity);
         }
 
-        public void Update(TEntity entity)
+        public virtual void Update(TEntity entity)
         {
             this.set.Update(entity);
         }

@@ -1,4 +1,10 @@
 <!-- <div
+  *ngFor="let tableModel of TemperatureSaleTableModel | async; let i = index"
+>
+  <app-table [tableModel]="tableModel" [addPaginator]="true"></app-table>
+</div> -->
+
+<!-- <div
   *ngFor="let graphModel of TemperatureSaleGraphModels | async; let i = index"
 >
   <app-graph
@@ -29,7 +35,7 @@
           <mat-panel-title>Clustered sales data</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-accordion class="accordion" multi>
-          <!-- <div
+          <div
             *ngFor="
               let tableModel of TemperatureSaleTableModel | async;
               let i = index
@@ -44,7 +50,7 @@
                 [addPaginator]="true"
               ></app-table>
             </mat-expansion-panel>
-          </div> -->
+          </div>
         </mat-accordion>
       </mat-expansion-panel>
       <mat-expansion-panel>

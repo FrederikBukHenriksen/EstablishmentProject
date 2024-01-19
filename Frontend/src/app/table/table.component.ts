@@ -161,8 +161,16 @@ export class TableComponent implements AfterViewInit {
     return tableElement as TableButton;
   }
 
+  // protected getTypeOfTableElement(element: TableElement): string {
+  //   return element.constructor.name;
+  // }
+
   protected getTypeOfTableElement(element: TableElement): string {
-    return element.constructor.name;
+    return element
+      ? element.constructor
+        ? element.constructor.name
+        : 'UndefinedType'
+      : 'UndefinedType';
   }
 
   protected GetColumns() {

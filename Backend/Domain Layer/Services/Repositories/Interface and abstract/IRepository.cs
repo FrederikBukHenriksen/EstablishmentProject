@@ -8,7 +8,7 @@
         protected ApplicationDbContext Context { get; }
 
         TEntity? GetById(Guid id);
-        public List<TEntity> GetFromIds(List<Guid> ids);
+        List<TEntity> GetFromIds(List<Guid> ids);
         IEnumerable<TEntity>? GetAll();
         bool Any(Expression<Func<TEntity, bool>> predicate);
         TEntity? Find(Expression<Func<TEntity, bool>> predicate);
