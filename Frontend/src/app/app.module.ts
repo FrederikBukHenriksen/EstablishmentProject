@@ -23,6 +23,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClusterModule } from './cluster/cluster.module';
+import { CrossCorrelationModule } from './cross-correlation/cross-correlation.module';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarComponent],
@@ -46,6 +47,7 @@ import { ClusterModule } from './cluster/cluster.module';
     MatFormFieldModule,
     MatInputModule,
     ClusterModule,
+    CrossCorrelationModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },

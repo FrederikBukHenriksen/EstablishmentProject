@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Utils;
 
 namespace WebApplication1.Controllers
 {
@@ -35,9 +34,9 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost("cross-correlation-with-weather")]
-        public async Task<CorrelationReturn> CorrelationCoefficientAndLag([FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
+        public async Task<CorrelationReturn> CorrelationCoefficientAndLag([FromBody] CorrelationCommand command, [FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
         {
-            var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1, 0, 0, 0), end: new DateTime(2022, 1, 1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
+            //var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1, 0, 0, 0), end: new DateTime(2022, 1, 1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
             var value = handler.Handle(command);
             return await value;
         }

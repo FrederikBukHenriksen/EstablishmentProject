@@ -96,8 +96,7 @@ export class DropDown extends SettingsDataBase {
 
 export class DropDownOption extends SettingsDataBase {
   name!: string;
-  constructor(name: string, value: string, selected: boolean) {
-    var id = '';
+  constructor(id: string, name: string, value: string, selected: boolean) {
     super(id);
     this.value = value;
     this.name = name;

@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
 
         [Authorize]
         [HttpPost("get-salesDTO")]
-        public async Task<GetSalesDTOReturn> GetSalesDTO([FromBody] Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers.GetSalesDTOCommand command, [FromServices] IHandler<Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers.GetSalesDTOCommand, GetSalesDTOReturn> handler)
+        public async Task<GetSalesDTOReturn> GetSalesDTO([FromBody] GetSalesDTOCommand command, [FromServices] IHandler<GetSalesDTOCommand, GetSalesDTOReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }

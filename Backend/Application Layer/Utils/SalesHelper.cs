@@ -4,26 +4,36 @@ using WebApplication1.Domain_Layer.Entities;
 namespace WebApplication1.Utils
 {
 
+    public enum SaleAttributes
+    {
+        Table,
+        Employee,
+        Items,
+        TimestampPayment,
+        TimestampCreation,
+        EstablishmentId,
+    }
+
     public class SalesSorting
     {
-        public List<Guid>? MustContainSomeItems { get; set; }
-        public List<Guid>? MustContainAllItems { get; set; }
-        public List<Guid>? MustContainSomeTables { get; set; }
-        public List<Guid>? MustContainAllTables { get; set; }
-        public List<DateTimePeriod>? UseDataFromTimeframePeriods { get; set; }
+        public List<Guid>? Any { get; set; }
+        public List<Guid>? Contains { get; set; }
+        public List<Guid>? All { get; set; }
+        public List<DateTimePeriod>? WithinTimeperiods { get; set; }
+        public List<SaleAttributes>? MustContainAllAttributes { get; set; }
     }
 
     public static class SalesSortingParametersExecute
     {
         public static IEnumerable<Sale> SortSales(this IEnumerable<Sale> sales, SalesSorting salesSortingParameters)
         {
-            if (!salesSortingParameters.UseDataFromTimeframePeriods.IsNullOrEmpty())
+            if (!salesSortingParameters.WithinTimeperiods.IsNullOrEmpty())
             {
-                sales = SalesHelper.SortSalesByTimePeriods(sales.ToList(), salesSortingParameters.UseDataFromTimeframePeriods);
+                sales = SalesHelper.SortSalesByTimePeriods(sales.ToList(), salesSortingParameters.WithinTimeperiods);
             }
-            if (!salesSortingParameters.MustContainSomeItems.IsNullOrEmpty())
+            if (!salesSortingParameters.Any.IsNullOrEmpty())
             {
-                sales = SalesHelper.SortSalesByItems(sales, salesSortingParameters.MustContainSomeItems);
+                sales = SalesHelper.SortSalesByItems(sales, salesSortingParameters.Any);
             }
             return sales;
         }

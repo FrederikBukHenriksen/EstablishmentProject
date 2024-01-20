@@ -121,7 +121,7 @@ export class CreateEstablishmentComponent implements OnInit {
             );
 
             dropdownItems = GetItemDTOReturn.items.map((item) => {
-              return new DropDownOption(item.name, item.id, false);
+              return new DropDownOption(item.id, item.name, item.id, false);
             });
 
             var dialogConfig: DialogConfig = {

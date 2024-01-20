@@ -13,6 +13,7 @@ import { AuthenticationClient } from 'api';
 import { map } from 'rxjs';
 import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
 import { ClusterComponent } from './cluster/cluster.component';
+import { CrossCorrelationComponent } from './cross-correlation/cross-correlation.component';
 
 // const authGuard =
 //   (roles: string[]) =>
@@ -41,6 +42,10 @@ const routes: Routes = [
   {
     path: 'cluster',
     component: ClusterComponent,
+  },
+  {
+    path: 'cross-correlation',
+    component: CrossCorrelationComponent,
   },
 ];
 

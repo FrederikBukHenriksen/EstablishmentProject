@@ -9,40 +9,18 @@ using WebApplication1.Utils;
 namespace WebApplication1.CommandHandlers
 {
     //[KnownType(typeof(COR_Sales_Temperature))]
-    public class CorrelationCommand : CommandBase
+    public class CorrelationCommand : CommandBase, ICmdField_SalesIds
     {
+        public Guid EstablishmentId { get; set; }
+        public List<Guid> SalesIds { get; set; }
         public DateTimePeriod TimePeriod { get; set; }
         public TimeResolution TimeResolution { get; set; }
-        //public abstract (List<(DateTime dateTime1, double value1)> variable1, List<(DateTime dateTime2, double value2)> variable2) GetData();
     }
-
-    //    public class COR_Sales_Temperature : CorrelationCommand
-    //{
-
-    //        public override (List<(DateTime dateTime1, double value1)> variable1, List<(DateTime dateTime2, double value2)> variable2) GetData()
-    //        {
-    //            //Fetch
-    //            Establishment activeEstablishment = this.userContextService.GetActiveEstablishment();
-    //            IEnumerable<Sale> sales = salesRepository.GetSalesFromEstablishment(activeEstablishment);
-
-    //            var weatherDataStart = this.TimePeriod.Start.Date;
-    //            var weatherDataEnd = this.TimePeriod.End.Date.AddDays(1).AddTicks(-1);
-    //            List<(DateTime, double)> temperaturePerHour = weatherApi.GetMeanTemperaturePerHour(activeEstablishment.Information.Location.Coordinates, this.TimePeriod.Start, this.TimePeriod.End).Result;
-
-    //            //Arrange
-    //            IEnumerable<Sale> salesWithTimespan = sales.Where(x => x.TimestampArrival >= this.TimePeriod.Start && x.TimestampArrival <= this.TimePeriod.End);
-
-    //            IEnumerable<IGrouping<int, Sale>> salesGroupedByHour = salesWithTimespan.GroupBy(x => x.TimestampPayment.Hour);
-    //            List<(DateTime, double)> numberOfSalesPerHour = salesGroupedByHour.Select(x => (x.First().TimestampPayment, (double)x.Count())).ToList();
-
-    //            //Return
-    //            return (numberOfSalesPerHour, temperaturePerHour);
-    //        }
-    //    }
 
     public class CorrelationReturn : ReturnBase
     {
         public Dictionary<TimeSpan, double> LagAndCorrelation { get; set; }
+        public List<(Guid saleId, double value)> metadata { get; set; }
     }
 
 

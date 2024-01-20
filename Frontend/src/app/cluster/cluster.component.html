@@ -24,9 +24,15 @@
 <mat-accordion class="accordion" multi>
   <mat-expansion-panel expanded>
     <mat-expansion-panel-header>
-      <mat-panel-title><h2>Sales vs weather</h2></mat-panel-title>
+      <mat-panel-title><h2>Time of day vs. spendings</h2></mat-panel-title>
     </mat-expansion-panel-header>
-    <button mat-stroked-button (click)="onSettings()">Settings</button>
+
+    <div *ngFor="let dialog of DialogConfigs | async">
+      <button mat-stroked-button (click)="dialog.action()">
+        {{ dialog.name }}
+      </button>
+    </div>
+
     <app-table [tableModel]="TemperatureTableModel"></app-table>
     <hr />
     <mat-accordion class="accordion" multi>
@@ -43,7 +49,7 @@
           >
             <mat-expansion-panel>
               <mat-expansion-panel-header>
-                <mat-panel-title>Cluster {{ i + 1 }}</mat-panel-title>
+                <mat-panel-title>Cluster {{ i }}</mat-panel-title>
               </mat-expansion-panel-header>
               <app-table
                 [tableModel]="tableModel"

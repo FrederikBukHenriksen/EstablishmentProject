@@ -1,0 +1,23 @@
+<h1>Cross correlation</h1>
+<button mat-stroked-button (click)="onFilterSales()">Filter sales</button>
+<div *ngFor="let collection of FetchDictionary">
+  <mat-accordion class="accordion" multi>
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title><h2>Sale vs. Temperature</h2></mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div *ngFor="let dialog of collection.dialog(collection.command)">
+        <button mat-stroked-button (click)="dialog.action()">
+          {{ dialog.name }}
+        </button>
+      </div>
+
+      <!-- <app-graph
+      [chartType]="chartType"
+      [chartData]="graphModel.chartData"
+      [chartOptions]="chartOptions"
+    ></app-graph> -->
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

@@ -9,36 +9,52 @@ import {
   AnalysisClient,
   ClusteringReturn,
   Clustering_TimeOfVisit_TotalPrice_Command,
+  EstablishmentClient,
+  GetEstablishmentCommand,
+  GetItemDTOCommand,
   GetSalesDTOCommand,
   GetSalesDTOReturn,
+  ItemClient,
+  ItemDTO,
   SaleDTO,
   SalesSorting,
   ValueTupleOfGuidAndListOfDouble,
 } from 'api';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { SaleClient, GetSalesReturn, GetSalesCommand } from 'api';
 import { lastValueFrom } from 'rxjs';
 
 import {
   DialogCheckboxComponent,
   DialogConfig,
+  DropDownMultipleSelects,
+  DropDownOption,
   Slider,
+  TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TableModel, TableEntry, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
 
+type dialog = {
+  name: string;
+  action: () => Promise<void>;
+};
+
 export interface ClusterFecthingAndExtracting {
-  command: () => Promise<Clustering_TimeOfVisit_TotalPrice_Command>;
-  dialogBuilder: () => DialogConfig;
+  command: Clustering_TimeOfVisit_TotalPrice_Command;
+  dialog: (command: Clustering_TimeOfVisit_TotalPrice_Command) => {
+    name: string;
+    action: () => Promise<void>;
+  }[];
   fetch: (
     command: Clustering_TimeOfVisit_TotalPrice_Command
   ) => Observable<ClusteringReturn>;
   dataExtractor: (data: ClusteringReturn) => Promise<string[][]>;
-  clusterTableBuilder: (data: SaleDTO[][]) => Promise<TableModel>;
-  saleTableBuilder: (data: SaleDTO[][]) => Promise<TableModel[]>;
-  clusterGraphBuilder: (data: ClusteringReturn) => Promise<
+  clusterTable: (data: SaleDTO[][]) => Promise<TableModel>;
+  clustersTables: (data: SaleDTO[][]) => Promise<TableModel[]>;
+  clusterGraph: (data: ClusteringReturn) => Promise<
     {
       chartType: ChartType;
       chartData: ChartData;
@@ -56,64 +72,27 @@ export class ClusterComponent implements OnInit {
   private readonly sessionStorageService = inject(SessionStorageService);
   private analysisClient = inject(AnalysisClient);
   private saleClient = inject(SaleClient);
+  private itemClient = inject(ItemClient);
+  private establishmentClient = inject(EstablishmentClient);
   public dialog = inject(MatDialog);
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   chartOptions: ChartOptions = {
-    responsive: true,
     scales: {
       x: {
-        type: 'linear', // Use 'linear' for numerical data
+        type: 'linear',
         position: 'bottom',
       },
 
       y: {
-        type: 'linear', // Use 'linear' for numerical data
+        type: 'linear',
         position: 'left',
       },
     },
   };
 
   chartType: ChartType = 'scatter';
-
-  // chartData: ChartData = {
-  //   datasets: [
-  //     {
-  //       label: 'Data Points',
-  //       data: [
-  //         { x: 10, y: 20 },
-  //         { x: 15, y: 25 },
-  //         { x: 20, y: 30 },
-  //       ],
-  //       backgroundColor: 'rgba(75, 192, 192, 0.8)',
-  //       borderColor: 'rgba(75, 192, 192, 1)',
-  //       pointRadius: 5,
-  //       pointHoverRadius: 8,
-  //     },
-  //   ],
-  // };
-
-  lineChartOptions = {
-    options: {
-      scales: {
-        xAxes: [
-          {
-            type: 'linear', // or 'category' depending on your data type
-            position: 'bottom',
-            // other configurations
-          },
-        ],
-        yAxes: [
-          {
-            type: 'linear',
-            position: 'left',
-            // other configurations
-          },
-        ],
-      },
-    },
-  } as ChartOptions;
 
   MSalesIdClustered: string[][] = [];
   MSalesClustered: SaleDTO[][] = [];
@@ -140,33 +119,25 @@ export class ClusterComponent implements OnInit {
     }[]
   >();
 
+  public DialogConfigs: Observable<dialog[]> = of([]);
+
   public activeEstablishment =
     this.sessionStorageService.getActiveEstablishment();
 
   protected salesSortingParameters = {} as SalesSorting;
-
-  async openCommandDialog(
-    dialogConfig: DialogConfig
-  ): Promise<{ [key: string]: any }> {
-    const dialogRef = this.dialog.open(DialogCheckboxComponent, {
-      data: dialogConfig.dialogElements,
-    });
-    var data: { [key: string]: any } = await lastValueFrom(
-      dialogRef.afterClosed()
-    );
-    console.log('data', data);
-    return data;
-  }
 
   async ngOnInit(): Promise<void> {
     var key: string = 'BasicCluster';
     var dic: ClusterFecthingAndExtracting =
       this.FetchDictionary['BasicCluster'];
 
-    var command = await dic.command();
+    dic.command.establishmentId = this.activeEstablishment!;
+    dic.command.salesIds = (await this.fetchSales()).sales;
 
-    var clusteringReturn = await lastValueFrom(dic.fetch(command));
-    var graphs = await dic.clusterGraphBuilder(clusteringReturn);
+    this.DialogConfigs = of(dic.dialog(dic.command));
+
+    var clusteringReturn = await lastValueFrom(dic.fetch(dic.command));
+    var graphs = await dic.clusterGraph(clusteringReturn);
     console.log('graphs', graphs);
     var hej: Observable<
       {
@@ -192,8 +163,8 @@ export class ClusterComponent implements OnInit {
       saleDTOs
     );
 
-    this.TemperatureTableModel = await dic.clusterTableBuilder(saleDTOClusters);
-    var output = dic.saleTableBuilder(saleDTOClusters);
+    this.TemperatureTableModel = await dic.clusterTable(saleDTOClusters);
+    var output = dic.clustersTables(saleDTOClusters);
     console.log('output', await output);
     this.TemperatureSaleTableModel = from(output);
     this.TemperatureTableModel = { ...this.TemperatureTableModel };
@@ -218,38 +189,81 @@ export class ClusterComponent implements OnInit {
     );
   }
 
-  public onSettings() {
-    var dialog = this.FetchDictionary['BasicCluster'].dialogBuilder();
-    this.openCommandDialog(dialog);
-  }
-
   private FetchDictionary: { [key: string]: ClusterFecthingAndExtracting } = {
     BasicCluster: {
-      command: async () => {
-        var saleIds = (await this.fetchSales()).sales;
+      command: {
+        establishmentId: this.activeEstablishment,
+      } as Clustering_TimeOfVisit_TotalPrice_Command,
+      dialog: (command: Clustering_TimeOfVisit_TotalPrice_Command) => [
+        {
+          name: 'Basic cluster',
+          action: async () => {
+            var dialogConfig: DialogConfig = {
+              dialogElements: [
+                new Slider('TimeOfDay', 'Time of day', 1, 10, 1),
+                new Slider('TotalSpend', 'Total spend', 1, 100, 1),
+              ],
+            };
 
-        var commandIns = new Clustering_TimeOfVisit_TotalPrice_Command();
-        commandIns.establishmentId = this.activeEstablishment!;
-        commandIns.salesIds = saleIds;
-        return commandIns;
-      },
+            var data: { [key: string]: any } = await lastValueFrom(
+              this.dialog
+                .open(DialogCheckboxComponent, {
+                  data: dialogConfig.dialogElements,
+                })
+                .afterClosed()
+            );
+          },
+        },
+        {
+          name: 'Filter sales',
+          action: async () => {
+            var itemIds = (
+              await lastValueFrom(
+                this.establishmentClient.getEstablishment({
+                  establishmentId: this.activeEstablishment,
+                } as GetEstablishmentCommand)
+              )
+            ).establishmentDTO.items;
 
-      dialogBuilder: () => {
-        return {
-          dialogElements: [
-            new Slider('1', 'bandwith 1', 0, 10, 1),
-            new Slider('2', 'bandwith 2', 0, 10, 1),
-          ],
-        } as DialogConfig;
-      },
+            var items = await lastValueFrom(
+              this.itemClient.getItems({
+                establishmentId: this.activeEstablishment,
+                itemsIds: itemIds,
+              } as GetItemDTOCommand)
+            );
+
+            var dropdownItems: DropDownOption[] = items.items.map(
+              (item) => new DropDownOption(item.id, item.name, item.id, false)
+            );
+
+            var dialogConfig: DialogConfig = {
+              dialogElements: [
+                new DropDownMultipleSelects(
+                  'itemsMustContained',
+                  'Items',
+                  dropdownItems
+                ),
+              ],
+            };
+
+            var data: { [key: string]: any } = await lastValueFrom(
+              this.dialog
+                .open(DialogCheckboxComponent, {
+                  data: dialogConfig.dialogElements,
+                })
+                .afterClosed()
+            );
+            command.salesIds = data['itemsMustContained'];
+          },
+        },
+      ],
       fetch: (command: Clustering_TimeOfVisit_TotalPrice_Command) =>
         this.analysisClient.timeOfVisitTotalPrice(command),
       dataExtractor: async (data: ClusteringReturn) => {
         return data.clusters;
       },
-      saleTableBuilder: async (salesDTOClusters: SaleDTO[][]) => {
+      clustersTables: async (salesDTOClusters: SaleDTO[][]) => {
         var tableModels: TableModel[] = [];
-
         salesDTOClusters.forEach((cluster, index) => {
           tableModels.push({
             columns: ['Time', 'Table', 'No. items'],
@@ -271,26 +285,40 @@ export class ClusterComponent implements OnInit {
 
         return tableModels;
       },
-      clusterTableBuilder: async (salesDTOClusters: SaleDTO[][]) => {
+      clusterTable: async (salesDTOClusters: SaleDTO[][]) => {
         var tableEntries: TableEntry[] = [];
+
+        var itemIds = salesDTOClusters
+          .flat()
+          .map((sale) => sale.salesItems)
+          .flat();
+
+        var items: ItemDTO[] = (
+          await lastValueFrom(
+            this.itemClient.getItems({
+              establishmentId: this.activeEstablishment,
+              itemsIds: itemIds,
+            } as GetItemDTOCommand)
+          )
+        ).items;
 
         salesDTOClusters.forEach((element, index) => {
           tableEntries.push({
             id: index,
             elements: [
               new TableString('Cluster number', index.toString()),
-              new TableString('Number of sales', element.length.toString()),
+              new TableString('No. of sales', element.length.toString()),
             ],
           } as TableEntry);
         });
 
         console.log('clusterTableBuilder tableEntries', tableEntries);
         return {
-          columns: ['Cluster number', 'Number of sales'],
+          columns: ['Cluster number', 'No. of sales'],
           elements: tableEntries,
         } as TableModel;
       },
-      clusterGraphBuilder: async (data: ClusteringReturn) => {
+      clusterGraph: async (data: ClusteringReturn) => {
         //axis calc
         // var calculationValues: number[][] = data.calculationValues.map(
         //   (x) => x.item2 as number[]
@@ -321,24 +349,6 @@ export class ClusterComponent implements OnInit {
         var scatterChartData: ChartDataset[] = points.map((cluster, index) => {
           return {
             data: cluster,
-            // data: [
-            //   {
-            //     x: -10,
-            //     y: 0,
-            //   },
-            //   {
-            //     x: 0,
-            //     y: 10,
-            //   },
-            //   {
-            //     x: 10,
-            //     y: 5,
-            //   },
-            //   {
-            //     x: 0.5,
-            //     y: 5.5,
-            //   },
-            // ],
             label: `Cluster ${index}`,
             backgroundColor: 'rgba(0, 0, 255, 0.2)',
           } as ChartDataset;
@@ -354,7 +364,7 @@ export class ClusterComponent implements OnInit {
             chartData: {
               datasets: scatterChartData,
             },
-            chartOptions: this.lineChartOptions,
+            chartOptions: this.chartOptions,
           },
         ];
         return graphs;

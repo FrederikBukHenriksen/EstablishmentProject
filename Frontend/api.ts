@@ -218,15 +218,19 @@ export class AnalysisClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    correlationCoefficientAndLag(): Observable<CorrelationReturn> {
+    correlationCoefficientAndLag(command: CorrelationCommand): Observable<CorrelationReturn> {
         let url_ = this.baseUrl + "/api/analysis/cross-correlation-with-weather";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -1397,6 +1401,7 @@ export abstract class ReturnBase {
 
 export class CorrelationReturn extends ReturnBase {
     lagAndCorrelation!: { [key: string]: number; };
+    metadata!: ValueTupleOfGuidAndDouble[];
 
     override init(_data?: any) {
         super.init(_data);
@@ -1407,6 +1412,11 @@ export class CorrelationReturn extends ReturnBase {
                     if (_data["lagAndCorrelation"].hasOwnProperty(key))
                         (<any>this.lagAndCorrelation)![key] = _data["lagAndCorrelation"][key];
                 }
+            }
+            if (Array.isArray(_data["metadata"])) {
+                this.metadata = [] as any;
+                for (let item of _data["metadata"])
+                    this.metadata!.push(ValueTupleOfGuidAndDouble.fromJS(item));
             }
         }
     }
@@ -1427,9 +1437,131 @@ export class CorrelationReturn extends ReturnBase {
                     (<any>data["lagAndCorrelation"])[key] = (<any>this.lagAndCorrelation)[key];
             }
         }
+        if (Array.isArray(this.metadata)) {
+            data["metadata"] = [];
+            for (let item of this.metadata)
+                data["metadata"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
+}
+
+export class ValueTupleOfGuidAndDouble {
+    item1!: string;
+    item2!: number;
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"];
+            this.item2 = _data["item2"];
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfGuidAndDouble {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfGuidAndDouble();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1;
+        data["item2"] = this.item2;
+        return data;
+    }
+}
+
+export abstract class CommandBase {
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): CommandBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export class CorrelationCommand extends CommandBase {
+    establishmentId!: string;
+    salesIds!: string[];
+    timePeriod!: DateTimePeriod;
+    timeResolution!: TimeResolution;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+            this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
+            this.timeResolution = _data["timeResolution"];
+        }
+    }
+
+    static override fromJS(data: any): CorrelationCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CorrelationCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
+        data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
+        data["timeResolution"] = this.timeResolution;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class DateTimePeriod {
+    start!: Date;
+    end!: Date;
+
+    init(_data?: any) {
+        if (_data) {
+            this.start = _data["start"] ? new Date(_data["start"].toString()) : <any>undefined;
+            this.end = _data["end"] ? new Date(_data["end"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): DateTimePeriod {
+        data = typeof data === 'object' ? data : {};
+        let result = new DateTimePeriod();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["start"] = this.start ? this.start.toISOString() : <any>undefined;
+        data["end"] = this.end ? this.end.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export enum TimeResolution {
+    Hour = 0,
+    Date = 1,
+    Month = 2,
+    Year = 3,
 }
 
 export class ClusteringReturn extends ReturnBase {
@@ -1510,22 +1642,6 @@ export class ValueTupleOfGuidAndListOfDouble {
     }
 }
 
-export abstract class CommandBase {
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): CommandBase {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
 export abstract class ClusteringCommand extends CommandBase {
     establishmentId!: string;
     salesIds!: string[];
@@ -1579,6 +1695,8 @@ export abstract class ClusteringCommand extends CommandBase {
 }
 
 export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
+    bandwidthTimeOfVisit!: number;
+    bandwidthTotalPrice!: number;
 
     constructor() {
         super();
@@ -1587,6 +1705,10 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
 
     override init(_data?: any) {
         super.init(_data);
+        if (_data) {
+            this.bandwidthTimeOfVisit = _data["bandwidthTimeOfVisit"];
+            this.bandwidthTotalPrice = _data["bandwidthTotalPrice"];
+        }
     }
 
     static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
@@ -1598,6 +1720,8 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["bandwidthTimeOfVisit"] = this.bandwidthTimeOfVisit;
+        data["bandwidthTotalPrice"] = this.bandwidthTotalPrice;
         super.toJSON(data);
         return data;
     }
@@ -2184,32 +2308,6 @@ export class SalesSorting {
     }
 }
 
-export class DateTimePeriod {
-    start!: Date;
-    end!: Date;
-
-    init(_data?: any) {
-        if (_data) {
-            this.start = _data["start"] ? new Date(_data["start"].toString()) : <any>undefined;
-            this.end = _data["end"] ? new Date(_data["end"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): DateTimePeriod {
-        data = typeof data === 'object' ? data : {};
-        let result = new DateTimePeriod();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["start"] = this.start ? this.start.toISOString() : <any>undefined;
-        data["end"] = this.end ? this.end.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
 export class SalesStatisticsReturn extends ReturnBase {
     data!: { [key: string]: number; };
 
@@ -2301,13 +2399,6 @@ export abstract class SalesStatisticsCommand extends CommandBase {
         super.toJSON(data);
         return data;
     }
-}
-
-export enum TimeResolution {
-    Hour = 0,
-    Date = 1,
-    Month = 2,
-    Year = 3,
 }
 
 export class SalesStatisticNumber extends SalesStatisticsCommand {
