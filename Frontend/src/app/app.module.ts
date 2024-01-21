@@ -16,7 +16,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
-import { DialogCheckboxModule } from './dialog-checkbox/dialog.checkbox.component.module';
+import { DialogBaseModule } from './dialog-checkbox/dialog.checkbox.component.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -24,6 +24,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClusterModule } from './cluster/cluster.module';
 import { CrossCorrelationModule } from './cross-correlation/cross-correlation.module';
+import { DialogFilterSalesModule } from './dialog-filter-sales/dialog-filter-sales.module';
+import { DialogGraphSettingsModule } from './dialog-graph-settings/dialog-graph-settings.module';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarComponent],
@@ -32,7 +34,7 @@ import { CrossCorrelationModule } from './cross-correlation/cross-correlation.mo
     AppRoutingModule,
     CreateEstablishmentModule,
     SelectEstablishmentModule,
-    DialogCheckboxModule,
+    DialogBaseModule,
     LoginModule,
     HttpClientModule,
     HomepageModule,
@@ -48,6 +50,8 @@ import { CrossCorrelationModule } from './cross-correlation/cross-correlation.mo
     MatInputModule,
     ClusterModule,
     CrossCorrelationModule,
+    DialogFilterSalesModule,
+    DialogGraphSettingsModule,
   ],
   providers: [
     { provide: API_BASE_URL, useValue: '' },

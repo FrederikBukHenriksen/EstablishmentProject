@@ -114,8 +114,8 @@ namespace WebApplication1.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    EstablishmentId = table.Column<Guid>(type: "uuid", nullable: false)
+                    EstablishmentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,16 +176,17 @@ namespace WebApplication1.Migrations
                 name: "Price",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
                     PriceValue = table.Column<double>(type: "double precision", nullable: false),
-                    PriceCurrency = table.Column<int>(type: "integer", nullable: false)
+                    PriceCurrency = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Price", x => x.Id);
+                    table.PrimaryKey("PK_Price", x => x.ItemId);
                     table.ForeignKey(
-                        name: "FK_Price_Item_Id",
-                        column: x => x.Id,
+                        name: "FK_Price_Item_ItemId",
+                        column: x => x.ItemId,
                         principalTable: "Item",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -291,6 +292,12 @@ namespace WebApplication1.Migrations
                 name: "IX_Sale_EstablishmentId",
                 table: "Sale",
                 column: "EstablishmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sale_Id",
+                table: "Sale",
+                column: "Id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sale_TableId",

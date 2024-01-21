@@ -3,21 +3,20 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { DialogCheckboxComponent } from './dialog-checkbox.component';
+import { DialogBase } from './dialog-checkbox.component';
 
 describe('DialogCheckboxComponent', () => {
-  let component: DialogCheckboxComponent;
-  let fixture: ComponentFixture<DialogCheckboxComponent>;
+  let component: DialogBase;
+  let fixture: ComponentFixture<DialogBase>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DialogCheckboxComponent ]
-    })
-    .compileComponents();
+      declarations: [DialogBase],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DialogCheckboxComponent);
+    fixture = TestBed.createComponent(DialogBase);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

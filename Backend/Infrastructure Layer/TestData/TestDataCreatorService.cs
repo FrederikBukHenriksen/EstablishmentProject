@@ -1,4 +1,5 @@
 ﻿using NodaTime;
+using WebApplication1.Data.DataModels;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 
@@ -187,8 +188,11 @@ namespace WebApplication1.Infrastructure.Data
                 var date = entry.Key;
                 var value = entry.Value;
 
-                Sale sale = this.factoryServiceBuilder.SaleBuilder().WithTimestampPayment(date).WithSoldItems(items).Build();
-
+                //Sale sale = this.factoryServiceBuilder.SaleBuilder().WithTimestampPayment(date).WithSoldItems(items).Build();
+                Sale sale = new Sale();
+                //sale.Id = Guid.NewGuid();
+                sale.TimestampPayment = date;
+                sale.SalesItems = items.Select(x => new SalesItems(sale, x.item, x.quanity)).ToList();
                 for (int i = 0; i < value; i++)
                 {
                     sales.Add(sale);

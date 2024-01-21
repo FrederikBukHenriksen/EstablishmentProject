@@ -25,7 +25,7 @@ import { SaleClient, GetSalesReturn, GetSalesCommand } from 'api';
 import { lastValueFrom } from 'rxjs';
 
 import {
-  DialogCheckboxComponent,
+  DialogBase,
   DialogConfig,
   DropDownMultipleSelects,
   DropDownOption,
@@ -207,7 +207,7 @@ export class ClusterComponent implements OnInit {
 
             var data: { [key: string]: any } = await lastValueFrom(
               this.dialog
-                .open(DialogCheckboxComponent, {
+                .open(DialogBase, {
                   data: dialogConfig.dialogElements,
                 })
                 .afterClosed()
@@ -233,7 +233,7 @@ export class ClusterComponent implements OnInit {
             );
 
             var dropdownItems: DropDownOption[] = items.items.map(
-              (item) => new DropDownOption(item.id, item.name, item.id, false)
+              (item) => new DropDownOption(item.name, item.id, false)
             );
 
             var dialogConfig: DialogConfig = {
@@ -248,7 +248,7 @@ export class ClusterComponent implements OnInit {
 
             var data: { [key: string]: any } = await lastValueFrom(
               this.dialog
-                .open(DialogCheckboxComponent, {
+                .open(DialogBase, {
                   data: dialogConfig.dialogElements,
                 })
                 .afterClosed()

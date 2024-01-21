@@ -10,6 +10,18 @@ namespace WebApplication1.Data.DataModels
         public virtual Item Item { get; set; }
         public int Quantity { get; set; }
 
+        public SalesItems()
+        {
+
+        }
+
+        public SalesItems(Sale Sale, Item Item, int Quantity)
+        {
+            this.Sale = Sale;
+            this.Item = Item;
+            this.Quantity = Quantity;
+        }
+
         public class SalesItemsConfiguration : IEntityTypeConfiguration<SalesItems>
         {
             public void Configure(EntityTypeBuilder<SalesItems> builder)

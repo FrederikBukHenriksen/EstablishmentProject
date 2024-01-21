@@ -55,10 +55,9 @@ namespace WebApplication1.Data
 
 
 
-            modelBuilder.Entity<Location>()
-                .OwnsOne(l => l.Coordinates);
-
-            ;
+            //modelBuilder.Entity<Location>()
+            //    .OwnsOne(l => l.Coordinates);
+            //;
 
 
 

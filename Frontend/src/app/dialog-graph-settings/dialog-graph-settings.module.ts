@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogFilterSalesComponent } from './dialog-filter-sales.component';
+import { DialogGraphSettingsComponent } from './dialog-graph-settings.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogBaseModule } from '../dialog-checkbox/dialog.checkbox.component.module';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -13,8 +13,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
+
 @NgModule({
-  declarations: [DialogFilterSalesComponent],
+  declarations: [DialogGraphSettingsComponent],
   imports: [
     CommonModule,
     MatDialogModule,
@@ -31,4 +32,4 @@ import { MatSliderModule } from '@angular/material/slider';
     MatSliderModule,
   ],
 })
-export class DialogFilterSalesModule {}
+export class DialogGraphSettingsModule {}

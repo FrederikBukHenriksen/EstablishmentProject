@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, OnInit, Inject, Input, inject } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -14,9 +14,14 @@ import {
 } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CommandBase } from 'api';
+import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
-export interface DialogConfig {
+export class DialogConfig {
   dialogElements: SettingsData[];
+
+  constructor(elements: SettingsData[]) {
+    this.dialogElements = elements;
+  }
 }
 
 export interface SettingsData {
@@ -86,7 +91,7 @@ export class DropDownMultipleSelects extends SettingsDataBase {
 
 export class DropDown extends SettingsDataBase {
   options: DropDownOption[];
-  constructor(id: string, title: string, options: DropDownOption[]) {
+  constructor(id: string, title: any, options: DropDownOption[]) {
     super(id);
     this.title = title;
     this.options = options;
@@ -96,8 +101,8 @@ export class DropDown extends SettingsDataBase {
 
 export class DropDownOption extends SettingsDataBase {
   name!: string;
-  constructor(id: string, name: string, value: string, selected: boolean) {
-    super(id);
+  constructor(name: string, value: any, selected: boolean) {
+    super('');
     this.value = value;
     this.name = name;
     this.selected = selected;
@@ -143,27 +148,30 @@ export interface TableElement {}
   selector: 'app-dialog-checkbox',
   templateUrl: './dialog-checkbox.component.html',
 })
-export class DialogCheckboxComponent implements OnInit {
+export class DialogBase implements OnInit {
   myFormGroup: FormGroup;
 
+  protected fb = inject(FormBuilder);
+  protected dialogRef = inject(MatDialogRef<DialogBase>);
   constructor(
     @Inject(MAT_DIALOG_DATA)
-    public data: SettingsData[],
-    private dialogRef: MatDialogRef<DialogCheckboxComponent>,
-    private fb: FormBuilder
+    public data: SettingsData[] // protected dialogRef: MatDialogRef<DialogBase>
   ) {
+    console.log('data', data);
     this.myFormGroup = new FormGroup({});
   }
 
   ngOnInit(): void {
     const formControls: any = {};
     this.data.forEach((control) => {
+      console.log(control);
       formControls[control.id] = new FormControl(control.value);
     });
     this.myFormGroup = this.fb.group(formControls);
+    console.log('base data', this.data);
   }
 
-  onOkClick(): void {
+  onSubmit(): void {
     console.log(this.myFormGroup);
     if (this.myFormGroup.valid) {
       const valuesAsDictionary: { [key: string]: any } = {
@@ -180,7 +188,6 @@ export class DialogCheckboxComponent implements OnInit {
     return input.constructor.name;
   }
 
-  //Dropdown
   GetDropdownOptions(input: SettingsData): DropDownOption[] {
     switch (this.getType(input)) {
       case 'DropDownMultipleSelects':

@@ -12,8 +12,8 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240119094525_420")]
-    partial class _420
+    [Migration("20240121142739_6")]
+    partial class _6
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,12 +93,7 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("information");
                 });
@@ -124,17 +119,6 @@ namespace WebApplication1.Migrations
                         .IsUnique();
 
                     b.ToTable("Item");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.OpeningHours", b =>
@@ -254,6 +238,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Role")
@@ -304,15 +289,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Information");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
-                {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
-                    b.Navigation("Location");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Item", b =>
                 {
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
@@ -323,51 +299,30 @@ namespace WebApplication1.Migrations
 
                     b.OwnsOne("WebApplication1.Domain_Layer.Entities.Price", "Price", b1 =>
                         {
-                            b1.Property<Guid>("Id")
+                            b1.Property<Guid>("ItemId")
                                 .HasColumnType("uuid");
 
                             b1.Property<int>("Currency")
                                 .HasColumnType("integer")
                                 .HasColumnName("PriceCurrency");
 
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
+
                             b1.Property<double>("Value")
                                 .HasColumnType("double precision")
                                 .HasColumnName("PriceValue");
 
-                            b1.HasKey("Id");
+                            b1.HasKey("ItemId");
 
                             b1.ToTable("Price");
 
                             b1.WithOwner()
-                                .HasForeignKey("Id");
+                                .HasForeignKey("ItemId");
                         });
 
                     b.Navigation("Price")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Location", b =>
-                {
-                    b.OwnsOne("WebApplication1.Domain_Layer.Entities.Coordinates", "Coordinates", b1 =>
-                        {
-                            b1.Property<Guid>("LocationId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<double>("Latitude")
-                                .HasColumnType("double precision");
-
-                            b1.Property<double>("Longitude")
-                                .HasColumnType("double precision");
-
-                            b1.HasKey("LocationId");
-
-                            b1.ToTable("Location");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LocationId");
-                        });
-
-                    b.Navigation("Coordinates")
                         .IsRequired();
                 });
 

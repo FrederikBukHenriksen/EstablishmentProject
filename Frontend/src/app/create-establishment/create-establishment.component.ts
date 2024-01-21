@@ -15,12 +15,13 @@ import {
   GetSalesCommand,
   SalesStatisticNumber,
   SalesStatisticsReturn,
+  SalesSorting,
 } from 'api';
 import { lastValueFrom } from 'rxjs';
 
 import { MatDialog } from '@angular/material/dialog';
 import {
-  DialogCheckboxComponent,
+  DialogBase,
   DialogConfig,
   DropDownMultipleSelects,
   DropDownOption,
@@ -121,7 +122,7 @@ export class CreateEstablishmentComponent implements OnInit {
             );
 
             dropdownItems = GetItemDTOReturn.items.map((item) => {
-              return new DropDownOption(item.id, item.name, item.id, false);
+              return new DropDownOption(item.name, item.id, false);
             });
 
             var dialogConfig: DialogConfig = {
@@ -146,11 +147,9 @@ export class CreateEstablishmentComponent implements OnInit {
               this.saleClient.getSales({
                 establishmentId: establishmentId,
                 salesSortingParameters: {
-                  mustContainSomeItems: dictionary['items'],
-                  useDataFromTimeframePeriods: [
-                    this.timePeriod,
-                  ] as DateTimePeriod[],
-                },
+                  contains: dictionary['items'],
+                  withinTimeperiods: [this.timePeriod] as DateTimePeriod[],
+                } as SalesSorting,
               } as GetSalesCommand)
             );
 
@@ -291,7 +290,7 @@ export class CreateEstablishmentComponent implements OnInit {
   async openCommandDialog(
     dialogConfig: DialogConfig
   ): Promise<{ [key: string]: any }> {
-    const dialogRef = this.dialog.open(DialogCheckboxComponent, {
+    const dialogRef = this.dialog.open(DialogBase, {
       data: dialogConfig.dialogElements,
     });
     var data: { [key: string]: any } = await lastValueFrom(

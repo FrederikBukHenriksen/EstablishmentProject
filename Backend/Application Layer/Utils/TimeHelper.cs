@@ -68,6 +68,11 @@ namespace WebApplication1.Utils
 
     public static class TimeHelper
     {
+        public static int FromTimeSpanToHours(TimeSpan timespan, TimeResolution timeResolution)
+        {
+            return (int)timespan.TotalHours;
+        }
+
         public static LocalTime DateTimeToLocalTime(DateTime dateTime)
         {
             return new LocalTime(dateTime.Hour, dateTime.Minute, dateTime.Second);

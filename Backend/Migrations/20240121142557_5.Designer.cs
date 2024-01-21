@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApplication1.Data;
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240121142557_5")]
+    partial class _5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,7 +93,12 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("information");
                 });
@@ -116,6 +124,17 @@ namespace WebApplication1.Migrations
                         .IsUnique();
 
                     b.ToTable("Item");
+                });
+
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Location", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.OpeningHours", b =>
@@ -286,6 +305,15 @@ namespace WebApplication1.Migrations
                     b.Navigation("Information");
                 });
 
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
+                {
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.Navigation("Location");
+                });
+
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Item", b =>
                 {
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
@@ -296,24 +324,27 @@ namespace WebApplication1.Migrations
 
                     b.OwnsOne("WebApplication1.Domain_Layer.Entities.Price", "Price", b1 =>
                         {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
+                            b1.Property<Guid>("ItemId")
                                 .HasColumnType("uuid");
 
                             b1.Property<int>("Currency")
                                 .HasColumnType("integer")
                                 .HasColumnName("PriceCurrency");
 
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
+
                             b1.Property<double>("Value")
                                 .HasColumnType("double precision")
                                 .HasColumnName("PriceValue");
 
-                            b1.HasKey("Id");
+                            b1.HasKey("ItemId");
 
                             b1.ToTable("Price");
 
                             b1.WithOwner()
-                                .HasForeignKey("Id");
+                                .HasForeignKey("ItemId");
                         });
 
                     b.Navigation("Price")

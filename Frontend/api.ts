@@ -1049,13 +1049,11 @@ export class Establishment extends EntityBase {
 }
 
 export class EstablishmentInformation extends EntityBase {
-    location!: Location | undefined;
     openingHours!: OpeningHours[];
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.location = _data["location"] ? Location.fromJS(_data["location"]) : <any>undefined;
             if (Array.isArray(_data["openingHours"])) {
                 this.openingHours = [] as any;
                 for (let item of _data["openingHours"])
@@ -1073,64 +1071,12 @@ export class EstablishmentInformation extends EntityBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
         if (Array.isArray(this.openingHours)) {
             data["openingHours"] = [];
             for (let item of this.openingHours)
                 data["openingHours"].push(item.toJSON());
         }
         super.toJSON(data);
-        return data;
-    }
-}
-
-export class Location extends EntityBase {
-    coordinates!: Coordinates;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.coordinates = _data["coordinates"] ? Coordinates.fromJS(_data["coordinates"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): Location {
-        data = typeof data === 'object' ? data : {};
-        let result = new Location();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["coordinates"] = this.coordinates ? this.coordinates.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Coordinates {
-    latitude!: number;
-    longitude!: number;
-
-    init(_data?: any) {
-        if (_data) {
-            this.latitude = _data["latitude"];
-            this.longitude = _data["longitude"];
-        }
-    }
-
-    static fromJS(data: any): Coordinates {
-        data = typeof data === 'object' ? data : {};
-        let result = new Coordinates();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["latitude"] = this.latitude;
-        data["longitude"] = this.longitude;
         return data;
     }
 }
@@ -1400,23 +1346,21 @@ export abstract class ReturnBase {
 }
 
 export class CorrelationReturn extends ReturnBase {
-    lagAndCorrelation!: { [key: string]: number; };
-    metadata!: ValueTupleOfGuidAndDouble[];
+    lagAndCorrelation!: ValueTupleOfIntegerAndDouble[];
+    calculationValues!: ValueTupleOfDateTimeAndListOfDouble[];
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            if (_data["lagAndCorrelation"]) {
-                this.lagAndCorrelation = {} as any;
-                for (let key in _data["lagAndCorrelation"]) {
-                    if (_data["lagAndCorrelation"].hasOwnProperty(key))
-                        (<any>this.lagAndCorrelation)![key] = _data["lagAndCorrelation"][key];
-                }
+            if (Array.isArray(_data["lagAndCorrelation"])) {
+                this.lagAndCorrelation = [] as any;
+                for (let item of _data["lagAndCorrelation"])
+                    this.lagAndCorrelation!.push(ValueTupleOfIntegerAndDouble.fromJS(item));
             }
-            if (Array.isArray(_data["metadata"])) {
-                this.metadata = [] as any;
-                for (let item of _data["metadata"])
-                    this.metadata!.push(ValueTupleOfGuidAndDouble.fromJS(item));
+            if (Array.isArray(_data["calculationValues"])) {
+                this.calculationValues = [] as any;
+                for (let item of _data["calculationValues"])
+                    this.calculationValues!.push(ValueTupleOfDateTimeAndListOfDouble.fromJS(item));
             }
         }
     }
@@ -1430,25 +1374,23 @@ export class CorrelationReturn extends ReturnBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (this.lagAndCorrelation) {
-            data["lagAndCorrelation"] = {};
-            for (let key in this.lagAndCorrelation) {
-                if (this.lagAndCorrelation.hasOwnProperty(key))
-                    (<any>data["lagAndCorrelation"])[key] = (<any>this.lagAndCorrelation)[key];
-            }
+        if (Array.isArray(this.lagAndCorrelation)) {
+            data["lagAndCorrelation"] = [];
+            for (let item of this.lagAndCorrelation)
+                data["lagAndCorrelation"].push(item.toJSON());
         }
-        if (Array.isArray(this.metadata)) {
-            data["metadata"] = [];
-            for (let item of this.metadata)
-                data["metadata"].push(item.toJSON());
+        if (Array.isArray(this.calculationValues)) {
+            data["calculationValues"] = [];
+            for (let item of this.calculationValues)
+                data["calculationValues"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export class ValueTupleOfGuidAndDouble {
-    item1!: string;
+export class ValueTupleOfIntegerAndDouble {
+    item1!: number;
     item2!: number;
 
     init(_data?: any) {
@@ -1458,9 +1400,9 @@ export class ValueTupleOfGuidAndDouble {
         }
     }
 
-    static fromJS(data: any): ValueTupleOfGuidAndDouble {
+    static fromJS(data: any): ValueTupleOfIntegerAndDouble {
         data = typeof data === 'object' ? data : {};
-        let result = new ValueTupleOfGuidAndDouble();
+        let result = new ValueTupleOfIntegerAndDouble();
         result.init(data);
         return result;
     }
@@ -1469,6 +1411,40 @@ export class ValueTupleOfGuidAndDouble {
         data = typeof data === 'object' ? data : {};
         data["item1"] = this.item1;
         data["item2"] = this.item2;
+        return data;
+    }
+}
+
+export class ValueTupleOfDateTimeAndListOfDouble {
+    item1!: Date;
+    item2!: number[] | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"] ? new Date(_data["item1"].toString()) : <any>undefined;
+            if (Array.isArray(_data["item2"])) {
+                this.item2 = [] as any;
+                for (let item of _data["item2"])
+                    this.item2!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfDateTimeAndListOfDouble {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfDateTimeAndListOfDouble();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1 ? this.item1.toISOString() : <any>undefined;
+        if (Array.isArray(this.item2)) {
+            data["item2"] = [];
+            for (let item of this.item2)
+                data["item2"].push(item);
+        }
         return data;
     }
 }
@@ -1494,6 +1470,7 @@ export class CorrelationCommand extends CommandBase {
     salesIds!: string[];
     timePeriod!: DateTimePeriod;
     timeResolution!: TimeResolution;
+    maxLag!: number;
 
     override init(_data?: any) {
         super.init(_data);
@@ -1506,6 +1483,7 @@ export class CorrelationCommand extends CommandBase {
             }
             this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
             this.timeResolution = _data["timeResolution"];
+            this.maxLag = _data["maxLag"];
         }
     }
 
@@ -1526,6 +1504,7 @@ export class CorrelationCommand extends CommandBase {
         }
         data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
         data["timeResolution"] = this.timeResolution;
+        data["maxLag"] = this.maxLag;
         super.toJSON(data);
         return data;
     }
@@ -2234,38 +2213,38 @@ export class GetSalesCommand extends CommandBase {
 }
 
 export class SalesSorting {
-    mustContainSomeItems!: string[] | undefined;
-    mustContainAllItems!: string[] | undefined;
-    mustContainSomeTables!: string[] | undefined;
-    mustContainAllTables!: string[] | undefined;
-    useDataFromTimeframePeriods!: DateTimePeriod[] | undefined;
+    any!: string[] | undefined;
+    contains!: string[] | undefined;
+    all!: string[] | undefined;
+    withinTimeperiods!: DateTimePeriod[] | undefined;
+    mustContainAllAttributes!: SaleAttributes[] | undefined;
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["mustContainSomeItems"])) {
-                this.mustContainSomeItems = [] as any;
-                for (let item of _data["mustContainSomeItems"])
-                    this.mustContainSomeItems!.push(item);
+            if (Array.isArray(_data["any"])) {
+                this.any = [] as any;
+                for (let item of _data["any"])
+                    this.any!.push(item);
             }
-            if (Array.isArray(_data["mustContainAllItems"])) {
-                this.mustContainAllItems = [] as any;
-                for (let item of _data["mustContainAllItems"])
-                    this.mustContainAllItems!.push(item);
+            if (Array.isArray(_data["contains"])) {
+                this.contains = [] as any;
+                for (let item of _data["contains"])
+                    this.contains!.push(item);
             }
-            if (Array.isArray(_data["mustContainSomeTables"])) {
-                this.mustContainSomeTables = [] as any;
-                for (let item of _data["mustContainSomeTables"])
-                    this.mustContainSomeTables!.push(item);
+            if (Array.isArray(_data["all"])) {
+                this.all = [] as any;
+                for (let item of _data["all"])
+                    this.all!.push(item);
             }
-            if (Array.isArray(_data["mustContainAllTables"])) {
-                this.mustContainAllTables = [] as any;
-                for (let item of _data["mustContainAllTables"])
-                    this.mustContainAllTables!.push(item);
+            if (Array.isArray(_data["withinTimeperiods"])) {
+                this.withinTimeperiods = [] as any;
+                for (let item of _data["withinTimeperiods"])
+                    this.withinTimeperiods!.push(DateTimePeriod.fromJS(item));
             }
-            if (Array.isArray(_data["useDataFromTimeframePeriods"])) {
-                this.useDataFromTimeframePeriods = [] as any;
-                for (let item of _data["useDataFromTimeframePeriods"])
-                    this.useDataFromTimeframePeriods!.push(DateTimePeriod.fromJS(item));
+            if (Array.isArray(_data["mustContainAllAttributes"])) {
+                this.mustContainAllAttributes = [] as any;
+                for (let item of _data["mustContainAllAttributes"])
+                    this.mustContainAllAttributes!.push(item);
             }
         }
     }
@@ -2279,33 +2258,42 @@ export class SalesSorting {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.mustContainSomeItems)) {
-            data["mustContainSomeItems"] = [];
-            for (let item of this.mustContainSomeItems)
-                data["mustContainSomeItems"].push(item);
+        if (Array.isArray(this.any)) {
+            data["any"] = [];
+            for (let item of this.any)
+                data["any"].push(item);
         }
-        if (Array.isArray(this.mustContainAllItems)) {
-            data["mustContainAllItems"] = [];
-            for (let item of this.mustContainAllItems)
-                data["mustContainAllItems"].push(item);
+        if (Array.isArray(this.contains)) {
+            data["contains"] = [];
+            for (let item of this.contains)
+                data["contains"].push(item);
         }
-        if (Array.isArray(this.mustContainSomeTables)) {
-            data["mustContainSomeTables"] = [];
-            for (let item of this.mustContainSomeTables)
-                data["mustContainSomeTables"].push(item);
+        if (Array.isArray(this.all)) {
+            data["all"] = [];
+            for (let item of this.all)
+                data["all"].push(item);
         }
-        if (Array.isArray(this.mustContainAllTables)) {
-            data["mustContainAllTables"] = [];
-            for (let item of this.mustContainAllTables)
-                data["mustContainAllTables"].push(item);
+        if (Array.isArray(this.withinTimeperiods)) {
+            data["withinTimeperiods"] = [];
+            for (let item of this.withinTimeperiods)
+                data["withinTimeperiods"].push(item.toJSON());
         }
-        if (Array.isArray(this.useDataFromTimeframePeriods)) {
-            data["useDataFromTimeframePeriods"] = [];
-            for (let item of this.useDataFromTimeframePeriods)
-                data["useDataFromTimeframePeriods"].push(item.toJSON());
+        if (Array.isArray(this.mustContainAllAttributes)) {
+            data["mustContainAllAttributes"] = [];
+            for (let item of this.mustContainAllAttributes)
+                data["mustContainAllAttributes"].push(item);
         }
         return data;
     }
+}
+
+export enum SaleAttributes {
+    Table = 0,
+    Employee = 1,
+    Items = 2,
+    TimestampPayment = 3,
+    TimestampCreation = 4,
+    EstablishmentId = 5,
 }
 
 export class SalesStatisticsReturn extends ReturnBase {

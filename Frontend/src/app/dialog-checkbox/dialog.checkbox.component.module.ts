@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogCheckboxComponent } from './dialog-checkbox.component';
+import { DialogBase } from './dialog-checkbox.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
-  declarations: [DialogCheckboxComponent],
+  declarations: [DialogBase],
   imports: [
     CommonModule,
     MatTabsModule,
@@ -28,4 +28,4 @@ import { MatSliderModule } from '@angular/material/slider';
     MatSliderModule,
   ],
 })
-export class DialogCheckboxModule {}
+export class DialogBaseModule {}

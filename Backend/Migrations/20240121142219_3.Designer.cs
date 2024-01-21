@@ -12,8 +12,8 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240110120313_1")]
-    partial class _1
+    [Migration("20240121142219_3")]
+    partial class _3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,9 +195,12 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("EstablishmentId");
 
+                    b.HasIndex("Id")
+                        .IsUnique();
+
                     b.HasIndex("TableId");
 
-                    b.ToTable("Sale");
+                    b.ToTable("Sale", (string)null);
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Table", b =>
@@ -251,6 +254,7 @@ namespace WebApplication1.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Role")
@@ -320,23 +324,27 @@ namespace WebApplication1.Migrations
 
                     b.OwnsOne("WebApplication1.Domain_Layer.Entities.Price", "Price", b1 =>
                         {
-                            b1.Property<Guid>("Id")
+                            b1.Property<Guid>("ItemId")
                                 .HasColumnType("uuid");
 
                             b1.Property<int>("Currency")
                                 .HasColumnType("integer")
                                 .HasColumnName("PriceCurrency");
 
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
+
                             b1.Property<double>("Value")
                                 .HasColumnType("double precision")
                                 .HasColumnName("PriceValue");
 
-                            b1.HasKey("Id");
+                            b1.HasKey("ItemId");
 
                             b1.ToTable("Price");
 
                             b1.WithOwner()
-                                .HasForeignKey("Id");
+                                .HasForeignKey("ItemId");
                         });
 
                     b.Navigation("Price")
@@ -381,7 +389,7 @@ namespace WebApplication1.Migrations
                         .WithMany()
                         .HasForeignKey("EmployeeId");
 
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", "Establishment")
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
                         .WithMany("Sales")
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -392,8 +400,6 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("TableId");
 
                     b.Navigation("Employee");
-
-                    b.Navigation("Establishment");
 
                     b.Navigation("Table");
                 });

@@ -1,10 +1,13 @@
-﻿namespace WebApplication1.Domain_Layer.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WebApplication1.Domain_Layer.Entities
 {
-    public abstract class EntityBase 
+    public abstract class EntityBase
     {
 
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
 
     }
 
