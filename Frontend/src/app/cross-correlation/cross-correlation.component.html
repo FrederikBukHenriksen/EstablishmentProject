@@ -6,27 +6,29 @@
 <div *ngFor="let collection of FetchDictionary">
   <mat-accordion class="accordion" multi>
     <mat-expansion-panel
-      [disabled]="collection.result === undefined"
-      [expanded]="collection.result !== undefined"
+      [disabled]="!collection.result"
+      [expanded]="collection.result"
     >
       <mat-expansion-panel-header>
-        <mat-panel-title><h2>Sale vs. Temperature</h2></mat-panel-title>
+        <mat-panel-title
+          ><h2>{{ collection.title }}</h2></mat-panel-title
+        >
       </mat-expansion-panel-header>
 
       <app-graph
-        *ngIf="collection.graphModel !== undefined"
+        *ngIf="collection.graphModel"
         [chartType]="collection.graphModel.chartType"
         [chartData]="collection.graphModel.chartData"
         [chartOptions]="collection.graphModel.chartOptions"
       ></app-graph>
 
       <hr />
-      <mat-expansion-panel [disabled]="collection.tableModel === undefined">
+      <mat-expansion-panel [disabled]="!collection.tableModel">
         <mat-expansion-panel-header>
           <mat-panel-title><h2>Correlations and shifts</h2></mat-panel-title>
         </mat-expansion-panel-header>
         <app-table
-          *ngIf="collection.tableModel !== undefined"
+          *ngIf="collection.tableModel"
           [tableModel]="collection.tableModel"
         ></app-table>
       </mat-expansion-panel>

@@ -728,8 +728,61 @@ export class ItemClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getItems(command: GetItemDTOCommand): Observable<GetItemDTOReturn> {
-        let url_ = this.baseUrl + "/api/establishment/item/get";
+    getItemsDTO(command: GetItemDTOCommand): Observable<GetItemDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get-items-dto";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetItemsDTO(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetItemsDTO(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetItemDTOReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetItemDTOReturn>;
+        }));
+    }
+
+    protected processGetItemsDTO(response: HttpResponseBase): Observable<GetItemDTOReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetItemDTOReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getItems(command: GetItemsCommand): Observable<GetItemsReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get-items";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -752,14 +805,14 @@ export class ItemClient {
                 try {
                     return this.processGetItems(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetItemDTOReturn>;
+                    return _observableThrow(e) as any as Observable<GetItemsReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetItemDTOReturn>;
+                return _observableThrow(response_) as any as Observable<GetItemsReturn>;
         }));
     }
 
-    protected processGetItems(response: HttpResponseBase): Observable<GetItemDTOReturn> {
+    protected processGetItems(response: HttpResponseBase): Observable<GetItemsReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -770,7 +823,7 @@ export class ItemClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetItemDTOReturn.fromJS(resultData200);
+            result200 = GetItemsReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2025,6 +2078,64 @@ export class GetItemDTOCommand extends CommandBase {
             for (let item of this.itemsIds)
                 data["itemsIds"].push(item);
         }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetItemsReturn extends ReturnBase {
+    items!: string[];
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemsReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemsReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class GetItemsCommand extends CommandBase {
+    establishmentId!: string;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+        }
+    }
+
+    static override fromJS(data: any): GetItemsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemsCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
         super.toJSON(data);
         return data;
     }

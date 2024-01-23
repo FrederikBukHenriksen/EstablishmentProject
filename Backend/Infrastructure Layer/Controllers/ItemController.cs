@@ -16,13 +16,13 @@ namespace WebApplication1.Controllers
             this.handlerService = handlerService;
         }
 
-        [HttpPost("get")]
+        [HttpPost("get-items-dto")]
         public async Task<GetItemDTOReturn> GetItemsDTO([FromBody] GetItemDTOCommand command, IHandler<GetItemDTOCommand, GetItemDTOReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }
 
-        [HttpPost("get")]
+        [HttpPost("get-items")]
         public async Task<GetItemsReturn> GetItems([FromBody] GetItemsCommand command, IHandler<GetItemsCommand, GetItemsReturn> handler)
         {
             return await this.handlerService.Service(handler, command);

@@ -13,9 +13,9 @@
             this.Items.Remove(item);
         }
 
-        public ICollection<Item> GetItems()
+        public List<Item> GetItems()
         {
-            return this.Items;
+            return this.Items.ToList();
         }
 
         public bool IsItemUsedInSales(Item item)

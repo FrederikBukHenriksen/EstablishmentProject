@@ -33,20 +33,13 @@ import {
   TableString,
 } from '../table/table.component';
 
-type dialog = {
-  name: string;
-  action: () => Promise<void>;
-};
-
 type GraphModel = {
   chartType: ChartType;
   chartData: ChartData;
   chartOptions: ChartOptions;
 };
 
-type MyObject = { date: Date; value1: number; value2: number };
-
-type collection = {
+type CrossCorrelationHolder = {
   title: string;
   command: CorrelationCommand;
   fetch: (command: CorrelationCommand) => Promise<CorrelationReturn>;
@@ -72,10 +65,7 @@ export class CrossCorrelationComponent {
   public dialog = inject(MatDialog);
 
   constructor() {
-    this.salesFilterDialog = new DialogFilterSalesComponent(
-      this.dialog,
-      this.getSalesCommand.salesSorting
-    );
+    this.salesFilterDialog = new DialogFilterSalesComponent(this.dialog);
     this.graphSettingsDialog = new DialogGraphSettingsComponent(this.dialog);
   }
 
@@ -114,27 +104,20 @@ export class CrossCorrelationComponent {
     });
   }
 
-  public FetchDictionary: collection[] = [
+  public FetchDictionary: CrossCorrelationHolder[] = [
     {
       title: 'Sale vs. Temperature',
       command: {
         establishmentId: this.activeEstablishment,
       } as CorrelationCommand,
       fetch: async (command: CorrelationCommand) => {
-        // this.getSalesCommand.salesSortingParameters.withinTimeperiods = [
-        //   this.graphSettings.timeframe,
-        // ];
-        console.log('this.getSalesCommand', this.getSalesCommand);
         var salesIds: string[] = (
           await lastValueFrom(this.salesClient.getSales(this.getSalesCommand))
         ).sales;
 
-        console.log('this.graphSettings', this.graphSettings);
-
         command.timePeriod = this.graphSettings.timeframe;
         command.timeResolution = this.graphSettings.timeresolution;
         command.salesIds = salesIds;
-        console.log('command', command);
 
         return lastValueFrom(
           this.analysisClient.correlationCoefficientAndLag(command)
@@ -161,26 +144,19 @@ export class CrossCorrelationComponent {
       },
       tableModel: undefined,
       buildGraph: async (data: CorrelationReturn) => {
-        console.log('buildGraph', data);
-        var values: MyObject[] = data.calculationValues.map((x) => {
-          return {
-            date: x.item1,
-            value1: x.item2?.[0] ?? 0,
-            value2: x.item2?.[1] ?? 0,
-          };
-        });
+        var values: { date: Date; value1: number; value2: number }[] =
+          data.calculationValues.map((x) => {
+            return {
+              date: x.item1,
+              value1: x.item2?.[0] ?? 0,
+              value2: x.item2?.[1] ?? 0,
+            };
+          });
 
         var maxTuple = data.lagAndCorrelation.reduce((max, current) =>
           Math.abs(max.item2) > Math.abs(current.item2) ? max : current
         );
         var shiftAmount = maxTuple.item1;
-        shiftAmount = -2; //tetsing
-
-        console.log('values', values);
-        console.log(
-          'this.shiftArrayAttributev2',
-          this.shiftArrayAttributev2(values, 'value2', shiftAmount)
-        );
 
         var chartDatasets: ChartDataset[] = [
           {

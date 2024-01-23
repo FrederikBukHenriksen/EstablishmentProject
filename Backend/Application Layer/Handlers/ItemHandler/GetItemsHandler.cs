@@ -5,10 +5,9 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Application_Layer.Handlers.ItemHandler
 {
-    public class GetItemsCommand : CommandBase, ICmdField_ItemsId
+    public class GetItemsCommand : CommandBase
     {
         public Guid EstablishmentId { get; set; }
-        public List<Guid> ItemsIds { get; set; }
     }
 
     public class GetItemsReturn : ReturnBase
@@ -31,8 +30,8 @@ namespace WebApplication1.Application_Layer.Handlers.ItemHandler
 
         public async override Task<GetItemsReturn> Handle(GetItemsCommand command)
         {
-            List<Item> items = this.unitOfWork.itemRepository.FindAll(x => x.EstablishmentId == command.EstablishmentId).ToList();
-            items = items.Where(x => command.ItemsIds.Contains(x.Id)).ToList();
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeItems().GetById(command.EstablishmentId);
+            List<Item> items = establishment.GetItems();
 
             return new GetItemsReturn(items);
         }

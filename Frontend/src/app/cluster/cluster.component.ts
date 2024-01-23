@@ -36,6 +36,11 @@ import { TableModel, TableEntry, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
+import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
+import {
+  DialogGraphSettingsComponent,
+  GraphSettings,
+} from '../dialog-graph-settings/dialog-graph-settings.component';
 
 type dialog = {
   name: string;
@@ -44,7 +49,7 @@ type dialog = {
 
 export interface ClusterFecthingAndExtracting {
   command: Clustering_TimeOfVisit_TotalPrice_Command;
-  dialog: (command: Clustering_TimeOfVisit_TotalPrice_Command) => {
+  dialogs: (command: Clustering_TimeOfVisit_TotalPrice_Command) => {
     name: string;
     action: () => Promise<void>;
   }[];
@@ -69,14 +74,80 @@ export interface ClusterFecthingAndExtracting {
   styleUrls: ['./cluster.component.css'],
 })
 export class ClusterComponent implements OnInit {
-  private readonly sessionStorageService = inject(SessionStorageService);
   private analysisClient = inject(AnalysisClient);
   private saleClient = inject(SaleClient);
-  private itemClient = inject(ItemClient);
-  private establishmentClient = inject(EstablishmentClient);
   public dialog = inject(MatDialog);
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  private readonly sessionStorageService = inject(SessionStorageService);
+  private activeEstablishment =
+    this.sessionStorageService.getActiveEstablishment();
+
+  protected getSalesCommand: GetSalesCommand = {
+    establishmentId: this.activeEstablishment,
+    salesSorting: {} as SalesSorting,
+  } as GetSalesCommand;
+  protected graphSettings!: GraphSettings;
+
+  constructor(private cdr: ChangeDetectorRef) {
+    this.salesFilterDialog = new DialogFilterSalesComponent(this.dialog);
+    this.graphSettingsDialog = new DialogGraphSettingsComponent(this.dialog);
+  }
+
+  public salesFilterDialog!: DialogFilterSalesComponent;
+  graphSettingsDialog: DialogGraphSettingsComponent;
+
+  protected async onFilterSales() {
+    this.getSalesCommand = await this.salesFilterDialog.Open();
+  }
+
+  protected async onGraphSettings() {
+    this.graphSettings = await this.graphSettingsDialog.Open();
+  }
+
+  protected async onLoad() {
+    this.FetchDictionary.forEach(async (element) => {
+      element.command.establishmentId = this.activeEstablishment!;
+      element.command.salesIds = (await this.fetchSales()).sales;
+
+      this.DialogConfigs = of(element.dialogs(element.command));
+
+      var clusteringReturn = await lastValueFrom(
+        element.fetch(element.command)
+      );
+      var graphs = await element.clusterGraph(clusteringReturn);
+      console.log('graphs', graphs);
+      var hej: Observable<
+        {
+          chartType: ChartType;
+          chartData: ChartData;
+          chartOptions: ChartOptions;
+        }[]
+      > = from([graphs]);
+      this.TemperatureSaleGraphModels = hej;
+      var clusteringData = await element.dataExtractor(clusteringReturn);
+
+      var saleDTOs: SaleDTO[] = (
+        await lastValueFrom(
+          this.saleClient.getSalesDTO({
+            establishmentId: this.activeEstablishment,
+            salesIds: clusteringReturn.clusters.flat(),
+          } as GetSalesDTOCommand)
+        )
+      ).sales;
+
+      var saleDTOClusters: SaleDTO[][] = this.ClustersMatchSaleIdsAndSaleDTOs(
+        clusteringData,
+        saleDTOs
+      );
+
+      this.TemperatureTableModel = await element.clusterTable(saleDTOClusters);
+      var output = element.clustersTables(saleDTOClusters);
+      console.log('output', await output);
+      this.TemperatureSaleTableModel = from(output);
+      this.TemperatureTableModel = { ...this.TemperatureTableModel };
+      this.cdr.detectChanges();
+    });
+  }
 
   chartOptions: ChartOptions = {
     scales: {
@@ -121,54 +192,45 @@ export class ClusterComponent implements OnInit {
 
   public DialogConfigs: Observable<dialog[]> = of([]);
 
-  public activeEstablishment =
-    this.sessionStorageService.getActiveEstablishment();
-
   protected salesSortingParameters = {} as SalesSorting;
 
   async ngOnInit(): Promise<void> {
-    var key: string = 'BasicCluster';
-    var dic: ClusterFecthingAndExtracting =
-      this.FetchDictionary['BasicCluster'];
-
-    dic.command.establishmentId = this.activeEstablishment!;
-    dic.command.salesIds = (await this.fetchSales()).sales;
-
-    this.DialogConfigs = of(dic.dialog(dic.command));
-
-    var clusteringReturn = await lastValueFrom(dic.fetch(dic.command));
-    var graphs = await dic.clusterGraph(clusteringReturn);
-    console.log('graphs', graphs);
-    var hej: Observable<
-      {
-        chartType: ChartType;
-        chartData: ChartData;
-        chartOptions: ChartOptions;
-      }[]
-    > = from([graphs]);
-    this.TemperatureSaleGraphModels = hej;
-    var clusteringData = await dic.dataExtractor(clusteringReturn);
-
-    var saleDTOs: SaleDTO[] = (
-      await lastValueFrom(
-        this.saleClient.getSalesDTO({
-          establishmentId: this.activeEstablishment,
-          salesIds: clusteringReturn.clusters.flat(),
-        } as GetSalesDTOCommand)
-      )
-    ).sales;
-
-    var saleDTOClusters: SaleDTO[][] = this.ClustersMatchSaleIdsAndSaleDTOs(
-      clusteringData,
-      saleDTOs
-    );
-
-    this.TemperatureTableModel = await dic.clusterTable(saleDTOClusters);
-    var output = dic.clustersTables(saleDTOClusters);
-    console.log('output', await output);
-    this.TemperatureSaleTableModel = from(output);
-    this.TemperatureTableModel = { ...this.TemperatureTableModel };
-    this.cdr.detectChanges();
+    // var key: string = 'BasicCluster';
+    // var dic: ClusterFecthingAndExtracting =
+    //   this.FetchDictionary['BasicCluster'];
+    // dic.command.establishmentId = this.activeEstablishment!;
+    // dic.command.salesIds = (await this.fetchSales()).sales;
+    // this.DialogConfigs = of(dic.dialog(dic.command));
+    // var clusteringReturn = await lastValueFrom(dic.fetch(dic.command));
+    // var graphs = await dic.clusterGraph(clusteringReturn);
+    // console.log('graphs', graphs);
+    // var hej: Observable<
+    //   {
+    //     chartType: ChartType;
+    //     chartData: ChartData;
+    //     chartOptions: ChartOptions;
+    //   }[]
+    // > = from([graphs]);
+    // this.TemperatureSaleGraphModels = hej;
+    // var clusteringData = await dic.dataExtractor(clusteringReturn);
+    // var saleDTOs: SaleDTO[] = (
+    //   await lastValueFrom(
+    //     this.saleClient.getSalesDTO({
+    //       establishmentId: this.activeEstablishment,
+    //       salesIds: clusteringReturn.clusters.flat(),
+    //     } as GetSalesDTOCommand)
+    //   )
+    // ).sales;
+    // var saleDTOClusters: SaleDTO[][] = this.ClustersMatchSaleIdsAndSaleDTOs(
+    //   clusteringData,
+    //   saleDTOs
+    // );
+    // this.TemperatureTableModel = await dic.clusterTable(saleDTOClusters);
+    // var output = dic.clustersTables(saleDTOClusters);
+    // console.log('output', await output);
+    // this.TemperatureSaleTableModel = from(output);
+    // this.TemperatureTableModel = { ...this.TemperatureTableModel };
+    // this.cdr.detectChanges();
   }
 
   public async fetchSales(): Promise<GetSalesReturn> {
@@ -189,74 +251,10 @@ export class ClusterComponent implements OnInit {
     );
   }
 
-  private FetchDictionary: { [key: string]: ClusterFecthingAndExtracting } = {
-    BasicCluster: {
-      command: {
-        establishmentId: this.activeEstablishment,
-      } as Clustering_TimeOfVisit_TotalPrice_Command,
-      dialog: (command: Clustering_TimeOfVisit_TotalPrice_Command) => [
-        {
-          name: 'Basic cluster',
-          action: async () => {
-            var dialogConfig: DialogConfig = {
-              dialogElements: [
-                new Slider('TimeOfDay', 'Time of day', 1, 10, 1),
-                new Slider('TotalSpend', 'Total spend', 1, 100, 1),
-              ],
-            };
-
-            var data: { [key: string]: any } = await lastValueFrom(
-              this.dialog
-                .open(DialogBase, {
-                  data: dialogConfig.dialogElements,
-                })
-                .afterClosed()
-            );
-          },
-        },
-        {
-          name: 'Filter sales',
-          action: async () => {
-            var itemIds = (
-              await lastValueFrom(
-                this.establishmentClient.getEstablishment({
-                  establishmentId: this.activeEstablishment,
-                } as GetEstablishmentCommand)
-              )
-            ).establishmentDTO.items;
-
-            var items = await lastValueFrom(
-              this.itemClient.getItems({
-                establishmentId: this.activeEstablishment,
-                itemsIds: itemIds,
-              } as GetItemDTOCommand)
-            );
-
-            var dropdownItems: DropDownOption[] = items.items.map(
-              (item) => new DropDownOption(item.name, item.id, false)
-            );
-
-            var dialogConfig: DialogConfig = {
-              dialogElements: [
-                new DropDownMultipleSelects(
-                  'itemsMustContained',
-                  'Items',
-                  dropdownItems
-                ),
-              ],
-            };
-
-            var data: { [key: string]: any } = await lastValueFrom(
-              this.dialog
-                .open(DialogBase, {
-                  data: dialogConfig.dialogElements,
-                })
-                .afterClosed()
-            );
-            command.salesIds = data['itemsMustContained'];
-          },
-        },
-      ],
+  protected FetchDictionary = [
+    {
+      command: new Clustering_TimeOfVisit_TotalPrice_Command(),
+      dialogs: (command: Clustering_TimeOfVisit_TotalPrice_Command) => [],
       fetch: (command: Clustering_TimeOfVisit_TotalPrice_Command) =>
         this.analysisClient.timeOfVisitTotalPrice(command),
       dataExtractor: async (data: ClusteringReturn) => {
@@ -293,14 +291,14 @@ export class ClusterComponent implements OnInit {
           .map((sale) => sale.salesItems)
           .flat();
 
-        var items: ItemDTO[] = (
-          await lastValueFrom(
-            this.itemClient.getItems({
-              establishmentId: this.activeEstablishment,
-              itemsIds: itemIds,
-            } as GetItemDTOCommand)
-          )
-        ).items;
+        // var items: ItemDTO[] = (
+        //   await lastValueFrom(
+        //     this.itemClient.getItems({
+        //       establishmentId: this.activeEstablishment,
+        //       itemsIds: itemIds,
+        //     } as GetItemDTOCommand)
+        //   )
+        // ).items;
 
         salesDTOClusters.forEach((element, index) => {
           tableEntries.push({
@@ -369,6 +367,6 @@ export class ClusterComponent implements OnInit {
         ];
         return graphs;
       },
-    },
-  };
+    } as ClusterFecthingAndExtracting,
+  ] as ClusterFecthingAndExtracting[];
 }

@@ -1,31 +1,14 @@
-<!-- <div
-  *ngFor="let tableModel of TemperatureSaleTableModel | async; let i = index"
->
-  <app-table [tableModel]="tableModel" [addPaginator]="true"></app-table>
-</div> -->
-
-<!-- <div
-  *ngFor="let graphModel of TemperatureSaleGraphModels | async; let i = index"
->
-  <app-graph
-    [chartType]="chartType"
-    [chartData]="graphModel.chartData"
-    [chartOptions]="chartOptions"
-  ></app-graph>
-</div> -->
-
-<!-- <app-graph
-  [chartType]="chartType"
-  [chartData]="chartData"
-  [chartOptions]="chartOptions"
-></app-graph> -->
 <h1>Sales statistics</h1>
+
+<button mat-stroked-button (click)="onFilterSales()">Filter sales</button>
+<button mat-stroked-button (click)="onLoad()">Load all</button>
 
 <mat-accordion class="accordion" multi>
   <mat-expansion-panel expanded>
     <mat-expansion-panel-header>
       <mat-panel-title><h2>Time of day vs. spendings</h2></mat-panel-title>
     </mat-expansion-panel-header>
+    <button mat-stroked-button (click)="onLoad()">Adjust bandwith</button>
 
     <div *ngFor="let dialog of DialogConfigs | async">
       <button mat-stroked-button (click)="dialog.action()">

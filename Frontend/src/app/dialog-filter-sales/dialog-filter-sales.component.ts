@@ -22,6 +22,7 @@ import {
   EstablishmentClient,
   GetEstablishmentCommand,
   GetItemDTOCommand,
+  GetItemsCommand,
   GetSalesCommand,
   ItemClient,
   ItemDTO,
@@ -42,25 +43,14 @@ export class DialogFilterSalesComponent {
 
   private itemClient = inject(ItemClient);
 
-  constructor(
-    public dialog: MatDialog,
-    private inputCommand: SalesSorting | null
-  ) {}
+  private dialogConfig: DialogConfig = new DialogConfig([]);
+
+  constructor(public dialog: MatDialog) {}
 
   private async buildDialog(): Promise<DialogConfig> {
     var itemOptions = (await this.GetItems()).map(
       (item) => new DropDownOption(item.name, item.id, false)
     );
-    console.log('1', itemOptions);
-
-    itemOptions.map((item) => {
-      this.inputCommand?.any?.forEach((x) => {
-        if (item.id == x) {
-          item.selected = true;
-        }
-      });
-    });
-    console.log('2', itemOptions);
 
     return new DialogConfig([
       new DropDownMultipleSelects('Any', 'Contains any of these', itemOptions),
@@ -73,40 +63,17 @@ export class DialogFilterSalesComponent {
     ]);
   }
 
-  private async GetItems() {
-    var getEstablishmentCommand: GetEstablishmentCommand = {
-      establishmentId: this.activeEstablishment,
-    } as GetEstablishmentCommand;
-
-    var itemIds: string[] = (
-      await lastValueFrom(
-        this.establishmentClient.getEstablishment(getEstablishmentCommand)
-      )
-    ).establishmentDTO.items;
-
-    var getItemDTOCommand: GetItemDTOCommand = {
-      establishmentId: this.activeEstablishment,
-      itemsIds: itemIds,
-    } as GetItemDTOCommand;
-
-    var itemDTOs: ItemDTO[] = (
-      await lastValueFrom(this.itemClient.getItems(getItemDTOCommand))
-    ).items;
-    return itemDTOs;
-  }
-
   public async Open(): Promise<GetSalesCommand> {
+    var dialogConfig = await this.buildDialog();
     var data: { [key: string]: any } = await lastValueFrom(
       this.dialog
         .open(DialogBase, {
-          data: (await this.buildDialog()).dialogElements,
+          data: dialogConfig.dialogElements,
         })
         .afterClosed()
     );
     return this.buildReturn(data);
   }
-
-  private reselect() {}
 
   private buildReturn(data: { [key: string]: any }): GetSalesCommand {
     var salesSorting: SalesSorting = {
@@ -119,5 +86,26 @@ export class DialogFilterSalesComponent {
       establishmentId: this.sessionStorageService.getActiveEstablishment(),
       salesSorting: salesSorting,
     } as GetSalesCommand;
+  }
+
+  private async GetItems() {
+    var getItemsCommand: GetItemsCommand = {
+      establishmentId: this.activeEstablishment,
+    } as GetItemsCommand;
+
+    var itemsIds: string[] = (
+      await lastValueFrom(this.itemClient.getItems(getItemsCommand))
+    ).items;
+
+    var getItemDTOCommand: GetItemDTOCommand = {
+      establishmentId: this.activeEstablishment,
+      itemsIds: itemsIds,
+    } as GetItemDTOCommand;
+
+    var itemDTOs: ItemDTO[] = (
+      await lastValueFrom(this.itemClient.getItemsDTO(getItemDTOCommand))
+    ).items;
+
+    return itemDTOs;
   }
 }
