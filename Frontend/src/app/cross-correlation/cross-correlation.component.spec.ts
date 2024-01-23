@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CrossCorrelationComponent } from './cross-correlation.component';
+import { CrossCorrelationComponent } from './cross-correlation.model.holder';
 
 describe('CrossCorrelationComponent', () => {
   let component: CrossCorrelationComponent;
@@ -8,7 +8,7 @@ describe('CrossCorrelationComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CrossCorrelationComponent]
+      declarations: [CrossCorrelationComponent],
     });
     fixture = TestBed.createComponent(CrossCorrelationComponent);
     component = fixture.componentInstance;
