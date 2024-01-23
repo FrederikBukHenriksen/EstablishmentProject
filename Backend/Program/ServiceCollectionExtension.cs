@@ -83,6 +83,8 @@ namespace WebApplication1.Program
 
             //Item
             serviceCollection.AddTransient<IHandler<GetItemDTOCommand, GetItemDTOReturn>, GetItemDTOHandler>();
+            serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsReturn>, GetItemsHandler>();
+
 
 
 

@@ -29,6 +29,18 @@ export function DateToString(dateTime: Date): string {
   });
 }
 
+export function DateForGraph(date: Date): string {
+  return (
+    date.getFullYear() +
+    '-' +
+    (date.getMonth() + 1) +
+    '-' +
+    date.getDate() +
+    '-' +
+    date.getHours()
+  );
+}
+
 export function UTCDATE(date1: Date) {
   return new Date(
     date1.getUTCFullYear(),

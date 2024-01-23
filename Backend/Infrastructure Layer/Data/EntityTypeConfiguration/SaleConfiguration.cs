@@ -7,7 +7,7 @@ namespace WebApplication1.Infrastructure_Layer.Data.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Sale> builder)
         {
-            builder.HasIndex(e => e.Id).IsUnique();
+            //builder.HasIndex(e => e.Id).IsUnique();
 
             builder.ToTable(nameof(Sale));
 

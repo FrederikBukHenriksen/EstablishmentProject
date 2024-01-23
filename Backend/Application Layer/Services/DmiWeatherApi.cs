@@ -1,13 +1,21 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services;
+using WebApplication1.Utils;
 
 namespace DMIOpenData
 {
+    public enum WeatherParamters
+    {
+        [Description("temp_mean_past1h")]
+        Temperature,
+    }
+
     public interface IWeatherApi
     {
-        Task<List<(DateTime, double)>> GetMeanTemperaturePerHour(Coordinates coordinates, DateTime startTime, DateTime endTime);
+        Task<List<(DateTime, double)>> GetTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution);
     }
 
     public class DmiWeatherApi : IWeatherApi
@@ -15,8 +23,6 @@ namespace DMIOpenData
         private const string BaseUrl = "https://dmigw.govcloud.dk/v2/metObs";
         private const string BaseUrlData = "https://dmigw.govcloud.dk/v2/metObs/collections/observation/items";
         private const string BaseUrlStation = "https://dmigw.govcloud.dk/v2/metObs/collections/station/items";
-
-
         private readonly string apiKey = "ff666551-985c-4533-970f-96f3ef50036e";
 
         private readonly HttpClient httpClient;
@@ -45,7 +51,7 @@ namespace DMIOpenData
         }
 
 
-        public async Task<List<(DateTime, double)>> GetMeanTemperaturePerHour(Coordinates coordinates, DateTime startTime, DateTime endTime)
+        public async Task<List<(DateTime, double)>> GetTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution)
         {
             if (startTime > endTime)
             {
@@ -75,10 +81,17 @@ namespace DMIOpenData
 
             List<(DateTime, double)> data = listOfJsonObjects.Select(x => ((DateTime)x["properties"]["observed"], (double)x["properties"]["value"])).OrderBy(x => x.Item1).ToList();
 
-            List<(DateTime, double)> dataOrdered = data.OrderBy(x => x.Item1).ToList();
+            List<(DateTime datetime, double values)> dataOrdered = data.OrderBy(x => x.Item1).ToList();
 
-            return dataOrdered;
-
+            //Account for TimeResolution
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(new DateTimePeriod(startTime, endTime), timeresolution);
+            Dictionary<DateTime, List<(DateTime datetime, double values)>> averageTemperaturePerDateTime = TimeHelper.MapObjectsToTimeline(dataOrdered, x => x.datetime, timeline, timeresolution);
+            Dictionary<DateTime, double> averagePerTimeResolution = averageTemperaturePerDateTime.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Select(v => v.values).Average()
+            );
+            List<(DateTime, double)> asList = averagePerTimeResolution.Select(x => (x.Key, x.Value)).ToList();
+            return asList;
         }
 
         private double EuclideanDistance(double x1, double y1, double x2, double y2)

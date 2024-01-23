@@ -174,7 +174,7 @@ export class ClusterComponent implements OnInit {
   public async fetchSales(): Promise<GetSalesReturn> {
     var command = {
       establishmentId: this.activeEstablishment,
-      salesSortingParameters: this.salesSortingParameters,
+      salesSorting: this.salesSortingParameters,
     } as GetSalesCommand;
     var sales = await lastValueFrom(this.saleClient.getSales(command));
     return sales;

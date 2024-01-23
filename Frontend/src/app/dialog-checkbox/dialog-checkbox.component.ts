@@ -133,16 +133,16 @@ export class Slider extends SettingsDataBase {
   }
 }
 
-export interface TableModel {
-  columns: string[];
-  elements: TableEntry[];
-}
+// export interface TableModel {
+//   columns: string[];
+//   elements: TableEntry[];
+// }
 
-export interface TableEntry {
-  id: string;
-}
+// export interface TableEntry {
+//   id: string;
+// }
 
-export interface TableElement {}
+// export interface TableElement {}
 
 @Component({
   selector: 'app-dialog-checkbox',

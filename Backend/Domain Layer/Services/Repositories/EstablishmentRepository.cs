@@ -10,10 +10,14 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         ICollection<Table> GetEstablishmentTables(Guid id);
         IEstablishmentRepository IncludeItems();
         IEstablishmentRepository IncludeTables();
+        IEstablishmentRepository IncludeSalesItems();
         IEstablishmentRepository IncludeSales();
+        IEstablishmentRepository EnableLazyLoading();
     }
+
     public class EstablishmentRepository : Repository<Establishment>, IEstablishmentRepository
     {
+
 
         public EstablishmentRepository(ApplicationDbContext context) : base(context)
         {
@@ -39,19 +43,31 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         public IEstablishmentRepository IncludeTables()
         {
-            this.set.Include(x => x.Tables);
+            this.query = this.query.Include(x => x.Tables);
             return this;
         }
 
         public IEstablishmentRepository IncludeItems()
         {
-            this.set.Include(x => x.Items);
+            this.query = this.query.Include(x => x.Items);
             return this;
         }
 
         public IEstablishmentRepository IncludeSales()
         {
-            this.set.Include(x => x.Sales);
+            this.query = this.query.Include(x => x.Sales);
+            return this;
+        }
+
+        public IEstablishmentRepository IncludeSalesItems()
+        {
+            this.query = this.query.Include(x => x.Sales).ThenInclude(x => x.SalesItems).ThenInclude(x => x.Item);
+            return this;
+        }
+
+        public IEstablishmentRepository EnableLazyLoading()
+        {
+            this.context.ChangeTracker.LazyLoadingEnabled = true;
             return this;
         }
     }

@@ -19,16 +19,16 @@ namespace WebApplication1.CommandHandlers
     public class CorrelationReturn : ReturnBase
     {
         public List<(int, double)> LagAndCorrelation { get; set; }
-        public List<(DateTime id, List<double> values)> calculationValues { get; set; }
+        public List<(DateTime id, List<double?> values)> calculationValues { get; set; }
 
         public CorrelationReturn(
             Dictionary<TimeSpan, double> lagAndCorrelation,
-        Dictionary<DateTime, List<double>> calculationValues
-
+        Dictionary<DateTime, (double?, double?)> calculationValues
             )
         {
             this.LagAndCorrelation = lagAndCorrelation.Select(x => (TimeHelper.FromTimeSpanToHours(x.Key, TimeResolution.Hour), x.Value)).ToList();
-            this.calculationValues = calculationValues.Values.Select(x => (calculationValues.Keys.First(), x)).ToList();
+            this.calculationValues = calculationValues.Select(kv => (id: kv.Key, values: new List<double?> { kv.Value.Item1, kv.Value.Item2 }))
+            .ToList();
         }
     }
 
@@ -47,22 +47,25 @@ namespace WebApplication1.CommandHandlers
         public override async Task<CorrelationReturn> Handle(CorrelationCommand command)
         {
             Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().GetById(command.EstablishmentId)!;
-            Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
+            //Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().GetById();
 
-            //FETCH and ARRANGE sales
+            Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
+            //FETCH and ARRANGE sales   
             List<Sale> sales = establishment.GetSales().Where(x => command.SalesIds.Any(y => y == x.Id)).ToList();
+
+
             var dateTimeList = TimeHelper.CreateTimelineAsList(command.TimePeriod, command.TimeResolution);
 
             Dictionary<DateTime, List<Sale>> salesOverTimeline = TimeHelper.MapObjectsToTimeline(sales, x => x.GetTimeOfSale(), dateTimeList, command.TimeResolution);
 
-            Dictionary<DateTime, int> numberOfSalesForTheDateTimeKey = salesOverTimeline
-                .ToDictionary(kv => kv.Key, kv => kv.Value.Count);
+            Dictionary<DateTime, double> numberOfSalesForTheDateTimeKey = salesOverTimeline
+                .ToDictionary(kv => kv.Key, kv => (double)kv.Value.Count);
 
 
             //FETCH and ARRANGE weather
             var weatherDataStart = command.TimePeriod.Start.Date.AddDays(0);
             var weatherDataEnd = command.TimePeriod.End.Date.AddDays(2);
-            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetMeanTemperaturePerHour(coordinates, weatherDataStart, weatherDataEnd);
+            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, weatherDataStart, weatherDataEnd, command.TimeResolution);
             var weatherDateTimeList = TimeHelper.CreateTimelineAsList(new DateTimePeriod(weatherDataStart, weatherDataEnd), command.TimeResolution);
 
             Dictionary<DateTime, List<(DateTime, double)>> tempMappedToTimeline = TimeHelper.MapObjectsToTimeline(temperaturePerHour, x => x.Item1, weatherDateTimeList, command.TimeResolution);
@@ -87,20 +90,20 @@ namespace WebApplication1.CommandHandlers
             Dictionary<TimeSpan, double> spearmanAsDictionary = spearman.ToDictionary(x => x.Item1, x => x.Item2);
 
             //return
-            Dictionary<DateTime, List<double>> metadata =
-                numberOfSalesForTheDateTimeKey
-                .ToDictionary(kv => kv.Key, kv => new List<double> { (double)kv.Value })
-                .Concat(tempMappedToTimeline.Select(kv => new KeyValuePair<DateTime, List<double>>(kv.Key, kv.Value.Select(tuple => tuple.Item2).ToList())))
-                .GroupBy(kvp => kvp.Key)
-                .ToDictionary(
-                    grouping => grouping.Key,
-                    grouping => grouping.SelectMany(kvp => kvp.Value).ToList()
-                );
+            Dictionary<DateTime, (double?, double?)> combinedDictionary = numberOfSalesForTheDateTimeKey
+                .Select(kv =>
+                {
+                    double? valueSales = kv.Value;
+                    double? valueAverages = averages.TryGetValue(kv.Key, out double average) ? (double?)average : null;
+                    return new KeyValuePair<DateTime, (double?, double?)>(kv.Key, (valueSales, valueAverages));
+                })
+                .Concat(averages
+                    .Where(kv => !numberOfSalesForTheDateTimeKey.ContainsKey(kv.Key))
+                    .Select(kv => new KeyValuePair<DateTime, (double?, double?)>(kv.Key, (null, (double?)kv.Value))))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
 
 
-
-
-            return new CorrelationReturn(spearmanAsDictionary, metadata);
+            return new CorrelationReturn(spearmanAsDictionary, combinedDictionary);
 
         }
 

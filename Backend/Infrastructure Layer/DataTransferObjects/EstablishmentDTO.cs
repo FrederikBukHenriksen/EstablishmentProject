@@ -14,9 +14,9 @@ namespace WebApplication1.Controllers
         {
             this.id = establishment.Id;
             this.name = establishment.Name!;
-            this.items = establishment.Items.Select(item => item.Id).ToList();
-            this.tables = establishment.Tables.Select(table => table.Id).ToList();
-            this.sales = establishment.Sales.Select(sale => sale.Id).ToList();
+            //this.items = establishment.Items.Select(item => item.Id).ToList();
+            //this.tables = establishment.Tables.Select(table => table.Id).ToList();
+            //this.sales = establishment.Sales.Select(sale => sale.Id).ToList();
         }
     }
 }

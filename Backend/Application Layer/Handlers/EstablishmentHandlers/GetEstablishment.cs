@@ -27,7 +27,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Estab
 
         public override async Task<GetEstablishmentReturn> Handle(GetEstablishmentCommand command)
         {
-            Establishment establishment = this.unitOfWork.establishmentRepository.GetById(command.EstablishmentId);
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().GetById(command.EstablishmentId);
             EstablishmentDTO establishmentDTO = new EstablishmentDTO(establishment);
             return new GetEstablishmentReturn { EstablishmentDTO = establishmentDTO };
         }

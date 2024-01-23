@@ -1347,7 +1347,7 @@ export abstract class ReturnBase {
 
 export class CorrelationReturn extends ReturnBase {
     lagAndCorrelation!: ValueTupleOfIntegerAndDouble[];
-    calculationValues!: ValueTupleOfDateTimeAndListOfDouble[];
+    calculationValues!: ValueTupleOfDateTimeAndListOfNullableDouble[];
 
     override init(_data?: any) {
         super.init(_data);
@@ -1360,7 +1360,7 @@ export class CorrelationReturn extends ReturnBase {
             if (Array.isArray(_data["calculationValues"])) {
                 this.calculationValues = [] as any;
                 for (let item of _data["calculationValues"])
-                    this.calculationValues!.push(ValueTupleOfDateTimeAndListOfDouble.fromJS(item));
+                    this.calculationValues!.push(ValueTupleOfDateTimeAndListOfNullableDouble.fromJS(item));
             }
         }
     }
@@ -1415,9 +1415,9 @@ export class ValueTupleOfIntegerAndDouble {
     }
 }
 
-export class ValueTupleOfDateTimeAndListOfDouble {
+export class ValueTupleOfDateTimeAndListOfNullableDouble {
     item1!: Date;
-    item2!: number[] | undefined;
+    item2!: (number | undefined)[] | undefined;
 
     init(_data?: any) {
         if (_data) {
@@ -1430,9 +1430,9 @@ export class ValueTupleOfDateTimeAndListOfDouble {
         }
     }
 
-    static fromJS(data: any): ValueTupleOfDateTimeAndListOfDouble {
+    static fromJS(data: any): ValueTupleOfDateTimeAndListOfNullableDouble {
         data = typeof data === 'object' ? data : {};
-        let result = new ValueTupleOfDateTimeAndListOfDouble();
+        let result = new ValueTupleOfDateTimeAndListOfNullableDouble();
         result.init(data);
         return result;
     }
@@ -2186,13 +2186,13 @@ export class GetSalesReturn extends ReturnBase {
 
 export class GetSalesCommand extends CommandBase {
     establishmentId!: string;
-    salesSortingParameters!: SalesSorting;
+    salesSorting!: SalesSorting;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.establishmentId = _data["establishmentId"];
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSorting.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.salesSorting = _data["salesSorting"] ? SalesSorting.fromJS(_data["salesSorting"]) : <any>undefined;
         }
     }
 
@@ -2206,7 +2206,7 @@ export class GetSalesCommand extends CommandBase {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["establishmentId"] = this.establishmentId;
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        data["salesSorting"] = this.salesSorting ? this.salesSorting.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }

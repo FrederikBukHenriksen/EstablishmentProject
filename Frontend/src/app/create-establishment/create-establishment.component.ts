@@ -146,7 +146,7 @@ export class CreateEstablishmentComponent implements OnInit {
             var salesIds: GetSalesReturn = await lastValueFrom(
               this.saleClient.getSales({
                 establishmentId: establishmentId,
-                salesSortingParameters: {
+                salesSorting: {
                   contains: dictionary['items'],
                   withinTimeperiods: [this.timePeriod] as DateTimePeriod[],
                 } as SalesSorting,

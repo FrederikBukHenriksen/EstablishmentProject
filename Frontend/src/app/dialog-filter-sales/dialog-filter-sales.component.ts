@@ -42,12 +42,26 @@ export class DialogFilterSalesComponent {
 
   private itemClient = inject(ItemClient);
 
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    private inputCommand: SalesSorting | null
+  ) {}
 
   private async buildDialog(): Promise<DialogConfig> {
     var itemOptions = (await this.GetItems()).map(
       (item) => new DropDownOption(item.name, item.id, false)
     );
+    console.log('1', itemOptions);
+
+    itemOptions.map((item) => {
+      this.inputCommand?.any?.forEach((x) => {
+        if (item.id == x) {
+          item.selected = true;
+        }
+      });
+    });
+    console.log('2', itemOptions);
+
     return new DialogConfig([
       new DropDownMultipleSelects('Any', 'Contains any of these', itemOptions),
       new DropDownMultipleSelects('All', 'Contains all of these', itemOptions),
@@ -92,6 +106,8 @@ export class DialogFilterSalesComponent {
     return this.buildReturn(data);
   }
 
+  private reselect() {}
+
   private buildReturn(data: { [key: string]: any }): GetSalesCommand {
     var salesSorting: SalesSorting = {
       any: data['Any'],
@@ -101,7 +117,7 @@ export class DialogFilterSalesComponent {
 
     return {
       establishmentId: this.sessionStorageService.getActiveEstablishment(),
-      salesSortingParameters: salesSorting,
+      salesSorting: salesSorting,
     } as GetSalesCommand;
   }
 }

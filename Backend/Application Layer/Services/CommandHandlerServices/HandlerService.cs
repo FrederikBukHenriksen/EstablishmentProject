@@ -31,9 +31,9 @@ namespace WebApplication1.CommandsHandlersReturns
         {
             try
             {
-                this.verifyEstablishmentCommandService.VerifyEstablishment(command);
-                this.verifySalesCommandService.VerifySales(command);
-                this.verifyItemsCommandService.VerifyItems(command);
+                //this.verifyEstablishmentCommandService.VerifyEstablishment(command);
+                //this.verifySalesCommandService.VerifySales(command);
+                //this.verifyItemsCommandService.VerifyItems(command);
                 return await handler.Handle(command);
             }
             catch (Exception exception)

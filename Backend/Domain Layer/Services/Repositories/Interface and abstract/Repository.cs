@@ -3,20 +3,21 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Domain_Layer.Services.Repositories
 {
-
     public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
     {
-
         public ApplicationDbContext context;
         public DbSet<TEntity> set;
+        public IQueryable<TEntity> query;
 
         public Repository(ApplicationDbContext Context)
         {
             this.context = Context;
             this.set = this.context.Set<TEntity>();
+            this.query = this.set.AsQueryable();
         }
 
-        public ApplicationDbContext Context { get => this.context; }
+        public ApplicationDbContext Context => this.context;
+        public IQueryable<TEntity> Query => this.query;
 
         public virtual void Add(TEntity entity)
         {
@@ -30,40 +31,38 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
-            return this.set.Any(predicate);
+            return this.query.Any(predicate);
         }
 
         public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return this.set.Where(predicate).FirstOrDefault();
+            return this.query.Where(predicate).FirstOrDefault();
         }
 
         public virtual IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate)
         {
-            return this.set.Where(predicate).AsEnumerable();
+            return this.query.Where(predicate).AsEnumerable();
         }
 
         public virtual bool HasAny(Expression<Func<TEntity, bool>> predicate)
         {
-            return this.set.Any(predicate);
+            return this.query.Any(predicate);
         }
 
         public virtual TEntity? GetById(Guid id)
         {
-            return this.set.Find(id);
-
+            return this.query.FirstOrDefault(x => x.Id == id);
         }
 
         public virtual IEnumerable<TEntity>? GetAll()
         {
-            return this.set.AsEnumerable();
+            return this.query.AsEnumerable();
         }
 
         public virtual List<TEntity> GetFromIds(List<Guid> ids)
         {
-            return this.set.Where(x => ids.Any(y => y == x.Id)).ToList();
+            return this.query.Where(x => ids.Contains(x.Id)).ToList();
         }
-
 
         public virtual void Remove(TEntity entity)
         {
@@ -72,9 +71,7 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         public virtual void Update(TEntity entity)
         {
-            this.set.Update(entity);
+            this.set.Attach(entity);
         }
-
-
     }
 }

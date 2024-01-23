@@ -1,4 +1,5 @@
 ﻿using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Utils;
 
 namespace WebApplication1.Domain_Layer.Services.Repositories
 {
@@ -6,6 +7,8 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
     public interface ISalesRepository : IRepository<Sale>
     {
         IEnumerable<Sale> GetAllSalesFromEstablishment(Guid establishmentId);
+
+        ICollection<Sale> SortSales(SalesSorting salesSorting);
     }
 
     public class SalesRepository : Repository<Sale>, ISalesRepository
@@ -29,6 +32,13 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
             return this.set.Where(sale => sale.EstablishmentId == establishmentId);
         }
 
+        public ICollection<Sale> SortSales(SalesSorting salesSorting)
+        {
+            return this.set
+                .Where(x => x.TimestampPayment >= salesSorting.WithinTimeperiods[0].Start)
+                .Where(x => x.TimestampPayment <= salesSorting.WithinTimeperiods[0].End)
+                .ToList();
+        }
     }
 }
 

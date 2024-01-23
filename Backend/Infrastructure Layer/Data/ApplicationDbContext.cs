@@ -14,7 +14,11 @@ namespace WebApplication1.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             //this.ChangeTracker.LazyLoadingEnabled = false;
-            this.ChangeTracker.LazyLoadingEnabled = true;  // Enable lazy loading
+
+            this.ChangeTracker.LazyLoadingEnabled = false;  // Enable lazy loading
+            this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+
 
         }
 
@@ -31,6 +35,7 @@ namespace WebApplication1.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.HasPostgresExtension("uuid-ossp");
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());

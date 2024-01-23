@@ -178,31 +178,63 @@ namespace WebApplication1.Infrastructure.Data
             return dictionary;
         }
 
+        //public List<Sale> SaleGenerator(List<(Item item, int quanity)> items, Dictionary<DateTime, int> DistributionOverTime)
+        //{
+        //    List<Sale> sales = new List<Sale>();
+
+        //    //Iterate over the distribution
+        //    foreach (KeyValuePair<DateTime, int> entry in DistributionOverTime)
+        //    {
+        //        var date = entry.Key;
+        //        var value = entry.Value;
+
+        //        //Sale sale = this.factoryServiceBuilder.SaleBuilder().WithTimestampPayment(date).WithSoldItems(items).Build();
+        //        Sale sale = new Sale();
+        //        sale.TimestampPayment = date;
+        //        sale.SalesItems = items.Select(x => new SalesItems(sale, x.item, x.quanity)).ToList();
+        //        for (int i = 0; i < value; i++)
+        //        {
+        //            sales.Add(sale);
+        //        }
+
+
+
+
+        //    }
+        //    return sales;
+        //}
         public List<Sale> SaleGenerator(List<(Item item, int quanity)> items, Dictionary<DateTime, int> DistributionOverTime)
         {
             List<Sale> sales = new List<Sale>();
 
-            //Iterate over the distribution
+            // Iterate over the distribution
             foreach (KeyValuePair<DateTime, int> entry in DistributionOverTime)
             {
                 var date = entry.Key;
                 var value = entry.Value;
 
-                //Sale sale = this.factoryServiceBuilder.SaleBuilder().WithTimestampPayment(date).WithSoldItems(items).Build();
-                Sale sale = new Sale();
-                //sale.Id = Guid.NewGuid();
-                sale.TimestampPayment = date;
-                sale.SalesItems = items.Select(x => new SalesItems(sale, x.item, x.quanity)).ToList();
                 for (int i = 0; i < value; i++)
                 {
+                    // Create a new Sale instance for each iteration
+                    Sale sale = new Sale
+                    {
+                        TimestampPayment = date,
+                        SalesItems = items.Select(x => new SalesItems(null, x.item, x.quanity)).ToList()
+                        // Note: Use null as the Sale reference for now; it will be set later
+                    };
+
+                    // Set the reference to the Sale instance for each SalesItems
+                    foreach (var salesItem in sale.SalesItems)
+                    {
+                        salesItem.Sale = sale;
+                    }
+
                     sales.Add(sale);
                 }
-
-
-
-
             }
+
             return sales;
         }
+
     }
 }
