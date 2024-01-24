@@ -19,7 +19,7 @@ namespace WebApplication1.Program
 
             AddDatabase(builder);
 
-            //Add repository
+            //Make JSON serializer be able to use inheritance.
             builder.Services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {

@@ -57,6 +57,12 @@ export class DialogGraphSettingsComponent {
 
   private buildReturn(data: { [key: string]: any }): GraphSettings {
     console.log('build settings graph', data);
+    var startTime = data['timeframestart'] as Date;
+    var endTime = new Date(
+      (data['timeframeend'] as Date).setHours(23, 59, 59, 999)
+    );
+    console.log('start', startTime);
+    console.log('end', endTime);
     var timeFrame: DateTimePeriod = {
       start: data['timeframestart'] as Date,
       end: data['timeframeend'] as Date,

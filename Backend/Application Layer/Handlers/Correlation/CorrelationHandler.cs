@@ -47,7 +47,6 @@ namespace WebApplication1.CommandHandlers
         public override async Task<CorrelationReturn> Handle(CorrelationCommand command)
         {
             Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().GetById(command.EstablishmentId)!;
-            //Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().GetById();
 
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
             //FETCH and ARRANGE sales   

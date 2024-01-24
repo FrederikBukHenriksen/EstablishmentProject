@@ -26,9 +26,10 @@ import { ClusterModule } from './cluster/cluster.module';
 import { CrossCorrelationModule } from './cross-correlation/cross-correlation.module';
 import { DialogFilterSalesModule } from './dialog-filter-sales/dialog-filter-sales.module';
 import { DialogGraphSettingsModule } from './dialog-graph-settings/dialog-graph-settings.module';
+import { DialogCrossCorrelationSettingsComponent } from './dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, NavbarComponent],
+  declarations: [AppComponent, NavbarComponent, NavbarComponent, DialogCrossCorrelationSettingsComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

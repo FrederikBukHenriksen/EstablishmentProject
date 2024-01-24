@@ -3,18 +3,19 @@
 <button mat-stroked-button (click)="onGraphSettings()">Graph settings</button>
 <button mat-stroked-button (click)="onLoad()">Load all</button>
 
-<div *ngFor="let collection of FetchDictionary">
+<div *ngFor="let collection of collectionOfImplementaions">
   <mat-accordion class="accordion" multi>
-    <mat-expansion-panel
-      [disabled]="!collection.result"
-      [expanded]="collection.result"
-    >
+    <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title
           ><h2>{{ collection.title }}</h2></mat-panel-title
         >
       </mat-expansion-panel-header>
-
+      <div *ngFor="let dialog of collection.dialogs">
+        <button mat-stroked-button (click)="dialog.action(collection.command)">
+          Settings
+        </button>
+      </div>
       <app-graph
         *ngIf="collection.graphModel"
         [chartType]="collection.graphModel.chartType"

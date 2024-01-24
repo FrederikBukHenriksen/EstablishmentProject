@@ -15,28 +15,15 @@ namespace WebApplication1.Controllers
     [Route("api/test")]
     public class DataSeedController : ControllerBase
     {
-        private IUserRepository _userRepository;
-        private ISalesService salesService;
-        private ISalesRepository _salesRepository;
-        private IUserRolesRepository _userRolesRepository;
-        private IEstablishmentRepository _establishmentRepository;
-        private ApplicationDbContext _applicationDbContext;
 
-        public DataSeedController(ISalesService salesService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUserRolesRepository userRolesRepository, ISalesRepository salesRepository)
+        public DataSeedController()
         {
-            this.salesService = salesService;
-            this._salesRepository = salesRepository;
-            this._userRolesRepository = userRolesRepository;
-            this._userRepository = userRepository;
-            this._establishmentRepository = establishmentRepository;
         }
 
         [HttpGet]
         public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             var totalDataTimePeriod = new DateTimePeriod(new DateTime(2024, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0).AddMonths(-6), new DateTime(2024, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0)); //Leave out last day of the year to test null values
-
-            //var totalDataTimePeriod = new DateTimePeriod(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 12, 30, 23, 0, 0)); //Leave out last day of the year to test null values
             var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod, TimeResolution.Hour);
             var openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
             var timelineDaysWithinOpeningHours = testDataCreatorService.FilterDistrubutionBasedOnOpeningHours(timelineAllDays, openingHours);
@@ -93,17 +80,5 @@ namespace WebApplication1.Controllers
 
             }
         }
-
-        [HttpGet("lol")]
-        public void test(IEstablishmentRepository establishmentRepository, IUnitOfWork unitOfWork)
-        {
-            using (var uow = unitOfWork)
-            {
-                var ee = uow.establishmentRepository.GetAll().First();
-            }
-        }
-
     }
-
-
 }

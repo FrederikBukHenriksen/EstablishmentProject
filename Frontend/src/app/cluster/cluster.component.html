@@ -3,69 +3,71 @@
 <button mat-stroked-button (click)="onFilterSales()">Filter sales</button>
 <button mat-stroked-button (click)="onLoad()">Load all</button>
 
-<mat-accordion class="accordion" multi>
-  <mat-expansion-panel expanded>
-    <mat-expansion-panel-header>
-      <mat-panel-title><h2>Time of day vs. spendings</h2></mat-panel-title>
-    </mat-expansion-panel-header>
-    <button mat-stroked-button (click)="onLoad()">Adjust bandwith</button>
+<div *ngFor="let collection of FetchDictionary">
+  <mat-accordion class="accordion" multi>
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title><h2>Time of day vs. spendings</h2></mat-panel-title>
+      </mat-expansion-panel-header>
+      <button mat-stroked-button (click)="onLoad()">Adjust bandwith</button>
 
-    <div *ngFor="let dialog of DialogConfigs | async">
-      <button mat-stroked-button (click)="dialog.action()">
-        {{ dialog.name }}
-      </button>
-    </div>
+      <div *ngFor="let dialog of DialogConfigs | async">
+        <button mat-stroked-button (click)="dialog.action()">
+          {{ dialog.name }}
+        </button>
+      </div>
 
-    <app-table [tableModel]="TemperatureTableModel"></app-table>
-    <hr />
-    <mat-accordion class="accordion" multi>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>Clustered sales data</mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-accordion class="accordion" multi>
-          <div
-            *ngFor="
-              let tableModel of TemperatureSaleTableModel | async;
-              let i = index
-            "
-          >
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>Cluster {{ i }}</mat-panel-title>
-              </mat-expansion-panel-header>
-              <app-table
-                [tableModel]="tableModel"
-                [addPaginator]="true"
-              ></app-table>
-            </mat-expansion-panel>
-          </div>
-        </mat-accordion>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>Clustered Sales data plotted</mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-accordion class="accordion" multi>
-          <div
-            *ngFor="
-              let graphModel of TemperatureSaleGraphModels | async;
-              let i = index
-            "
-          >
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>Time of sale vs. Spend</mat-panel-title>
-              </mat-expansion-panel-header>
-              <app-graph
-                [chartType]="chartType"
-                [chartData]="graphModel.chartData"
-                [chartOptions]="chartOptions"
-              ></app-graph>
-            </mat-expansion-panel>
-          </div>
-        </mat-accordion>
-      </mat-expansion-panel>
-    </mat-accordion>
-  </mat-expansion-panel>
-</mat-accordion>
+      <app-table [tableModel]="TemperatureTableModel"></app-table>
+      <hr />
+      <mat-accordion class="accordion" multi>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Clustered sales data</mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-accordion class="accordion" multi>
+            <div
+              *ngFor="
+                let tableModel of TemperatureSaleTableModel | async;
+                let i = index
+              "
+            >
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>Cluster {{ i }}</mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-table
+                  [tableModel]="tableModel"
+                  [addPaginator]="true"
+                ></app-table>
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Clustered Sales data plotted</mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-accordion class="accordion" multi>
+            <div
+              *ngFor="
+                let graphModel of TemperatureSaleGraphModels | async;
+                let i = index
+              "
+            >
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>Time of sale vs. Spend</mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-graph
+                  [chartType]="chartType"
+                  [chartData]="graphModel.chartData"
+                  [chartOptions]="chartOptions"
+                ></app-graph>
+              </mat-expansion-panel>
+            </div>
+          </mat-accordion>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

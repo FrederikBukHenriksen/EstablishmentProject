@@ -117,7 +117,7 @@ export class DatePicker extends SettingsDataBase {
   }
 }
 
-export class Slider extends SettingsDataBase {
+export class DialogSlider extends SettingsDataBase {
   override value = this.FormControl.value;
 
   constructor(
@@ -132,17 +132,6 @@ export class Slider extends SettingsDataBase {
     this.slider = { min, max, step };
   }
 }
-
-// export interface TableModel {
-//   columns: string[];
-//   elements: TableEntry[];
-// }
-
-// export interface TableEntry {
-//   id: string;
-// }
-
-// export interface TableElement {}
 
 @Component({
   selector: 'app-dialog-checkbox',

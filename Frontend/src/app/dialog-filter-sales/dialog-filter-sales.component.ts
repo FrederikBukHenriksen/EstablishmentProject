@@ -13,7 +13,7 @@ import {
   DropDownOption,
   SettingsData,
   SettingsDataBase,
-  Slider,
+  DialogSlider,
   TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CrossCorrelationComponent } from './cross-correlation.model.holder';
+import { CrossCorrelationComponent } from './cross-correlation.component';
 
 describe('CrossCorrelationComponent', () => {
   let component: CrossCorrelationComponent;

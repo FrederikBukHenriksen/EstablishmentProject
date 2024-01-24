@@ -25,12 +25,14 @@ namespace WebApplication1.Controllers
             return await this.handlerService.Service(handler, command);
         }
 
+        [Authorize]
         [HttpPost("find")]
         public async Task<GetSalesReturn> GetSales([FromBody] GetSalesCommand command, [FromServices] IHandler<GetSalesCommand, GetSalesReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }
 
+        [Authorize]
         [HttpPost("statistics")]
         public async Task<SalesStatisticsReturn> SaleStaticstics([FromBody] SalesStatisticsCommand command, [FromServices] IHandler<SalesStatisticsCommand, SalesStatisticsReturn> handler)
         {

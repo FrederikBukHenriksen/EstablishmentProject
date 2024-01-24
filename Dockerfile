@@ -1,25 +1,27 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# Use the official .NET SDK as a base image for building
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+# Set the working directory in the container
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["WebApplication1.csproj", "."]
-RUN dotnet restore "./WebApplication1.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "WebApplication1.csproj" -c Release -o /app/build
+# Copy the project file and restore dependencies
+COPY MyCSharpApp/*.csproj .
+RUN dotnet restore
 
-FROM build AS publish
-RUN dotnet publish "WebApplication1.csproj" -c Release -o /app/publish /p:UseAppHost=false
+# Copy the remaining source code
+COPY MyCSharpApp/ .
 
-FROM base AS final
+# Build the application
+RUN dotnet publish -c Release -o out
+
+# Use a smaller runtime image for the final stage
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
+
+# Set the working directory
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebApplication1.dll"]
+
+# Copy the published app from the build stage
+COPY --from=build /app/out .
+
+# Define the command to run your app
+ENTRYPOINT ["dotnet", "MyCSharpApp.dll"]

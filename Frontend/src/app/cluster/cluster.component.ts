@@ -29,7 +29,7 @@ import {
   DialogConfig,
   DropDownMultipleSelects,
   DropDownOption,
-  Slider,
+  DialogSlider,
   TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TableModel, TableEntry, TableString } from '../table/table.component';

@@ -1,15 +1,35 @@
 // cross-correlation.model.ts
-import { CorrelationCommand, CorrelationReturn, GetSalesCommand } from 'api';
+import {
+  CommandBase,
+  CorrelationCommand,
+  CorrelationReturn,
+  GetSalesCommand,
+} from 'api';
 import { ChartDataset } from 'chart.js';
 import { DateForGraph } from '../utils/TimeHelper';
-import { lastValueFrom } from 'rxjs';
+import { async, lastValueFrom } from 'rxjs';
 import { AnalysisClient } from 'api';
 import { SaleClient } from 'api';
 import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
-import { GraphModel } from './cross-correlation.component';
+import {
+  CrossCorrelationImplementaion,
+  GraphModel,
+  ImplementationDialog,
+} from './cross-correlation.component';
+import { DialogBase } from '../dialog-checkbox/dialog-checkbox.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogCrossCorrelationSettingsComponent } from '../dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
 
-export class CrossCorrelation_Sales_Temperature {
+export interface CrossCorrealtionAssembly {
+  assembly: CrossCorrelationImplementaion;
+}
+
+export class CrossCorrelation_Sales_Temperature
+  implements CrossCorrealtionAssembly
+{
+  public assembly!: CrossCorrelationImplementaion;
+
   title: string;
   command: CorrelationCommand;
   result: CorrelationReturn | undefined;
@@ -21,7 +41,8 @@ export class CrossCorrelation_Sales_Temperature {
     private readonly getSalesCommand: GetSalesCommand,
     private readonly salesClient: SaleClient,
     private readonly analysisClient: AnalysisClient,
-    private readonly sessionStorageService: SessionStorageService
+    private readonly sessionStorageService: SessionStorageService,
+    private readonly dialog: MatDialog
   ) {
     this.title = 'Sales vs Temperature';
     this.command = command;
@@ -30,8 +51,31 @@ export class CrossCorrelation_Sales_Temperature {
       chartData: { datasets: [] },
       chartOptions: {},
     };
+
+    this.assembly = {
+      title: this.title,
+      dialogs: this.dialogs,
+      fetch: this.fetch,
+      result: this.result,
+      buildTable: this.buildTable,
+      tableModel: this.tableModel,
+      buildGraph: this.buildGraph,
+      graphModel: this.graphModel,
+    } as CrossCorrelationImplementaion;
+
     console.log('salesClient', salesClient);
   }
+
+  dialogs: ImplementationDialog[] = [
+    {
+      name: 'Settings',
+      action: async (command: CorrelationCommand) => {
+        var dialogCrossCorrelationSettingsComponent =
+          new DialogCrossCorrelationSettingsComponent(this.dialog);
+        command.maxLag = await dialogCrossCorrelationSettingsComponent.Open();
+      },
+    } as ImplementationDialog,
+  ];
 
   async fetch(command: CorrelationCommand): Promise<CorrelationReturn> {
     const activeEstablishment =
@@ -104,7 +148,7 @@ export class CrossCorrelation_Sales_Temperature {
       chartType: 'line',
       chartData: {
         datasets: chartDatasets,
-        labels: values.map((x) => DateForGraph(x.date)),
+        labels: values.map((x) => x.date),
       },
       chartOptions: {},
     } as GraphModel;
