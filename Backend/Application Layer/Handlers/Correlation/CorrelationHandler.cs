@@ -7,11 +7,11 @@ using WebApplication1.Utils;
 
 namespace WebApplication1.CommandHandlers
 {
-    public class CorrelationCommand : CommandBase, ICmdField_EstablishmentId, ICmdField_SalesIds
+    public class CorrelationCommand : CommandBase, ICmdField_EstablishmentId
     {
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; }
-        public SalesSorting salesSorting { get; set; }
+        //public SalesSorting salesSorting { get; set; }
         public DateTimePeriod TimePeriod { get; set; }
         public TimeResolution TimeResolution { get; set; }
         public int MaxLag { get; set; }
@@ -51,7 +51,7 @@ namespace WebApplication1.CommandHandlers
 
             Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
             //FETCH and ARRANGE sales   
-            List<Sale> sales = establishment.GetSales().Where(x => command.SalesIds.Any(y => y == x.Id)).ToList();
+            List<Sale> sales = establishment.GetSales().Where(x => command.SalesIds.Contains(x.Id)).ToList();
 
 
             var dateTimeList = TimeHelper.CreateTimelineAsList(command.TimePeriod, command.TimeResolution);
@@ -64,7 +64,7 @@ namespace WebApplication1.CommandHandlers
 
             //FETCH and ARRANGE weather
             var weatherDataStart = command.TimePeriod.Start.Date.AddDays(0);
-            var weatherDataEnd = command.TimePeriod.End.Date.AddDays(2);
+            var weatherDataEnd = command.TimePeriod.End.Date;
             List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, weatherDataStart, weatherDataEnd, command.TimeResolution);
             var weatherDateTimeList = TimeHelper.CreateTimelineAsList(new DateTimePeriod(weatherDataStart, weatherDataEnd), command.TimeResolution);
 

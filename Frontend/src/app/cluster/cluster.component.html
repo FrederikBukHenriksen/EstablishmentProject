@@ -1,23 +1,29 @@
 <h1>Sales statistics</h1>
 
-<button mat-stroked-button (click)="onFilterSales()">Filter sales</button>
-<button mat-stroked-button (click)="onLoad()">Load all</button>
+<!-- <button mat-stroked-button (click)="onFilterSales()">Filter sales</button>
+<button mat-stroked-button (click)="onLoad()">Load all</button> -->
 
 <div *ngFor="let collection of FetchDictionary">
   <mat-accordion class="accordion" multi>
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>
-        <mat-panel-title><h2>Time of day vs. spendings</h2></mat-panel-title>
+        <mat-panel-title
+          ><h2>{{ collection.title }}</h2></mat-panel-title
+        >
       </mat-expansion-panel-header>
-      <button mat-stroked-button (click)="onLoad()">Adjust bandwith</button>
 
-      <div *ngFor="let dialog of DialogConfigs | async">
-        <button mat-stroked-button (click)="dialog.action()">
-          {{ dialog.name }}
-        </button>
+      <div class="botton_box">
+        <div *ngFor="let dialog of collection.dialogs">
+          <button mat-stroked-button (click)="dialog.action()">
+            {{ dialog.name }}
+          </button>
+        </div>
       </div>
 
-      <app-table [tableModel]="TemperatureTableModel"></app-table>
+      <app-table
+        *ngIf="collection.clustersTable"
+        [tableModel]="collection.clustersTable"
+      ></app-table>
       <hr />
       <mat-accordion class="accordion" multi>
         <mat-expansion-panel>
@@ -27,7 +33,7 @@
           <mat-accordion class="accordion" multi>
             <div
               *ngFor="
-                let tableModel of TemperatureSaleTableModel | async;
+                let tableModel of collection.eachClustersTables;
                 let i = index
               "
             >
@@ -49,10 +55,7 @@
           </mat-expansion-panel-header>
           <mat-accordion class="accordion" multi>
             <div
-              *ngFor="
-                let graphModel of TemperatureSaleGraphModels | async;
-                let i = index
-              "
+              *ngFor="let graphModel of collection.graphModels; let i = index"
             >
               <mat-expansion-panel>
                 <mat-expansion-panel-header>

@@ -15,6 +15,7 @@ import {
   SettingsDataBase,
   DialogSlider,
   TextInputField,
+  DatePicker,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import {
@@ -28,6 +29,7 @@ import {
   ItemDTO,
   SaleClient,
   SalesSorting,
+  ValueTupleOfDateTimeAndDateTime,
 } from 'api';
 
 @Component({
@@ -36,16 +38,11 @@ import {
   styleUrls: ['./dialog-filter-sales.component.scss'],
 })
 export class DialogFilterSalesComponent {
-  private sessionStorageService = inject(SessionStorageService);
-  private activeEstablishment =
-    this.sessionStorageService.getActiveEstablishment();
-  private establishmentClient = inject(EstablishmentClient);
-
-  private itemClient = inject(ItemClient);
-
-  private dialogConfig: DialogConfig = new DialogConfig([]);
-
-  constructor(public dialog: MatDialog) {}
+  constructor(
+    public dialog: MatDialog,
+    public itemClient: ItemClient,
+    public sessionStorageService: SessionStorageService
+  ) {}
 
   private async buildDialog(): Promise<DialogConfig> {
     var itemOptions = (await this.GetItems()).map(
@@ -60,10 +57,12 @@ export class DialogFilterSalesComponent {
         'Contains precisely these',
         itemOptions
       ),
+      // new DatePicker('timeframetart'),
+      // new DatePicker('timeframeend'),
     ]);
   }
 
-  public async Open(): Promise<GetSalesCommand> {
+  public async Open(): Promise<SalesSorting> {
     var dialogConfig = await this.buildDialog();
     var data: { [key: string]: any } = await lastValueFrom(
       this.dialog
@@ -72,25 +71,27 @@ export class DialogFilterSalesComponent {
         })
         .afterClosed()
     );
-    return this.buildReturn(data);
+    var res = this.buildReturn(data);
+    return res;
   }
 
-  private buildReturn(data: { [key: string]: any }): GetSalesCommand {
-    var salesSorting: SalesSorting = {
+  private buildReturn(data: { [key: string]: any }): SalesSorting {
+    return {
       any: data['Any'],
       all: data['All'],
       excatly: data['Exact'],
+      // withinTimeperiods: [
+      //   {
+      //     item1: data['timeframetart'],
+      //     item2: data['timeframeend'],
+      //   },
+      // ] as ValueTupleOfDateTimeAndDateTime[],
     } as SalesSorting;
-
-    return {
-      establishmentId: this.sessionStorageService.getActiveEstablishment(),
-      salesSorting: salesSorting,
-    } as GetSalesCommand;
   }
 
   private async GetItems() {
     var getItemsCommand: GetItemsCommand = {
-      establishmentId: this.activeEstablishment,
+      establishmentId: this.sessionStorageService.getActiveEstablishment(),
     } as GetItemsCommand;
 
     var itemsIds: string[] = (
@@ -98,7 +99,7 @@ export class DialogFilterSalesComponent {
     ).items;
 
     var getItemDTOCommand: GetItemDTOCommand = {
-      establishmentId: this.activeEstablishment,
+      establishmentId: this.sessionStorageService.getActiveEstablishment(),
       itemsIds: itemsIds,
     } as GetItemDTOCommand;
 

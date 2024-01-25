@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import {
   AnalysisClient,
@@ -8,8 +8,10 @@ import {
   DateTimePeriod,
   GetSalesCommand,
   GetSalesReturn,
+  ItemClient,
   SaleClient,
   SalesSorting,
+  TimeResolution,
 } from 'api';
 import { lastValueFrom } from 'rxjs';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
@@ -33,18 +35,15 @@ export type GraphModel = {
 
 export type ImplementationDialog = {
   name: string;
-  action: (command: CorrelationCommand) => Promise<void>;
+  action: () => Promise<void>;
 };
 
 export interface CrossCorrelationImplementaion {
   title: string;
-  command: CorrelationCommand;
+  getSalesCommand: GetSalesCommand; //Accesable to set global Sales settings
+  correlationCommand: CorrelationCommand; //Accesable to set global Correlation settings
   dialogs: ImplementationDialog[];
-  fetch: (command: CorrelationCommand) => Promise<CorrelationReturn>;
-  result: CorrelationReturn | undefined;
-  buildTable: (data: CorrelationReturn) => Promise<TableModel>;
   tableModel: TableModel | undefined;
-  buildGraph: (data: CorrelationReturn) => Promise<GraphModel>;
   graphModel: GraphModel | undefined;
 }
 
@@ -53,88 +52,58 @@ export interface CrossCorrelationImplementaion {
   templateUrl: './cross-correlation.component.html',
   styleUrls: ['./cross-correlation.component.scss'],
 })
-export class CrossCorrelationComponent {
+export class CrossCorrelationComponent implements OnInit {
   private sessionStorageService = inject(SessionStorageService);
   private activeEstablishment =
     this.sessionStorageService.getActiveEstablishment();
 
   private analysisClient = inject(AnalysisClient);
+  private itemClient = inject(ItemClient);
+
   private salesClient = inject(SaleClient);
   public dialog = inject(MatDialog);
 
-  constructor() {
-    this.salesFilterDialog = new DialogFilterSalesComponent(this.dialog);
-    this.graphSettingsDialog = new DialogGraphSettingsComponent(this.dialog);
+  ngOnInit(): void {
+    this.collectionOfImplementaions.forEach((element) => {
+      element.getSalesCommand = this.initGetSalesCommand();
+      element.correlationCommand = this.initCorrelationCommand();
+    });
   }
 
-  protected getSalesCommand: GetSalesCommand = {
-    establishmentId: this.activeEstablishment,
-    salesSorting: {} as SalesSorting,
-  } as GetSalesCommand;
+  private initGetSalesCommand(): GetSalesCommand {
+    return {
+      establishmentId: this.sessionStorageService.getActiveEstablishment()!,
+      salesSorting: {},
+    } as GetSalesCommand;
+  }
 
-  protected GeneralCorrelationCommand: CorrelationCommand = {
-    establishmentId: this.activeEstablishment,
-  } as CorrelationCommand;
+  private initCorrelationCommand(): CorrelationCommand {
+    var timeOffset = 1;
+    var timeFrameAmountOfDays = 7;
 
-  // public collectionOfImplementaions: CrossCorrelation_Sales_Temperature[] = [
-  //   new CrossCorrelation_Sales_Temperature(
-  //     this.GeneralCorrelationCommand,
-  //     this.analysisClient,
-  //     this.dialog
-  //   ),
-  // ];
+    var endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - timeFrameAmountOfDays);
+
+    return {
+      establishmentId: this.sessionStorageService.getActiveEstablishment()!,
+      salesIds: [] as string[],
+      timePeriod: {
+        start: startDate,
+        end: endDate,
+      } as DateTimePeriod,
+      timeResolution: TimeResolution.Date,
+      maxLag: 10,
+    } as CorrelationCommand;
+  }
 
   public collectionOfImplementaions: CrossCorrelationImplementaion[] = [
     new CrossCorrelation_Sales_Temperature(
-      this.GeneralCorrelationCommand,
-      this.getSalesCommand,
-      this.salesClient,
       this.analysisClient,
       this.sessionStorageService,
-      this.dialog
+      this.itemClient,
+      this.dialog,
+      this.salesClient
     ),
   ];
-
-  protected salesFilterDialog!: DialogFilterSalesComponent;
-  protected graphSettingsDialog: DialogGraphSettingsComponent;
-  protected graphSettings!: GraphSettings;
-
-  protected fetchSalesData: (
-    command: GetSalesCommand
-  ) => Promise<GetSalesReturn> = async () => {
-    return lastValueFrom(this.salesClient.getSales(this.getSalesCommand));
-  };
-
-  protected async onFilterSales() {
-    this.getSalesCommand = await this.salesFilterDialog.Open();
-  }
-
-  protected async onGraphSettings() {
-    this.graphSettings = await this.graphSettingsDialog.Open();
-    console.log('graphSettings', this.graphSettings);
-  }
-
-  protected async onLoad() {
-    this.collectionOfImplementaions.forEach(async (element) => {
-      // element.command.timeResolution = this.graphSettings.timeresolution;
-      // element.command.timePeriod = this.graphSettings.timeframe;
-      element.command.timePeriod = {
-        start: new Date('2021-01-01'),
-        end: new Date('2021-01-02'),
-      } as DateTimePeriod;
-      element.command.timeResolution = 1;
-
-      const activeEstablishment =
-        this.sessionStorageService.getActiveEstablishment()!;
-      this.getSalesCommand.establishmentId = activeEstablishment;
-      var salesIds: string[] = (
-        await lastValueFrom(this.salesClient.getSales(this.getSalesCommand))
-      ).sales;
-      element.command.salesIds = salesIds;
-
-      element.result = await element.fetch(element.command);
-      element.tableModel = await element.buildTable(element.result);
-      element.graphModel = await element.buildGraph(element.result);
-    });
-  }
 }

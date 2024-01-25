@@ -2,10 +2,21 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
+  DatePicker,
   DialogBase,
   DialogConfig,
   DialogSlider,
+  DropDown,
+  DropDownOption,
 } from '../dialog-checkbox/dialog-checkbox.component';
+import { TimeResolution } from 'api';
+
+export type DialogCrossCorrelationSettingsReturn = {
+  maxLag: number | undefined;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  timeResolution: TimeResolution | undefined;
+};
 
 @Component({
   selector: 'app-dialog-cross-correlation-settings',
@@ -18,10 +29,18 @@ export class DialogCrossCorrelationSettingsComponent {
   private async buildDialog(): Promise<DialogConfig> {
     return new DialogConfig([
       new DialogSlider('maxLag', 'Maximum allowed lag', 1, 24, 1),
+      new DatePicker('timeframetart'),
+      new DatePicker('timeframeend'),
+      new DropDown('timeresolution', 'Time resolution', [
+        new DropDownOption('Hourly', 0, true),
+        new DropDownOption('Daily', 1, false),
+        new DropDownOption('Monthly', 2, false),
+        new DropDownOption('Yearly', 3, false),
+      ]),
     ]);
   }
 
-  public async Open(): Promise<number> {
+  public async Open(): Promise<DialogCrossCorrelationSettingsReturn> {
     var dialogConfig = await this.buildDialog();
     var data: { [key: string]: any } = await lastValueFrom(
       this.dialog
@@ -30,6 +49,11 @@ export class DialogCrossCorrelationSettingsComponent {
         })
         .afterClosed()
     );
-    return data['maxLag'];
+    return {
+      maxLag: data['maxLag'] as number,
+      startDate: data['timeframetart'] as Date,
+      endDate: data['timeframeend'] as Date,
+      timeResolution: data['timeresolution'] as TimeResolution,
+    } as DialogCrossCorrelationSettingsReturn;
   }
 }
