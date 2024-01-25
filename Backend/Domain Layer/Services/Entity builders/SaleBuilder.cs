@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using WebApplication1.Data.DataModels;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
@@ -28,20 +26,9 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             this.itemRepository = itemRepository;
         }
 
-        public override void ReadPropertiesOfEntity(Sale entity)
+        public override void ConstructEntity(Sale Entity)
         {
-            this.builderTimestampArrival = entity.TimestampArrival;
-            this.builderTimestampPayment = entity.TimestampPayment;
-            this.builderSalesItems = entity.SalesItems;
-            this.builderTable = entity.Table;
-        }
-
-        public override void WritePropertiesOfEntity(Sale Entity)
-        {
-            Entity.TimestampArrival = (DateTime?)this.builderTimestampArrival;
-            Entity.TimestampPayment = (DateTime)this.builderTimestampPayment;
-            Entity.SalesItems = (List<SalesItems>)this.builderSalesItems;
-            Entity.Table = (Table)this.builderTable;
+            this.Entity = new Sale(timestampPayment: (DateTime)this.builderTimestampPayment, salesItems: this.builderSalesItems, timestampArrival: this.builderTimestampArrival, table: this.builderTable);
         }
 
         public ISaleBuilder WithTimestampArrival(DateTime? timestampArrival)
@@ -64,22 +51,8 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
         public ISaleBuilder WithSoldItems(List<(Item item, int quantity)> itemsAndQuantities)
         {
-            var projectedToSalesItems = itemsAndQuantities.Select(x => new SalesItemsBuilder().WithSale(this.Entity).WithItem(x.item).WithQuantity(x.quantity).Build());
-            this.builderSalesItems = projectedToSalesItems.ToList();
+            this.builderSalesItems = itemsAndQuantities.Select(x => new SalesItems(x.item, x.quantity)).ToList();
             return this;
         }
-
-        public override bool Validation()
-        {
-            if (!this.DoesSaleHavePaymentTimestamp()) throw new System.Exception("Sale must have a timestamp for payment");
-            return true;
-        }
-
-        private bool DoesSaleHavePaymentTimestamp()
-        {
-            return builderTimestampPayment != null;
-        }
-
-
     }
 }

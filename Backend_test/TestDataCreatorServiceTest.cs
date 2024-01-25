@@ -47,7 +47,7 @@ namespace EstablishmentProject.test
             var DistributionFunction = TestDataCreatorService.GetLinearFuncition(1, 1);
 
             //Act
-            var distribution = testDataCreatorService.GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
+            var distribution = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
 
             //Assert
             Assert.Equal(24 * 7, distribution.Count()); //Correct number of entries
@@ -108,8 +108,8 @@ namespace EstablishmentProject.test
         };
 
             List<(Item, int)> soldItems = new List<(Item, int)> {
-                (factoryServiceBuilder.ItemBuilder().WithName("Coffee").WithPrice(25).Build(), 1),
-                (factoryServiceBuilder.ItemBuilder().WithName("Bun").WithPrice(50).Build(), 1)
+                (factoryServiceBuilder.ItemBuilder().withName("Coffee").withPrice(25).Build(), 1),
+                (factoryServiceBuilder.ItemBuilder().withName("Bun").withPrice(50).Build(), 1)
             };
 
             //Act
@@ -143,7 +143,7 @@ namespace EstablishmentProject.test
             };
 
             //Act
-            List<DateTime> timelineOpeningHours = testDataCreatorService.FilterDistrubutionBasedOnOpeningHours(fullWeekTimeline, openingHours);
+            List<DateTime> timelineOpeningHours = testDataCreatorService.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(fullWeekTimeline, openingHours);
 
             //Assert
             Dictionary<DayOfWeek, List<DateTime>> groupedByOpenHours = timelineOpeningHours.GroupBy(x => x.DayOfWeek).ToDictionary(x => x.Key, x => x.ToList());

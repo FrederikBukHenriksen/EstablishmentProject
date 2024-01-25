@@ -1,4 +1,5 @@
-﻿using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
+﻿using DMIOpenData;
+using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
 using WebApplication1.Application_Layer.Handlers.ItemHandler;
 using WebApplication1.Application_Layer.Handlers.SalesHandlers;
@@ -37,6 +38,7 @@ namespace WebApplication1.Program
 
             serviceCollection.AddScoped<IFactoryServiceBuilder, FactoryServiceBuilder>();
             serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
+            serviceCollection.AddScoped<IWeatherApi, DmiWeatherApi>();
         }
 
         public static void AddRepositories(this IServiceCollection serviceCollection)

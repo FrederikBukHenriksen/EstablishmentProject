@@ -990,7 +990,6 @@ export class Establishment extends EntityBase {
     items!: Item[];
     tables!: Table[];
     sales!: Sale[];
-    employees!: Employee[];
 
     override init(_data?: any) {
         super.init(_data);
@@ -1011,11 +1010,6 @@ export class Establishment extends EntityBase {
                 this.sales = [] as any;
                 for (let item of _data["sales"])
                     this.sales!.push(Sale.fromJS(item));
-            }
-            if (Array.isArray(_data["employees"])) {
-                this.employees = [] as any;
-                for (let item of _data["employees"])
-                    this.employees!.push(Employee.fromJS(item));
             }
         }
     }
@@ -1045,11 +1039,6 @@ export class Establishment extends EntityBase {
             data["sales"] = [];
             for (let item of this.sales)
                 data["sales"].push(item.toJSON());
-        }
-        if (Array.isArray(this.employees)) {
-            data["employees"] = [];
-            for (let item of this.employees)
-                data["employees"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
@@ -1225,9 +1214,8 @@ export class Sale extends EntityBase {
     paymentType!: PaymentType | undefined;
     timestampArrival!: Date | undefined;
     timestampPayment!: Date;
-    salesItems!: SalesItems[];
+    salesItems!: SalesItems[] | undefined;
     table!: Table | undefined;
-    employee!: Employee | undefined;
 
     override init(_data?: any) {
         super.init(_data);
@@ -1243,7 +1231,6 @@ export class Sale extends EntityBase {
                     this.salesItems!.push(SalesItems.fromJS(item));
             }
             this.table = _data["table"] ? Table.fromJS(_data["table"]) : <any>undefined;
-            this.employee = _data["employee"] ? Employee.fromJS(_data["employee"]) : <any>undefined;
         }
     }
 
@@ -1267,7 +1254,6 @@ export class Sale extends EntityBase {
                 data["salesItems"].push(item.toJSON());
         }
         data["table"] = this.table ? this.table.toJSON() : <any>undefined;
-        data["employee"] = this.employee ? this.employee.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -1312,26 +1298,6 @@ export class SalesItems extends EntityBase {
         data["sale"] = this.sale ? this.sale.toJSON() : <any>undefined;
         data["item"] = this.item ? this.item.toJSON() : <any>undefined;
         data["quantity"] = this.quantity;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Employee extends EntityBase {
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): Employee {
-        data = typeof data === 'object' ? data : {};
-        let result = new Employee();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
         super.toJSON(data);
         return data;
     }
@@ -2280,9 +2246,9 @@ export class GetSalesCommand extends CommandBase {
 
 export class SalesSorting {
     any!: string[] | undefined;
-    contains!: string[] | undefined;
+    excatly!: string[] | undefined;
     all!: string[] | undefined;
-    withinTimeperiods!: DateTimePeriod[] | undefined;
+    withinTimeperiods!: ValueTupleOfDateTimeAndDateTime[] | undefined;
     mustContainAllAttributes!: SaleAttributes[] | undefined;
 
     init(_data?: any) {
@@ -2292,10 +2258,10 @@ export class SalesSorting {
                 for (let item of _data["any"])
                     this.any!.push(item);
             }
-            if (Array.isArray(_data["contains"])) {
-                this.contains = [] as any;
-                for (let item of _data["contains"])
-                    this.contains!.push(item);
+            if (Array.isArray(_data["excatly"])) {
+                this.excatly = [] as any;
+                for (let item of _data["excatly"])
+                    this.excatly!.push(item);
             }
             if (Array.isArray(_data["all"])) {
                 this.all = [] as any;
@@ -2305,7 +2271,7 @@ export class SalesSorting {
             if (Array.isArray(_data["withinTimeperiods"])) {
                 this.withinTimeperiods = [] as any;
                 for (let item of _data["withinTimeperiods"])
-                    this.withinTimeperiods!.push(DateTimePeriod.fromJS(item));
+                    this.withinTimeperiods!.push(ValueTupleOfDateTimeAndDateTime.fromJS(item));
             }
             if (Array.isArray(_data["mustContainAllAttributes"])) {
                 this.mustContainAllAttributes = [] as any;
@@ -2329,10 +2295,10 @@ export class SalesSorting {
             for (let item of this.any)
                 data["any"].push(item);
         }
-        if (Array.isArray(this.contains)) {
-            data["contains"] = [];
-            for (let item of this.contains)
-                data["contains"].push(item);
+        if (Array.isArray(this.excatly)) {
+            data["excatly"] = [];
+            for (let item of this.excatly)
+                data["excatly"].push(item);
         }
         if (Array.isArray(this.all)) {
             data["all"] = [];
@@ -2353,13 +2319,37 @@ export class SalesSorting {
     }
 }
 
+export class ValueTupleOfDateTimeAndDateTime {
+    item1!: Date;
+    item2!: Date;
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"] ? new Date(_data["item1"].toString()) : <any>undefined;
+            this.item2 = _data["item2"] ? new Date(_data["item2"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfDateTimeAndDateTime {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfDateTimeAndDateTime();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1 ? this.item1.toISOString() : <any>undefined;
+        data["item2"] = this.item2 ? this.item2.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
 export enum SaleAttributes {
     Table = 0,
-    Employee = 1,
-    Items = 2,
-    TimestampPayment = 3,
-    TimestampCreation = 4,
-    EstablishmentId = 5,
+    Items = 1,
+    TimestampPayment = 2,
+    TimestampArrival = 3,
 }
 
 export class SalesStatisticsReturn extends ReturnBase {

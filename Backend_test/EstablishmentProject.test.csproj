@@ -8,6 +8,7 @@
 	  <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
 	  <PreserveCompilationContext>true</PreserveCompilationContext>
+	  <LangVersion>preview</LangVersion>
 
   </PropertyGroup>
 
@@ -36,6 +37,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Handlers\HandlerServices\" />
+    <Folder Include="Application\Handlers\Clustering\" />
   </ItemGroup>
 
 </Project>

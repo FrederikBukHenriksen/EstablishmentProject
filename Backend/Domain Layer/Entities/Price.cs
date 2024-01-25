@@ -18,6 +18,10 @@
             this.Currency = currency;
         }
 
+        public Price(double price, Currency? currency)
+        {
+        }
+
         public double Value { get; set; }
         public Currency Currency { get; set; }
 

@@ -12,20 +12,6 @@ namespace EstablishmentProject.test.Domain.Builders
             factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
         }
 
-        [Fact]
-        public void UseExistingEstablishment__Success()
-        {
-            //Arrange
-            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").Build();
-
-            //Act
-            var existingUser = factoryServiceBuilder.UserBuilder(user).Build();
-
-            //Assert
-            Assert.NotNull(user);
-            Assert.NotNull(existingUser);
-            Assert.Equal(user, existingUser);
-        }
 
         [Fact]
         public void WithEmail__Success()

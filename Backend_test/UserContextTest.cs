@@ -41,11 +41,11 @@ namespace EstablishmentProject.test
             //Arrange
             establishment1 = _factoryServiceBuilder
                 .EstablishmentBuilder()
-                .SetName("Cafe 1")
+                .withName("Cafe 1")
                 .Build();
             establishment2 = _factoryServiceBuilder
                 .EstablishmentBuilder()
-                .SetName("Cafe 2")
+                .withName("Cafe 2")
                 .Build();
             allEstablishments = new List<Establishment> { establishment1, establishment2 };
             dbContext.Set<Establishment>().AddRange(allEstablishments);

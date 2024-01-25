@@ -7,6 +7,13 @@ namespace WebApplication1.Domain_Layer.Entities
         public Guid EstablishmentId { get; set; }
         public string Name { get; set; }
         public Price Price { get; set; }
+
+        public Item() { }
+        public Item(string name, Price price)
+        {
+            this.Name = name;
+            this.Price = price;
+        }
     }
 
     public class ItemConfiguration : IEntityTypeConfiguration<Item>

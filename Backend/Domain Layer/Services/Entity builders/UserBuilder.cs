@@ -24,13 +24,7 @@ namespace WebApplication1.Domain_Layer.Entities
             this.userRepository = userRepository;
         }
 
-        public override void ReadPropertiesOfEntity(User entity)
-        {
-            this.builderEmail = entity.Email;
-            this.builderPassword = entity.Password;
-        }
-
-        public override void WritePropertiesOfEntity(User Entity)
+        public override void ConstructEntity(User Entity)
         {
             Entity.Email = (string)this.builderEmail;
             Entity.Password = (string)this.builderPassword;
@@ -48,12 +42,6 @@ namespace WebApplication1.Domain_Layer.Entities
         {
             this.builderPassword = password;
             return this;
-        }
-
-        public override bool Validation()
-        {
-            if (!this.IsEmailUnique(this.builderEmail)) throw new Exception("Email is not unique");
-            return true;
         }
 
         private bool IsEmailUnique(string email) => !(this.userRepository.GetAll().Any(u => u.Email == this.builderEmail));

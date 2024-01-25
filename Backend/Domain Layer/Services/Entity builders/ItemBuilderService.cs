@@ -1,12 +1,11 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
+﻿using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
     public interface IItemBuilderService : IEntityBuilder<Item>
     {
-        IItemBuilderService WithName(string name);
-        IItemBuilderService WithPrice(double price);
+        IItemBuilderService withName(string name);
+        IItemBuilderService withPrice(double price, Currency? currency = null);
     }
 
     public class ItemBuilderService : EntityBuilderBase<Item>, IItemBuilderService
@@ -14,41 +13,25 @@ namespace WebApplication1.Domain_Layer.Entities
         private string? builderName = null;
         private Price? builderPrice = null;
 
-        public override void ReadPropertiesOfEntity(Item entity)
+
+        public override void ConstructEntity(Item entity)
         {
-            this.builderName = entity.Name;
-            this.builderPrice = entity.Price;
+            this.Entity = new Item(this.builderName, this.builderPrice);
         }
 
-        public override void WritePropertiesOfEntity(Item entity)
-        {
-            entity.Name = (string)this.builderName;
-            entity.Price = this.builderPrice;
-        }
-
-        public IItemBuilderService WithName(string name)
+        public IItemBuilderService withName(string name)
         {
             this.builderName = name;
             return this;
         }
 
-        public IItemBuilderService WithPrice(double price)
+        public IItemBuilderService withPrice(double price, Currency? currency = null)
         {
-            this.builderPrice = new Price(price, Currency.DKK);
+            currency ??= Currency.DKK;
+            this.builderPrice = new Price(price, currency!);
             return this;
         }
 
-        public override bool Validation()
-        {
-            if (!this.doesItemHaveAName()) throw new Exception("Item must have a name");
-            return true;
-        }
-
-
-        private bool doesItemHaveAName()
-        {
-            return !(this.builderName.IsNullOrEmpty());
-        }
     }
 }
 

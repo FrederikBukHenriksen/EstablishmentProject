@@ -8,18 +8,17 @@ namespace WebApplication1.Data.DataModels
     {
         public virtual Sale Sale { get; set; }
         public virtual Item Item { get; set; }
-        public int Quantity { get; set; }
+        public int quantity { get; set; }
 
         public SalesItems()
         {
 
         }
 
-        public SalesItems(Sale Sale, Item Item, int Quantity)
+        public SalesItems(Item Item, int Quantity)
         {
-            this.Sale = Sale;
             this.Item = Item;
-            this.Quantity = Quantity;
+            this.quantity = Quantity;
         }
 
         public class SalesItemsConfiguration : IEntityTypeConfiguration<SalesItems>

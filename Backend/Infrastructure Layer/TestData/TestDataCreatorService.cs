@@ -1,7 +1,9 @@
 ﻿using NodaTime;
+using System.Globalization;
 using WebApplication1.Data.DataModels;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
+using WebApplication1.Utils;
 
 namespace WebApplication1.Infrastructure.Data
 {
@@ -9,10 +11,18 @@ namespace WebApplication1.Infrastructure.Data
     public interface ITestDataCreatorService
     {
         List<OpeningHours> CreateSimpleOpeningHoursForWeek(LocalTime open, LocalTime close);
-        List<DateTime> FilterDistrubutionBasedOnOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours);
+        List<DateTime> SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours);
+        List<DateTime> OpenHoursCalendar(DateTime datetimeStart, DateTime datetimeEnd, TimeResolution timeResolution, List<OpeningHours> openingHours);
+
         List<Sale> SaleGenerator(List<(Item item, int quanity)> items, Dictionary<DateTime, int> DistributionOverTime);
         Dictionary<DateTime, int> AggregateDistributions(List<Dictionary<DateTime, int>> listOfDistributions);
-        Dictionary<DateTime, int> GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> dateExtractor, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> SLETTES_GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> dateExtractor, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> DistributionHour(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> DistributionDay(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> DistributionWeek(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> DistributionDayOfYear(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> DistributionMonth(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
+        Dictionary<DateTime, int> DistributionYear(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
     }
 
     public class TestDataCreatorService : ITestDataCreatorService
@@ -40,13 +50,13 @@ namespace WebApplication1.Infrastructure.Data
             this.factoryServiceBuilder = factoryServiceBuilder;
         }
 
-        public Dictionary<DateTime, int> GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> dateExtractor, Func<double, double> distributionFunction)
+        public Dictionary<DateTime, int> SLETTES_GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> valueExtractor, Func<double, double> distributionFunction)
         {
             Dictionary<DateTime, int> dictionary = new Dictionary<DateTime, int>();
 
             foreach (DateTime date in dateTimePoints)
             {
-                int time = dateExtractor(date);
+                int time = valueExtractor(date);
                 double value = distributionFunction(time);
                 dictionary.Add(date, (int)value);
             }
@@ -144,7 +154,7 @@ namespace WebApplication1.Infrastructure.Data
             return openingHoursList;
         }
 
-        public List<DateTime> FilterDistrubutionBasedOnOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours)
+        public List<DateTime> SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours)
         {
             foreach (OpeningHours openingHour in openingHours)
             {
@@ -178,31 +188,6 @@ namespace WebApplication1.Infrastructure.Data
             return dictionary;
         }
 
-        //public List<Sale> SaleGenerator(List<(Item item, int quanity)> items, Dictionary<DateTime, int> DistributionOverTime)
-        //{
-        //    List<Sale> sales = new List<Sale>();
-
-        //    //Iterate over the distribution
-        //    foreach (KeyValuePair<DateTime, int> entry in DistributionOverTime)
-        //    {
-        //        var date = entry.Key;
-        //        var value = entry.Value;
-
-        //        //Sale sale = this.factoryServiceBuilder.SaleBuilder().WithTimestampPayment(date).WithSoldItems(items).Build();
-        //        Sale sale = new Sale();
-        //        sale.TimestampPayment = date;
-        //        sale.SalesItems = items.Select(x => new SalesItems(sale, x.item, x.quanity)).ToList();
-        //        for (int i = 0; i < value; i++)
-        //        {
-        //            sales.Add(sale);
-        //        }
-
-
-
-
-        //    }
-        //    return sales;
-        //}
         public List<Sale> SaleGenerator(List<(Item item, int quanity)> items, Dictionary<DateTime, int> DistributionOverTime)
         {
             List<Sale> sales = new List<Sale>();
@@ -219,7 +204,7 @@ namespace WebApplication1.Infrastructure.Data
                     Sale sale = new Sale
                     {
                         TimestampPayment = date,
-                        SalesItems = items.Select(x => new SalesItems(null, x.item, x.quanity)).ToList()
+                        SalesItems = items.Select(x => new SalesItems(x.item, x.quanity)).ToList()
                         // Note: Use null as the Sale reference for now; it will be set later
                     };
 
@@ -235,6 +220,42 @@ namespace WebApplication1.Infrastructure.Data
 
             return sales;
         }
+
+        public List<DateTime> OpenHoursCalendar(DateTime start, DateTime end, TimeResolution timeResolution, List<OpeningHours> openingHours)
+        {
+            var timeline = TimeHelper.CreateTimelineAsList(start, end, TimeResolution.Hour);
+            return this.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timeline, openingHours);
+        }
+
+        public Dictionary<DateTime, int> DistributionHour(List<DateTime> dateTimePoints, Func<double, double> distributionFunction)
+        {
+            return this.SLETTES_GenerateDistributionFromTimeline(dateTimePoints, x => x.Hour, distributionFunction);
+        }
+        public Dictionary<DateTime, int> DistributionDay(List<DateTime> dateTimePoints, Func<double, double> distributionFunction)
+        {
+            return this.SLETTES_GenerateDistributionFromTimeline(dateTimePoints, x => x.Day, distributionFunction);
+        }
+        public Dictionary<DateTime, int> DistributionWeek(List<DateTime> dateTimePoints, Func<double, double> distributionFunction)
+        {
+            Calendar calendar = CultureInfo.CurrentCulture.Calendar;
+            return this.SLETTES_GenerateDistributionFromTimeline(dateTimePoints, x => calendar.GetWeekOfYear(x, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday), distributionFunction);
+        }
+
+        public Dictionary<DateTime, int> DistributionDayOfYear(List<DateTime> dateTimePoints, Func<double, double> distributionFunction)
+        {
+            return this.SLETTES_GenerateDistributionFromTimeline(dateTimePoints, x => x.DayOfYear, distributionFunction);
+        }
+
+        public Dictionary<DateTime, int> DistributionMonth(List<DateTime> dateTimePoints, Func<double, double> distributionFunction)
+        {
+            return this.SLETTES_GenerateDistributionFromTimeline(dateTimePoints, x => x.Month + 1, distributionFunction);
+        }
+
+        public Dictionary<DateTime, int> DistributionYear(List<DateTime> dateTimePoints, Func<double, double> distributionFunction)
+        {
+            return this.SLETTES_GenerateDistributionFromTimeline(dateTimePoints, x => x.Year, distributionFunction);
+        }
+
 
     }
 }

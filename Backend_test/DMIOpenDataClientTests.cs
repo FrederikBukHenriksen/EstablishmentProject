@@ -1,18 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using Xunit;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Moq;
-using Moq.Protected;
-using Xunit;
 using DMIOpenData;
 using RichardSzalay.MockHttp;
-using System.Net.Http.Json;
-using Microsoft.AspNetCore.Http;
+using System.Net;
 using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Utils;
 
 namespace EstablishmentProject.test
 {
@@ -31,13 +21,13 @@ namespace EstablishmentProject.test
             // Arrange
             var startTime = new DateTime(2022, 1, 1, 0, 0, 0); ;
             var endTime = new DateTime(2022, 1, 1, 23, 59, 59, 999);
-            
+
             HttpClient mockHttpClient = createHttpClientForWeatherApi();
 
             var client = new DmiWeatherApi(mockHttpClient);
 
             // Act
-            var result =  await client.GetMeanTemperaturePerHour(coordinatesOfMyApartment, startTime, endTime);
+            var result = await client.GetTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
 
             // Assert
             Assert.All(result, date => Assert.InRange(date.Item1, startTime, endTime));
@@ -56,11 +46,12 @@ namespace EstablishmentProject.test
 
             // Act
 
-            List<(DateTime,double)>? result = null;
+            List<(DateTime, double)>? result = null;
             ArgumentException? exception = null;
 
-            try { 
-                result = await client.GetMeanTemperaturePerHour(coordinatesOfMyApartment, startTime, endTime);
+            try
+            {
+                result = await client.GetTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
             }
             catch (ArgumentException e)
             {

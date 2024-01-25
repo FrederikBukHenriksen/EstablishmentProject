@@ -22,7 +22,6 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
             this.TimestampPayment = sale.TimestampPayment;
             this.SalesItems = sale.SalesItems.Select(salesItem => salesItem.Id).ToList();
             this.Table = sale.Table?.Id;
-            this.Employee = sale.Employee?.Id;
         }
     }
 }

@@ -2,7 +2,7 @@
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 
-namespace EstablishmentProject.test
+namespace EstablishmentProject.test.Repositories
 {
     public class RepositoryTest : BaseIntegrationTest
     {

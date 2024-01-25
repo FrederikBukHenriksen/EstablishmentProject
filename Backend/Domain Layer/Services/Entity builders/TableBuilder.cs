@@ -12,12 +12,8 @@ namespace WebApplication1.Domain_Layer.Entities
 
         private string? builderName = null;
 
-        public override void ReadPropertiesOfEntity(Table entity)
-        {
-            this.builderName = entity.Name;
-        }
 
-        public override void WritePropertiesOfEntity(Table Entity)
+        public override void ConstructEntity(Table Entity)
         {
             Entity.Name = (string)this.builderName;
         }
@@ -26,10 +22,6 @@ namespace WebApplication1.Domain_Layer.Entities
         {
             this.builderName = name;
             return this;
-        }
-        public override bool Validation()
-        {
-            return true;
         }
 
 

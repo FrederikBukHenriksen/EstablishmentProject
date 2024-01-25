@@ -26,10 +26,27 @@ namespace WebApplication1.Domain_Layer.Entities
         public PaymentType? PaymentType { get; set; }
         public DateTime? TimestampArrival { get; set; } = null;
         public DateTime TimestampPayment { get; set; }
-        public virtual List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
+        public virtual List<SalesItems>? SalesItems { get; set; } = new List<SalesItems>();
         public virtual Table? Table { get; set; } = null;
-        public virtual Employee? Employee { get; set; } = null;
+        public Sale()
+        {
+        }
 
+        public Sale(
+            DateTime timestampPayment,
+            SaleType? saleType = null,
+            PaymentType? paymentType = null,
+            DateTime? timestampArrival = null,
+            List<SalesItems>? salesItems = null,
+            Table? table = null)
+        {
+            this.SaleType = saleType;
+            this.PaymentType = paymentType;
+            this.TimestampArrival = timestampArrival;
+            this.TimestampPayment = timestampPayment;
+            this.SalesItems = salesItems ?? new List<SalesItems>();
+            this.Table = table;
+        }
 
         public DateTime GetTimeOfSale()
         {
@@ -54,7 +71,7 @@ namespace WebApplication1.Domain_Layer.Entities
                 {
                     if (!(salesItem == null))
                     {
-                        totalPrice += salesItem.Item.Price.Value * salesItem.Quantity;
+                        totalPrice += salesItem.Item.Price.Value * salesItem.quantity;
                     }
                 }
             }

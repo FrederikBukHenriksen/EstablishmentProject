@@ -170,6 +170,35 @@ namespace WebApplication1.Utils
             return timeline;
         }
 
+        public static List<DateTime> CreateTimelineAsList(DateTime start, DateTime end, TimeResolution resolution)
+        {
+            Func<DateTime, DateTime> res = x =>
+            {
+                switch (resolution)
+                {
+                    case TimeResolution.Hour:
+                        return x.AddHours(1);
+                    case TimeResolution.Date:
+                        return x.AddDays(1);
+                    case TimeResolution.Month:
+                        return x.AddMonths(1);
+                    case TimeResolution.Year:
+                        return x.AddYears(1);
+                    default:
+                        return x;
+                }
+            };
+
+            List<DateTime> timeline = new List<DateTime>();
+
+            for (DateTime date = TimeResolutionUniqueRounder(start, resolution); date <= end; date = res(date))
+            {
+                timeline.Add(date);
+            }
+
+            return timeline;
+        }
+
         public static LocalDate GetLocalDateFromDateTime(DateTime datetime)
         {
             return new LocalDate(datetime.Year, datetime.Month, datetime.Day);

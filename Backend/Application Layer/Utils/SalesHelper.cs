@@ -7,67 +7,96 @@ namespace WebApplication1.Utils
     public enum SaleAttributes
     {
         Table,
-        Employee,
         Items,
         TimestampPayment,
-        TimestampCreation,
-        EstablishmentId,
+        TimestampArrival,
     }
 
     public class SalesSorting
     {
         public List<Guid>? Any { get; set; }
-        public List<Guid>? Contains { get; set; }
+        public List<Guid>? Excatly { get; set; }
         public List<Guid>? All { get; set; }
-        public List<DateTimePeriod>? WithinTimeperiods { get; set; }
+        public List<(DateTime start, DateTime end)>? WithinTimeperiods { get; set; }
         public List<SaleAttributes>? MustContainAllAttributes { get; set; }
+
     }
 
     public static class SalesSortingParametersExecute
     {
-        public static IEnumerable<Sale> SortSales(this IEnumerable<Sale> sales, SalesSorting salesSortingParameters)
+        public static List<Sale> SortSales(List<Sale> sales, SalesSorting salesSortingParameters)
         {
-            if (!salesSortingParameters.WithinTimeperiods.IsNullOrEmpty())
-            {
-                sales = SalesHelper.SortSalesByTimePeriods(sales.ToList(), salesSortingParameters.WithinTimeperiods);
-            }
             if (!salesSortingParameters.Any.IsNullOrEmpty())
             {
-                sales = SalesHelper.SortSalesByItems(sales, salesSortingParameters.Any);
+                sales = SalesHelper.AnyFilter(sales, salesSortingParameters.Any);
+            }
+            if (!salesSortingParameters.All.IsNullOrEmpty())
+            {
+                sales = SalesHelper.AllFilter(sales, salesSortingParameters.All);
+            }
+            if (!salesSortingParameters.Excatly.IsNullOrEmpty())
+            {
+                sales = SalesHelper.ExcatlyFilter(sales, salesSortingParameters.Excatly);
+            }
+            if (!salesSortingParameters.WithinTimeperiods.IsNullOrEmpty())
+            {
+                sales = SalesHelper.SortSalesByTimePeriod(sales, salesSortingParameters.WithinTimeperiods);
             }
             return sales;
         }
     }
-    public static partial class SalesHelper
+
+    public static class SalesHelper
     {
 
-        public static List<Sale> SortSalesByTimePeriod(this List<Sale> sales, DateTimePeriod timePeriods)
+        public static List<Sale> AnyFilter(this List<Sale> sales, List<Guid> itemIds)
         {
-            return sales.SortEntitiesWithinDateTimePeriod(timePeriods, (x) => x.TimestampPayment);
+            return sales.Where(sale => sale.SalesItems.Any(salesItem => itemIds.Contains(salesItem.Item.Id))).ToList();
         }
 
-        public static List<Sale> SortSalesByTimePeriods(this List<Sale> sales, List<DateTimePeriod> timePeriods)
+        public static List<Sale> AllFilter(this List<Sale> sales, List<Guid> itemIds)
         {
-            return sales.SortEntitiesWithinTimePeriods(timePeriods, (x) => x.TimestampPayment);
+            return sales.Where(sale => itemIds.All(itemId => sale.SalesItems.Any(salesItem => salesItem.Item.Id == itemId))).ToList();
         }
 
-        public static IEnumerable<Sale> SortSalesByItems(this IEnumerable<Sale> sales, IEnumerable<Item> mustContainedItems)
+        public static List<Sale> ExcatlyFilter(this List<Sale> sales, List<Guid> itemIds)
         {
-            return sales.Where(sale => mustContainedItems.All(item => sale.SalesItems.Any(x => x.Item == item))).ToList();
+            return sales.Where(sale => sale.SalesItems.Count == itemIds.Count && itemIds.All(itemId => sale.SalesItems.Any(salesItem => salesItem.Item.Id == itemId))).ToList();
         }
 
-        public static IEnumerable<Sale> SortSalesByItems(this IEnumerable<Sale> sales, IEnumerable<Guid> mustContainedItems)
+        public static List<Sale> SortSalesByTimePeriod(this List<Sale> sales, List<(DateTime start, DateTime end)> timeframes)
         {
-            return sales.Where(sale => mustContainedItems.All(item => sale.SalesItems.Any(x => x.Item.Id == item))).ToList();
+            List<DateTimePeriod> periods = timeframes.Select(timeframe => new DateTimePeriod(timeframe.start, timeframe.end)).ToList();
+            foreach (var period in periods)
+            {
+                sales = sales.Where(sale => sale.GetTimeOfSale() >= period.Start && sale.GetTimeOfSale() <= period.End).ToList();
+            }
+            return sales;
         }
 
-        public static IEnumerable<Sale> SortSalesByRequiredConatinedItems(this IEnumerable<Sale> sales, IEnumerable<Item> mustContainedItems)
+        public static List<Sale> FilterSalesByNotNullAttribute(this List<Sale> sales, SaleAttributes saleAttributes)
         {
-            return sales.Where(sale => mustContainedItems.All(item => sale.SalesItems.Any(x => x.Item == item))).ToList();
+            return sales.Where(sale =>
+            {
+                switch (saleAttributes)
+                {
+                    case SaleAttributes.Table:
+                        return sale.Table != null;
+
+                    case SaleAttributes.Items:
+                        return sale.SalesItems != null;
+
+                    case SaleAttributes.TimestampPayment:
+                        return sale.TimestampPayment != null;
+
+                    case SaleAttributes.TimestampArrival:
+                        return sale.TimestampArrival != null;
+
+                    default:
+                        return false;
+                }
+            }).ToList();
         }
-        public static IEnumerable<Sale> SortSalesByTables(this IEnumerable<Sale> sales, IEnumerable<Table> possibleTables)
-        {
-            return sales.Where(sale => possibleTables.Contains(sale.Table)).ToList();
-        }
+
     }
 }

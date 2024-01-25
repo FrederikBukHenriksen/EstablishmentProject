@@ -18,7 +18,6 @@ namespace WebApplication1.Application_Layer.Services
         void FetchAndLoadItems();
         void FetchAndLoadTables();
         void FetchAndLoadSales();
-        void FetchAndLoadEmployees();
     }
 
     public class DataFetcingAndStoringService : IDataFetcingAndStoringService
@@ -38,7 +37,6 @@ namespace WebApplication1.Application_Layer.Services
             this.FetchAndLoadItems();
             this.FetchAndLoadTables();
             this.FetchAndLoadSales();
-            this.FetchAndLoadEmployees();
         }
 
         public async void FetchAndLoadItems()
@@ -68,16 +66,6 @@ namespace WebApplication1.Application_Layer.Services
             foreach (var sale in fetchedSales)
             {
                 this.establishment.AddSale(sale);
-            }
-        }
-
-        public async void FetchAndLoadEmployees()
-        {
-            var fetchedEmployees = await this.dataFetchingService.FetchEmployees();
-
-            foreach (var employee in fetchedEmployees)
-            {
-                this.establishment.AddEmployee(employee);
             }
         }
     }

@@ -60,8 +60,8 @@ namespace WebApplication1.Application_Layer.Services
                 IItemBuilderService builder = this.factoryServiceBuilder.ItemBuilder();
 
                 var newItem = builder
-                    .WithName(itemObject.Name)
-                    .WithPrice(double.Parse(itemObject.Price))
+                    .withName(itemObject.Name)
+                    .withPrice(double.Parse(itemObject.Price))
                     .Build();
 
                 items.Add(newItem);

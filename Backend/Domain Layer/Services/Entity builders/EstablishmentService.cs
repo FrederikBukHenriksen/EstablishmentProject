@@ -4,71 +4,46 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface IEstablishmentService : IEntityBuilder<Establishment>
     {
-        IEstablishmentService SetName(string name);
-        IEstablishmentService AddItems(ICollection<Item> items);
-        IEstablishmentService AddTables(ICollection<Table> tables);
-        IEstablishmentService AddSales(ICollection<Sale> sales);
+        IEstablishmentService withName(string name);
+        IEstablishmentService withItems(List<Item> items);
+        IEstablishmentService withTables(List<Table> tables);
+        IEstablishmentService withSales(List<Sale> sales);
     }
 
     public class EstablishmentService : EntityBuilderBase<Establishment>, IEstablishmentService
     {
         private string? name = null;
-        private ICollection<Item> items = new List<Item>();
-        private ICollection<Table> tables = new List<Table>();
-        private ICollection<Sale> sales = new List<Sale>();
+        private List<Item> items = new List<Item>();
+        private List<Table> tables = new List<Table>();
+        private List<Sale> sales = new List<Sale>();
 
-        public override bool Validation()
-        {
-            return true;
-        }
-
-        public IEstablishmentService SetName(string name)
+        public IEstablishmentService withName(string name)
         {
             this.name = name;
             return this;
         }
 
-        public IEstablishmentService AddItems(ICollection<Item> items)
+        public IEstablishmentService withItems(List<Item> items)
         {
             this.items = items;
             return this;
         }
 
-        public IEstablishmentService AddTables(ICollection<Table> tables)
+        public IEstablishmentService withTables(List<Table> tables)
         {
             this.tables = tables;
             return this;
         }
 
-        public IEstablishmentService AddSales(ICollection<Sale> sales)
+        public IEstablishmentService withSales(List<Sale> sales)
         {
             this.sales = sales;
             return this;
         }
 
-        public override void WritePropertiesOfEntity(Establishment entity)
+        public override void ConstructEntity(Establishment entity)
         {
-            entity.Name = (string)this.name;
-            foreach (var item in this.items)
-            {
-                this.Entity.AddItem(item);
-            }
-            foreach (var table in this.tables)
-            {
-                this.Entity.AddTable(table);
-            }
-            foreach (var sale in this.sales)
-            {
-                this.Entity.AddSale(sale);
-            }
-        }
-
-        public override void ReadPropertiesOfEntity(Establishment entity)
-        {
-            this.name = entity.Name;
-            this.items = entity.Items;
-            this.tables = entity.Tables;
-            this.sales = entity.Sales;
+            this.Entity = new Establishment(name: this.name, items: this.items, tables: this.tables, sales: this.sales);
         }
     }
 }
