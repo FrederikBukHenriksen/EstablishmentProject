@@ -21,9 +21,10 @@
       </div>
 
       <app-table
-        *ngIf="collection.clustersTable"
-        [tableModel]="collection.clustersTable"
+        *ngIf="collection.clustersTable | async as clustersTableModel"
+        [tableModel]="clustersTableModel"
       ></app-table>
+
       <hr />
       <mat-accordion class="accordion" multi>
         <mat-expansion-panel>
@@ -33,7 +34,7 @@
           <mat-accordion class="accordion" multi>
             <div
               *ngFor="
-                let tableModel of collection.eachClustersTables;
+                let tableModel of collection.eachClustersTables | async;
                 let i = index
               "
             >
@@ -55,7 +56,10 @@
           </mat-expansion-panel-header>
           <mat-accordion class="accordion" multi>
             <div
-              *ngFor="let graphModel of collection.graphModels; let i = index"
+              *ngFor="
+                let graphModel of collection.graphModels | async;
+                let i = index
+              "
             >
               <mat-expansion-panel>
                 <mat-expansion-panel-header>

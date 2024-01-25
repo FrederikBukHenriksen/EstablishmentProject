@@ -21,7 +21,7 @@ import {
   GraphModel,
   ImplementationDialog,
 } from '../cross-correlation/cross-correlation.component';
-import { lastValueFrom } from 'rxjs';
+import { Observable, from, lastValueFrom, of } from 'rxjs';
 
 export interface ClusteringAssembly {
   assembly: ClusteringImplementaion;
@@ -29,9 +29,9 @@ export interface ClusteringAssembly {
 
 export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
   title: string = 'Time of dat vs Total spending';
-  clustersTable: TableModel | undefined;
-  eachClustersTables: TableModel[] | undefined;
-  graphModels: GraphModel[] | undefined;
+  clustersTable!: Promise<TableModel>;
+  eachClustersTables!: Promise<TableModel[]>;
+  graphModels!: Promise<GraphModel[]>;
 
   getSalesCommand: GetSalesCommand = {
     establishmentId: this.sessionStorageService.getActiveEstablishment()!,
@@ -102,8 +102,9 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
     );
 
     //Build tables
-    this.clustersTable = await this.buildClusterTable(salesDTOClusters);
-    this.clustersTable = { ...this.clustersTable };
+    // this.clustersTable = from(this.buildClusterTable(salesDTOClusters));
+    this.clustersTable = this.buildClusterTable(salesDTOClusters);
+
     this.eachClustersTables = this.buildClustersTables(salesDTOClusters);
 
     //Build graphs
@@ -155,7 +156,7 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
     } as TableModel;
   }
 
-  private buildClustersTables(salesDTOClusters: SaleDTO[][]) {
+  private async buildClustersTables(salesDTOClusters: SaleDTO[][]) {
     var tableModels: TableModel[] = [];
     salesDTOClusters.forEach((cluster, index) => {
       tableModels.push({
@@ -176,7 +177,9 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
     return tableModels;
   }
 
-  private buildClusterGraph(data: ClusteringReturn): GraphModel[] {
+  private async buildClusterGraph(
+    data: ClusteringReturn
+  ): Promise<GraphModel[]> {
     var points: { x: number; y: number }[][] = data.clusters.map((cluster) =>
       cluster.map((saleId) => {
         var caluationData = data.calculationValues.find(

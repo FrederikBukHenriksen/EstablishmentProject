@@ -45,35 +45,35 @@ type dialog = {
   action: () => Promise<void>;
 };
 
-export interface ClusterFecthingAndExtracting {
-  command: Clustering_TimeOfVisit_TotalPrice_Command;
-  dialogs: (command: Clustering_TimeOfVisit_TotalPrice_Command) => {
-    name: string;
-    action: () => Promise<void>;
-  }[];
-  fetch: (
-    command: Clustering_TimeOfVisit_TotalPrice_Command
-  ) => Observable<ClusteringReturn>;
-  dataExtractor: (data: ClusteringReturn) => Promise<string[][]>;
-  clusterTable: (data: SaleDTO[][]) => Promise<TableModel>;
-  clustersTables: (data: SaleDTO[][]) => Promise<TableModel[]>;
-  clusterGraph: (data: ClusteringReturn) => Promise<
-    {
-      chartType: ChartType;
-      chartData: ChartData;
-      chartOptions: ChartOptions;
-    }[]
-  >;
-}
+// export interface ClusterFecthingAndExtracting {
+//   command: Clustering_TimeOfVisit_TotalPrice_Command;
+//   dialogs: (command: Clustering_TimeOfVisit_TotalPrice_Command) => {
+//     name: string;
+//     action: () => Promise<void>;
+//   }[];
+//   fetch: (
+//     command: Clustering_TimeOfVisit_TotalPrice_Command
+//   ) => Observable<ClusteringReturn>;
+//   dataExtractor: (data: ClusteringReturn) => Promise<string[][]>;
+//   clusterTable: (data: SaleDTO[][]) => Promise<TableModel>;
+//   clustersTables: (data: SaleDTO[][]) => Promise<TableModel[]>;
+//   clusterGraph: (data: ClusteringReturn) => Promise<
+//     {
+//       chartType: ChartType;
+//       chartData: ChartData;
+//       chartOptions: ChartOptions;
+//     }[]
+//   >;
+// }
 
 export interface ClusteringImplementaion {
   title: string;
   getSalesCommand: GetSalesCommand; //Accesable to set global Sales settings
   clusteringCommand: ClusteringCommand; //Accesable to set global Correlation settings
   dialogs: ImplementationDialog[];
-  clustersTable: TableModel | undefined;
-  eachClustersTables: TableModel[] | undefined;
-  graphModels: GraphModel[] | undefined;
+  clustersTable: Promise<TableModel>;
+  eachClustersTables: Promise<TableModel[]>;
+  graphModels: Promise<GraphModel[]>;
 }
 
 @Component({
