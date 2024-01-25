@@ -11,6 +11,7 @@ namespace WebApplication1.CommandHandlers
     {
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; }
+        public SalesSorting salesSorting { get; set; }
         public DateTimePeriod TimePeriod { get; set; }
         public TimeResolution TimeResolution { get; set; }
         public int MaxLag { get; set; }

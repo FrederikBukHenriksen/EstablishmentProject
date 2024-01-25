@@ -1442,6 +1442,7 @@ export abstract class CommandBase {
 export class CorrelationCommand extends CommandBase {
     establishmentId!: string;
     salesIds!: string[];
+    salesSorting!: SalesSorting;
     timePeriod!: DateTimePeriod;
     timeResolution!: TimeResolution;
     maxLag!: number;
@@ -1455,6 +1456,7 @@ export class CorrelationCommand extends CommandBase {
                 for (let item of _data["salesIds"])
                     this.salesIds!.push(item);
             }
+            this.salesSorting = _data["salesSorting"] ? SalesSorting.fromJS(_data["salesSorting"]) : <any>undefined;
             this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
             this.timeResolution = _data["timeResolution"];
             this.maxLag = _data["maxLag"];
@@ -1476,12 +1478,121 @@ export class CorrelationCommand extends CommandBase {
             for (let item of this.salesIds)
                 data["salesIds"].push(item);
         }
+        data["salesSorting"] = this.salesSorting ? this.salesSorting.toJSON() : <any>undefined;
         data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
         data["timeResolution"] = this.timeResolution;
         data["maxLag"] = this.maxLag;
         super.toJSON(data);
         return data;
     }
+}
+
+export class SalesSorting {
+    any!: string[] | undefined;
+    excatly!: string[] | undefined;
+    all!: string[] | undefined;
+    withinTimeperiods!: ValueTupleOfDateTimeAndDateTime[] | undefined;
+    mustContainAllAttributes!: SaleAttributes[] | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["any"])) {
+                this.any = [] as any;
+                for (let item of _data["any"])
+                    this.any!.push(item);
+            }
+            if (Array.isArray(_data["excatly"])) {
+                this.excatly = [] as any;
+                for (let item of _data["excatly"])
+                    this.excatly!.push(item);
+            }
+            if (Array.isArray(_data["all"])) {
+                this.all = [] as any;
+                for (let item of _data["all"])
+                    this.all!.push(item);
+            }
+            if (Array.isArray(_data["withinTimeperiods"])) {
+                this.withinTimeperiods = [] as any;
+                for (let item of _data["withinTimeperiods"])
+                    this.withinTimeperiods!.push(ValueTupleOfDateTimeAndDateTime.fromJS(item));
+            }
+            if (Array.isArray(_data["mustContainAllAttributes"])) {
+                this.mustContainAllAttributes = [] as any;
+                for (let item of _data["mustContainAllAttributes"])
+                    this.mustContainAllAttributes!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): SalesSorting {
+        data = typeof data === 'object' ? data : {};
+        let result = new SalesSorting();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.any)) {
+            data["any"] = [];
+            for (let item of this.any)
+                data["any"].push(item);
+        }
+        if (Array.isArray(this.excatly)) {
+            data["excatly"] = [];
+            for (let item of this.excatly)
+                data["excatly"].push(item);
+        }
+        if (Array.isArray(this.all)) {
+            data["all"] = [];
+            for (let item of this.all)
+                data["all"].push(item);
+        }
+        if (Array.isArray(this.withinTimeperiods)) {
+            data["withinTimeperiods"] = [];
+            for (let item of this.withinTimeperiods)
+                data["withinTimeperiods"].push(item.toJSON());
+        }
+        if (Array.isArray(this.mustContainAllAttributes)) {
+            data["mustContainAllAttributes"] = [];
+            for (let item of this.mustContainAllAttributes)
+                data["mustContainAllAttributes"].push(item);
+        }
+        return data;
+    }
+}
+
+export class ValueTupleOfDateTimeAndDateTime {
+    item1!: Date;
+    item2!: Date;
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"] ? new Date(_data["item1"].toString()) : <any>undefined;
+            this.item2 = _data["item2"] ? new Date(_data["item2"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfDateTimeAndDateTime {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfDateTimeAndDateTime();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1 ? this.item1.toISOString() : <any>undefined;
+        data["item2"] = this.item2 ? this.item2.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export enum SaleAttributes {
+    Table = 0,
+    Items = 1,
+    TimestampPayment = 2,
+    TimestampArrival = 3,
 }
 
 export class DateTimePeriod {
@@ -2242,114 +2353,6 @@ export class GetSalesCommand extends CommandBase {
         super.toJSON(data);
         return data;
     }
-}
-
-export class SalesSorting {
-    any!: string[] | undefined;
-    excatly!: string[] | undefined;
-    all!: string[] | undefined;
-    withinTimeperiods!: ValueTupleOfDateTimeAndDateTime[] | undefined;
-    mustContainAllAttributes!: SaleAttributes[] | undefined;
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["any"])) {
-                this.any = [] as any;
-                for (let item of _data["any"])
-                    this.any!.push(item);
-            }
-            if (Array.isArray(_data["excatly"])) {
-                this.excatly = [] as any;
-                for (let item of _data["excatly"])
-                    this.excatly!.push(item);
-            }
-            if (Array.isArray(_data["all"])) {
-                this.all = [] as any;
-                for (let item of _data["all"])
-                    this.all!.push(item);
-            }
-            if (Array.isArray(_data["withinTimeperiods"])) {
-                this.withinTimeperiods = [] as any;
-                for (let item of _data["withinTimeperiods"])
-                    this.withinTimeperiods!.push(ValueTupleOfDateTimeAndDateTime.fromJS(item));
-            }
-            if (Array.isArray(_data["mustContainAllAttributes"])) {
-                this.mustContainAllAttributes = [] as any;
-                for (let item of _data["mustContainAllAttributes"])
-                    this.mustContainAllAttributes!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): SalesSorting {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesSorting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.any)) {
-            data["any"] = [];
-            for (let item of this.any)
-                data["any"].push(item);
-        }
-        if (Array.isArray(this.excatly)) {
-            data["excatly"] = [];
-            for (let item of this.excatly)
-                data["excatly"].push(item);
-        }
-        if (Array.isArray(this.all)) {
-            data["all"] = [];
-            for (let item of this.all)
-                data["all"].push(item);
-        }
-        if (Array.isArray(this.withinTimeperiods)) {
-            data["withinTimeperiods"] = [];
-            for (let item of this.withinTimeperiods)
-                data["withinTimeperiods"].push(item.toJSON());
-        }
-        if (Array.isArray(this.mustContainAllAttributes)) {
-            data["mustContainAllAttributes"] = [];
-            for (let item of this.mustContainAllAttributes)
-                data["mustContainAllAttributes"].push(item);
-        }
-        return data;
-    }
-}
-
-export class ValueTupleOfDateTimeAndDateTime {
-    item1!: Date;
-    item2!: Date;
-
-    init(_data?: any) {
-        if (_data) {
-            this.item1 = _data["item1"] ? new Date(_data["item1"].toString()) : <any>undefined;
-            this.item2 = _data["item2"] ? new Date(_data["item2"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): ValueTupleOfDateTimeAndDateTime {
-        data = typeof data === 'object' ? data : {};
-        let result = new ValueTupleOfDateTimeAndDateTime();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["item1"] = this.item1 ? this.item1.toISOString() : <any>undefined;
-        data["item2"] = this.item2 ? this.item2.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export enum SaleAttributes {
-    Table = 0,
-    Items = 1,
-    TimestampPayment = 2,
-    TimestampArrival = 3,
 }
 
 export class SalesStatisticsReturn extends ReturnBase {

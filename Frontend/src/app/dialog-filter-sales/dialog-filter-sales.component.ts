@@ -79,7 +79,7 @@ export class DialogFilterSalesComponent {
     var salesSorting: SalesSorting = {
       any: data['Any'],
       all: data['All'],
-      contains: data['Exact'],
+      excatly: data['Exact'],
     } as SalesSorting;
 
     return {

@@ -26,9 +26,9 @@ export interface CrossCorrealtionAssembly {
 }
 
 export class CrossCorrelation_Sales_Temperature
-  implements CrossCorrealtionAssembly
+  implements CrossCorrelationImplementaion
 {
-  public assembly!: CrossCorrelationImplementaion;
+  // public assembly!: CrossCorrelationImplementaion;
 
   title: string;
   command: CorrelationCommand;
@@ -51,19 +51,6 @@ export class CrossCorrelation_Sales_Temperature
       chartData: { datasets: [] },
       chartOptions: {},
     };
-
-    this.assembly = {
-      title: this.title,
-      dialogs: this.dialogs,
-      fetch: this.fetch,
-      result: this.result,
-      buildTable: this.buildTable,
-      tableModel: this.tableModel,
-      buildGraph: this.buildGraph,
-      graphModel: this.graphModel,
-    } as CrossCorrelationImplementaion;
-
-    console.log('salesClient', salesClient);
   }
 
   dialogs: ImplementationDialog[] = [
@@ -78,20 +65,8 @@ export class CrossCorrelation_Sales_Temperature
   ];
 
   async fetch(command: CorrelationCommand): Promise<CorrelationReturn> {
-    const activeEstablishment =
-      this.sessionStorageService.getActiveEstablishment()!;
-    this.getSalesCommand.establishmentId = activeEstablishment;
-
-    var salesIds: string[] = (
-      await lastValueFrom(this.salesClient.getSales(this.getSalesCommand))
-    ).sales;
-
-    this.command.timePeriod = this.command.timePeriod;
-    this.command.timeResolution = this.command.timeResolution;
-    this.command.salesIds = salesIds;
-
     this.result = await lastValueFrom(
-      this.analysisClient.correlationCoefficientAndLag(this.command)
+      this.analysisClient.correlationCoefficientAndLag(command)
     );
     return this.result;
   }

@@ -5,6 +5,7 @@ import {
   CommandBase,
   CorrelationCommand,
   CorrelationReturn,
+  DateTimePeriod,
   GetSalesCommand,
   GetSalesReturn,
   SaleClient,
@@ -35,7 +36,7 @@ export type ImplementationDialog = {
   action: (command: CorrelationCommand) => Promise<void>;
 };
 
-export type CrossCorrelationImplementaion = {
+export interface CrossCorrelationImplementaion {
   title: string;
   command: CorrelationCommand;
   dialogs: ImplementationDialog[];
@@ -45,7 +46,7 @@ export type CrossCorrelationImplementaion = {
   tableModel: TableModel | undefined;
   buildGraph: (data: CorrelationReturn) => Promise<GraphModel>;
   graphModel: GraphModel | undefined;
-};
+}
 
 @Component({
   selector: 'app-cross-correlation',
@@ -75,7 +76,15 @@ export class CrossCorrelationComponent {
     establishmentId: this.activeEstablishment,
   } as CorrelationCommand;
 
-  public collectionOfImplementaions: CrossCorrelation_Sales_Temperature[] = [
+  // public collectionOfImplementaions: CrossCorrelation_Sales_Temperature[] = [
+  //   new CrossCorrelation_Sales_Temperature(
+  //     this.GeneralCorrelationCommand,
+  //     this.analysisClient,
+  //     this.dialog
+  //   ),
+  // ];
+
+  public collectionOfImplementaions: CrossCorrelationImplementaion[] = [
     new CrossCorrelation_Sales_Temperature(
       this.GeneralCorrelationCommand,
       this.getSalesCommand,
@@ -86,22 +95,9 @@ export class CrossCorrelationComponent {
     ),
   ];
 
-  // public collectionOfImplementaions: CrossCorrelationImplementaion[] = [
-  //   new CrossCorrelation_Sales_Temperature(
-  //     this.GeneralCorrelationCommand,
-  //     this.getSalesCommand,
-  //     this.salesClient,
-  //     this.analysisClient,
-  //     this.sessionStorageService,
-  //     this.dialog
-  //   ).assembly,
-  // ];
-
   protected salesFilterDialog!: DialogFilterSalesComponent;
   protected graphSettingsDialog: DialogGraphSettingsComponent;
   protected graphSettings!: GraphSettings;
-
-  protected filteredSalesId: string[] = [];
 
   protected fetchSalesData: (
     command: GetSalesCommand
@@ -120,10 +116,23 @@ export class CrossCorrelationComponent {
 
   protected async onLoad() {
     this.collectionOfImplementaions.forEach(async (element) => {
-      element.command.timeResolution = this.graphSettings.timeresolution;
-      element.command.timePeriod = this.graphSettings.timeframe;
-      element.result = await element.fetch(element.command);
+      // element.command.timeResolution = this.graphSettings.timeresolution;
+      // element.command.timePeriod = this.graphSettings.timeframe;
+      element.command.timePeriod = {
+        start: new Date('2021-01-01'),
+        end: new Date('2021-01-02'),
+      } as DateTimePeriod;
+      element.command.timeResolution = 1;
 
+      const activeEstablishment =
+        this.sessionStorageService.getActiveEstablishment()!;
+      this.getSalesCommand.establishmentId = activeEstablishment;
+      var salesIds: string[] = (
+        await lastValueFrom(this.salesClient.getSales(this.getSalesCommand))
+      ).sales;
+      element.command.salesIds = salesIds;
+
+      element.result = await element.fetch(element.command);
       element.tableModel = await element.buildTable(element.result);
       element.graphModel = await element.buildGraph(element.result);
     });

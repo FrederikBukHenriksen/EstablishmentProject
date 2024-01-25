@@ -147,8 +147,8 @@ export class CreateEstablishmentComponent implements OnInit {
               this.saleClient.getSales({
                 establishmentId: establishmentId,
                 salesSorting: {
-                  contains: dictionary['items'],
-                  withinTimeperiods: [this.timePeriod] as DateTimePeriod[],
+                  excatly: dictionary['items'],
+                  // withinTimeperiods: [this.timePeriod] as DateTimePeriod[],
                 } as SalesSorting,
               } as GetSalesCommand)
             );
