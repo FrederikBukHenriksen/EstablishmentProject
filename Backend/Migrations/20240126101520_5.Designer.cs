@@ -12,8 +12,8 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240121142219_3")]
-    partial class _3
+    [Migration("20240126101520_5")]
+    partial class _5
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,11 +21,9 @@ namespace WebApplication1.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.11")
-                .HasAnnotation("Proxies:ChangeTracking", false)
-                .HasAnnotation("Proxies:CheckEquality", false)
-                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("WebApplication1.Data.DataModels.SalesItems", b =>
@@ -37,11 +35,11 @@ namespace WebApplication1.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -52,29 +50,13 @@ namespace WebApplication1.Migrations
                     b.ToTable("SalesItems");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Employee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("EstablishmentId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EstablishmentId");
-
-                    b.ToTable("Employee");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("InformationId")
+                    b.Property<Guid>("InformationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -93,12 +75,7 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.ToTable("information");
                 });
@@ -124,17 +101,6 @@ namespace WebApplication1.Migrations
                         .IsUnique();
 
                     b.ToTable("Item");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.OpeningHours", b =>
@@ -168,9 +134,6 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EmployeeId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("EstablishmentId")
                         .HasColumnType("uuid");
 
@@ -191,12 +154,7 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("EstablishmentId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
 
                     b.HasIndex("TableId");
 
@@ -289,29 +247,35 @@ namespace WebApplication1.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Employee", b =>
-                {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
-                        .WithMany("Employees")
-                        .HasForeignKey("EstablishmentId");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment", b =>
                 {
                     b.HasOne("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", "Information")
                         .WithMany()
-                        .HasForeignKey("InformationId");
+                        .HasForeignKey("InformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Information");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
                 {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
+                    b.OwnsOne("WebApplication1.Domain_Layer.Entities.Location", "Location", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid");
 
-                    b.Navigation("Location");
+                            b1.HasKey("Id");
+
+                            b1.ToTable("information");
+
+                            b1.WithOwner()
+                                .HasForeignKey("Id");
+                        });
+
+                    b.Navigation("Location")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Item", b =>
@@ -324,55 +288,27 @@ namespace WebApplication1.Migrations
 
                     b.OwnsOne("WebApplication1.Domain_Layer.Entities.Price", "Price", b1 =>
                         {
-                            b1.Property<Guid>("ItemId")
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uuid");
 
                             b1.Property<int>("Currency")
                                 .HasColumnType("integer")
                                 .HasColumnName("PriceCurrency");
 
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid");
-
                             b1.Property<double>("Value")
                                 .HasColumnType("double precision")
                                 .HasColumnName("PriceValue");
 
-                            b1.HasKey("ItemId");
+                            b1.HasKey("Id");
 
-                            b1.ToTable("Price");
+                            b1.ToTable("Item");
 
                             b1.WithOwner()
-                                .HasForeignKey("ItemId");
+                                .HasForeignKey("Id");
                         });
 
                     b.Navigation("Price")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Location", b =>
-                {
-                    b.OwnsOne("WebApplication1.Domain_Layer.Entities.Coordinates", "Coordinates", b1 =>
-                        {
-                            b1.Property<Guid>("LocationId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<double>("Latitude")
-                                .HasColumnType("double precision");
-
-                            b1.Property<double>("Longitude")
-                                .HasColumnType("double precision");
-
-                            b1.HasKey("LocationId");
-
-                            b1.ToTable("Location");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LocationId");
-                        });
-
-                    b.Navigation("Coordinates")
                         .IsRequired();
                 });
 
@@ -385,10 +321,6 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Sale", b =>
                 {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId");
-
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
                         .WithMany("Sales")
                         .HasForeignKey("EstablishmentId")
@@ -398,8 +330,6 @@ namespace WebApplication1.Migrations
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Table", "Table")
                         .WithMany()
                         .HasForeignKey("TableId");
-
-                    b.Navigation("Employee");
 
                     b.Navigation("Table");
                 });
@@ -432,8 +362,6 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment", b =>
                 {
-                    b.Navigation("Employees");
-
                     b.Navigation("Items");
 
                     b.Navigation("Sales");

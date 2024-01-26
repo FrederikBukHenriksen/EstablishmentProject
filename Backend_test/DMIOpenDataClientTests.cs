@@ -1,7 +1,7 @@
 using DMIOpenData;
 using RichardSzalay.MockHttp;
 using System.Net;
-using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Application_Layer.Objects;
 using WebApplication1.Utils;
 
 namespace EstablishmentProject.test
@@ -9,7 +9,7 @@ namespace EstablishmentProject.test
     public class DMIOpenDataClientTests : BaseIntegrationTest
     {
 
-        private Coordinates coordinatesOfMyApartment = new Coordinates { Latitude = 55.6761, Longitude = 12.5683 };
+        private Coordinates coordinatesOfMyApartment = new Coordinates(55.6761, 12.5683);
 
         public DMIOpenDataClientTests(IntegrationTestWebAppFactory factory) : base(factory)
         {

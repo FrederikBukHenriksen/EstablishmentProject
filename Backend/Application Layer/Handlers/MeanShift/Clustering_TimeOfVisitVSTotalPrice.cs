@@ -68,7 +68,8 @@ namespace WebApplication1.CommandHandlers
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
         {
             //Fetch
-            List<Sale> sales = this.unitOfWork.salesRepository.GetFromIds(command.SalesIds);
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().GetById(command.EstablishmentId);
+            List<Sale> sales = establishment.GetSales().Where(sale => command.SalesIds.Contains(sale.Id)).ToList();
 
             //Arrange
             List<(Sale sale, List<double> values)> saleData = sales

@@ -69,6 +69,12 @@ export function AddToDateTimeResolution(
   }
 }
 
+export function getDifferenceInHours(date1: Date, date2: Date): number {
+  const timeDifferenceInMilliseconds = date2.getTime() - date1.getTime();
+  const hoursDifference = timeDifferenceInMilliseconds / (1000 * 60 * 60);
+  return hoursDifference;
+}
+
 export function GetTimeLineWithTimeResolution(
   start: Date,
   end: Date,

@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   OnInit,
@@ -21,7 +22,7 @@ import {
   SalesSorting,
   ValueTupleOfGuidAndListOfDouble,
 } from 'api';
-import { Observable, from, of } from 'rxjs';
+import { Observable, Subject, from, of } from 'rxjs';
 import { SaleClient, GetSalesReturn, GetSalesCommand } from 'api';
 import { lastValueFrom } from 'rxjs';
 
@@ -71,15 +72,16 @@ export interface ClusteringImplementaion {
   getSalesCommand: GetSalesCommand; //Accesable to set global Sales settings
   clusteringCommand: ClusteringCommand; //Accesable to set global Correlation settings
   dialogs: ImplementationDialog[];
-  clustersTable: Promise<TableModel>;
-  eachClustersTables: Promise<TableModel[]>;
-  graphModels: Promise<GraphModel[]>;
+  clustersTable: Subject<TableModel>;
+  eachClustersTables: Subject<TableModel[]>;
+  graphModels: Subject<{ title: string; graphModel: GraphModel }[]>;
 }
 
 @Component({
   selector: 'app-cluster',
   templateUrl: './cluster.component.html',
   styleUrls: ['./cluster.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClusterComponent {
   private analysisClient = inject(AnalysisClient);

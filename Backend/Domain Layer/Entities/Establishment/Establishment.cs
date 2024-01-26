@@ -1,9 +1,11 @@
-﻿namespace WebApplication1.Domain_Layer.Entities
+﻿using NodaTime;
+
+namespace WebApplication1.Domain_Layer.Entities
 {
     public partial class Establishment : EntityBase
     {
         public string? Name { get; set; }
-        public virtual EstablishmentInformation? Information { get; set; }
+        public virtual EstablishmentInformation Information { get; set; } = new EstablishmentInformation();
         public virtual ICollection<Item> Items { get; set; } = new List<Item>();
         public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
         public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
@@ -27,6 +29,12 @@
         public void SetName(string name)
         {
             this.Name = name;
+        }
+
+        public void SetOpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
+        {
+            OpeningHours openingHours = new OpeningHours(dayOfWeek, open, close);
+            this.Information.setOpeningHour(openingHours);
         }
     }
 }

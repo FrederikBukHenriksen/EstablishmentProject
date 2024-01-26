@@ -24,11 +24,9 @@ namespace WebApplication1.Domain_Layer.Entities
             this.userRepository = userRepository;
         }
 
-        public override void ConstructEntity(User Entity)
+        public override User Build()
         {
-            Entity.Email = (string)this.builderEmail;
-            Entity.Password = (string)this.builderPassword;
-            Entity.UserRoles = (List<UserRole>)this.builderUserRoles;
+            return new User(this.builderEmail, this.builderPassword, this.builderUserRoles);
         }
 
         public IUserBuilder WithEmail(string email)
@@ -44,7 +42,6 @@ namespace WebApplication1.Domain_Layer.Entities
             return this;
         }
 
-        private bool IsEmailUnique(string email) => !(this.userRepository.GetAll().Any(u => u.Email == this.builderEmail));
 
         public IUserBuilder WithUserRoles(ICollection<(Establishment establishment, Role role)> establishmentAndRole)
         {

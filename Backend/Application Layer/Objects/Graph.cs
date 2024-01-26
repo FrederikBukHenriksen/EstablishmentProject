@@ -1,20 +1,20 @@
 ﻿namespace WebApplication1.Application_Layer.Objects
 {
-public class TimeAndValue<Type>
+    public class TimeAndValue<Type>
     {
         public DateTime dateTime { get; set; }
         public Type value { get; set; }
     }
 
-    public class CoordinatesAndValue<Type>
+    public class Coordinates
     {
-        public Coordinates coordinates { get; set; }
-        public Type Value { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
-        public class Coordinates
+        public Coordinates(double x, double y)
         {
-            public double X { get; set; }
-            public double Y { get; set; }
+            this.Latitude = x;
+            this.Longitude = y;
         }
     }
 }

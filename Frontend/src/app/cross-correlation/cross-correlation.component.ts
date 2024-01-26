@@ -78,10 +78,15 @@ export class CrossCorrelationComponent implements OnInit {
   }
 
   private initCorrelationCommand(): CorrelationCommand {
-    var timeOffset = 1;
-    var timeFrameAmountOfDays = 7;
+    //Allowed Lag
+    const maxLag = 5;
 
+    //Period
+    var offset = maxLag;
+    var timeFrameAmountOfDays = 7;
+    var today = new Date();
     var endDate = new Date();
+    endDate.setDate(today.getDate() - offset);
     const startDate = new Date(endDate);
     startDate.setDate(endDate.getDate() - timeFrameAmountOfDays);
 
@@ -93,7 +98,7 @@ export class CrossCorrelationComponent implements OnInit {
         end: endDate,
       } as DateTimePeriod,
       timeResolution: TimeResolution.Date,
-      maxLag: 10,
+      maxLag: maxLag,
     } as CorrelationCommand;
   }
 

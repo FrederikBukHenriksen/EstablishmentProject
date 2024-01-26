@@ -13,6 +13,7 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
         public Guid? Table { get; set; } = null;
         public Guid? Employee { get; set; } = null;
 
+
         public SaleDTO(Sale sale)
         {
             this.id = sale.Id;

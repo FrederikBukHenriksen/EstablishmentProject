@@ -103,6 +103,23 @@ namespace WebApplication1.Utils
             return timestamp.CompareTo(start) > 0 && timestamp.CompareTo(end) < 0;
         }
 
+        public static DateTime AddToDateTime(this DateTime datetime, int amount, TimeResolution timeResolution)
+        {
+            switch (timeResolution)
+            {
+                case TimeResolution.Hour:
+                    return datetime.AddHours(amount);
+                case TimeResolution.Date:
+                    return datetime.AddDays(amount);
+                case TimeResolution.Month:
+                    return datetime.AddMonths(amount);
+                case TimeResolution.Year:
+                    return datetime.AddYears(amount);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public static bool IsEntityWithinTimeframe<Entity>(
             this Entity entity,
             DateTimePeriod timePeriod,

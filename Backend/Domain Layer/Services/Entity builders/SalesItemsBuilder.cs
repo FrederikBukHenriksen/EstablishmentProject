@@ -16,11 +16,9 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
         private Item? builderItem = null;
         private int? builderQuantity = null;
 
-        public override void ConstructEntity(SalesItems Entity)
+        public override SalesItems Build()
         {
-            Entity.Sale = (Sale)this.builderSale;
-            Entity.Item = (Item)this.builderItem;
-            Entity.quantity = (int)this.builderQuantity;
+            return new SalesItems(Item: this.builderItem, Quantity: (int)this.builderQuantity);
         }
 
         public ISalesItemsBuilder WithItem(Item item)

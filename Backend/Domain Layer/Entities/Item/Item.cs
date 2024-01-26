@@ -26,10 +26,13 @@ namespace WebApplication1.Domain_Layer.Entities
             builder.OwnsOne(e => e.Price, priceBuilder =>
             {
                 priceBuilder.Property(p => p.Value).HasColumnName("PriceValue").IsRequired();
-                priceBuilder.Property(p => p.Currency).HasColumnName("PriceCurrency").IsRequired();
+                priceBuilder.Property(p => p.Currency)
+                    .HasConversion(
+                    currency => currency.ToString(),
+                    currencyName => (Currency)Enum.Parse(typeof(Currency), currencyName))
+                    .HasColumnName("PriceCurrency")
+            .IsRequired(true);
             });
-
-
         }
     }
 }

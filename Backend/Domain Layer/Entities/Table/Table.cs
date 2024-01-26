@@ -1,11 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public class Table : EntityBase
     {
         //public Establishment Establishment { get; set; }
         public string Name { get; set; }
+
+        public Table()
+        {
+
+        }
+
+        public Table(string name)
+        {
+            this.Name = name;
+        }
 
     }
 

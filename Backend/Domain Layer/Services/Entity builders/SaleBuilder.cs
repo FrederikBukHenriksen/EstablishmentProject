@@ -26,10 +26,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
             this.itemRepository = itemRepository;
         }
 
-        public override void ConstructEntity(Sale Entity)
-        {
-            this.Entity = new Sale(timestampPayment: (DateTime)this.builderTimestampPayment, salesItems: this.builderSalesItems, timestampArrival: this.builderTimestampArrival, table: this.builderTable);
-        }
+
 
         public ISaleBuilder WithTimestampArrival(DateTime? timestampArrival)
         {
@@ -53,6 +50,12 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
         {
             this.builderSalesItems = itemsAndQuantities.Select(x => new SalesItems(x.item, x.quantity)).ToList();
             return this;
+        }
+
+        public override Sale Build()
+        {
+            return new Sale(timestampPayment: (DateTime)this.builderTimestampPayment, salesItems: this.builderSalesItems, timestampArrival: this.builderTimestampArrival, table: this.builderTable);
+
         }
     }
 }

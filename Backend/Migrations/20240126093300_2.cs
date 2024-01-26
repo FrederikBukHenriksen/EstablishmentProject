@@ -6,11 +6,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApplication1.Migrations
 {
     /// <inheritdoc />
-    public partial class _1 : Migration
+    public partial class _2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:uuid-ossp", ",,");
+
             migrationBuilder.CreateTable(
                 name: "Location",
                 columns: table => new
@@ -42,7 +45,7 @@ namespace WebApplication1.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    LocationId = table.Column<Guid>(type: "uuid", nullable: true)
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,7 +54,8 @@ namespace WebApplication1.Migrations
                         name: "FK_information_Location_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Location",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,7 +64,7 @@ namespace WebApplication1.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    InformationId = table.Column<Guid>(type: "uuid", nullable: true)
+                    InformationId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,7 +73,8 @@ namespace WebApplication1.Migrations
                         name: "FK_Establishment_information_InformationId",
                         column: x => x.InformationId,
                         principalTable: "information",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,29 +98,14 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employee",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    EstablishmentId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employee", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Employee_Establishment_EstablishmentId",
-                        column: x => x.EstablishmentId,
-                        principalTable: "Establishment",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Item",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     EstablishmentId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    PriceValue = table.Column<double>(type: "double precision", nullable: false),
+                    PriceCurrency = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -173,26 +163,6 @@ namespace WebApplication1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Price",
-                columns: table => new
-                {
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PriceValue = table.Column<double>(type: "double precision", nullable: false),
-                    PriceCurrency = table.Column<int>(type: "integer", nullable: false),
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Price", x => x.ItemId);
-                    table.ForeignKey(
-                        name: "FK_Price_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Sale",
                 columns: table => new
                 {
@@ -202,17 +172,11 @@ namespace WebApplication1.Migrations
                     PaymentType = table.Column<int>(type: "integer", nullable: true),
                     TimestampArrival = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     TimestampPayment = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TableId = table.Column<Guid>(type: "uuid", nullable: true),
-                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: true)
+                    TableId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sale", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Sale_Employee_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Employee",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Sale_Establishment_EstablishmentId",
                         column: x => x.EstablishmentId,
@@ -233,7 +197,7 @@ namespace WebApplication1.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     SaleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false)
+                    quantity = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -251,11 +215,6 @@ namespace WebApplication1.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employee_EstablishmentId",
-                table: "Employee",
-                column: "EstablishmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Establishment_InformationId",
@@ -284,20 +243,9 @@ namespace WebApplication1.Migrations
                 column: "EstablishmentInformationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sale_EmployeeId",
-                table: "Sale",
-                column: "EmployeeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sale_EstablishmentId",
                 table: "Sale",
                 column: "EstablishmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sale_Id",
-                table: "Sale",
-                column: "Id",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sale_TableId",
@@ -343,9 +291,6 @@ namespace WebApplication1.Migrations
                 name: "OpeningHours");
 
             migrationBuilder.DropTable(
-                name: "Price");
-
-            migrationBuilder.DropTable(
                 name: "SalesItems");
 
             migrationBuilder.DropTable(
@@ -359,9 +304,6 @@ namespace WebApplication1.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
-
-            migrationBuilder.DropTable(
-                name: "Employee");
 
             migrationBuilder.DropTable(
                 name: "Table");

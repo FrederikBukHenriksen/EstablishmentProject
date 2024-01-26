@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel;
-using WebApplication1.Domain_Layer.Entities;
+using WebApplication1.Application_Layer.Objects;
 using WebApplication1.Services;
 using WebApplication1.Utils;
 

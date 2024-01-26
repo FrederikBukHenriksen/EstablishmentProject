@@ -10,6 +10,18 @@ namespace WebApplication1.Domain_Layer.Entities
         public string Password { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
 
+
+        public User()
+        {
+
+        }
+        public User(string email, string password, ICollection<UserRole> userRoles)
+        {
+            this.SetEmail(email);
+            this.SetPassword(password);
+            this.UserRoles = userRoles;
+        }
+
         public void SetEmail(string email)
         {
             if (!this.IsEmailValid(email)) throw new Exception("Email is not valid");

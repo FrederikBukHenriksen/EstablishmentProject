@@ -121,6 +121,7 @@ export class TableComponent implements AfterViewInit {
     }
     console.log('table, ngAfterViewInit', this.dataSource);
     console.log('table, ngAfterViewInit', this.dataSource.data);
+    this.dataSource.data = this.tableModel.elements;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -129,8 +130,6 @@ export class TableComponent implements AfterViewInit {
       this.tableModel = changes['tableModel'].currentValue;
       this.tableModel.columns = [...this.tableModel.columns];
       this.tableModel.elements = [...this.tableModel.elements];
-      this.dataSource.data = this.tableModel.elements;
-      console.log('table, ngOnChanges', this.tableModel);
       this.cdr.detectChanges();
     }
   }

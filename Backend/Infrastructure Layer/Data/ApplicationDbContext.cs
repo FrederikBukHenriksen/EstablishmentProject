@@ -26,7 +26,7 @@ namespace WebApplication1.Data
         public DbSet<Establishment> Establishment { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<Price> Price { get; set; }
+        //public DbSet<Price> Price { get; set; }
 
 
         public DbSet<EstablishmentInformation> information { get; set; }
@@ -41,6 +41,8 @@ namespace WebApplication1.Data
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
             modelBuilder.ApplyConfiguration(new SaleConfiguration());
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
+            modelBuilder.ApplyConfiguration(new EstablishmentInformationConfiguration());
+
 
 
 
@@ -59,10 +61,6 @@ namespace WebApplication1.Data
                 );
 
 
-
-            //modelBuilder.Entity<Location>()
-            //    .OwnsOne(l => l.Coordinates);
-            //;
 
 
 

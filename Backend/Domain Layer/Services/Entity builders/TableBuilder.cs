@@ -12,10 +12,10 @@ namespace WebApplication1.Domain_Layer.Entities
 
         private string? builderName = null;
 
-
-        public override void ConstructEntity(Table Entity)
+        public override Table Build()
         {
-            Entity.Name = (string)this.builderName;
+            return new Table((string)this.builderName);
+
         }
 
         public ITableBuilder WithName(string name)

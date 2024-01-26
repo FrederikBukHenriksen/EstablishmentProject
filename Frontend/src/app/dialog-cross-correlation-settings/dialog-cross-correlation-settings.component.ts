@@ -10,6 +10,7 @@ import {
   DropDownOption,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TimeResolution } from 'api';
+import { CreateDate } from '../utils/TimeHelper';
 
 export type DialogCrossCorrelationSettingsReturn = {
   maxLag: number | undefined;
@@ -49,10 +50,29 @@ export class DialogCrossCorrelationSettingsComponent {
         })
         .afterClosed()
     );
+    var startDate = data['timeframetart'] as Date;
+    var startDate = CreateDate(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate(),
+      0,
+      0,
+      0
+    );
+    var endDate = data['timeframeend'] as Date;
+    var endDate = CreateDate(
+      endDate.getFullYear(),
+      endDate.getMonth(),
+      endDate.getDate(),
+      0,
+      0,
+      0
+    );
+
     return {
       maxLag: data['maxLag'] as number,
-      startDate: data['timeframetart'] as Date,
-      endDate: data['timeframeend'] as Date,
+      startDate: startDate,
+      endDate: endDate,
       timeResolution: data['timeresolution'] as TimeResolution,
     } as DialogCrossCorrelationSettingsReturn;
   }

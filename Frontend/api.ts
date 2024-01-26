@@ -986,7 +986,7 @@ export abstract class EntityBase {
 
 export class Establishment extends EntityBase {
     name!: string | undefined;
-    information!: EstablishmentInformation | undefined;
+    information!: EstablishmentInformation;
     items!: Item[];
     tables!: Table[];
     sales!: Sale[];
@@ -1046,11 +1046,13 @@ export class Establishment extends EntityBase {
 }
 
 export class EstablishmentInformation extends EntityBase {
+    location!: Location;
     openingHours!: OpeningHours[];
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.location = _data["location"] ? Location.fromJS(_data["location"]) : <any>undefined;
             if (Array.isArray(_data["openingHours"])) {
                 this.openingHours = [] as any;
                 for (let item of _data["openingHours"])
@@ -1068,11 +1070,32 @@ export class EstablishmentInformation extends EntityBase {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
         if (Array.isArray(this.openingHours)) {
             data["openingHours"] = [];
             for (let item of this.openingHours)
                 data["openingHours"].push(item.toJSON());
         }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class Location extends EntityBase {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): Location {
+        data = typeof data === 'object' ? data : {};
+        let result = new Location();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
         super.toJSON(data);
         return data;
     }
@@ -1179,8 +1202,9 @@ export class Price extends EntityBase {
 }
 
 export enum Currency {
-    DKK = 0,
-    EUR = 1,
+    UNKNOWN = 0,
+    DKK = 1,
+    EUR = 2,
 }
 
 export class Table extends EntityBase {

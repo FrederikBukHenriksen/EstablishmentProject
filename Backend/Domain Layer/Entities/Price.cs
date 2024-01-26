@@ -2,6 +2,7 @@
 {
     public enum Currency
     {
+        UNKNOWN,
         DKK,
         EUR,
     }
@@ -10,15 +11,11 @@
     {
         public Price(double value, Currency currency)
         {
-            if (!this.IsPriceValid(value))
-            {
-                throw new Exception("Price must be a positive number");
-            }
             this.Value = value;
             this.Currency = currency;
         }
 
-        public Price(double price, Currency? currency)
+        public Price()
         {
         }
 

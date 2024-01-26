@@ -20,14 +20,21 @@
         </div>
       </div>
 
-      <app-table
-        *ngIf="collection.clustersTable | async as clustersTableModel"
-        [tableModel]="clustersTableModel"
-      ></app-table>
-
       <hr />
       <mat-accordion class="accordion" multi>
-        <mat-expansion-panel>
+        <mat-expansion-panel [disabled]="!collection.clustersTable">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Clusters</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <app-table
+            *ngIf="collection.clustersTable | async as clustersTableModel"
+            [tableModel]="clustersTableModel"
+            [addPaginator]="true"
+          ></app-table>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]="!collection.eachClustersTables">
           <mat-expansion-panel-header>
             <mat-panel-title>Clustered sales data</mat-panel-title>
           </mat-expansion-panel-header>
@@ -50,25 +57,25 @@
             </div>
           </mat-accordion>
         </mat-expansion-panel>
-        <mat-expansion-panel>
+        <mat-expansion-panel [disabled]="!collection.graphModels">
           <mat-expansion-panel-header>
             <mat-panel-title>Clustered Sales data plotted</mat-panel-title>
           </mat-expansion-panel-header>
           <mat-accordion class="accordion" multi>
             <div
               *ngFor="
-                let graphModel of collection.graphModels | async;
+                let graph of collection.graphModels | async;
                 let i = index
               "
             >
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
-                  <mat-panel-title>Time of sale vs. Spend</mat-panel-title>
+                  <mat-panel-title>{{ graph.title }}</mat-panel-title>
                 </mat-expansion-panel-header>
                 <app-graph
-                  [chartType]="chartType"
-                  [chartData]="graphModel.chartData"
-                  [chartOptions]="chartOptions"
+                  [chartType]="graph.graphModel.chartType"
+                  [chartData]="graph.graphModel.chartData"
+                  [chartOptions]="graph.graphModel.chartOptions"
                 ></app-graph>
               </mat-expansion-panel>
             </div>

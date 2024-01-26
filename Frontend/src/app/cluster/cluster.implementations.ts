@@ -21,7 +21,7 @@ import {
   GraphModel,
   ImplementationDialog,
 } from '../cross-correlation/cross-correlation.component';
-import { Observable, from, lastValueFrom, of } from 'rxjs';
+import { Observable, Subject, from, lastValueFrom, of } from 'rxjs';
 
 export interface ClusteringAssembly {
   assembly: ClusteringImplementaion;
@@ -29,9 +29,10 @@ export interface ClusteringAssembly {
 
 export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
   title: string = 'Time of dat vs Total spending';
-  clustersTable!: Promise<TableModel>;
-  eachClustersTables!: Promise<TableModel[]>;
-  graphModels!: Promise<GraphModel[]>;
+  clustersTable: Subject<TableModel> = new Subject<TableModel>();
+  eachClustersTables: Subject<TableModel[]> = new Subject<TableModel[]>();
+  graphModels: Subject<{ title: string; graphModel: GraphModel }[]> =
+    new Subject<{ title: string; graphModel: GraphModel }[]>();
 
   getSalesCommand: GetSalesCommand = {
     establishmentId: this.sessionStorageService.getActiveEstablishment()!,
@@ -54,8 +55,8 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
     this.clusteringCommand = new Clustering_TimeOfVisit_TotalPrice_Command();
     this.clusteringCommand.establishmentId =
       this.sessionStorageService.getActiveEstablishment()!;
-    this.clusteringCommand.bandwidthTotalPrice = 10;
-    this.clusteringCommand.bandwidthTimeOfVisit = 10;
+    this.clusteringCommand.bandwidthTotalPrice = 50;
+    this.clusteringCommand.bandwidthTimeOfVisit = 120;
   }
 
   dialogs: ImplementationDialog[] = [
@@ -72,6 +73,7 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
           await dialogCrossCorrelationSettingsComponent.Open();
       },
     } as ImplementationDialog,
+
     {
       name: 'Run',
       action: async () => {
@@ -81,7 +83,6 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
         );
 
         this.clusteringCommand.salesIds = this.getSalesReturn.sales;
-
         //Get clustering
         this.clusteringReturn = await lastValueFrom(
           this.analysisClient.timeOfVisitTotalPrice(this.clusteringCommand)
@@ -102,13 +103,12 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
     );
 
     //Build tables
-    // this.clustersTable = from(this.buildClusterTable(salesDTOClusters));
-    this.clustersTable = this.buildClusterTable(salesDTOClusters);
-
-    this.eachClustersTables = this.buildClustersTables(salesDTOClusters);
-
+    this.clustersTable.next(await this.buildClusterTable(salesDTOClusters));
+    this.eachClustersTables.next(
+      await this.buildClustersTables(salesDTOClusters)
+    );
     //Build graphs
-    this.graphModels = this.buildClusterGraph(this.clusteringReturn!);
+    this.graphModels.next(await this.buildClusterGraph(this.clusteringReturn!));
   }
 
   private async getSalesDTO(): Promise<SaleDTO[]> {
@@ -179,7 +179,7 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
 
   private async buildClusterGraph(
     data: ClusteringReturn
-  ): Promise<GraphModel[]> {
+  ): Promise<{ title: string; graphModel: GraphModel }[]> {
     var points: { x: number; y: number }[][] = data.clusters.map((cluster) =>
       cluster.map((saleId) => {
         var caluationData = data.calculationValues.find(
@@ -197,31 +197,45 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
       return {
         data: cluster,
         label: `Cluster ${index}`,
-        backgroundColor: 'rgba(0, 0, 255, 0.2)',
+        backgroundColor: this.getRandomColor(),
+        showLine: false,
+        pointRadius: 5,
       } as ChartDataset;
     });
 
-    var graphs: GraphModel[] = [
+    var graphs: { title: string; graphModel: GraphModel }[] = [
       {
-        chartType: 'scatter' as ChartType,
-        chartData: {
-          datasets: scatterChartData,
-        } as ChartData,
-        chartOptions: {
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'bottom',
+        title: 'Time of day vs Total spending',
+        graphModel: {
+          chartType: 'scatter' as ChartType,
+          chartData: {
+            datasets: scatterChartData,
+          } as ChartData,
+          chartOptions: {
+            scales: {
+              x: {
+                type: 'linear',
+                position: 'bottom',
+              },
+              y: {
+                type: 'linear',
+                position: 'left',
+              },
             },
-
-            y: {
-              type: 'linear',
-              position: 'left',
-            },
-          },
-        } as ChartOptions,
-      } as GraphModel,
-    ] as GraphModel[];
+          } as ChartOptions,
+        } as GraphModel,
+      },
+    ];
+    console.log('graphs', graphs);
     return graphs;
+  }
+
+  private getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   }
 }

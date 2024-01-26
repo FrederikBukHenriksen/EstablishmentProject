@@ -41,9 +41,9 @@ namespace WebApplication1.Domain_Layer.Entities
             return this;
         }
 
-        public override void ConstructEntity(Establishment entity)
+        public override Establishment Build()
         {
-            this.Entity = new Establishment(name: this.name, items: this.items, tables: this.tables, sales: this.sales);
+            return new Establishment(name: this.name, items: this.items, tables: this.tables, sales: this.sales);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DMIOpenData;
+using WebApplication1.Application_Layer.Objects;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
@@ -11,7 +12,6 @@ namespace WebApplication1.CommandHandlers
     {
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; }
-        //public SalesSorting salesSorting { get; set; }
         public DateTimePeriod TimePeriod { get; set; }
         public TimeResolution TimeResolution { get; set; }
         public int MaxLag { get; set; }
@@ -20,16 +20,16 @@ namespace WebApplication1.CommandHandlers
     public class CorrelationReturn : ReturnBase
     {
         public List<(int, double)> LagAndCorrelation { get; set; }
-        public List<(DateTime id, List<double?> values)> calculationValues { get; set; }
+        public List<(DateTime dateTime, List<double?> values)> calculationValues { get; set; }
 
         public CorrelationReturn(
-            Dictionary<TimeSpan, double> lagAndCorrelation,
+            Dictionary<int, double> lagAndCorrelation,
         Dictionary<DateTime, (double?, double?)> calculationValues
             )
         {
-            this.LagAndCorrelation = lagAndCorrelation.Select(x => (TimeHelper.FromTimeSpanToHours(x.Key, TimeResolution.Hour), x.Value)).ToList();
-            this.calculationValues = calculationValues.Select(kv => (id: kv.Key, values: new List<double?> { kv.Value.Item1, kv.Value.Item2 }))
-            .ToList();
+            this.LagAndCorrelation = lagAndCorrelation.Select(x => (x.Key, x.Value)).OrderBy(x => x.Key).ToList();
+            this.calculationValues = calculationValues.Select(kv => (dateTime: kv.Key, values: new List<double?> { kv.Value.Item1, kv.Value.Item2 }))
+            .OrderBy(x => x.dateTime).ToList();
         }
     }
 
@@ -49,7 +49,7 @@ namespace WebApplication1.CommandHandlers
         {
             Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().GetById(command.EstablishmentId)!;
 
-            Coordinates coordinates = new Coordinates() { Latitude = 55.676098, Longitude = 12.568337 };
+            Coordinates coordinates = new Coordinates(55.676098, 12.568337);
             //FETCH and ARRANGE sales   
             List<Sale> sales = establishment.GetSales().Where(x => command.SalesIds.Contains(x.Id)).ToList();
 
@@ -63,10 +63,10 @@ namespace WebApplication1.CommandHandlers
 
 
             //FETCH and ARRANGE weather
-            var weatherDataStart = command.TimePeriod.Start.Date.AddDays(0);
-            var weatherDataEnd = command.TimePeriod.End.Date;
-            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, weatherDataStart, weatherDataEnd, command.TimeResolution);
-            var weatherDateTimeList = TimeHelper.CreateTimelineAsList(new DateTimePeriod(weatherDataStart, weatherDataEnd), command.TimeResolution);
+            var lagDateStart = command.TimePeriod.Start.Date.AddToDateTime(command.MaxLag * (-1), command.TimeResolution);
+            var lagDateEnd = command.TimePeriod.End.Date.AddToDateTime(command.MaxLag, command.TimeResolution);
+            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, lagDateStart, lagDateEnd, command.TimeResolution);
+            var weatherDateTimeList = TimeHelper.CreateTimelineAsList(new DateTimePeriod(lagDateStart, lagDateEnd), command.TimeResolution);
 
             Dictionary<DateTime, List<(DateTime, double)>> tempMappedToTimeline = TimeHelper.MapObjectsToTimeline(temperaturePerHour, x => x.Item1, weatherDateTimeList, command.TimeResolution);
 
@@ -87,10 +87,19 @@ namespace WebApplication1.CommandHandlers
 
             List<(TimeSpan, double)> spearman = CrossCorrelation.DoAnalysis(listOfDateTimeAndCounts, averageToList);
 
-            Dictionary<TimeSpan, double> spearmanAsDictionary = spearman.ToDictionary(x => x.Item1, x => x.Item2);
 
-            //return
-            Dictionary<DateTime, (double?, double?)> combinedDictionary = numberOfSalesForTheDateTimeKey
+
+            //RETURN
+
+            Dictionary<TimeSpan, double> spearmanAsDictionary = spearman.ToDictionary(x => x.Item1, x => x.Item2);
+            Dictionary<int, double> spearmanWithLagAsDictionary = spearman.ToDictionary(x => TimeHelper.FromTimeSpanToHours(x.Item1, command.TimeResolution), x => x.Item2);
+
+            List<Sale> salesWithinLag = sales.Where(x => x.GetTimeOfSale() >= lagDateStart && x.GetTimeOfSale() <= lagDateEnd).ToList();
+            Dictionary<DateTime, double> salesWithinLagNumberOfSales = salesWithinLag
+                .GroupBy(x => TimeHelper.TimeResolutionUniqueRounder(x.GetTimeOfSale(), command.TimeResolution))
+                .ToDictionary(x => x.Key, x => (double)x.Count());
+
+            Dictionary<DateTime, (double?, double?)> combinedDictionary = salesWithinLagNumberOfSales
                 .Select(kv =>
                 {
                     double? valueSales = kv.Value;
@@ -98,12 +107,12 @@ namespace WebApplication1.CommandHandlers
                     return new KeyValuePair<DateTime, (double?, double?)>(kv.Key, (valueSales, valueAverages));
                 })
                 .Concat(averages
-                    .Where(kv => !numberOfSalesForTheDateTimeKey.ContainsKey(kv.Key))
+                    .Where(kv => !salesWithinLagNumberOfSales.ContainsKey(kv.Key))
                     .Select(kv => new KeyValuePair<DateTime, (double?, double?)>(kv.Key, (null, (double?)kv.Value))))
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
 
 
-            return new CorrelationReturn(spearmanAsDictionary, combinedDictionary);
+            return new CorrelationReturn(spearmanWithLagAsDictionary, combinedDictionary);
 
         }
 

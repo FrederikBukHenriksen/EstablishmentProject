@@ -23,6 +23,7 @@ namespace WebApplication1.Infrastructure.Data
         Dictionary<DateTime, int> DistributionDayOfYear(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
         Dictionary<DateTime, int> DistributionMonth(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
         Dictionary<DateTime, int> DistributionYear(List<DateTime> dateTimePoints, Func<double, double> distributionFunction);
+
     }
 
     public class TestDataCreatorService : ITestDataCreatorService

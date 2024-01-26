@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NodaTime;
+using WebApplication1.Application_Layer.Objects;
 using WebApplication1.Application_Layer.Services;
-using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
@@ -21,9 +21,8 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
             //Inject services
             testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            SetupMockWeatherApi();
             var yourClassUnderTest = scope.ServiceProvider.GetRequiredService<IWeatherApi>();
-            Coordinates coordinates = new Coordinates { Latitude = 55.676098, Longitude = 12.568337 };
+            Coordinates coordinates = new Coordinates(55.676098, 12.568337);
             var ok = yourClassUnderTest.GetTemperature(coordinates, new DateTime(2021, 1, 1), new DateTime(2021, 1, 1), TimeResolution.Hour);
         }
 
@@ -51,23 +50,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
         }
 
 
-        private void SetupMockWeatherApi()
-        {
-            mockWeatherApi = new Mock<IWeatherApi>();
 
-            var expectedTemperatureData = new List<(DateTime, double)>
-    {
-        (DateTime.UtcNow, 20.0),
-        (DateTime.UtcNow.AddHours(1), 22.5),
-    };
-
-            mockWeatherApi
-                .Setup(api => api.GetTemperature(It.IsAny<Coordinates>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TimeResolution>()))
-                .ReturnsAsync(expectedTemperatureData);
-
-            // Register the mock in the service collection
-            scope.ServiceCollection.AddScoped<IWeatherApi>(_ => mockWeatherApi.Object);
-        }
 
 
     }
