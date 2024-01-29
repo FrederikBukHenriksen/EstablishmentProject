@@ -10,10 +10,11 @@ import {
   DropDownOption,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TimeResolution } from 'api';
-import { CreateDate } from '../utils/TimeHelper';
+import { CreateDate, removeTimezone } from '../utils/TimeHelper';
 
 export type DialogCrossCorrelationSettingsReturn = {
-  maxLag: number | undefined;
+  lowerLag: number | undefined;
+  upperLag: number | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   timeResolution: TimeResolution | undefined;
@@ -29,7 +30,8 @@ export class DialogCrossCorrelationSettingsComponent {
 
   private async buildDialog(): Promise<DialogConfig> {
     return new DialogConfig([
-      new DialogSlider('maxLag', 'Maximum allowed lag', 1, 24, 1),
+      new DialogSlider('lowerLag', 'Lower allows lag', 1, 24, 1),
+      new DialogSlider('upperLag', 'Upper allowed lag', 1, 24, 1),
       new DatePicker('timeframetart'),
       new DatePicker('timeframeend'),
       new DropDown('timeresolution', 'Time resolution', [
@@ -50,30 +52,14 @@ export class DialogCrossCorrelationSettingsComponent {
         })
         .afterClosed()
     );
-    var startDate = data['timeframetart'] as Date;
-    var startDate = CreateDate(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate(),
-      0,
-      0,
-      0
-    );
-    var endDate = data['timeframeend'] as Date;
-    var endDate = CreateDate(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate(),
-      0,
-      0,
-      0
-    );
-
+    var startDate = (data['timeframetart'] as Date) ?? undefined;
+    var endDate = (data['timeframeend'] as Date) ?? undefined;
     return {
-      maxLag: data['maxLag'] as number,
-      startDate: startDate,
-      endDate: endDate,
-      timeResolution: data['timeresolution'] as TimeResolution,
+      lowerLag: (data['lowerLag'] as number) ?? undefined,
+      upperLag: (data['upperLag'] as number) ?? undefined,
+      startDate: removeTimezone(startDate) ?? undefined,
+      endDate: removeTimezone(endDate) ?? undefined,
+      timeResolution: (data['timeresolution'] as TimeResolution) ?? undefined,
     } as DialogCrossCorrelationSettingsReturn;
   }
 }

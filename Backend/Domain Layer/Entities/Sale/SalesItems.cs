@@ -25,6 +25,8 @@ namespace WebApplication1.Data.DataModels
         {
             public void Configure(EntityTypeBuilder<SalesItems> builder)
             {
+
+
                 builder.Property<Guid>("SalesId");
                 builder.Property<Guid>("ItemId");
 

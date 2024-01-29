@@ -26,15 +26,17 @@ namespace WebApplication1.Domain_Layer.Entities
             sales?.ForEach(this.AddSale);
         }
 
-        public void SetName(string name)
+        public Establishment SetName(string name)
         {
             this.Name = name;
+            return this;
         }
 
-        public void SetOpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
+        public Establishment SetOpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
         {
             OpeningHours openingHours = new OpeningHours(dayOfWeek, open, close);
             this.Information.setOpeningHour(openingHours);
+            return this;
         }
     }
 }

@@ -21,19 +21,19 @@ namespace WebApplication1.Domain_Layer.Services.Entity_controllers
 
         public IEstablishmentService AddItem(Item item)
         {
-            this.Entity?.AddItem(item);
+            //this.Entity?.AddItem(item);
             return this;
         }
 
         public IEstablishmentService AddSale(Sale sale)
         {
-            this.Entity?.AddSale(sale);
+            //this.Entity?.AddSale(sale);
             return this;
         }
 
         public IEstablishmentService AddTable(Table table)
         {
-            this.Entity?.AddTable(table);
+            //this.Entity?.AddTable(table);
             return this;
         }
 

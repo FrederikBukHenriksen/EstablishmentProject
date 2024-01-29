@@ -62,10 +62,9 @@
       <mat-slider
         showTickMarks
         discrete
-        min="{{ input.slider.min }}"
-        max="{{ input.slider.max }}"
-        step="{{ input.slider.step }}"
-        [formControlName]="input.id"
+        [min]="input.slider.min"
+        [max]="input.slider.max"
+        [step]="input.slider.step"
       >
         <input matSliderThumb [formControlName]="input.id" />
       </mat-slider>

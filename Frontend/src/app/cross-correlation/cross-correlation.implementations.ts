@@ -23,7 +23,12 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { DialogCrossCorrelationSettingsComponent } from '../dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
 import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
-import { DateForGraph, getDifferenceInHours } from '../utils/TimeHelper';
+import {
+  DateForGraph,
+  getDifferenceInHours,
+  accountForTimezone,
+  removeTimezone,
+} from '../utils/TimeHelper';
 
 export interface CrossCorrealtionAssembly {
   assembly: CrossCorrelationImplementaion;
@@ -92,7 +97,8 @@ export class CrossCorrelation_Sales_Temperature
         var dialogCrossCorrelationSettingsComponent =
           new DialogCrossCorrelationSettingsComponent(this.dialog);
         var res = await dialogCrossCorrelationSettingsComponent.Open();
-        this.correlationCommand.maxLag = res.maxLag!;
+        this.correlationCommand.lowerLag = res.lowerLag!;
+        this.correlationCommand.upperLag = res.upperLag!;
         this.correlationCommand.timePeriod = {
           start: res.startDate,
           end: res.endDate,
@@ -184,7 +190,11 @@ export class CrossCorrelation_Sales_Temperature
         data: this.shiftArrayAttribute(values, 'value2', bestLag.lag).map(
           (x: any) => x.value2
         ),
-        label: `Temperature shifted ${this.getLagAmount(bestLag.lag, timeres)}`,
+        label:
+          'Temperature shifted ' +
+          this.getLagAmount(bestLag.lag, timeres) +
+          ' ' +
+          this.getLagUnit(timeres),
       } as ChartDataset,
     ];
 
@@ -254,6 +264,8 @@ export class CrossCorrelation_Sales_Temperature
     dateEnd: Date,
     timeResolution: TimeResolution
   ) => {
+    dateStart = accountForTimezone(dateStart);
+    dateEnd = accountForTimezone(dateEnd);
     if (inputDate >= dateStart && inputDate <= dateEnd) {
       return DateForGraph(inputDate);
     }
@@ -264,7 +276,6 @@ export class CrossCorrelation_Sales_Temperature
       console.log('dateStart', dateStart);
 
       return (
-        'before' +
         this.getLagAmount(difference, timeResolution) +
         ' ' +
         this.getLagUnit(timeResolution)
@@ -273,7 +284,6 @@ export class CrossCorrelation_Sales_Temperature
     if (inputDate > dateEnd) {
       var difference = getDifferenceInHours(inputDate, dateEnd);
       return (
-        'after' +
         this.getLagAmount(difference, timeResolution) +
         ' ' +
         this.getLagUnit(timeResolution)

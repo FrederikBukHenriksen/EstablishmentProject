@@ -54,8 +54,7 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
 
         public override Sale Build()
         {
-            return new Sale(timestampPayment: (DateTime)this.builderTimestampPayment, salesItems: this.builderSalesItems, timestampArrival: this.builderTimestampArrival, table: this.builderTable);
-
+            throw new NotImplementedException();
         }
     }
 }

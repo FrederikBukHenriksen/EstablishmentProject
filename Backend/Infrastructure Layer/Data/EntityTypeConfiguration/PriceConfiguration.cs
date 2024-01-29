@@ -9,7 +9,7 @@ namespace WebApplication1.Infrastructure_Layer.Data.EntityTypeConfiguration
         {
             builder.ToTable(nameof(Price));
 
-            builder.Property(x => x.Value).IsRequired(true);
+            builder.Property(x => x.Amount).IsRequired(true);
 
             builder.Property(x => x.Currency)
             .HasConversion(

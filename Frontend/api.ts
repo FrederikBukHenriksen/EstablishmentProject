@@ -138,76 +138,6 @@ export class UserContextClient {
 @Injectable({
     providedIn: 'root'
 })
-export class WeatherClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    getWeatherTemperature(): Observable<Establishment[]> {
-        let url_ = this.baseUrl + "/api/user-context/get-temperature";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetWeatherTemperature(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetWeatherTemperature(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Establishment[]>;
-        }));
-    }
-
-    protected processGetWeatherTemperature(response: HttpResponseBase): Observable<Establishment[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(Establishment.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-}
-
-@Injectable({
-    providedIn: 'root'
-})
 export class AnalysisClient {
     private http: HttpClient;
     private baseUrl: string;
@@ -963,370 +893,6 @@ export class SaleClient {
     }
 }
 
-export abstract class EntityBase {
-    id!: string;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): EntityBase {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'EntityBase' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        return data;
-    }
-}
-
-export class Establishment extends EntityBase {
-    name!: string | undefined;
-    information!: EstablishmentInformation;
-    items!: Item[];
-    tables!: Table[];
-    sales!: Sale[];
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.information = _data["information"] ? EstablishmentInformation.fromJS(_data["information"]) : <any>undefined;
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(Item.fromJS(item));
-            }
-            if (Array.isArray(_data["tables"])) {
-                this.tables = [] as any;
-                for (let item of _data["tables"])
-                    this.tables!.push(Table.fromJS(item));
-            }
-            if (Array.isArray(_data["sales"])) {
-                this.sales = [] as any;
-                for (let item of _data["sales"])
-                    this.sales!.push(Sale.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Establishment {
-        data = typeof data === 'object' ? data : {};
-        let result = new Establishment();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["information"] = this.information ? this.information.toJSON() : <any>undefined;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        if (Array.isArray(this.tables)) {
-            data["tables"] = [];
-            for (let item of this.tables)
-                data["tables"].push(item.toJSON());
-        }
-        if (Array.isArray(this.sales)) {
-            data["sales"] = [];
-            for (let item of this.sales)
-                data["sales"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class EstablishmentInformation extends EntityBase {
-    location!: Location;
-    openingHours!: OpeningHours[];
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.location = _data["location"] ? Location.fromJS(_data["location"]) : <any>undefined;
-            if (Array.isArray(_data["openingHours"])) {
-                this.openingHours = [] as any;
-                for (let item of _data["openingHours"])
-                    this.openingHours!.push(OpeningHours.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): EstablishmentInformation {
-        data = typeof data === 'object' ? data : {};
-        let result = new EstablishmentInformation();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        if (Array.isArray(this.openingHours)) {
-            data["openingHours"] = [];
-            for (let item of this.openingHours)
-                data["openingHours"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Location extends EntityBase {
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): Location {
-        data = typeof data === 'object' ? data : {};
-        let result = new Location();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class OpeningHours extends EntityBase {
-    dayOfWeek!: DayOfWeek;
-    open!: string;
-    close!: string;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.dayOfWeek = _data["dayOfWeek"];
-            this.open = _data["open"];
-            this.close = _data["close"];
-        }
-    }
-
-    static override fromJS(data: any): OpeningHours {
-        data = typeof data === 'object' ? data : {};
-        let result = new OpeningHours();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["dayOfWeek"] = this.dayOfWeek;
-        data["open"] = this.open;
-        data["close"] = this.close;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export enum DayOfWeek {
-    Sunday = 0,
-    Monday = 1,
-    Tuesday = 2,
-    Wednesday = 3,
-    Thursday = 4,
-    Friday = 5,
-    Saturday = 6,
-}
-
-export class Item extends EntityBase {
-    establishmentId!: string;
-    name!: string;
-    price!: Price;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.establishmentId = _data["establishmentId"];
-            this.name = _data["name"];
-            this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): Item {
-        data = typeof data === 'object' ? data : {};
-        let result = new Item();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["establishmentId"] = this.establishmentId;
-        data["name"] = this.name;
-        data["price"] = this.price ? this.price.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Price extends EntityBase {
-    value!: number;
-    currency!: Currency;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.value = _data["value"];
-            this.currency = _data["currency"];
-        }
-    }
-
-    static override fromJS(data: any): Price {
-        data = typeof data === 'object' ? data : {};
-        let result = new Price();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["value"] = this.value;
-        data["currency"] = this.currency;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export enum Currency {
-    UNKNOWN = 0,
-    DKK = 1,
-    EUR = 2,
-}
-
-export class Table extends EntityBase {
-    name!: string;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-        }
-    }
-
-    static override fromJS(data: any): Table {
-        data = typeof data === 'object' ? data : {};
-        let result = new Table();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Sale extends EntityBase {
-    establishmentId!: string;
-    saleType!: SaleType | undefined;
-    paymentType!: PaymentType | undefined;
-    timestampArrival!: Date | undefined;
-    timestampPayment!: Date;
-    salesItems!: SalesItems[] | undefined;
-    table!: Table | undefined;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.establishmentId = _data["establishmentId"];
-            this.saleType = _data["saleType"];
-            this.paymentType = _data["paymentType"];
-            this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
-            this.timestampPayment = _data["timestampPayment"] ? new Date(_data["timestampPayment"].toString()) : <any>undefined;
-            if (Array.isArray(_data["salesItems"])) {
-                this.salesItems = [] as any;
-                for (let item of _data["salesItems"])
-                    this.salesItems!.push(SalesItems.fromJS(item));
-            }
-            this.table = _data["table"] ? Table.fromJS(_data["table"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): Sale {
-        data = typeof data === 'object' ? data : {};
-        let result = new Sale();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["establishmentId"] = this.establishmentId;
-        data["saleType"] = this.saleType;
-        data["paymentType"] = this.paymentType;
-        data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
-        data["timestampPayment"] = this.timestampPayment ? this.timestampPayment.toISOString() : <any>undefined;
-        if (Array.isArray(this.salesItems)) {
-            data["salesItems"] = [];
-            for (let item of this.salesItems)
-                data["salesItems"].push(item.toJSON());
-        }
-        data["table"] = this.table ? this.table.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export enum SaleType {
-    EatIn = 0,
-    Delivery = 1,
-    TakeAway = 2,
-}
-
-export enum PaymentType {
-    Cash = 0,
-    Mobilepay = 1,
-    Card = 2,
-    Online = 3,
-}
-
-export class SalesItems extends EntityBase {
-    sale!: Sale;
-    item!: Item;
-    quantity!: number;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.sale = _data["sale"] ? Sale.fromJS(_data["sale"]) : <any>undefined;
-            this.item = _data["item"] ? Item.fromJS(_data["item"]) : <any>undefined;
-            this.quantity = _data["quantity"];
-        }
-    }
-
-    static override fromJS(data: any): SalesItems {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesItems();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["sale"] = this.sale ? this.sale.toJSON() : <any>undefined;
-        data["item"] = this.item ? this.item.toJSON() : <any>undefined;
-        data["quantity"] = this.quantity;
-        super.toJSON(data);
-        return data;
-    }
-}
-
 export abstract class ReturnBase {
 
     init(_data?: any) {
@@ -1468,7 +1034,8 @@ export class CorrelationCommand extends CommandBase {
     salesIds!: string[];
     timePeriod!: DateTimePeriod;
     timeResolution!: TimeResolution;
-    maxLag!: number;
+    upperLag!: number;
+    lowerLag!: number;
 
     override init(_data?: any) {
         super.init(_data);
@@ -1481,7 +1048,8 @@ export class CorrelationCommand extends CommandBase {
             }
             this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
             this.timeResolution = _data["timeResolution"];
-            this.maxLag = _data["maxLag"];
+            this.upperLag = _data["upperLag"];
+            this.lowerLag = _data["lowerLag"];
         }
     }
 
@@ -1502,7 +1070,8 @@ export class CorrelationCommand extends CommandBase {
         }
         data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
         data["timeResolution"] = this.timeResolution;
-        data["maxLag"] = this.maxLag;
+        data["upperLag"] = this.upperLag;
+        data["lowerLag"] = this.lowerLag;
         super.toJSON(data);
         return data;
     }
@@ -1992,6 +1561,63 @@ export class ItemDTO {
     }
 }
 
+export abstract class EntityBase {
+    id!: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): EntityBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'EntityBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export class Price extends EntityBase {
+    amount!: number;
+    currency!: Currency;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.amount = _data["amount"];
+            this.currency = _data["currency"];
+        }
+    }
+
+    static override fromJS(data: any): Price {
+        data = typeof data === 'object' ? data : {};
+        let result = new Price();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["amount"] = this.amount;
+        data["currency"] = this.currency;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export enum Currency {
+    UNKNOWN = 0,
+    DKK = 1,
+    EUR = 2,
+    GBP = 3,
+    USD = 4,
+}
+
 export class GetItemDTOCommand extends CommandBase {
     establishmentId!: string;
     itemsIds!: string[];
@@ -2169,6 +1795,19 @@ export class SaleDTO {
         data["employee"] = this.employee;
         return data;
     }
+}
+
+export enum SaleType {
+    EatIn = 0,
+    Delivery = 1,
+    TakeAway = 2,
+}
+
+export enum PaymentType {
+    Cash = 0,
+    Mobilepay = 1,
+    Card = 2,
+    Online = 3,
 }
 
 export class GetSalesDTOCommand extends CommandBase {

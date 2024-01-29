@@ -14,6 +14,36 @@ namespace WebApplication1.Domain_Layer.Entities
             this.Name = name;
             this.Price = price;
         }
+
+        public Item(string name, double price, Currency currency)
+        {
+            this.Name = name;
+            this.Price = new Price(price, currency);
+        }
+
+        public Guid GetEstablishmentId()
+        {
+            return this.EstablishmentId;
+        }
+        public string GetName()
+        {
+            return this.Name;
+        }
+
+        public void SetName(string name)
+        {
+            this.Name = name;
+        }
+
+        public Price GetPrice()
+        {
+            return this.Price;
+        }
+
+        public void SetPrice(double price, Currency currency)
+        {
+            this.Price = new Price(price, currency);
+        }
     }
 
     public class ItemConfiguration : IEntityTypeConfiguration<Item>
@@ -25,7 +55,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
             builder.OwnsOne(e => e.Price, priceBuilder =>
             {
-                priceBuilder.Property(p => p.Value).HasColumnName("PriceValue").IsRequired();
+                priceBuilder.Property(p => p.Amount).HasColumnName("PriceValue").IsRequired();
                 priceBuilder.Property(p => p.Currency)
                     .HasConversion(
                     currency => currency.ToString(),

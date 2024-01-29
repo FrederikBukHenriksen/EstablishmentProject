@@ -9,6 +9,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
         }
         public Location Location { get; set; } = new Location();
+        public Currency Currency = Currency.UNKNOWN;
         public virtual ICollection<OpeningHours> OpeningHours { get; set; } = new List<OpeningHours>();
 
 

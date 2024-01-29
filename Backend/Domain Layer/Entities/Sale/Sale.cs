@@ -37,14 +37,14 @@ namespace WebApplication1.Domain_Layer.Entities
             SaleType? saleType = null,
             PaymentType? paymentType = null,
             DateTime? timestampArrival = null,
-            List<SalesItems>? salesItems = null,
+            List<(Item item, int quantity)>? salesItems = null,
             Table? table = null)
         {
             this.SaleType = saleType;
             this.PaymentType = paymentType;
             this.TimestampArrival = timestampArrival;
             this.TimestampPayment = timestampPayment;
-            this.SalesItems = salesItems ?? new List<SalesItems>();
+            this.SalesItems = salesItems?.Select(x => new SalesItems(x.item, x.quantity)).ToList();
             this.Table = table;
         }
 
@@ -71,7 +71,7 @@ namespace WebApplication1.Domain_Layer.Entities
                 {
                     if (!(salesItem == null))
                     {
-                        totalPrice += salesItem.Item.Price.Value * salesItem.quantity;
+                        totalPrice += salesItem.Item.Price.Amount * salesItem.quantity;
                     }
                 }
             }

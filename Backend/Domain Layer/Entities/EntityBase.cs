@@ -1,15 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public abstract class EntityBase
+    public interface ICommon
     {
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
 
     }
 
+    public interface IEntity : ICommon
+    {
+        public Guid Id { get; set; }
+    }
 
+    public abstract class EntityBase : IEntity
+    {
+
+        [Key]
+        public Guid Id { get; set; } = new Guid();
+    }
 }
+
+//[DatabaseGenerated(DatabaseGeneratedOption.Identity)]

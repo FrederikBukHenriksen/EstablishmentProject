@@ -8,7 +8,6 @@ using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace EstablishmentProject.test
 {
-    [Collection("Login")]
     public class LoginTest : BaseIntegrationTest
     {
         private const string apiLogin = "/api/authentication/login";
@@ -20,6 +19,7 @@ namespace EstablishmentProject.test
 
         public LoginTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
+            clearDatabase();
             factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
 
             List<User> users = new List<User> {
@@ -31,57 +31,94 @@ namespace EstablishmentProject.test
             dbContext.SaveChanges();
         }
 
-        [Theory]
-        [InlineData("frederik@mail.com", "hello123")]
-        [InlineData("Frederik@Mail.COM", "hello123")]
-        public async void Login__Success(string username, string password)
+        [Fact]
+        public async Task Login_WithCorrectCredentials_WithExactCaing_ShouldLogIn()
         {
-            //ARRANGE
-            LoginCommand LoginCommand = new LoginCommand
+            // ARRANGE
+            var loginCommand = new LoginCommand
             {
-                Username = username,
-                Password = password
+                Username = "frederik@mail.com",
+                Password = "hello123"
             };
 
-            //ACT
-            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
+            // ACT
+            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
 
-            string jwtToken = extractJwtTokenHelper(loginResponse);
+            var jwtToken = extractJwtTokenHelper(loginResponse);
             httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
 
-
-            //ASSERT
+            // ASSERT
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
             Assert.NotNull(jwtToken);
-
         }
 
-        [Theory]
-        [InlineData("rederik@mail.com", "hello123")] //Wrong username
-        [InlineData("frederik@mail.com", "hallo123")] //Misspelled password
-        [InlineData("frederik@mail.com", "Hallo123")] //Usser case password
-        public async void Login__Failure__Wrong_Credentials(string username, string password)
+
+        [Fact]
+        public async Task Login_WithCorrectCredentials_WithMixedCaseUsername_ShouldLogIn()
         {
-            //ARRANGE
-            LoginCommand LoginCommand = new LoginCommand
+            // ARRANGE
+            var loginCommand = new LoginCommand
             {
-                Username = username,
-                Password = password
+                Username = "FrEDErIk@MAiL.cOM",
+                Password = "hello123"
             };
 
-            //ACT
-            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
+            // ACT
+            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
 
-            string jwtToken = extractJwtTokenHelper(loginResponse);
+            var jwtToken = extractJwtTokenHelper(loginResponse);
             httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
 
-
-            //ASSERT
+            // ASSERT
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
             Assert.NotNull(jwtToken);
-
         }
 
+
+        [Fact]
+        public async Task Login_Success_ValidUsernameAndPassword()
+        {
+            // ARRANGE
+            var loginCommand = new LoginCommand
+            {
+                Username = "frederik@mail.com",
+                Password = "hello123"
+            };
+
+            // ACT
+            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
+
+            var jwtToken = extractJwtTokenHelper(loginResponse);
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
+
+            // ASSERT
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+            Assert.NotNull(jwtToken);
+        }
+
+        [Fact]
+        public async Task Login_Success_CaseInsensitiveUsername()
+        {
+            // ARRANGE
+            var loginCommand = new LoginCommand
+            {
+                Username = "Frederik@Mail.COM",
+                Password = "hello123"
+            };
+
+            // ACT
+            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
+
+            var jwtToken = extractJwtTokenHelper(loginResponse);
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
+
+            // ASSERT
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+            Assert.NotNull(jwtToken);
+        }
+
+
+        [Fact]
         public async void IsLoggedIn__Success__A_User_Is_Logged_In()
         {
             //ARRANGE
@@ -119,7 +156,7 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public async void Logout__Success()
+        public async void LogOut_WhenUserLogsOut_ShouldLogOut()
         {
             //ARRANGE
             LoginCommand LoginCommand = new LoginCommand

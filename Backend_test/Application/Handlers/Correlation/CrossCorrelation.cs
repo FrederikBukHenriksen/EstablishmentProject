@@ -43,11 +43,6 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
             var aggregatedDistribution = testDataCreatorService.AggregateDistributions(allDistributions);
         }
 
-        [Fact]
-        public void Any()
-        {
-
-        }
 
 
 

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using WebApplication1.Application_Layer.Services.DataFetching;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace WebApplication1.Application_Layer.Services
 {
@@ -13,31 +11,34 @@ namespace WebApplication1.Application_Layer.Services
         public string Password { get; set; } = "";
     }
 
+    public class RetrivingMetadata
+    {
+        public string ThirdPartyId { get; }
+
+        public RetrivingMetadata(
+            string thirdPartyId
+            )
+        {
+            this.ThirdPartyId = thirdPartyId;
+        }
+    }
+
     public class UpserveAdapter : IDataFetching
     {
-        private IFactoryServiceBuilder factoryServiceBuilder;
         public HttpClient httpClient;
-        public UpserveAdapter(UpserveCredentials credentails, [FromServices] IFactoryServiceBuilder factoryServiceBuilder)
+        public UpserveAdapter(UpserveCredentials credentails)
         {
-            this.factoryServiceBuilder = factoryServiceBuilder;
             this.httpClient = this.httpClient ?? new HttpClient();
             this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-API-Key", credentails.Key);
             this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-Username", credentails.Username);
             this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-Passeord", credentails.Password);
         }
 
-        public Task<ICollection<Employee>> FetchEmployees()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ICollection<Item>> FetchItems()
+        public async Task<List<(Func<IEntity>, RetrivingMetadata)>> FetchItems(Establishment establishment)
         {
             string url = "https://api.breadcrumb.com/ws/v2/items.json";
             var parameters = new Dictionary<string, dynamic>
             {
-                //{ "category_id", "" },
-                //{ "status", "" },
                 { "limit", 500 },
                 { "offset", 0 }
             };
@@ -54,28 +55,25 @@ namespace WebApplication1.Application_Layer.Services
 
             List<ItemObject> itemObjects = respones.SelectMany(x => x.ItemObjects).ToList();
 
-            List<Item> items = new List<Item>();
+            List<(Func<IEntity>, RetrivingMetadata)> result = new List<(Func<IEntity>, RetrivingMetadata)>();
+
             foreach (var itemObject in itemObjects)
             {
-                IItemBuilderService builder = this.factoryServiceBuilder.ItemBuilder();
-
-                var newItem = builder
-                    .withName(itemObject.Name)
-                    .withPrice(double.Parse(itemObject.Price))
-                    .Build();
-
-                items.Add(newItem);
+                result.Add((
+                    () => establishment.CreateItem(itemObject.Name, double.Parse(itemObject.Price), establishment.Information.Currency),
+                    new RetrivingMetadata(itemObject.ItemId)
+                    ));
             }
 
-            return items;
+            return result;
         }
 
-        public Task<ICollection<Sale>> FetchSales()
+        public Task<List<(Func<IEntity>, RetrivingMetadata)>> FetchSales(Establishment establishment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ICollection<Table>> FetchTables()
+        public Task<List<(Func<IEntity>, RetrivingMetadata)>> FetchTables(Establishment establishment)
         {
             throw new NotImplementedException();
         }

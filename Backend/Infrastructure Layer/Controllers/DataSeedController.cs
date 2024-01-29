@@ -84,7 +84,6 @@ namespace WebApplication1.Controllers
                 .Build();
 
             var TestEstab = establishment!.Sales.First()!;
-            TestEstab.Id = new Guid("ba9fcc86-1a5c-4ffa-a550-2c9c567e1965");
 
 
             var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();

@@ -5,13 +5,15 @@
         UNKNOWN,
         DKK,
         EUR,
+        GBP,
+        USD
     }
 
     public class Price : EntityBase
     {
         public Price(double value, Currency currency)
         {
-            this.Value = value;
+            this.Amount = value;
             this.Currency = currency;
         }
 
@@ -19,7 +21,7 @@
         {
         }
 
-        public double Value { get; set; }
+        public double Amount { get; set; }
         public Currency Currency { get; set; }
 
         //Validators

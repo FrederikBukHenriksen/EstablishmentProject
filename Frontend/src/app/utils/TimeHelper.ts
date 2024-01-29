@@ -17,16 +17,39 @@ export function CreateDate(
   minutes: number,
   seconds: number
 ): Date {
-  return new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+  var date = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+  date = removeTimezone(date);
+  return date;
 }
-
-// new Date('2021-01-01T00:00:00');
 
 export function DateToString(dateTime: Date): string {
   return new Date(dateTime).toLocaleString('da-DK', {
     hour: 'numeric',
     minute: 'numeric',
   });
+}
+
+export function removeTimezone(date: Date) {
+  // Create a new Date object with the same year, month, and day
+  const dateWithoutTimezone = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
+  );
+
+  return dateWithoutTimezone;
+}
+
+export function accountForTimezone(
+  dateWithoutTimezone: Date,
+  offsetMinutes: number = -60
+) {
+  // Add the specified number of minutes to reintroduce the timezone
+  const adjustedTime =
+    dateWithoutTimezone.getTime() + offsetMinutes * 60 * 1000;
+
+  // Create a new Date object using the adjusted time
+  const dateWithTimezone = new Date(adjustedTime);
+
+  return dateWithTimezone;
 }
 
 export function DateForGraph(date: Date): string {
@@ -38,6 +61,17 @@ export function DateForGraph(date: Date): string {
     date.getDate() +
     '-' +
     date.getHours()
+  );
+}
+
+export function RemoveTimezoneFromDate(date: Date): Date {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
   );
 }
 
@@ -69,8 +103,12 @@ export function AddToDateTimeResolution(
   }
 }
 
-export function getDifferenceInHours(date1: Date, date2: Date): number {
-  const timeDifferenceInMilliseconds = date2.getTime() - date1.getTime();
+export function getDifferenceInHours(
+  inputDate: Date,
+  referenceDate: Date
+): number {
+  const timeDifferenceInMilliseconds =
+    inputDate.getTime() - referenceDate.getTime();
   const hoursDifference = timeDifferenceInMilliseconds / (1000 * 60 * 60);
   return hoursDifference;
 }

@@ -14,7 +14,9 @@ namespace WebApplication1.CommandHandlers
         public List<Guid> SalesIds { get; set; }
         public DateTimePeriod TimePeriod { get; set; }
         public TimeResolution TimeResolution { get; set; }
-        public int MaxLag { get; set; }
+        public int UpperLag { get; set; }
+        public int LowerLag { get; set; }
+
     }
 
     public class CorrelationReturn : ReturnBase
@@ -63,8 +65,8 @@ namespace WebApplication1.CommandHandlers
 
 
             //FETCH and ARRANGE weather
-            var lagDateStart = command.TimePeriod.Start.Date.AddToDateTime(command.MaxLag * (-1), command.TimeResolution);
-            var lagDateEnd = command.TimePeriod.End.Date.AddToDateTime(command.MaxLag, command.TimeResolution);
+            var lagDateStart = command.TimePeriod.Start.Date.AddToDateTime(command.LowerLag * (-1), command.TimeResolution);
+            var lagDateEnd = command.TimePeriod.End.Date.AddToDateTime(command.UpperLag, command.TimeResolution);
             List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, lagDateStart, lagDateEnd, command.TimeResolution);
             var weatherDateTimeList = TimeHelper.CreateTimelineAsList(new DateTimePeriod(lagDateStart, lagDateEnd), command.TimeResolution);
 
@@ -115,19 +117,5 @@ namespace WebApplication1.CommandHandlers
             return new CorrelationReturn(spearmanWithLagAsDictionary, combinedDictionary);
 
         }
-
-
-        //private static List<(DateTime Key, double Value)> ShiftDateTimeValues(List<(DateTime Key, double Value)> originalList, TimeSpan shiftAmount)
-        //{
-        //    List<(DateTime Key, double Value)> shiftedList = new List<(DateTime Key, double Value)>();
-
-        //    foreach (var tuple in originalList)
-        //    {
-        //        DateTime shiftedDateTime = tuple.Key + shiftAmount;
-        //        shiftedList.Add((shiftedDateTime, tuple.Value));
-        //    }
-
-        //    return shiftedList;
-        //}
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using WebApplication1.Domain_Layer.Entities;
+﻿using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Utils;
 
@@ -21,18 +20,40 @@ namespace EstablishmentProject.test
         private Sale sale_coffee_tea_water;
 
 
+        //public SalesSortingTest(IntegrationTestWebAppFactory factory) : base(factory)
+        //{
+        //    factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
+        //    coffee = factoryServiceBuilder.ItemBuilder().withName("coffee").withPrice(0, Currency.DKK).Build();
+        //    tea = factoryServiceBuilder.ItemBuilder().withName("tea").withPrice(0, Currency.DKK).Build();
+        //    water = factoryServiceBuilder.ItemBuilder().withName("water").withPrice(0, Currency.DKK).Build();
+
+        //    sale_empty = factoryServiceBuilder.SaleBuilder().WithTimestampPayment(DateTime.Today).Build();
+        //    sale_coffee = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-1)).Build();
+        //    sale_coffee_tea = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1), (tea, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-2)).Build();
+        //    sale_coffee_tea_water = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1), (tea, 1), (water, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-3)).Build();
+
+
+        //    //ARRANGE
+        //    sales = [
+        //        sale_empty,
+        //        sale_coffee,
+        //        sale_coffee_tea,
+        //        sale_coffee_tea_water
+        //    ];
+        //}
+
         public SalesSortingTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
-            factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
-            coffee = factoryServiceBuilder.ItemBuilder().withName("coffee").withPrice(0, Currency.DKK).Build();
-            tea = factoryServiceBuilder.ItemBuilder().withName("tea").withPrice(0, Currency.DKK).Build();
-            water = factoryServiceBuilder.ItemBuilder().withName("water").withPrice(0, Currency.DKK).Build();
+            establishment = new Establishment("Cafe 1");
 
-            sale_empty = factoryServiceBuilder.SaleBuilder().WithTimestampPayment(DateTime.Today).Build();
-            sale_coffee = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-1)).Build();
-            sale_coffee_tea = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1), (tea, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-2)).Build();
-            sale_coffee_tea_water = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1), (tea, 1), (water, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-3)).Build();
+            coffee = establishment.CreateItem("coffee", 0, Currency.DKK);
+            tea = establishment.CreateItem("tea", 0, Currency.DKK);
+            water = establishment.CreateItem("water", 0, Currency.DKK);
 
+            sale_empty = establishment.CreateSale(DateTime.Today);
+            sale_coffee = establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) });
+            sale_coffee_tea = establishment.CreateSale(DateTime.Today.AddDays(-2), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1) });
+            sale_coffee_tea_water = establishment.CreateSale(DateTime.Today.AddDays(-3), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1), (water, 1) });
 
             //ARRANGE
             sales = [
