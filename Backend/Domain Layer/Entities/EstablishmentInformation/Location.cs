@@ -1,6 +1,4 @@
-﻿using WebApplication1.Application_Layer.Objects;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public class Location : EntityBase
     {
@@ -12,7 +10,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
         }
 
-        public Coordinates getCoordinates()
+        public Coordinates GetCoordinates()
         {
             return new Coordinates(this.Latitude, this.Longitude);
         }

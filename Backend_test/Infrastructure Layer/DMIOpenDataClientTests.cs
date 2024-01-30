@@ -1,7 +1,7 @@
 using DMIOpenData;
 using RichardSzalay.MockHttp;
 using System.Net;
-using WebApplication1.Application_Layer.Objects;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Utils;
 
 namespace EstablishmentProject.test

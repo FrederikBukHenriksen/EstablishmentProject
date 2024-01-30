@@ -6,6 +6,12 @@ namespace WebApplication1.Services.Analysis
     {
         public static List<(TimeSpan, double)> DoAnalysis(List<(DateTime, double)> list1WithTime, List<(DateTime, double)> list2WithTime)
         {
+
+            if (list1WithTime.Count == 0 || list2WithTime.Count == 0)
+            {
+                throw new ArgumentException("Lists cannot be empty");
+            }
+
             int times = (list2WithTime.Count - list1WithTime.Count) + 1;
 
             List<(TimeSpan, double)> LagAndCorrelation = new List<(TimeSpan, double)>();
@@ -24,6 +30,8 @@ namespace WebApplication1.Services.Analysis
             }
             return LagAndCorrelation;
         }
+
+
         //public static List<(TimeSpan, double)> DoAnalysis(List<(DateTime, double)> list1WithTime, List<(DateTime, double)> list2WithTime)
         //{
         //    int times = Math.Max(0, list2WithTime.Count - list1WithTime.Count) + 1;

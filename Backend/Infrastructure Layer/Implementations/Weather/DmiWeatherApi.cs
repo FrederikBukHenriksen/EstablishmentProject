@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel;
-using WebApplication1.Application_Layer.Objects;
-using WebApplication1.Services;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Utils;
+using static WebApplication1.Services.DmiWeatherApiItems;
 
 namespace DMIOpenData
 {
@@ -46,7 +46,7 @@ namespace DMIOpenData
 
             var featuresWithTemperature = root.features.Where(x => x.properties.parameterId.Any(x => x == "temp_mean_past1h")).ToList(); //temp_dry, weather
 
-            var rootClosestToMyCoordinates = featuresWithTemperature.OrderBy(x => this.EuclideanDistance(x.geometry.coordinates[0], x.geometry.coordinates[1], coordinates.Longitude, coordinates.Latitude)).First();
+            var rootClosestToMyCoordinates = featuresWithTemperature.OrderBy(x => this.EuclideanDistance(x.geometry.coordinates[0], x.geometry.coordinates[1], coordinates.longitude, coordinates.latitude)).First();
             return rootClosestToMyCoordinates.properties.stationId;
         }
 

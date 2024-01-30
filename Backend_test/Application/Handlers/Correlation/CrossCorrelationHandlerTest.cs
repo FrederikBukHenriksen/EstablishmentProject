@@ -2,21 +2,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NodaTime;
-using WebApplication1.Application_Layer.Objects;
 using WebApplication1.Application_Layer.Services;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
 namespace EstablishmentProject.test.Application.Handlers.Correlation
 {
-    public class CrossCorrelation : BaseIntegrationTest
+    public class CrossCorrelationHandlerTest : BaseIntegrationTest
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ITestDataCreatorService testDataCreatorService;
         private Mock<IWeatherApi> mockWeatherApi;
 
 
-        public CrossCorrelation(IntegrationTestWebAppFactory factory) : base(factory)
+        public CrossCorrelationHandlerTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
             //Inject services
             testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();

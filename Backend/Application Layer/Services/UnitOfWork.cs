@@ -8,7 +8,6 @@ namespace WebApplication1.Application_Layer.Services
         IEstablishmentRepository establishmentRepository { get; }
         IUserRepository userRepository { get; }
         ISalesRepository salesRepository { get; }
-
         IItemRepository itemRepository { get; }
     }
 

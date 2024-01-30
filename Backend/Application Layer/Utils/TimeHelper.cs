@@ -279,33 +279,6 @@ namespace WebApplication1.Utils
             }
         }
 
-        //public static IEnumerable<(DateTime, IEnumerable<T?>)> mapToATimeline<T>(
-        //    IEnumerable<T> values,
-        //    Func<T, DateTime> datetimeSelector,
-        //    TimePeriod timePeriod,
-        //    TimeResolution timeResolution)
-        //{
-        //    IEnumerable<DateTime> timeline = TimeHelper.CreateTimelineAsList(timePeriod, timeResolution);
-        //    IDictionary<DateTime, IEnumerable<T?>> timelineDictionary = timeline.ToDictionary(x => x, x => (IEnumerable<T?>)new List<T?>());
-
-        //    foreach (var value in values)
-        //    {
-        //        DateTime dateTime = datetimeSelector(value).TimeResolutionUniqueRounder(timeResolution);
-
-        //        // Check if the key exists in the dictionary
-        //        if (timelineDictionary.TryGetValue(dateTime, out IEnumerable<T?> output))
-        //        {
-        //            // Key exists, add the value to the existing list
-        //            var updatedList = output.Concat(new List<T?> { value });
-        //            timelineDictionary[dateTime] = updatedList;
-        //        }
-        //    }
-
-        //    IEnumerable<(DateTime, IEnumerable<T?>)> res = timelineDictionary.Select(dic => (dic.Key, dic.Value)).ToList();
-        //    return res;
-        //}
-
-
         public static IEnumerable<int> GetTimelineForTimeResolution(TimeResolution timeResolution)
         {
             switch (timeResolution)

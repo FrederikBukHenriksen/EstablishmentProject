@@ -38,7 +38,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weath
             //Arrange
             Establishment establisment = command.EstablishmentId != null ? this.contextService.TrySetActiveEstablishment((Guid)command.EstablishmentId) : this.contextService.GetActiveEstablishment();
 
-            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(establisment.Information.Location.getCoordinates(), command.DateTimePeriod.Start, command.DateTimePeriod.End, command.TimeResolution);
+            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(establisment.Information.Location.GetCoordinates(), command.DateTimePeriod.Start, command.DateTimePeriod.End, command.TimeResolution);
 
             //Return the data accourding to the time resolution
             List<DateTime> timeline = TimeHelper.CreateTimelineAsList(command.DateTimePeriod, command.TimeResolution);

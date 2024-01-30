@@ -77,7 +77,6 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Folder Include="Infrastructure Layer\Services\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

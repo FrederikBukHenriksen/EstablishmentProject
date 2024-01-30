@@ -29,10 +29,23 @@ namespace WebApplication1.Infrastructure.Data
     public class TestDataCreatorService : ITestDataCreatorService
     {
 
-        public static Func<double, double> GetSinusFunction(double amplitude = 1.0, double frequency = 2 * double.Pi, double phaseShift = 0, double verticalShift = 0)
+
+        public static Func<double, double> GetCosineFunction(double amplitude, double horizontalShift, double period, double verticalShift)
         {
-            return x => amplitude * Math.Sin(frequency * (x + phaseShift)) + verticalShift;
+            if (period == 0)
+            {
+                throw new ArgumentException("Parameter 'period' cannot be zero.");
+            }
+
+            return x =>
+            {
+                double argument = (x - horizontalShift) / period;
+                double cosineResult = Math.Cos(argument);
+                double y = amplitude * cosineResult + verticalShift;
+                return y;
+            };
         }
+
 
         public static Func<double, double> GetNormalFunction(double mean, double stdDev)
         {
