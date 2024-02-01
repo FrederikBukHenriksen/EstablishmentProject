@@ -1,4 +1,6 @@
-﻿using WebApplication1.Domain_Layer.Entities;
+﻿using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Application_Layer.Services;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Utils;
 
@@ -6,6 +8,7 @@ namespace EstablishmentProject.test
 {
     public class SalesSortingTest : BaseIntegrationTest
     {
+        private IUnitOfWork unitOfWork;
         private Establishment establishment;
         private IFactoryServiceBuilder factoryServiceBuilder;
         private List<Sale> sales;
@@ -13,47 +16,29 @@ namespace EstablishmentProject.test
         private Item coffee;
         private Item tea;
         private Item water;
-
+        private Table table;
         private Sale sale_empty;
         private Sale sale_coffee;
         private Sale sale_coffee_tea;
         private Sale sale_coffee_tea_water;
 
-
-        //public SalesSortingTest(IntegrationTestWebAppFactory factory) : base(factory)
-        //{
-        //    factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
-        //    coffee = factoryServiceBuilder.ItemBuilder().withName("coffee").withPrice(0, Currency.DKK).Build();
-        //    tea = factoryServiceBuilder.ItemBuilder().withName("tea").withPrice(0, Currency.DKK).Build();
-        //    water = factoryServiceBuilder.ItemBuilder().withName("water").withPrice(0, Currency.DKK).Build();
-
-        //    sale_empty = factoryServiceBuilder.SaleBuilder().WithTimestampPayment(DateTime.Today).Build();
-        //    sale_coffee = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-1)).Build();
-        //    sale_coffee_tea = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1), (tea, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-2)).Build();
-        //    sale_coffee_tea_water = factoryServiceBuilder.SaleBuilder().WithSoldItems([(coffee, 1), (tea, 1), (water, 1)]).WithTimestampPayment(DateTime.Today.AddDays(-3)).Build();
-
-
-        //    //ARRANGE
-        //    sales = [
-        //        sale_empty,
-        //        sale_coffee,
-        //        sale_coffee_tea,
-        //        sale_coffee_tea_water
-        //    ];
-        //}
-
         public SalesSortingTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
+            clearDatabase();
+            unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
             establishment = new Establishment("Cafe 1");
 
             coffee = establishment.AddItem(establishment.CreateItem("coffee", 0, Currency.DKK));
             tea = establishment.AddItem(establishment.CreateItem("tea", 0, Currency.DKK));
             water = establishment.AddItem(establishment.CreateItem("water", 0, Currency.DKK));
 
+            table = establishment.AddTable(establishment.CreateTable("table 1"));
+
             sale_empty = establishment.AddSale(establishment.CreateSale(DateTime.Today));
-            sale_coffee = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) }));
-            sale_coffee_tea = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-2), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1) }));
-            sale_coffee_tea_water = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-3), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1), (water, 1) }));
+            sale_coffee = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) }, table: table));
+            sale_coffee_tea = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-2), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1) }, timestampArrival: DateTime.Today.AddDays(-2).AddHours(-1)));
+            sale_coffee_tea_water = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-3), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1), (water, 1) }, timestampArrival: DateTime.Today.AddDays(-3).AddHours(-1)));
 
             //ARRANGE
             sales = [
@@ -62,6 +47,11 @@ namespace EstablishmentProject.test
                 sale_coffee_tea,
                 sale_coffee_tea_water
             ];
+
+            using (unitOfWork)
+            {
+                unitOfWork.establishmentRepository.Add(establishment);
+            }
         }
 
         [Fact]
@@ -76,6 +66,10 @@ namespace EstablishmentProject.test
             //ASSERT
             Assert.Equal(3, sortedSales.Count());
 
+            Assert.Contains(sale_coffee, sortedSales);
+            Assert.Contains(sale_coffee_tea, sortedSales);
+            Assert.Contains(sale_coffee_tea_water, sortedSales);
+
             List<List<Item>> sortedSalesItems = sortedSales.Select(sale => sale.SalesItems.Select(salesItem => salesItem.Item).ToList()).ToList();
             Assert.All(sortedSalesItems, salesItems => Assert.Contains(coffee, salesItems));
         }
@@ -84,19 +78,16 @@ namespace EstablishmentProject.test
         public void All()
         {
             //ARRANGE
-            var salesSorting = new SalesSorting { All = (new List<Guid> { coffee.Id, water.Id }) };
+            var salesSorting = new SalesSorting { All = (new List<Guid> { coffee.Id, tea.Id }) };
 
             //ACT
             var sortedSales = SalesSortingParametersExecute.SortSales(sales, salesSorting);
 
             //ASSERT
-            Assert.Equal(3, sortedSales.Count());
+            Assert.Equal(2, sortedSales.Count());
 
-            List<List<Item>> sortedSalesItems = sortedSales.Select(sale => sale.SalesItems.Select(salesItem => salesItem.Item).ToList()).ToList();
-            Assert.All(sortedSalesItems, salesItems =>
-            {
-                Assert.True(salesItems.Any(item => item == coffee || item == water));
-            });
+            Assert.Contains(sale_coffee_tea, sortedSales);
+            Assert.Contains(sale_coffee_tea_water, sortedSales);
         }
 
         [Fact]
@@ -111,9 +102,9 @@ namespace EstablishmentProject.test
             //ASSERT
             Assert.Equal(1, sortedSales.Count());
 
+            Assert.Contains(sale_coffee_tea, sortedSales);
+
             List<List<Item>> sortedSalesItems = sortedSales.Select(sale => sale.SalesItems.Select(salesItem => salesItem.Item).ToList()).ToList();
-            Assert.All(sortedSalesItems, salesItems => Assert.Contains(coffee, salesItems));
-            Assert.All(sortedSalesItems, salesItems => Assert.Contains(tea, salesItems));
         }
 
         [Fact]
@@ -130,23 +121,18 @@ namespace EstablishmentProject.test
             //ASSERT
             Assert.Equal(2, sortedSales.Count());
 
-            Assert.All(sortedSales, sale => Assert.True(sale.TimestampPayment >= start && sale.TimestampPayment <= end));
-
+            Assert.Contains(sale_coffee, sortedSales);
+            Assert.Contains(sale_coffee_tea, sortedSales);
         }
 
         [Theory]
-        [InlineData(SaleAttributes.TimestampArrival, 1)]
-        [InlineData(SaleAttributes.TimestampPayment, 4)]
+        [InlineData(SaleAttributes.TimestampArrival, 2)]
         [InlineData(SaleAttributes.Table, 1)]
-        [InlineData(SaleAttributes.Items, 4)]
-
-
+        [InlineData(SaleAttributes.Items, 3)]
+        [InlineData(SaleAttributes.TimestampPayment, 4)]
 
         public void Attributes(SaleAttributes saleAttributes, int numberOfExptectedElements)
         {
-            sale_empty.TimestampArrival = DateTime.Today.AddDays(-1);
-            sale_coffee.Table = new Table();
-
             //ARRANGE
             var salesSorting = new SalesSorting { MustContainAllAttributes = new List<SaleAttributes> { saleAttributes } };
 

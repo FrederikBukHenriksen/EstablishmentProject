@@ -6,6 +6,7 @@
         Table CreateTable(string name);
         void RemoveTable(Table table);
         List<Table> GetTables();
+        Table AddTable(Table table);
     }
 
     public partial class Establishment : EntityBase, IEstablishment_Table
@@ -17,13 +18,13 @@
             {
                 throw new ArgumentException("Name cannot be empty");
             }
-            this.AddTable(table);
             return table;
         }
 
-        private void AddTable(Table table)
+        public Table AddTable(Table table)
         {
             this.Tables.Add(table);
+            return table;
         }
 
         public void RemoveTable(Table table)

@@ -28,12 +28,6 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         {
             this.set.AddRange(entities);
         }
-
-        public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
-        {
-            return this.query.Any(predicate);
-        }
-
         public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
             return this.query.Where(predicate).FirstOrDefault();
@@ -42,11 +36,6 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         public virtual IEnumerable<TEntity>? FindAll(Expression<Func<TEntity, bool>> predicate)
         {
             return this.query.Where(predicate).AsEnumerable();
-        }
-
-        public virtual bool HasAny(Expression<Func<TEntity, bool>> predicate)
-        {
-            return this.query.Any(predicate);
         }
 
         public virtual TEntity? GetById(Guid id)

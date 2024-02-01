@@ -185,5 +185,29 @@ namespace EstablishmentProject.test.Repositories
             Assert.True(repositoryFetchedEstablishments.Any(x => x.Id == insertedEstablishments[1].Id));
 
         }
+
+        [Fact]
+        public void GetAll()
+        {
+            // Arrange
+            List<Establishment> databaseFetchedEstablishment = dbContext.Set<Establishment>().ToList();
+            Assert.False(databaseFetchedEstablishment.Any(x => x.Name == "Cafe 6"));
+            Assert.False(databaseFetchedEstablishment.Any(x => x.Name == "Cafe 7"));
+
+            //Act
+            var insertedEstablishments = new Establishment[]
+            {
+                new Establishment("Cafe 6"),
+                new Establishment("Cafe 7")
+            };
+            dbContext.Set<Establishment>().AddRange(insertedEstablishments);
+            dbContext.SaveChanges();
+
+            // Assert
+            var fetchedEstablishments = unitOfWork.establishmentRepository.GetAll();
+            Assert.Equal(2, fetchedEstablishments.ToList().Count);
+            Assert.True(fetchedEstablishments.Any(x => x.Id == insertedEstablishments[0].Id));
+            Assert.True(fetchedEstablishments.Any(x => x.Id == insertedEstablishments[1].Id));
+        }
     }
 }

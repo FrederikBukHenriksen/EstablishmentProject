@@ -2019,8 +2019,8 @@ export class ValueTupleOfDateTimeAndDateTime {
 export enum SaleAttributes {
     Table = 0,
     Items = 1,
-    TimestampPayment = 2,
-    TimestampArrival = 3,
+    TimestampArrival = 2,
+    TimestampPayment = 3,
 }
 
 export class SalesStatisticsReturn extends ReturnBase {

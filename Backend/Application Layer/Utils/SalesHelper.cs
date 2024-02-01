@@ -8,8 +8,9 @@ namespace WebApplication1.Utils
     {
         Table,
         Items,
-        TimestampPayment,
         TimestampArrival,
+        TimestampPayment,
+
     }
 
     public class SalesSorting
@@ -42,6 +43,10 @@ namespace WebApplication1.Utils
             {
                 sales = SalesHelper.SortSalesByTimePeriod(sales, salesSortingParameters.WithinTimeperiods);
             }
+            if (!salesSortingParameters.MustContainAllAttributes.IsNullOrEmpty())
+            {
+                sales = SalesHelper.FilterSalesByNotNullAttribute(sales, salesSortingParameters.MustContainAllAttributes);
+            }
             return sales;
         }
     }
@@ -51,7 +56,7 @@ namespace WebApplication1.Utils
 
         public static List<Sale> AnyFilter(this List<Sale> sales, List<Guid> itemIds)
         {
-            return sales.Where(sale => sale.SalesItems.Any(salesItem => itemIds.Contains(salesItem.Item.Id))).ToList();
+            return sales.Where(sale => sale.SalesItems?.Any(salesItem => salesItem?.Item != null && itemIds.Contains(salesItem.Item.Id)) == true).ToList();
         }
 
         public static List<Sale> AllFilter(this List<Sale> sales, List<Guid> itemIds)
@@ -74,29 +79,25 @@ namespace WebApplication1.Utils
             return sales;
         }
 
-        public static List<Sale> FilterSalesByNotNullAttribute(this List<Sale> sales, SaleAttributes saleAttributes)
+        public static List<Sale> FilterSalesByNotNullAttribute(this List<Sale> sales, List<SaleAttributes> saleAttributes)
         {
-            return sales.Where(sale =>
+            if (saleAttributes.Contains(SaleAttributes.Items))
             {
-                switch (saleAttributes)
-                {
-                    case SaleAttributes.Table:
-                        return sale.Table != null;
-
-                    case SaleAttributes.Items:
-                        return sale.SalesItems != null;
-
-                    case SaleAttributes.TimestampPayment:
-                        return sale.TimestampPayment != null;
-
-                    case SaleAttributes.TimestampArrival:
-                        return sale.TimestampArrival != null;
-
-                    default:
-                        return false;
-                }
-            }).ToList();
+                sales = sales.Where(sale => sale.SalesItems != null).ToList();
+            }
+            if (saleAttributes.Contains(SaleAttributes.Table))
+            {
+                sales = sales.Where(sale => sale.Table != null).ToList();
+            }
+            if (saleAttributes.Contains(SaleAttributes.TimestampArrival))
+            {
+                sales = sales.Where(sale => sale.TimestampArrival != null).ToList();
+            }
+            if (saleAttributes.Contains(SaleAttributes.TimestampPayment))
+            {
+                sales = sales.Where(sale => sale.TimestampPayment != null).ToList();
+            }
+            return sales;
         }
-
     }
 }

@@ -23,7 +23,7 @@ namespace WebApplication1.Domain_Layer.Entities
         {
             this.SetName(name);
             items?.ForEach(x => this.AddItem(x));
-            tables?.ForEach(this.AddTable);
+            tables?.ForEach(x => this.AddTable(x));
             sales?.ForEach(x => this.AddSale(x));
         }
 
