@@ -19,12 +19,9 @@ namespace EstablishmentProject.test.Domain
             Currency itemCurrency = Currency.DKK;
 
             // Act
-            establishment.CreateItem(itemName, itemPrice, itemCurrency);
+            var item = establishment.CreateItem(itemName, itemPrice, itemCurrency);
 
             // Assert
-            var items = establishment.GetItems();
-            var item = items.FirstOrDefault();
-            Assert.Single(items);
             Assert.NotNull(item);
             Assert.Equal(itemName, item.GetName());
             Assert.Equal(itemPrice, item.GetPrice().Amount);
@@ -36,8 +33,8 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var establishment = new Establishment();
-            var item1 = establishment.CreateItem("Item1", 10.00, Currency.DKK);
-            var item2 = establishment.CreateItem("Item2", 20.00, Currency.DKK);
+            var item1 = establishment.AddItem(establishment.CreateItem("Item1", 10.00, Currency.DKK));
+            var item2 = establishment.AddItem(establishment.CreateItem("Item2", 20.00, Currency.DKK));
             // Act
             var items = establishment.GetItems();
 
@@ -52,7 +49,7 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var establishment = new Establishment();
-            var item = establishment.CreateItem("Item1", 10.00, Currency.DKK);
+            var item = establishment.AddItem(establishment.CreateItem("Item1", 10.00, Currency.DKK));
             // Act
             establishment.RemoveItem(item);
 
@@ -66,7 +63,7 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var establishment = new Establishment();
-            var item = establishment.CreateItem("Item1", 10.00, Currency.DKK);
+            var item = establishment.AddItem(establishment.CreateItem("Item1", 10.00, Currency.DKK));
             establishment.CreateSale(DateTime.Now, itemAndQuantity: new List<(Item, int)> { (item, 1) });
 
             // Act

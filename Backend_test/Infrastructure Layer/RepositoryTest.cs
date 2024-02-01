@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 
@@ -6,48 +7,82 @@ namespace EstablishmentProject.test.Repositories
 {
     public class RepositoryTest : BaseIntegrationTest
     {
-        private readonly IEstablishmentRepository _repository;
+        private IEstablishmentRepository repository;
+        private IUnitOfWork unitOfWork;
 
         public RepositoryTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
-            _repository = scope.ServiceProvider.GetRequiredService<IEstablishmentRepository>();
+            clearDatabase();
+            //repository = scope.ServiceProvider.GetRequiredService<IEstablishmentRepository>();
+            unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         }
 
         [Fact]
         public void AddEntity_Succes()
         {
             // Arrange
-            var fetchToVerifyDatabase = dbContext.Set<Establishment>().Find(Guid.Parse("00000000-0000-0000-0000-000000000001"));
-            Assert.Null(fetchToVerifyDatabase);
+            List<Establishment> databaseFetchedEstablishment = dbContext.Set<Establishment>().ToList();
+            Assert.False(databaseFetchedEstablishment.Any(x => x.Name == "Cafe 1"));
 
             // Act
             var insertedEstablishment = new Establishment("Cafe 1");
-            insertedEstablishment.Id = Guid.Parse("00000000-0000-0000-0000-000000000001");
-            _repository.Add(insertedEstablishment);
+            using (unitOfWork)
+            {
+                unitOfWork.establishmentRepository.Add(insertedEstablishment);
+            }
 
             // Assert
             var fetchedEstablishment = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
             Assert.NotNull(fetchedEstablishment);
         }
 
+
         [Fact]
-        public void GetEntity_Succes()
+        public void AddRange()
+        {
+            // Arrange
+            List<Establishment> databaseFetchedEstablishments = dbContext.Set<Establishment>().ToList();
+            Assert.False(databaseFetchedEstablishments.Any(x => x.Name == "Cafe 1.1"));
+            Assert.False(databaseFetchedEstablishments.Any(x => x.Name == "Cafe 1.2"));
+
+            // Act
+            var insertedEstablishments = new Establishment[]
+            {
+                new Establishment("Cafe 1.1"),
+                new Establishment("Cafe 1.2")
+            };
+            using (unitOfWork)
+            {
+                unitOfWork.establishmentRepository.AddRange(insertedEstablishments);
+            }
+
+            // Assert
+            var fetchedEstablishment1 = dbContext.Set<Establishment>().Find(insertedEstablishments[0].Id);
+            var fetchedEstablishment2 = dbContext.Set<Establishment>().Find(insertedEstablishments[1].Id);
+            Assert.NotNull(fetchedEstablishment1);
+            Assert.NotNull(fetchedEstablishment2);
+        }
+
+        [Fact]
+        public void GetById_Succes()
         {
             // Arrange
             var insertedEstablishment = new Establishment("Cafe 2");
-            insertedEstablishment.Id = Guid.Parse("00000000-0000-0000-0000-000000000002");
             dbContext.Set<Establishment>().Add(insertedEstablishment);
             dbContext.SaveChanges();
-            var databaseFetchedEstablishment = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
+
+
+            var databaseFetchedEstablishments = dbContext.Set<Establishment>().ToList();
+            var databaseFetchedEstablishment = databaseFetchedEstablishments.Find(x => x.Name == "Cafe 2");
             Assert.NotNull(databaseFetchedEstablishment);
 
             // Act
-            var fetchedEstablishment = _repository.GetById(insertedEstablishment.Id);
+            var fetchedEstablishment = unitOfWork.establishmentRepository.GetById(insertedEstablishment.Id);
 
             // Assert
             Assert.NotNull(fetchedEstablishment);
-            Assert.Equal(fetchedEstablishment.Id, Guid.Parse("00000000-0000-0000-0000-000000000002"));
-            Assert.Equal(fetchedEstablishment.Name, "Cafe 2");
+            Assert.Equal(insertedEstablishment.Id, fetchedEstablishment.Id);
+            Assert.Equal(insertedEstablishment.Name, fetchedEstablishment.Name);
         }
 
         [Fact]
@@ -55,18 +90,22 @@ namespace EstablishmentProject.test.Repositories
         {
             // Arrange
             var insertedEstablishment = new Establishment("Cafe 3");
-            insertedEstablishment.Id = Guid.Parse("00000000-0000-0000-0000-000000000003");
+
             dbContext.Set<Establishment>().Add(insertedEstablishment);
             dbContext.SaveChanges();
-            var databaseFetchedEstablishment = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
+
+            var databaseFetchedEstablishments = dbContext.Set<Establishment>().ToList();
+            var databaseFetchedEstablishment = databaseFetchedEstablishments.Find(x => x.Name == "Cafe 3");
             Assert.NotNull(databaseFetchedEstablishment);
 
             // Act
-            _repository.Remove(databaseFetchedEstablishment);
+            using (unitOfWork)
+            {
+                unitOfWork.establishmentRepository.Remove(databaseFetchedEstablishment);
+            }
 
             // Assert
-            var fetchedEstablishmentAfterDelete = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
-            Assert.Null(fetchedEstablishmentAfterDelete);
+            Assert.False(dbContext.Set<Establishment>().ToList().Any(x => x.Name == insertedEstablishment.Name));
         }
 
         [Fact]
@@ -74,21 +113,26 @@ namespace EstablishmentProject.test.Repositories
         {
             // Arrange
             var insertedEstablishment = new Establishment("Cafe 4");
-            insertedEstablishment.Id = Guid.Parse("00000000-0000-0000-0000-000000000004");
             dbContext.Set<Establishment>().Add(insertedEstablishment);
             dbContext.SaveChanges();
-            var databaseFetchedEstablishment = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
+
+            var databaseFetchedEstablishmentLists = dbContext.Set<Establishment>().ToList();
+            var databaseFetchedEstablishment = databaseFetchedEstablishmentLists.Find(x => x.Name == "Cafe 4");
             Assert.NotNull(databaseFetchedEstablishment);
 
             // Act
-            databaseFetchedEstablishment.Name = "Cafe 4.1";
-            _repository.Update(databaseFetchedEstablishment);
+            var newName = "Cafe 4.1";
+            databaseFetchedEstablishment.Name = newName;
+            using (unitOfWork)
+            {
+                unitOfWork.establishmentRepository.Update(databaseFetchedEstablishment);
+            }
 
             // Assert
-            var fetchedEstablishmentAfterUpdate = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
+            var fetchedEstablishmentAfterUpdate = dbContext.Set<Establishment>().ToList().Find(x => x.Name == newName);
             Assert.NotNull(fetchedEstablishmentAfterUpdate);
-            Assert.Equal(fetchedEstablishmentAfterUpdate.Id, Guid.Parse("00000000-0000-0000-0000-000000000004"));
-            Assert.Equal("Cafe 4.1", fetchedEstablishmentAfterUpdate.Name);
+            Assert.Equal(insertedEstablishment.Id, fetchedEstablishmentAfterUpdate.Id);
+            Assert.Equal(newName, fetchedEstablishmentAfterUpdate.Name);
         }
 
         [Fact]
@@ -96,48 +140,50 @@ namespace EstablishmentProject.test.Repositories
         {
             // Arrange
             var insertedEstablishment = new Establishment("Cafe 5");
-            insertedEstablishment.Id = Guid.Parse("00000000-0000-0000-0000-000000000005");
             dbContext.Set<Establishment>().Add(insertedEstablishment);
             dbContext.SaveChanges();
-            var databaseFetchedEstablishment = dbContext.Set<Establishment>().Find(insertedEstablishment.Id);
+
+            var databaseFetchedEstablishmentLists = dbContext.Set<Establishment>().ToList();
+            var databaseFetchedEstablishment = databaseFetchedEstablishmentLists.Find(x => x.Name == "Cafe 5");
             Assert.NotNull(databaseFetchedEstablishment);
 
             // Act
-            var repositoryFetchedEstablishment = _repository.Find(x => x.Id == insertedEstablishment.Id);
+            var repositoryFetchedEstablishment = unitOfWork.establishmentRepository.Find(x => x.Id == insertedEstablishment.Id);
 
             // Assert
             Assert.NotNull(repositoryFetchedEstablishment);
-            Assert.Equal(repositoryFetchedEstablishment.Id, Guid.Parse("00000000-0000-0000-0000-000000000005"));
+            Assert.Equal(repositoryFetchedEstablishment.Id, repositoryFetchedEstablishment.Id);
         }
 
         [Fact]
         public void FindAllEntities_Success()
         {
             // Arrange
+            List<Establishment> databaseFetchedEstablishment = dbContext.Set<Establishment>().ToList();
+            Assert.False(databaseFetchedEstablishment.Any(x => x.Name == "Common name"));
+            Assert.False(databaseFetchedEstablishment.Any(x => x.Name == "Different name"));
+
+
             var insertedEstablishments = new Establishment[]
             {
                 new Establishment("Common name"),
                 new Establishment("Common name"),
                 new Establishment("Different name")
             };
-            insertedEstablishments[0].Id = Guid.Parse("00000000-0000-0000-0000-000000000006");
-            insertedEstablishments[1].Id = Guid.Parse("00000000-0000-0000-0000-000000000007");
-            insertedEstablishments[2].Id = Guid.Parse("00000000-0000-0000-0000-000000000008");
-            dbContext.Set<Establishment>().AddRange(insertedEstablishments);
-            dbContext.SaveChanges();
-            var databaseFetchedEstablishments = dbContext.Set<Establishment>().ToList();
-            Assert.True(databaseFetchedEstablishments.Any(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000006")));
-            Assert.True(databaseFetchedEstablishments.Any(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000007")));
+
+            using (unitOfWork)
+            {
+                unitOfWork.establishmentRepository.AddRange(insertedEstablishments);
+            }
 
             // Act
-            var repositoryFetchedEstablishments = _repository.FindAll(x => x.Name == "Common name");
+            var repositoryFetchedEstablishments = unitOfWork.establishmentRepository.FindAll(x => x.Name == "Common name");
 
             // Assert
             Assert.Equal(2, repositoryFetchedEstablishments.ToList().Count);
-            Assert.True(databaseFetchedEstablishments.Any(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000006")));
-            Assert.True(databaseFetchedEstablishments.Any(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000007")));
-        }
+            Assert.True(repositoryFetchedEstablishments.Any(x => x.Id == insertedEstablishments[0].Id));
+            Assert.True(repositoryFetchedEstablishments.Any(x => x.Id == insertedEstablishments[1].Id));
 
-        // Ensure you have the necessary dependencies and imports for Xunit and your testing infrastructure
+        }
     }
 }

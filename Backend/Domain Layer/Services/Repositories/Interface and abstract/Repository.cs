@@ -72,6 +72,8 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         public virtual void Update(TEntity entity)
         {
             this.set.Attach(entity);
+            this.context.Entry(entity).State = EntityState.Modified;
+
         }
     }
 }
