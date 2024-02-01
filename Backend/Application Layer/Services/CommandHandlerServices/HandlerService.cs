@@ -14,11 +14,11 @@ namespace WebApplication1.CommandsHandlersReturns
 
     public class HandlerService : IHandlerService
     {
-        private VerifyEstablishmentCommandService verifyEstablishmentCommandService;
-        private VerifySalesCommandService verifySalesCommandService;
-        private VerifyItemsCommandService verifyItemsCommandService;
+        private IVerifyEstablishmentCommandService verifyEstablishmentCommandService;
+        private IVerifySalesCommandService verifySalesCommandService;
+        private IVerifyItemsCommandService verifyItemsCommandService;
 
-        public HandlerService([FromServices] VerifyEstablishmentCommandService verifyEstablishmentCommandService, [FromServices] VerifySalesCommandService verifySalesCommandService, [FromServices] VerifyItemsCommandService verifyItemsCommandService)
+        public HandlerService([FromServices] IVerifyEstablishmentCommandService verifyEstablishmentCommandService, [FromServices] IVerifySalesCommandService verifySalesCommandService, [FromServices] IVerifyItemsCommandService verifyItemsCommandService)
         {
             this.verifyEstablishmentCommandService = verifyEstablishmentCommandService;
             this.verifySalesCommandService = verifySalesCommandService;

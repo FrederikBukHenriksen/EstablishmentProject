@@ -13,7 +13,6 @@ namespace EstablishmentProject.test
         private const string apiLogin = "/api/authentication/login";
         private const string apiLogout = "/api/authentication/logout";
         private const string apiIsLoggedIn = "/api/authentication/is-logged-in";
-        private const string apiGetLoggedInUser = "/api/authentication/get-logged-in-user";
 
         private IFactoryServiceBuilder factoryServiceBuilder;
 
@@ -32,20 +31,16 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public async Task Login_WithCorrectCredentials_WithExactCaing_ShouldLogIn()
+        public async Task Login_WithCorrectCredentials_ShouldLogIn()
         {
             // ARRANGE
-            var loginCommand = new LoginCommand
-            {
-                Username = "frederik@mail.com",
-                Password = "hello123"
-            };
+            var username = "frederik@mail.com";
+            var password = "hello123";
 
             // ACT
-            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
+            var loginResponse = await login(username, password);
 
             var jwtToken = extractJwtTokenHelper(loginResponse);
-            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
 
             // ASSERT
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
@@ -74,68 +69,16 @@ namespace EstablishmentProject.test
             Assert.NotNull(jwtToken);
         }
 
-
         [Fact]
-        public async Task Login_Success_ValidUsernameAndPassword()
-        {
-            // ARRANGE
-            var loginCommand = new LoginCommand
-            {
-                Username = "frederik@mail.com",
-                Password = "hello123"
-            };
-
-            // ACT
-            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
-
-            var jwtToken = extractJwtTokenHelper(loginResponse);
-            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
-
-            // ASSERT
-            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
-            Assert.NotNull(jwtToken);
-        }
-
-        [Fact]
-        public async Task Login_Success_CaseInsensitiveUsername()
-        {
-            // ARRANGE
-            var loginCommand = new LoginCommand
-            {
-                Username = "Frederik@Mail.COM",
-                Password = "hello123"
-            };
-
-            // ACT
-            var loginResponse = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
-
-            var jwtToken = extractJwtTokenHelper(loginResponse);
-            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
-
-            // ASSERT
-            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
-            Assert.NotNull(jwtToken);
-        }
-
-
-        [Fact]
-        public async void IsLoggedIn__Success__A_User_Is_Logged_In()
+        public async Task IsLoggedIn_WithUserLogginIn_ShouldReturnTrue()
         {
             //ARRANGE
-            LoginCommand LoginCommand = new LoginCommand
-            {
-                Username = "frederik@mail.com",
-                Password = "hello123"
-            };
+            Assert.Equal(HttpStatusCode.OK, (await login("frederik@mail.com", "hello123")).StatusCode);
 
             //ACT
-            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
-
             HttpResponseMessage isLoggedinResponse = await httpClient.GetAsync(apiIsLoggedIn);
 
-
             //ASSERT
-            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
             Assert.Equal(HttpStatusCode.OK, isLoggedinResponse.StatusCode);
 
             string responseContent = await isLoggedinResponse.Content.ReadAsStringAsync();
@@ -143,8 +86,11 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public async void IsLoggedIn__Success__A_User_Is_Not_Logged_in()
+        public async void IsLoggedIn_WithNoUserBeingLoggedIn_ShouldReturnFalse()
         {
+            //ARRANGE
+            Assert.Equal("false", await (await isLoggedIn()).Content.ReadAsStringAsync());
+
             //ACT
             HttpResponseMessage isLoggedinResponse = await httpClient.GetAsync(apiIsLoggedIn);
 
@@ -156,39 +102,36 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public async void LogOut_WhenUserLogsOut_ShouldLogOut()
+        public async void LogOut_WhenLoggedinUserLogsOut_ShouldBeLoggedOut()
         {
-            //ARRANGE
-            LoginCommand LoginCommand = new LoginCommand
-            {
-                Username = "frederik@mail.com",
-                Password = "hello123"
-            };
-
-            HttpResponseMessage loginResponse = await httpClient.PostAsJsonAsync(apiLogin, LoginCommand);
-            HttpResponseMessage isLoggedinResponsePre = await httpClient.GetAsync(apiIsLoggedIn);
+            //Arrange
+            Assert.Equal(HttpStatusCode.OK, (await login("frederik@mail.com", "hello123")).StatusCode);
+            Assert.Equal("true", await (await isLoggedIn()).Content.ReadAsStringAsync());
 
             //ACT
-            HttpResponseMessage logoutResponse = await httpClient.GetAsync(apiLogout);
+            HttpResponseMessage logoutResponse = await logOut();
 
             //ASSERT
-            //Assert the user is logged in
-            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
-            Assert.Equal(HttpStatusCode.OK, isLoggedinResponsePre.StatusCode);
-            string isLoggedinResponsePreContent = await isLoggedinResponsePre.Content.ReadAsStringAsync();
-            Assert.Equal("true", isLoggedinResponsePreContent);
-
-            //Assert the logout has happened
             Assert.Equal(HttpStatusCode.OK, logoutResponse.StatusCode);
-
-            //Assert the user is logged out
-            HttpResponseMessage isLoggedinResponsePost = await httpClient.GetAsync(apiIsLoggedIn);
-            string isLoggedinResponsePostContent = await isLoggedinResponsePre.Content.ReadAsStringAsync();
-            Assert.Equal(HttpStatusCode.OK, isLoggedinResponsePost.StatusCode);
-            Assert.Equal("false", isLoggedinResponsePostContent);
-
-
+            var read = await (await isLoggedIn()).Content.ReadAsStringAsync();
+            Assert.Equal("false", await (await isLoggedIn()).Content.ReadAsStringAsync());
+            Assert.False(httpClient.DefaultRequestHeaders.TryGetValues("Cookie", out var cookieHeaderValues));
         }
+
+        [Fact]
+        public async void LogOut_WhenNoUserLoggedIn_ShouldNotBeLoggedIn()
+        {
+            //Arrange
+            Assert.Equal("false", await (await isLoggedIn()).Content.ReadAsStringAsync());
+
+            //ACT
+            HttpResponseMessage logoutResponse = await logOut();
+
+            //Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, logoutResponse.StatusCode);
+        }
+
+
 
         private string extractJwtTokenHelper(HttpResponseMessage response)
         {
@@ -210,5 +153,32 @@ namespace EstablishmentProject.test
             return match.Groups[1].Value;
         }
 
+        private async Task<HttpResponseMessage> login(string username, string password)
+        {
+            var loginCommand = new LoginCommand
+            {
+                Username = username,
+                Password = password
+            };
+            var response = await httpClient.PostAsJsonAsync(apiLogin, loginCommand);
+            var jwtToken = extractJwtTokenHelper(response);
+            httpClient.DefaultRequestHeaders.Add("Cookie", $"jwt={jwtToken}");
+            return response;
+        }
+
+        private async Task<HttpResponseMessage> isLoggedIn()
+        {
+            var response = await httpClient.GetAsync(apiIsLoggedIn);
+
+            return response;
+
+        }
+
+        private async Task<HttpResponseMessage> logOut()
+        {
+            var response = await httpClient.GetAsync(apiLogout);
+            httpClient = webApplicationFactory.CreateDefaultClient();
+            return response;
+        }
     }
 }

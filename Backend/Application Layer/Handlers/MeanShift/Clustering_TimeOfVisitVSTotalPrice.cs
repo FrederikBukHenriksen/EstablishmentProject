@@ -24,15 +24,20 @@ namespace WebApplication1.CommandHandlers
         }
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; }
+
     }
 
     public class Clustering_TimeOfVisit_TotalPrice_Command : ClusteringCommand
     {
-        public Clustering_TimeOfVisit_TotalPrice_Command(Guid establishmentId, List<Guid> salesIds) : base(establishmentId, salesIds)
+        public double bandwidthTimeOfVisit;
+        public double bandwidthTotalPrice;
+
+        public Clustering_TimeOfVisit_TotalPrice_Command(Guid establishmentId, List<Guid> salesIds, double bandwidthTimeOfVisit, double bandwidthTotalPrice) : base(establishmentId, salesIds)
         {
+            this.bandwidthTimeOfVisit = bandwidthTimeOfVisit;
+            this.bandwidthTotalPrice = bandwidthTotalPrice;
         }
-        public int bandwidthTimeOfVisit = 1;
-        public int bandwidthTotalPrice = 35;
+
     }
 
     public class Clustering_TimeOfVisit_LengthOfVisit_Command : ClusteringCommand
@@ -40,6 +45,7 @@ namespace WebApplication1.CommandHandlers
         public Clustering_TimeOfVisit_LengthOfVisit_Command(Guid establishmentId, List<Guid> salesIds) : base(establishmentId, salesIds)
         {
         }
+
     }
 
     public class ClusteringReturn : ReturnBase
@@ -81,7 +87,8 @@ namespace WebApplication1.CommandHandlers
 
             List<(Guid Id, List<double> values)> calculationValues = saleData.Select(x => (x.sale.Id, x.values)).ToList();
 
-            var bandwith = new List<double> { command.bandwidthTimeOfVisit, command.bandwidthTimeOfVisit };
+            var bandwith = new List<double> { command.bandwidthTimeOfVisit, command.bandwidthTotalPrice };
+
 
             //Act
             List<List<Sale>> clusteredSales = MeanShiftClustering.Cluster(saleData, bandwith);

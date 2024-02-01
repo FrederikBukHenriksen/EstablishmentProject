@@ -65,8 +65,8 @@ namespace EstablishmentProject.test.Algortihm
 
             // Assert
             Assert.Single(result);
-            Assert.Equal(TimeSpan.Zero, result[0].Item1); // Inverse data should have zero lag
-            Assert.Equal(1.0, result[0].Item2, 5); // Adjust the precision if needed
+            Assert.Equal(TimeSpan.Zero, result[0].Item1);
+            Assert.Equal(1.0, result[0].Item2);
         }
 
         [Fact]
@@ -81,8 +81,8 @@ namespace EstablishmentProject.test.Algortihm
 
             // Assert
             Assert.Single(result);
-            Assert.Equal(TimeSpan.Zero, result[0].Item1); // Inverse data should have zero lag
-            Assert.Equal(1.0, result[0].Item2, 5); // Adjust the precision if needed
+            Assert.Equal(TimeSpan.Zero, result[0].Item1);
+            Assert.Equal(1.0, result[0].Item2);
         }
 
         [Fact]
@@ -97,8 +97,8 @@ namespace EstablishmentProject.test.Algortihm
 
             // Assert
             Assert.Single(result);
-            Assert.Equal(TimeSpan.Zero, result[0].Item1); // Inverse data should have zero lag
-            Assert.Equal(-1.0, result[0].Item2, 5); // Adjust the precision if needed
+            Assert.Equal(TimeSpan.Zero, result[0].Item1);
+            Assert.Equal(-1.0, result[0].Item2);
         }
         [Fact]
         public void Analysis_WithNormalAndSinusDistribution()
@@ -118,6 +118,23 @@ namespace EstablishmentProject.test.Algortihm
             Assert.Single(result);
             Assert.Equal(TimeSpan.Zero, result[0].Item1); // Inverse data should have zero lag
             Assert.Equal(1.0, result[0].Item2, 5); // Adjust the precision if needed
+        }
+
+
+        [Fact]
+        public void Analysis_InputEmptyList()
+        {
+            var list1 = new List<(DateTime, double)>();
+            var list2 = new List<(DateTime, double)>(normalDistributionTestData);
+
+            // Act
+            var act1 = () => CrossCorrelation.DoAnalysis(list1, list2);
+            var act2 = () => CrossCorrelation.DoAnalysis(list2, list1);
+
+
+            // Assert
+            Assert.Throws<ArgumentException>(act1);
+            Assert.Throws<ArgumentException>(act2);
         }
     }
 

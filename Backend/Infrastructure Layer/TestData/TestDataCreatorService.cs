@@ -30,7 +30,7 @@ namespace WebApplication1.Infrastructure.Data
     {
 
 
-        public static Func<double, double> GetCosineFunction(double amplitude, double horizontalShift, double period, double verticalShift)
+        public static Func<double, double> GetCosineFunction(double amplitude = 1.0, double period = 2.0 * Math.PI, double horizontalShift = 0.0, double verticalShift = 0.0)
         {
             if (period == 0)
             {

@@ -24,7 +24,7 @@ namespace WebApplication1.Controllers
         public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             var totalDataTimePeriod = new DateTimePeriod(new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0).AddMonths(-3), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0)); //Leave out last day of the year to test null values
-            var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod, TimeResolution.Hour);
+            var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod.Start, totalDataTimePeriod.End, TimeResolution.Hour);
             var openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
             var timelineDaysWithinOpeningHours = testDataCreatorService.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timelineAllDays, openingHours);
 
@@ -34,13 +34,12 @@ namespace WebApplication1.Controllers
 
             Dictionary<DateTime, int> aggregatedDistribution = testDataCreatorService.AggregateDistributions(new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly });
 
-            var water = factoryServiceBuilder.ItemBuilder().withName("Water").withPrice(10).Build();
-            var coffee = factoryServiceBuilder.ItemBuilder().withName("Coffee").withPrice(25).Build();
-            var esrepsso = factoryServiceBuilder.ItemBuilder().withName("Espresso").withPrice(30).Build();
-
-            var latte = factoryServiceBuilder.ItemBuilder().withName("Latte").withPrice(40).Build();
-
-            var bun = factoryServiceBuilder.ItemBuilder().withName("Bun").withPrice(50).Build();
+            var establishment = new Establishment("Cafe Frederik");
+            var water = establishment.AddItem(establishment.CreateItem("Water", 10, Currency.DKK));
+            var coffee = establishment.AddItem(establishment.CreateItem("Coffee", 25, Currency.DKK));
+            var esrepsso = establishment.AddItem(establishment.CreateItem("Espresso", 30, Currency.DKK));
+            var latte = establishment.AddItem(establishment.CreateItem("Latte", 40, Currency.DKK));
+            var bun = establishment.AddItem(establishment.CreateItem("Bun", 50, Currency.DKK));
 
             List<List<(Item, int)>> baskets = new List<List<(Item, int)>> {
                 new List<(Item, int)> { (esrepsso, 1), (water, 1) },
@@ -58,7 +57,7 @@ namespace WebApplication1.Controllers
                 for (int i = 0; i < entry.Value; i++)
                 {
                     int randomNumber = random.Next(0, baskets.Count);
-                    Sale newSale = factoryServiceBuilder.SaleBuilder().WithSoldItems(baskets[randomNumber]).WithTimestampPayment(entry.Key).Build();
+                    Sale newSale = establishment.AddSale(establishment.CreateSale(timestampPayment: entry.Key, itemAndQuantity: baskets[randomNumber]));
                     salesDistribution.Add(newSale);
                 }
             }
@@ -76,15 +75,12 @@ namespace WebApplication1.Controllers
                 sale.TimestampPayment = sale.TimestampPayment.AddMinutes(randomNumber);
             }
 
-            var establishment = factoryServiceBuilder
-                .EstablishmentBuilder()
-                .withName("Cafe Frederik")
-                .withItems(new List<Item> { coffee, latte, esrepsso, bun, water })
-                .withSales(salesDistribution)
-                .Build();
-
-            var TestEstab = establishment!.Sales.First()!;
-
+            //var establishmentBack = factoryServiceBuilder
+            //    .EstablishmentBuilder()
+            //    .withName("Cafe Frederik")
+            //    .withItems(new List<Item> { coffee, latte, esrepsso, bun, water })
+            //    .withSales(salesDistribution)
+            //    .Build();
 
             var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
 

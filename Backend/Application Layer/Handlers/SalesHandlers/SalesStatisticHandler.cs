@@ -25,7 +25,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Sales
     {
         public override Dictionary<DateTime, double> Calculation(IEnumerable<Sale> sales, DateTimePeriod period, TimeResolution timeResolution)
         {
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(period, timeResolution);
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(period.Start, period.End, timeResolution);
             Dictionary<DateTime, List<Sale>> salesMappedToTimeline = TimeHelper.MapObjectsToTimeline(sales, x => x.TimestampPayment, timeline, timeResolution);
             Dictionary<DateTime, double> salesCountPerDateTime = salesMappedToTimeline.ToDictionary(
                 kvp => kvp.Key,

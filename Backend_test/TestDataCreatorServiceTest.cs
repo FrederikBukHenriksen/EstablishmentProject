@@ -11,12 +11,14 @@ namespace EstablishmentProject.test
     {
         private ITestDataCreatorService testDataCreatorService;
         private IFactoryServiceBuilder factoryServiceBuilder;
-
+        private Establishment establishment;
 
         public TestDataCreatorServiceTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
             testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
             factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
+
+            establishment = new Establishment("Cafe 1");
         }
 
         [Fact]
@@ -42,7 +44,7 @@ namespace EstablishmentProject.test
         public void GenerateHourlyDistibutionFromTimeline()
         {
             //Arrange
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(new DateTimePeriod(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 1, 7, 23, 0, 0)), TimeResolution.Hour);
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 1, 7, 23, 0, 0), TimeResolution.Hour);
 
             var DistributionFunction = TestDataCreatorService.GetLinearFuncition(1, 1);
 
@@ -108,8 +110,8 @@ namespace EstablishmentProject.test
         };
 
             List<(Item, int)> soldItems = new List<(Item, int)> {
-                (factoryServiceBuilder.ItemBuilder().withName("Coffee").withPrice(25).Build(), 1),
-                (factoryServiceBuilder.ItemBuilder().withName("Bun").withPrice(50).Build(), 1)
+                (establishment.CreateItem("Coffee",25,Currency.DKK),1),
+                (establishment.CreateItem("Bun",50,Currency.DKK),1)
             };
 
             //Act
@@ -129,7 +131,7 @@ namespace EstablishmentProject.test
         public void OpeningHoursFilter()
         {
             //Arrange
-            List<DateTime> fullWeekTimeline = TimeHelper.CreateTimelineAsList(new DateTimePeriod(start: new DateTime(2021, 1, 1), end: new DateTime(2021, 1, 7)), TimeResolution.Hour);
+            List<DateTime> fullWeekTimeline = TimeHelper.CreateTimelineAsList(start: new DateTime(2021, 1, 1), end: new DateTime(2021, 1, 7), TimeResolution.Hour);
 
             List<OpeningHours> openingHours = new List<OpeningHours>
             {
@@ -159,8 +161,6 @@ namespace EstablishmentProject.test
 
                 Assert.All(resultListOfOpenHours, x => TimeHelper.IsTimeWithinPeriod_EndNotIncluded<DateTime>(x, testDataOpen, testDataClose));
             }
-
-
         }
         [Fact]
         public void aggregateDistributions()

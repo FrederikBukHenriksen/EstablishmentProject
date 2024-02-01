@@ -7,9 +7,9 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
     {
         IEstablishmentService EstablishmentBuilder();
         //IEstablishmentService EstablishmentBuilder(Establishment establishment);
-        IItemBuilderService ItemBuilder();
+        //IItemBuilderService ItemBuilder();
         //IItemBuilderService ItemBuilder(Item item);
-        ISaleBuilder SaleBuilder();
+        //ISaleBuilder SaleBuilder();
         //ISaleBuilder SaleBuilder(Sale sale);
         IUserBuilder UserBuilder();
         //IUserBuilder UserBuilder(User user);
@@ -36,29 +36,29 @@ namespace WebApplication1.Domain_Layer.Services.Entity_builders
         //    return builderService;
         //}
 
-        public ISaleBuilder SaleBuilder()
-        {
-            return this.serviceProvider.GetRequiredService<ISaleBuilder>();
-        }
-
-        //public ISaleBuilder SaleBuilder(Sale sale)
+        //public ISaleBuilder SaleBuilder()
         //{
-        //    var builderService = this.SaleBuilder();
-        //    builderService.UseExistingEntity(sale);
-        //    return builderService;
+        //    return this.serviceProvider.GetRequiredService<ISaleBuilder>();
         //}
 
-        public IItemBuilderService ItemBuilder()
-        {
-            return this.serviceProvider.GetRequiredService<IItemBuilderService>();
-        }
+        ////public ISaleBuilder SaleBuilder(Sale sale)
+        ////{
+        ////    var builderService = this.SaleBuilder();
+        ////    builderService.UseExistingEntity(sale);
+        ////    return builderService;
+        ////}
 
-        //public IItemBuilderService ItemBuilder(Item item)
+        //public IItemBuilderService ItemBuilder()
         //{
-        //    var builderService = this.ItemBuilder();
-        //    builderService.UseExistingEntity(item);
-        //    return builderService;
+        //    return this.serviceProvider.GetRequiredService<IItemBuilderService>();
         //}
+
+        ////public IItemBuilderService ItemBuilder(Item item)
+        ////{
+        ////    var builderService = this.ItemBuilder();
+        ////    builderService.UseExistingEntity(item);
+        ////    return builderService;
+        ////}
 
         public IUserBuilder UserBuilder()
         {

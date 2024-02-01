@@ -84,7 +84,7 @@ namespace DMIOpenData
             List<(DateTime datetime, double values)> dataOrdered = data.OrderBy(x => x.Item1).ToList();
 
             //Account for TimeResolution
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(new DateTimePeriod(startTime, endTime), timeresolution);
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(startTime, endTime, timeresolution);
             Dictionary<DateTime, List<(DateTime datetime, double values)>> averageTemperaturePerDateTime = TimeHelper.MapObjectsToTimeline(dataOrdered, x => x.datetime, timeline, timeresolution);
             Dictionary<DateTime, double> averagePerTimeResolution = averageTemperaturePerDateTime.ToDictionary(
                 kvp => kvp.Key,

@@ -26,6 +26,10 @@ namespace WebApplication1.Data
         public DbSet<Establishment> Establishment { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<EstablishmentSettings> EstablishmentSettings { get; set; }
+        public DbSet<RetrivedEntitiesJoiningTable> retrivedEntitiesJoiningTable { get; set; }
+
+
         //public DbSet<Price> Price { get; set; }
 
 
@@ -39,7 +43,7 @@ namespace WebApplication1.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentConfiguration());
             modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
-            modelBuilder.ApplyConfiguration(new SaleConfiguration());
+            modelBuilder.ApplyConfiguration(new Infrastructure_Layer.Data.EntityTypeConfiguration.SaleConfiguration());
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
             modelBuilder.ApplyConfiguration(new EstablishmentInformationConfiguration());
 

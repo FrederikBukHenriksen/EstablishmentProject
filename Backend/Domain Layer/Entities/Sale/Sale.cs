@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Domain_Layer.Entities
@@ -88,19 +87,5 @@ namespace WebApplication1.Domain_Layer.Entities
         }
     }
 
-    public class CheckConfiguration : IEntityTypeConfiguration<Sale>
-    {
-        public void Configure(EntityTypeBuilder<Sale> builder)
-        {
-            builder.ToTable(nameof(Sale));
 
-            builder.Property(e => e.TimestampArrival);
-
-
-            builder.Property(e => e.TimestampPayment).IsRequired();
-
-
-            builder.HasOne(e => e.Table);
-        }
-    }
 }

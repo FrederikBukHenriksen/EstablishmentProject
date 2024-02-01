@@ -55,7 +55,7 @@ namespace WebApplication1.CommandHandlers
             List<Sale> sales = establishment.GetSales().Where(x => command.SalesIds.Contains(x.Id)).ToList();
 
 
-            var dateTimeList = TimeHelper.CreateTimelineAsList(command.TimePeriod, command.TimeResolution);
+            var dateTimeList = TimeHelper.CreateTimelineAsList(command.TimePeriod.Start, command.TimePeriod.End, command.TimeResolution);
 
             Dictionary<DateTime, List<Sale>> salesOverTimeline = TimeHelper.MapObjectsToTimeline(sales, x => x.GetTimeOfSale(), dateTimeList, command.TimeResolution);
 
@@ -67,7 +67,7 @@ namespace WebApplication1.CommandHandlers
             var lagDateStart = command.TimePeriod.Start.Date.AddToDateTime(command.LowerLag * (-1), command.TimeResolution);
             var lagDateEnd = command.TimePeriod.End.Date.AddToDateTime(command.UpperLag, command.TimeResolution);
             List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, lagDateStart, lagDateEnd, command.TimeResolution);
-            var weatherDateTimeList = TimeHelper.CreateTimelineAsList(new DateTimePeriod(lagDateStart, lagDateEnd), command.TimeResolution);
+            var weatherDateTimeList = TimeHelper.CreateTimelineAsList(lagDateStart, lagDateEnd, command.TimeResolution);
 
             Dictionary<DateTime, List<(DateTime, double)>> tempMappedToTimeline = TimeHelper.MapObjectsToTimeline(temperaturePerHour, x => x.Item1, weatherDateTimeList, command.TimeResolution);
 
@@ -93,7 +93,7 @@ namespace WebApplication1.CommandHandlers
             //RETURN
 
             Dictionary<TimeSpan, double> spearmanAsDictionary = spearman.ToDictionary(x => x.Item1, x => x.Item2);
-            Dictionary<int, double> spearmanWithLagAsDictionary = spearman.ToDictionary(x => TimeHelper.FromTimeSpanToHours(x.Item1, command.TimeResolution), x => x.Item2);
+            Dictionary<int, double> spearmanWithLagAsDictionary = spearman.ToDictionary(x => TimeHelper.FromTimeSpanToHours(x.Item1), x => x.Item2);
 
             List<Sale> salesWithinLag = sales.Where(x => x.GetTimeOfSale() >= lagDateStart && x.GetTimeOfSale() <= lagDateEnd).ToList();
             Dictionary<DateTime, double> salesWithinLagNumberOfSales = salesWithinLag

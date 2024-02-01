@@ -6,6 +6,7 @@ namespace WebApplication1.Domain_Layer.Entities
     {
         public string? Name { get; set; }
         public virtual EstablishmentInformation Information { get; set; } = new EstablishmentInformation();
+        public virtual EstablishmentSettings Settings { get; set; } = new EstablishmentSettings();
         public virtual ICollection<Item> Items { get; set; } = new List<Item>();
         public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
         public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
@@ -21,9 +22,9 @@ namespace WebApplication1.Domain_Layer.Entities
             List<Sale>? sales = null)
         {
             this.SetName(name);
-            items?.ForEach(this.AddItem);
+            items?.ForEach(x => this.AddItem(x));
             tables?.ForEach(this.AddTable);
-            sales?.ForEach(this.AddSale);
+            sales?.ForEach(x => this.AddSale(x));
         }
 
         public Establishment SetName(string name)

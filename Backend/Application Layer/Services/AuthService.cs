@@ -55,7 +55,7 @@ namespace WebApplication1.Services
         public User? GetUserFromHttp(HttpContext httpContext)
         {
             string? token = httpContext.Request.Cookies["jwt"];
-            if (token == null)
+            if (token.IsNullOrEmpty())
             {
                 return null;
             }

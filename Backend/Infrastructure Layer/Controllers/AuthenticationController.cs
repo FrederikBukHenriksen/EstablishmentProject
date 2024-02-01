@@ -12,7 +12,7 @@ namespace WebApplication1.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> LogIn(
+        public async Task<ActionResult> LogIn(
             [FromBody] LoginCommand loginCommand,
             [FromServices] IHandler<LoginCommand, LoginReturn> loginCommandHandler
             )
@@ -25,24 +25,23 @@ namespace WebApplication1.Controllers
             }
             catch (Exception e)
             {
-                //this.HttpContext.Response.StatusCode = 401;
                 return this.Unauthorized(e);
             }
         }
 
         [AllowAnonymous]
-        [HttpPost("logout")]
-        public void LogOut([FromServices] IAuthService authenticationService)
+        [HttpGet("is-logged-in")]
+        public ActionResult<bool> IsLoggedIn([FromServices] IAuthService authenticationService)
         {
-            this.HttpContext.Response.Cookies.Delete("jwt");
-            return;
+            return this.Ok(authenticationService.GetUserFromHttp(this.HttpContext) != null);
         }
 
-        [AllowAnonymous]
-        [HttpGet("is-logged-in")]
-        public bool IsLoggedIn([FromServices] IAuthService authenticationService)
+        [Authorize]
+        [HttpGet("logout")]
+        public ActionResult LogOut()
         {
-            return authenticationService.GetUserFromHttp(this.HttpContext) != null;
+            this.HttpContext.Response.Cookies.Delete("jwt");
+            return this.Ok();
         }
     }
 }

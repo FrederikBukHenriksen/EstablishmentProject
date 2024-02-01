@@ -1,4 +1,5 @@
-﻿using WebApplication1.Services.Analysis;
+﻿using WebApplication1.Infrastructure.Data;
+using WebApplication1.Services.Analysis;
 
 namespace EstablishmentProject.test.Algortihm
 {
@@ -88,6 +89,64 @@ namespace EstablishmentProject.test.Algortihm
             // Assert
             Assert.Single(result);
             Assert.Contains(result, cluster => cluster.Contains("A") && cluster.Contains("B") && cluster.Contains("C"));
+        }
+
+        [Fact]
+        public void Cluster_2DNormalCenteredMass()
+        {
+            // Arrange
+            var number = 1000;
+            Func<double, double> normFunc = TestDataCreatorService.GetNormalFunction(0, 10);
+            Random random = new Random(1);
+
+            var data = new List<(string, List<double>)>();
+            for (int i = 0; i < number; i++)
+            {
+                //Random double between -10 and 10.
+                var x = normFunc(random.NextDouble() * 20.0 - 10.0);
+                var y = normFunc(random.NextDouble() * 20.0 - 10.0);
+                data.Add(("point", new List<double> { x, y }));
+            };
+
+            var bandwidth = new List<double> { 5, 5 };
+
+            // Act
+            var result = MeanShiftClustering.Cluster(data, bandwidth);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(number, result[0].Count);
+        }
+
+        [Fact]
+        public void Cluster_2DMultipleCosinePeaks()
+        {
+            // Arrange
+            var cosFunc = TestDataCreatorService.GetCosineFunction(amplitude: 4, verticalShift: 2, period: 10);
+
+            var data = new List<(string, List<double>)>();
+            for (int i = -10; i <= 10; i++)
+            {
+                for (int j = -10; j <= 10; j++)
+                {
+                    for (int k = 0; k < (cosFunc(i) + cosFunc(j)); k++)
+                    {
+                        var x = i;
+                        var y = j;
+                        data.Add(("point", new List<double> { x, y }));
+                    }
+
+                }
+            };
+
+            var bandwidth = new List<double> { 3, 3 };
+
+            // Act
+            var result = MeanShiftClustering.Cluster(data, bandwidth);
+
+            // Assert
+            Assert.Equal(9, result.Count());
+
         }
     }
 }

@@ -3,7 +3,12 @@ using WebApplication1.Domain_Layer.Exceptions;
 
 namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 {
-    public class VerifySalesCommandService
+
+    public interface IVerifySalesCommandService
+    {
+        void VerifySales(ICommand command);
+    }
+    public class VerifySalesCommandService : IVerifySalesCommandService
     {
         private IUnitOfWork unitOfWork;
 

@@ -41,7 +41,7 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weath
             List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(establisment.Information.Location.GetCoordinates(), command.DateTimePeriod.Start, command.DateTimePeriod.End, command.TimeResolution);
 
             //Return the data accourding to the time resolution
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(command.DateTimePeriod, command.TimeResolution);
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(command.DateTimePeriod.Start, command.DateTimePeriod.End, command.TimeResolution);
 
             Dictionary<DateTime, List<(DateTime, double)>> grouped = TimeHelper.MapObjectsToTimeline(temperaturePerHour, x => x.Item1, timeline, command.TimeResolution);
 

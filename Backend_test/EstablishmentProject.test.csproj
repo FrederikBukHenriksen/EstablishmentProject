@@ -38,7 +38,6 @@
   <ItemGroup>
     <Folder Include="Application\Handlers\Establishment\" />
     <Folder Include="Application\Handlers\HandlerServices\" />
-    <Folder Include="Application\Handlers\Clustering\" />
   </ItemGroup>
 
 </Project>

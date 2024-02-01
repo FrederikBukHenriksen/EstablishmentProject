@@ -4,7 +4,12 @@ using WebApplication1.Services;
 
 namespace WebApplication1.Application_Layer.Services
 {
-    public class VerifyEstablishmentCommandService
+    public interface IVerifyEstablishmentCommandService
+    {
+        void VerifyEstablishment(ICommand command);
+    }
+
+    public class VerifyEstablishmentCommandService : IVerifyEstablishmentCommandService
     {
         private IUserContextService userContextService;
 

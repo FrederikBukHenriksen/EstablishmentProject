@@ -38,7 +38,6 @@ namespace WebApplication1.Program
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddOpenApiDocument();
-
             WebApplication app = builder.Build();
             AutoMigrate(app);
 

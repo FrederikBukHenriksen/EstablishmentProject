@@ -6,6 +6,14 @@ namespace WebApplication1.Application_Layer.Services
 {
     public class UpserveCredentials
     {
+
+        public UpserveCredentials(string credentialsAsJson)
+        {
+            var credentials = JsonConvert.DeserializeObject<UpserveCredentials>(credentialsAsJson);
+            this.Key = credentials.Key;
+            this.Username = credentials.Username;
+            this.Password = credentials.Password;
+        }
         public string Key { get; set; } = "";
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
@@ -23,18 +31,18 @@ namespace WebApplication1.Application_Layer.Services
         }
     }
 
-    public class UpserveAdapter : IDataFetching
+    public class UpserveAdapter : IDataFetching, IRetrieveItems
     {
         public HttpClient httpClient;
-        public UpserveAdapter(UpserveCredentials credentails)
+        public UpserveAdapter(UpserveCredentials credentials)
         {
             this.httpClient = this.httpClient ?? new HttpClient();
-            this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-API-Key", credentails.Key);
-            this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-Username", credentails.Username);
-            this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-Passeord", credentails.Password);
+            this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-API-Key", credentials.Key);
+            this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-Username", credentials.Username);
+            this.httpClient.DefaultRequestHeaders.Add("X-Breadcrumb-Passeord", credentials.Password);
         }
 
-        public async Task<List<(Func<IEntity>, RetrivingMetadata)>> FetchItems(Establishment establishment)
+        public async Task<List<(Func<Item>, RetrivingMetadata)>> FetchItems(Establishment establishment)
         {
             string url = "https://api.breadcrumb.com/ws/v2/items.json";
             var parameters = new Dictionary<string, dynamic>
@@ -55,7 +63,7 @@ namespace WebApplication1.Application_Layer.Services
 
             List<ItemObject> itemObjects = respones.SelectMany(x => x.ItemObjects).ToList();
 
-            List<(Func<IEntity>, RetrivingMetadata)> result = new List<(Func<IEntity>, RetrivingMetadata)>();
+            List<(Func<Item>, RetrivingMetadata)> result = new List<(Func<Item>, RetrivingMetadata)>();
 
             foreach (var itemObject in itemObjects)
             {
@@ -68,12 +76,12 @@ namespace WebApplication1.Application_Layer.Services
             return result;
         }
 
-        public Task<List<(Func<IEntity>, RetrivingMetadata)>> FetchSales(Establishment establishment)
+        public Task<List<(Func<Sale>, RetrivingMetadata)>> FetchSales(Establishment establishment)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<(Func<IEntity>, RetrivingMetadata)>> FetchTables(Establishment establishment)
+        public Task<List<(Func<Table>, RetrivingMetadata)>> FetchTables(Establishment establishment)
         {
             throw new NotImplementedException();
         }
