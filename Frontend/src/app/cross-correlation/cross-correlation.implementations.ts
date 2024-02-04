@@ -16,9 +16,9 @@ import { SaleClient } from 'api';
 import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import {
-  CrossCorrelationImplementaion,
+  ICorrelationImplementaion,
   GraphModel,
-  ImplementationDialog,
+  IDialogImplementation,
 } from './cross-correlation.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogCrossCorrelationSettingsComponent } from '../dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
@@ -31,7 +31,7 @@ import {
 } from '../utils/TimeHelper';
 
 export interface CrossCorrealtionAssembly {
-  assembly: CrossCorrelationImplementaion;
+  assembly: ICorrelationImplementaion;
 }
 
 export type LagAndCorrelation = {
@@ -45,20 +45,34 @@ export type CorrelationCalculations = {
   value2: number;
 };
 
+// export class CrossCorrelation_haha implements CrossCorrelationImplementaion {
+//   constructor(
+//     private readonly analysisClient: AnalysisClient,
+//     private readonly sessionStorageService: SessionStorageService,
+//     private readonly itemClient: ItemClient,
+//     private readonly dialog: MatDialog,
+//     private readonly saleClient: SaleClient
+//   ) {}
+
+//   title: 'Seat time vs Temperature';
+//   getSalesCommand: GetSalesCommand;
+//   correlationCommand: CorrelationCommand;
+//   dialogs: ImplementationDialog[];
+//   tableModel: TableModel | undefined;
+//   graphModel: GraphModel | undefined;
+// }
+
 export class CrossCorrelation_Sales_Temperature
-  implements CrossCorrelationImplementaion
+  implements ICorrelationImplementaion
 {
   title: string = 'Sales vs Temperature';
   correlationCommand!: CorrelationCommand;
+  dialogCrossCorrelationSettingsComponent: DialogCrossCorrelationSettingsComponent =
+    {} as DialogCrossCorrelationSettingsComponent;
 
   result: CorrelationReturn | undefined;
   tableModel: TableModel | undefined;
   graphModel: GraphModel | undefined;
-
-  getSalesCommand: GetSalesCommand = {
-    establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-    salesSorting: {},
-  } as GetSalesCommand;
 
   salesIds: string[] = [];
   salesSorting: SalesSorting = {} as SalesSorting;
@@ -71,7 +85,7 @@ export class CrossCorrelation_Sales_Temperature
     private readonly saleClient: SaleClient
   ) {}
 
-  dialogs: ImplementationDialog[] = [
+  dialogs: IDialogImplementation[] = [
     {
       name: 'Sales',
       action: async () => {
@@ -81,47 +95,56 @@ export class CrossCorrelation_Sales_Temperature
             this.itemClient,
             this.sessionStorageService
           );
-        this.salesSorting =
-          await dialogCrossCorrelationSettingsComponent.Open();
-
-        this.getSalesCommand = {
-          establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-          salesSorting: this.salesSorting,
-        } as GetSalesCommand;
+        this.salesSorting = await dialogCrossCorrelationSettingsComponent.Open(
+          this.salesSorting
+        );
       },
-    } as ImplementationDialog,
+    } as IDialogImplementation,
 
     {
       name: 'Settings',
       action: async () => {
         var dialogCrossCorrelationSettingsComponent =
           new DialogCrossCorrelationSettingsComponent(this.dialog);
-        var res = await dialogCrossCorrelationSettingsComponent.Open();
-        this.correlationCommand.lowerLag = res.lowerLag!;
-        this.correlationCommand.upperLag = res.upperLag!;
+        var dialogCrossCorrelationSettingsReturn =
+          await dialogCrossCorrelationSettingsComponent.Open();
+
+        this.correlationCommand.lowerLag =
+          dialogCrossCorrelationSettingsReturn.lowerLag!;
+        this.correlationCommand.upperLag =
+          dialogCrossCorrelationSettingsReturn.upperLag!;
         this.correlationCommand.timePeriod = {
-          start: res.startDate,
-          end: res.endDate,
+          start: dialogCrossCorrelationSettingsReturn.startDate,
+          end: dialogCrossCorrelationSettingsReturn.endDate,
         } as DateTimePeriod;
-        this.correlationCommand.timeResolution = res.timeResolution!;
-        console.log('setting, cmd', this.correlationCommand);
+        this.correlationCommand.timeResolution =
+          dialogCrossCorrelationSettingsReturn.timeResolution!;
       },
-    } as ImplementationDialog,
+    } as IDialogImplementation,
     {
       name: 'Run',
       action: async () => {
-        this.salesIds = (
-          await lastValueFrom(this.saleClient.getSales(this.getSalesCommand))
-        ).sales;
-
-        this.correlationCommand.salesIds = this.salesIds;
-
-        this.result = await this.fetch(this.correlationCommand);
-        this.graphModel = await this.buildGraph();
-        this.tableModel = await this.buildTable();
+        await this.run();
       },
-    } as ImplementationDialog,
+    } as IDialogImplementation,
   ];
+
+  async run() {
+    var getSalesCommand: GetSalesCommand = {
+      establishmentId: this.sessionStorageService.getActiveEstablishment()!,
+      salesSorting: this.salesSorting,
+    } as GetSalesCommand;
+
+    this.salesIds = (
+      await lastValueFrom(this.saleClient.getSales(getSalesCommand))
+    ).sales;
+
+    this.correlationCommand.salesIds = this.salesIds;
+
+    this.result = await this.fetch(this.correlationCommand);
+    this.graphModel = await this.buildGraph();
+    this.tableModel = await this.buildTable();
+  }
 
   async fetch(command: CorrelationCommand): Promise<CorrelationReturn> {
     this.result = await lastValueFrom(
@@ -133,10 +156,10 @@ export class CrossCorrelation_Sales_Temperature
   async buildTable(): Promise<TableModel> {
     var timeRes = this.correlationCommand.timeResolution;
 
-    var columns = ['[' + this.getLagUnit(timeRes) + ']', 'Correlation'];
+    var columns = ['[' + getLagUnit(timeRes) + ']', 'Correlation'];
 
     this.tableModel = {
-      columns: [this.getLagUnit(timeRes), 'Correlation'],
+      columns: [getLagUnit(timeRes), 'Correlation'],
       elements:
         this.result?.lagAndCorrelation.map(
           (element, index) =>
@@ -145,7 +168,7 @@ export class CrossCorrelation_Sales_Temperature
               elements: [
                 new TableString(
                   columns[0],
-                  this.getLagAmount(element.item1, timeRes)
+                  getLagAmount(element.item1, timeRes)
                 ),
                 new TableString(columns[1], element.item2.toString()),
               ],
@@ -174,7 +197,7 @@ export class CrossCorrelation_Sales_Temperature
 
     values = values.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    var bestLag = this.getLargestCorrelation(lagAndCorrelation);
+    var bestLag = GetLargestCorrelation(lagAndCorrelation);
 
     var timeres = this.correlationCommand.timeResolution;
     var chartDatasets: ChartDataset[] = [
@@ -187,14 +210,14 @@ export class CrossCorrelation_Sales_Temperature
         label: `Temperature`,
       } as ChartDataset,
       {
-        data: this.shiftArrayAttribute(values, 'value2', bestLag.lag).map(
+        data: shiftArrayAttribute(values, 'value2', bestLag.lag).map(
           (x: any) => x.value2
         ),
         label:
           'Temperature shifted ' +
-          this.getLagAmount(bestLag.lag, timeres) +
+          getLagAmount(bestLag.lag, timeres) +
           ' ' +
-          this.getLagUnit(timeres),
+          getLagUnit(timeres),
       } as ChartDataset,
     ];
 
@@ -205,109 +228,108 @@ export class CrossCorrelation_Sales_Temperature
       chartData: {
         datasets: chartDatasets,
         labels: values.map((x) =>
-          this.getGraphLabel(x.date, startDate, endDate, timeres)
+          getGraphLabel(x.date, startDate, endDate, timeres)
         ),
       },
       chartOptions: {},
     } as GraphModel;
     return this.graphModel;
   }
+}
 
-  private shiftArrayAttribute<T>(
-    arr: T[],
-    attributeName: keyof T,
-    shiftAmount: number
-  ): T[] {
-    const newArray = [...arr];
+export function shiftArrayAttribute<T>(
+  arr: T[],
+  attributeName: keyof T,
+  shiftAmount: number
+): T[] {
+  const newArray = [...arr];
 
-    if (shiftAmount > 0) {
-      // Shift to the right
-      for (let i = 0; i < shiftAmount; i++) {
-        const lastValue = newArray[newArray.length - 1][attributeName];
-        for (let j = newArray.length - 1; j > 0; j--) {
-          newArray[j][attributeName] = newArray[j - 1][attributeName];
-        }
-        newArray[0][attributeName] = lastValue;
+  if (shiftAmount > 0) {
+    // Shift to the right
+    for (let i = 0; i < shiftAmount; i++) {
+      const lastValue = newArray[newArray.length - 1][attributeName];
+      for (let j = newArray.length - 1; j > 0; j--) {
+        newArray[j][attributeName] = newArray[j - 1][attributeName];
       }
-    } else if (shiftAmount < 0) {
-      // Shift to the left
-      for (let i = 0; i < -shiftAmount; i++) {
-        const firstValue = newArray[0][attributeName];
-        for (let j = 0; j < newArray.length - 1; j++) {
-          newArray[j][attributeName] = newArray[j + 1][attributeName];
-        }
-        newArray[newArray.length - 1][attributeName] = firstValue;
-      }
+      newArray[0][attributeName] = lastValue;
     }
-    return newArray;
+  } else if (shiftAmount < 0) {
+    // Shift to the left
+    for (let i = 0; i < -shiftAmount; i++) {
+      const firstValue = newArray[0][attributeName];
+      for (let j = 0; j < newArray.length - 1; j++) {
+        newArray[j][attributeName] = newArray[j + 1][attributeName];
+      }
+      newArray[newArray.length - 1][attributeName] = firstValue;
+    }
+  }
+  return newArray;
+}
+
+export function getLagAmount(
+  hours: number,
+  timeResolution: TimeResolution
+): string {
+  if (timeResolution === TimeResolution.Hour) {
+    return hours.toString();
+  } else {
+    return (hours / 24).toString();
+  }
+}
+
+export function getLagUnit(timeResolution: TimeResolution): string {
+  if (timeResolution === TimeResolution.Hour) {
+    return 'Hour(s)';
+  } else {
+    return 'Day(s)';
+  }
+}
+
+export function getGraphLabel(
+  inputDate: Date,
+  dateStart: Date,
+  dateEnd: Date,
+  timeResolution: TimeResolution
+): string {
+  dateStart = accountForTimezone(dateStart);
+  dateEnd = accountForTimezone(dateEnd);
+
+  if (inputDate >= dateStart && inputDate <= dateEnd) {
+    return DateForGraph(inputDate);
   }
 
-  private getLagAmount = (hours: number, timeresolution: TimeResolution) => {
-    if (timeresolution === TimeResolution.Hour) {
-      return hours.toString();
-    } else {
-      return (hours / 24).toString();
-    }
-  };
+  let difference!: number;
 
-  private getLagUnit = (timeresolution: TimeResolution) => {
-    if (timeresolution === TimeResolution.Hour) {
-      return 'Hour(s)';
-    } else {
-      return 'Day(s)';
-    }
-  };
-
-  private getGraphLabel = (
-    inputDate: Date,
-    dateStart: Date,
-    dateEnd: Date,
-    timeResolution: TimeResolution
-  ) => {
-    dateStart = accountForTimezone(dateStart);
-    dateEnd = accountForTimezone(dateEnd);
-    if (inputDate >= dateStart && inputDate <= dateEnd) {
-      return DateForGraph(inputDate);
-    }
-    if (inputDate < dateStart) {
-      var difference = getDifferenceInHours(inputDate, dateStart);
-      console.log('difference before', difference);
-      console.log('inputDate', inputDate);
-      console.log('dateStart', dateStart);
-
-      return (
-        this.getLagAmount(difference, timeResolution) +
-        ' ' +
-        this.getLagUnit(timeResolution)
-      );
-    }
-    if (inputDate > dateEnd) {
-      var difference = getDifferenceInHours(inputDate, dateEnd);
-      return (
-        this.getLagAmount(difference, timeResolution) +
-        ' ' +
-        this.getLagUnit(timeResolution)
-      );
-    }
-    return '';
-  };
-
-  private getLargestCorrelation(input: { lag: number; correlation: number }[]) {
-    return input.reduce((max, current) => {
-      // Compare based on absolute values of correlation
-      const compareCorrelationCoefficient =
-        Math.abs(current.correlation) - Math.abs(max.correlation);
-
-      // If absolute value of correlation is larger, or if it's the same but lag is closer to 0, update max
-      if (
-        compareCorrelationCoefficient > 0 ||
-        (compareCorrelationCoefficient === 0 &&
-          Math.abs(current.lag) < Math.abs(max.lag))
-      ) {
-        return current;
-      }
-
-      return max;
-    }, input[0]); // Use the first element as the initial max
+  if (inputDate < dateStart) {
+    difference = getDifferenceInHours(inputDate, dateStart);
+  } else if (inputDate > dateEnd) {
+    difference = getDifferenceInHours(inputDate, dateEnd);
   }
+
+  if (difference !== undefined) {
+    return (
+      getLagAmount(difference, timeResolution) +
+      ' ' +
+      getLagUnit(timeResolution)
+    );
+  }
+  return '';
+}
+
+export function GetLargestCorrelation(
+  input: { lag: number; correlation: number }[]
+) {
+  return input.reduce((max, current) => {
+    const compareCorrelationCoefficient =
+      Math.abs(current.correlation) - Math.abs(max.correlation);
+
+    if (
+      compareCorrelationCoefficient > 0 ||
+      (compareCorrelationCoefficient === 0 &&
+        Math.abs(current.lag) < Math.abs(max.lag))
+    ) {
+      return current;
+    }
+    return max;
+  }, input[0]);
 }

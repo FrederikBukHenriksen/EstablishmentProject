@@ -81,11 +81,16 @@ export class ButtonField extends SettingsDataBase {
 
 export class DropDownMultipleSelects extends SettingsDataBase {
   options: DropDownOption[];
-  constructor(id: string, title: string, options: DropDownOption[]) {
+  constructor(
+    id: string,
+    title: string,
+    options: DropDownOption[],
+    selectedValues?: string[]
+  ) {
     super(id);
     this.title = title;
     this.options = options;
-    this.value = [];
+    this.value = selectedValues ?? [];
   }
 }
 
@@ -112,8 +117,9 @@ export class DropDownOption extends SettingsDataBase {
 export class DatePicker extends SettingsDataBase {
   override value = this.FormControl.value;
 
-  constructor(id: string) {
+  constructor(id: string, value?: Date) {
     super(id);
+    this.value = value;
   }
 }
 
@@ -125,11 +131,13 @@ export class DialogSlider extends SettingsDataBase {
     title: string,
     min: number,
     max: number,
-    step: number
+    step: number,
+    value?: number
   ) {
     super(id);
     this.title = title;
     this.slider = { min, max, step };
+    value == null ? (this.value = 1) : (this.value = value);
   }
 }
 
@@ -146,15 +154,15 @@ export class DialogBase implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     public data: SettingsData[] // protected dialogRef: MatDialogRef<DialogBase>
   ) {
-    console.log('data', data);
     this.myFormGroup = new FormGroup({});
   }
 
   ngOnInit(): void {
     const formControls: any = {};
     this.data.forEach((control) => {
-      console.log(control);
-      formControls[control.id] = new FormControl(control.value);
+      var formcontrol = new FormControl(control.value);
+      formControls[control.id] = formcontrol;
+      control.FormControl = formcontrol;
     });
     this.myFormGroup = this.fb.group(formControls);
     console.log('base data', this.data);

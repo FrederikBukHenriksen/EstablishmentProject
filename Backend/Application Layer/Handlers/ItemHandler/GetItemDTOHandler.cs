@@ -28,7 +28,8 @@ namespace WebApplication1.Application_Layer.Handlers.ItemHandler
 
         public async override Task<GetItemDTOReturn> Handle(GetItemDTOCommand command)
         {
-            IEnumerable<Item> items = this.unitOfWork.itemRepository.FindAll(x => x.EstablishmentId == command.EstablishmentId);
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeItems().GetById(command.EstablishmentId);
+            IEnumerable<Item> items = establishment.Items.Where(x => command.ItemsIds.Any(y => y == x.Id));
             items = items.Where(x => command.ItemsIds.Contains(x.Id));
             List<ItemDTO> itemsDTO = items.Select(x => new ItemDTO(x)).ToList();
 

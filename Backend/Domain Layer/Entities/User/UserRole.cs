@@ -11,12 +11,12 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public UserRole()
         {
-            //this.Id = Guid.NewGuid();
+            this.Id = Guid.NewGuid();
         }
 
         public UserRole(User user, Establishment establishment, Role role)
         {
-            //this.Id = Guid.NewGuid();
+            this.Id = Guid.NewGuid();
             this.User = user;
             this.Establishment = establishment;
             this.Role = role;

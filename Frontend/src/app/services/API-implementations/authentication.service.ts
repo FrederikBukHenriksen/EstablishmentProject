@@ -4,7 +4,7 @@ import { AuthenticationClient } from 'api';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService {
+export class AuthenticationService {
   private readonly authenticationClient = inject(AuthenticationClient);
 
   public login(username: string, password: string): boolean {

@@ -2,10 +2,12 @@ import {
   ClusteringCommand,
   ClusteringReturn,
   Clustering_TimeOfVisit_TotalPrice_Command,
+  GetItemDTOCommand,
   GetSalesCommand,
   GetSalesDTOCommand,
   GetSalesReturn,
   ItemClient,
+  ItemDTO,
   SaleDTO,
 } from 'api';
 import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
@@ -16,18 +18,28 @@ import { SessionStorageService } from '../services/session-storage/session-stora
 
 import { MatDialog } from '@angular/material/dialog';
 import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
-import { ClusteringImplementaion } from './cluster.component';
+import { DialogClusterSettingsComponent } from '../dialog-cluster-settings/dialog-cluster-settings.component';
+import { IClusteringImplementaion } from './cluster.component';
 import {
   GraphModel,
-  ImplementationDialog,
+  IDialogImplementation,
 } from '../cross-correlation/cross-correlation.component';
 import { Observable, Subject, from, lastValueFrom, of } from 'rxjs';
+import { Injectable } from '@angular/core';
 
 export interface ClusteringAssembly {
-  assembly: ClusteringImplementaion;
+  assembly: IClusteringImplementaion;
 }
 
-export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
+export type ClusterBandwidths = {
+  title: string;
+  value: number;
+};
+
+@Injectable({
+  providedIn: 'root',
+})
+export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
   title: string = 'Time of dat vs Total spending';
   clustersTable: Subject<TableModel> = new Subject<TableModel>();
   eachClustersTables: Subject<TableModel[]> = new Subject<TableModel[]>();
@@ -40,9 +52,17 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
   } as GetSalesCommand;
 
   getSalesReturn: GetSalesReturn | undefined;
-
+  bandwidths: ClusterBandwidths[] = [
+    {
+      title: 'Time of visit',
+      value: 120,
+    },
+    {
+      title: 'Total price',
+      value: 50,
+    },
+  ];
   clusteringCommand!: Clustering_TimeOfVisit_TotalPrice_Command;
-
   clusteringReturn: ClusteringReturn | undefined;
 
   constructor(
@@ -55,11 +75,9 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
     this.clusteringCommand = new Clustering_TimeOfVisit_TotalPrice_Command();
     this.clusteringCommand.establishmentId =
       this.sessionStorageService.getActiveEstablishment()!;
-    this.clusteringCommand.bandwidthTotalPrice = 50;
-    this.clusteringCommand.bandwidthTimeOfVisit = 120;
   }
 
-  dialogs: ImplementationDialog[] = [
+  dialogs: IDialogImplementation[] = [
     {
       name: 'Sales',
       action: async () => {
@@ -70,9 +88,35 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
             this.sessionStorageService
           );
         this.getSalesCommand.salesSorting =
-          await dialogCrossCorrelationSettingsComponent.Open();
+          await dialogCrossCorrelationSettingsComponent.Open(
+            this.getSalesCommand.salesSorting
+          );
       },
-    } as ImplementationDialog,
+    } as IDialogImplementation,
+    {
+      name: 'Bandwidths',
+      action: async () => {
+        var dialogClusterSettingsComponent = new DialogClusterSettingsComponent(
+          this.dialog
+        );
+        this.bandwidths = await dialogClusterSettingsComponent.Open([
+          {
+            title: this.bandwidths[0].title,
+            min: 0,
+            max: 100,
+            step: 1,
+            value: this.bandwidths[0].value,
+          },
+          {
+            title: this.bandwidths[1].title,
+            min: 0,
+            max: 100,
+            step: 1,
+            value: this.bandwidths[1].value,
+          },
+        ]);
+      },
+    } as IDialogImplementation,
 
     {
       name: 'Run',
@@ -82,16 +126,17 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
           this.saleClient.getSales(this.getSalesCommand)
         );
 
-        this.clusteringCommand.salesIds = this.getSalesReturn.sales;
         //Get clustering
+        this.clusteringCommand.salesIds = this.getSalesReturn.sales;
+        this.clusteringCommand.bandwidthTimeOfVisit = this.bandwidths[0].value;
+        this.clusteringCommand.bandwidthTotalPrice = this.bandwidths[1].value;
         this.clusteringReturn = await lastValueFrom(
           this.analysisClient.timeOfVisitTotalPrice(this.clusteringCommand)
         );
 
-        //Generate UI
         this.generateUI();
       },
-    } as ImplementationDialog,
+    } as IDialogImplementation,
   ];
 
   private async generateUI(): Promise<void> {
@@ -136,22 +181,65 @@ export class Cluster_TimeOfDay_Spending implements ClusteringImplementaion {
   ): Promise<TableModel> {
     var tableEntries: TableEntry[] = [];
 
-    var itemIds = salesDTOClusters
-      .flat()
-      .map((sale) => sale.salesItems)
-      .flat();
+    var itemIds = Array.from(
+      new Set(
+        salesDTOClusters
+          .flat()
+          .map((sale) => sale.salesItems.map((x) => x.item1))
+          .flat()
+      )
+    );
+
+    var itemDTOs: ItemDTO[] = (
+      await lastValueFrom(
+        this.itemClient.getItemsDTO({
+          establishmentId: this.sessionStorageService.getActiveEstablishment(),
+          itemsIds: itemIds,
+        } as GetItemDTOCommand)
+      )
+    ).items;
+
+    var clusters = [
+      'Cluster number',
+      'Avg. no. item',
+      'Avg. spend',
+      'No. of sales',
+    ];
 
     salesDTOClusters.forEach((element, index) => {
+      var itemsDTOmapped: ItemDTO[][] = element.map((sale) =>
+        sale.salesItems.map(
+          (itemId) => itemDTOs.find((item) => item.id === itemId.item1)!
+        )
+      );
+
+      var averageNumberOfItemsOfCluster =
+        itemsDTOmapped.flat().length / element.length;
+
+      var averageSpendOfCluster =
+        itemsDTOmapped
+          .flat()
+          .reduce((prev, current) => prev + current.price.amount, 0) /
+        element.length;
+
       tableEntries.push({
         id: index,
         elements: [
-          new TableString('Cluster number', index.toString()),
-          new TableString('No. of sales', element.length.toString()),
+          new TableString(clusters[0], index.toString()),
+          new TableString(
+            clusters[1],
+            averageNumberOfItemsOfCluster.toFixed(1).toString()
+          ),
+          new TableString(
+            clusters[2],
+            averageSpendOfCluster.toFixed(1).toString()
+          ),
+          new TableString(clusters[3], element.length.toString()),
         ],
       } as TableEntry);
     });
     return {
-      columns: ['Cluster number', 'No. of sales'],
+      columns: clusters,
       elements: tableEntries,
     } as TableModel;
   }

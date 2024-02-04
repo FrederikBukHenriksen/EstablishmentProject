@@ -44,26 +44,43 @@ export class DialogFilterSalesComponent {
     public sessionStorageService: SessionStorageService
   ) {}
 
-  private async buildDialog(): Promise<DialogConfig> {
-    var itemOptions = (await this.GetItems()).map(
+  private async buildDialog(salesSorting: SalesSorting): Promise<DialogConfig> {
+    var itemOptions = (await this.FetchItems()).map(
       (item) => new DropDownOption(item.name, item.id, false)
     );
 
     return new DialogConfig([
-      new DropDownMultipleSelects('Any', 'Contains any of these', itemOptions),
-      new DropDownMultipleSelects('All', 'Contains all of these', itemOptions),
+      new DropDownMultipleSelects(
+        'Any',
+        'Contains any of these',
+        itemOptions,
+        salesSorting.any
+      ),
+      new DropDownMultipleSelects(
+        'All',
+        'Contains all of these',
+        itemOptions,
+        salesSorting.all
+      ),
       new DropDownMultipleSelects(
         'Exact',
         'Contains precisely these',
-        itemOptions
+        itemOptions,
+        salesSorting.excatly
       ),
-      // new DatePicker('timeframetart'),
-      // new DatePicker('timeframeend'),
+      new DatePicker(
+        'timeframetart',
+        salesSorting.withinTimeperiods?.[0]?.item1
+      ),
+      new DatePicker(
+        'timeframeend',
+        salesSorting.withinTimeperiods?.[0]?.item2
+      ),
     ]);
   }
 
-  public async Open(): Promise<SalesSorting> {
-    var dialogConfig = await this.buildDialog();
+  public async Open(salesSorting: SalesSorting): Promise<SalesSorting> {
+    var dialogConfig = await this.buildDialog(salesSorting);
     var data: { [key: string]: any } = await lastValueFrom(
       this.dialog
         .open(DialogBase, {
@@ -80,16 +97,16 @@ export class DialogFilterSalesComponent {
       any: data['Any'],
       all: data['All'],
       excatly: data['Exact'],
-      // withinTimeperiods: [
-      //   {
-      //     item1: data['timeframetart'],
-      //     item2: data['timeframeend'],
-      //   },
-      // ] as ValueTupleOfDateTimeAndDateTime[],
+      withinTimeperiods: [
+        {
+          item1: data['timeframetart'],
+          item2: data['timeframeend'],
+        },
+      ] as ValueTupleOfDateTimeAndDateTime[],
     } as SalesSorting;
   }
 
-  private async GetItems() {
+  private async FetchItems() {
     var getItemsCommand: GetItemsCommand = {
       establishmentId: this.sessionStorageService.getActiveEstablishment(),
     } as GetItemsCommand;
