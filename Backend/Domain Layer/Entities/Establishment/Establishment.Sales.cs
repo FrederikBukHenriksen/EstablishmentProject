@@ -5,7 +5,7 @@ namespace WebApplication1.Domain_Layer.Entities
     public interface IEstablishment_Sale
     {
         Sale AddSale(Sale sale);
-        Sale CreateSale(DateTime timestampPayment, Table? table = null, List<(Item, int)>? itemAndQuantity = null, SaleType? saleType = null, PaymentType? paymentType = null, DateTime? timestampArrival = null);
+        Sale CreateSale(DateTime timestampPayment, Table? table = null, List<(Item, int)>? itemAndQuantity = null, DateTime? timestampArrival = null);
         List<Sale> GetSales();
         void RemoveSale(Sale sale);
         Sale UpdateSale(Sale sale);
@@ -14,9 +14,9 @@ namespace WebApplication1.Domain_Layer.Entities
     public partial class Establishment : EntityBase, IEstablishment_Sale
     {
         //CRUD
-        public Sale CreateSale(DateTime timestampPayment, Table? table = null, List<(Item, int)>? itemAndQuantity = null, SaleType? saleType = null, PaymentType? paymentType = null, DateTime? timestampArrival = null)
+        public Sale CreateSale(DateTime timestampPayment, Table? table = null, List<(Item, int)>? itemAndQuantity = null, DateTime? timestampArrival = null)
         {
-            Sale sale = new Sale(timestampPayment, saleType, paymentType, timestampArrival, table: table, salesItems: itemAndQuantity);
+            Sale sale = new Sale(timestampPayment, timestampArrival, table: table, salesItems: itemAndQuantity);
             this.AddSale(sale);
             return sale;
         }

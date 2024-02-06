@@ -5,8 +5,6 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
     public class SaleDTO
     {
         public Guid id { get; set; }
-        public SaleType? SaleType { get; set; } = null;
-        public PaymentType? PaymentType { get; set; } = null;
         public DateTime? TimestampArrival { get; set; } = null;
         public DateTime TimestampPayment { get; set; }
         public List<(Guid, int)> SalesItems { get; set; } = new List<(Guid, int)>();
@@ -17,8 +15,6 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
         public SaleDTO(Sale sale)
         {
             this.id = sale.Id;
-            this.SaleType = sale.SaleType;
-            this.PaymentType = sale.PaymentType;
             this.TimestampArrival = sale.TimestampArrival;
             this.TimestampPayment = sale.TimestampPayment;
             this.SalesItems = sale.SalesItems.ToList().Select(x => (x.Item.Id, x.quantity)).ToList();

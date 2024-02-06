@@ -34,20 +34,21 @@ export class SaleService implements ISaleService {
   }
 
   public async getSalesWithoutSorting(
-    SalesSortingestablishmentId?: string
+    SalesSortingestablishmentId?: string,
+    establishmentId?: string
   ): Promise<string[]> {
     var command = new GetSalesCommand();
-    command.establishmentId =
-      SalesSortingestablishmentId ?? this.activeEstablishment ?? '';
+    command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
     return (await lastValueFrom(this.saleClient.getSales(command))).sales;
   }
 
   public async getSalesWithSortingObject(
-    salesSorting: SalesSorting
+    salesSorting: SalesSorting,
+    establishmentId?: string
   ): Promise<string[]> {
     var command = new GetSalesCommand();
-    command.establishmentId = this.activeEstablishment ?? '';
-    command.salesSorting = salesSorting;
+    command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
+    command.salesSorting = salesSorting ?? new SalesSorting();
     return (await lastValueFrom(this.saleClient.getSales(command))).sales;
   }
 }

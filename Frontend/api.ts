@@ -1433,7 +1433,16 @@ export class SaleClient {
   }
 }
 
-export abstract class ReturnBase {
+export abstract class ReturnBase implements IReturnBase {
+  constructor(data?: IReturnBase) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
   init(_data?: any) {}
 
   static fromJS(data: any): ReturnBase {
@@ -1447,9 +1456,18 @@ export abstract class ReturnBase {
   }
 }
 
-export class CorrelationReturn extends ReturnBase {
+export interface IReturnBase {}
+
+export class CorrelationReturn
+  extends ReturnBase
+  implements ICorrelationReturn
+{
   lagAndCorrelation!: ValueTupleOfIntegerAndDouble[];
   calculationValues!: ValueTupleOfDateTimeAndListOfNullableDouble[];
+
+  constructor(data?: ICorrelationReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -1495,9 +1513,25 @@ export class CorrelationReturn extends ReturnBase {
   }
 }
 
-export class ValueTupleOfIntegerAndDouble {
+export interface ICorrelationReturn extends IReturnBase {
+  lagAndCorrelation: ValueTupleOfIntegerAndDouble[];
+  calculationValues: ValueTupleOfDateTimeAndListOfNullableDouble[];
+}
+
+export class ValueTupleOfIntegerAndDouble
+  implements IValueTupleOfIntegerAndDouble
+{
   item1!: number;
   item2!: number;
+
+  constructor(data?: IValueTupleOfIntegerAndDouble) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -1521,9 +1555,25 @@ export class ValueTupleOfIntegerAndDouble {
   }
 }
 
-export class ValueTupleOfDateTimeAndListOfNullableDouble {
+export interface IValueTupleOfIntegerAndDouble {
+  item1: number;
+  item2: number;
+}
+
+export class ValueTupleOfDateTimeAndListOfNullableDouble
+  implements IValueTupleOfDateTimeAndListOfNullableDouble
+{
   item1!: Date;
   item2!: (number | undefined)[] | undefined;
+
+  constructor(data?: IValueTupleOfDateTimeAndListOfNullableDouble) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -1555,7 +1605,21 @@ export class ValueTupleOfDateTimeAndListOfNullableDouble {
   }
 }
 
-export abstract class CommandBase {
+export interface IValueTupleOfDateTimeAndListOfNullableDouble {
+  item1: Date;
+  item2: (number | undefined)[] | undefined;
+}
+
+export abstract class CommandBase implements ICommandBase {
+  constructor(data?: ICommandBase) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
   init(_data?: any) {}
 
   static fromJS(data: any): CommandBase {
@@ -1569,13 +1633,22 @@ export abstract class CommandBase {
   }
 }
 
-export class CorrelationCommand extends CommandBase {
+export interface ICommandBase {}
+
+export class CorrelationCommand
+  extends CommandBase
+  implements ICorrelationCommand
+{
   establishmentId!: string;
   salesIds!: string[];
   timePeriod!: DateTimePeriod;
   timeResolution!: TimeResolution;
   upperLag!: number;
   lowerLag!: number;
+
+  constructor(data?: ICorrelationCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -1619,9 +1692,27 @@ export class CorrelationCommand extends CommandBase {
   }
 }
 
-export class DateTimePeriod {
+export interface ICorrelationCommand extends ICommandBase {
+  establishmentId: string;
+  salesIds: string[];
+  timePeriod: DateTimePeriod;
+  timeResolution: TimeResolution;
+  upperLag: number;
+  lowerLag: number;
+}
+
+export class DateTimePeriod implements IDateTimePeriod {
   start!: Date;
   end!: Date;
+
+  constructor(data?: IDateTimePeriod) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -1649,6 +1740,11 @@ export class DateTimePeriod {
   }
 }
 
+export interface IDateTimePeriod {
+  start: Date;
+  end: Date;
+}
+
 export enum TimeResolution {
   Hour = 0,
   Date = 1,
@@ -1656,9 +1752,13 @@ export enum TimeResolution {
   Year = 3,
 }
 
-export class ClusteringReturn extends ReturnBase {
+export class ClusteringReturn extends ReturnBase implements IClusteringReturn {
   clusters!: string[][];
   calculationValues!: ValueTupleOfGuidAndListOfDouble[];
+
+  constructor(data?: IClusteringReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -1700,9 +1800,25 @@ export class ClusteringReturn extends ReturnBase {
   }
 }
 
-export class ValueTupleOfGuidAndListOfDouble {
+export interface IClusteringReturn extends IReturnBase {
+  clusters: string[][];
+  calculationValues: ValueTupleOfGuidAndListOfDouble[];
+}
+
+export class ValueTupleOfGuidAndListOfDouble
+  implements IValueTupleOfGuidAndListOfDouble
+{
   item1!: string;
   item2!: number[] | undefined;
+
+  constructor(data?: IValueTupleOfGuidAndListOfDouble) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -1732,14 +1848,22 @@ export class ValueTupleOfGuidAndListOfDouble {
   }
 }
 
-export abstract class ClusteringCommand extends CommandBase {
+export interface IValueTupleOfGuidAndListOfDouble {
+  item1: string;
+  item2: number[] | undefined;
+}
+
+export abstract class ClusteringCommand
+  extends CommandBase
+  implements IClusteringCommand
+{
   establishmentId!: string;
   salesIds!: string[];
 
   protected _discriminator: string;
 
-  constructor() {
-    super();
+  constructor(data?: IClusteringCommand) {
+    super(data);
     this._discriminator = 'ClusteringCommand';
   }
 
@@ -1784,12 +1908,20 @@ export abstract class ClusteringCommand extends CommandBase {
   }
 }
 
-export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand {
+export interface IClusteringCommand extends ICommandBase {
+  establishmentId: string;
+  salesIds: string[];
+}
+
+export class Clustering_TimeOfVisit_TotalPrice_Command
+  extends ClusteringCommand
+  implements IClustering_TimeOfVisit_TotalPrice_Command
+{
   bandwidthTimeOfVisit!: number;
   bandwidthTotalPrice!: number;
 
-  constructor() {
-    super();
+  constructor(data?: IClustering_TimeOfVisit_TotalPrice_Command) {
+    super(data);
     this._discriminator = 'Clustering_TimeOfVisit_TotalPrice_Command';
   }
 
@@ -1817,9 +1949,18 @@ export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand
   }
 }
 
-export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand {
-  constructor() {
-    super();
+export interface IClustering_TimeOfVisit_TotalPrice_Command
+  extends IClusteringCommand {
+  bandwidthTimeOfVisit: number;
+  bandwidthTotalPrice: number;
+}
+
+export class Clustering_TimeOfVisit_LengthOfVisit_Command
+  extends ClusteringCommand
+  implements IClustering_TimeOfVisit_LengthOfVisit_Command
+{
+  constructor(data?: IClustering_TimeOfVisit_LengthOfVisit_Command) {
+    super(data);
     this._discriminator = 'Clustering_TimeOfVisit_LengthOfVisit_Command';
   }
 
@@ -1843,9 +1984,21 @@ export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringComm
   }
 }
 
-export class LoginCommand {
+export interface IClustering_TimeOfVisit_LengthOfVisit_Command
+  extends IClusteringCommand {}
+
+export class LoginCommand implements ILoginCommand {
   username!: string;
   password!: string;
+
+  constructor(data?: ILoginCommand) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -1869,8 +2022,20 @@ export class LoginCommand {
   }
 }
 
-export class GetEstablishmentReturn extends ReturnBase {
+export interface ILoginCommand {
+  username: string;
+  password: string;
+}
+
+export class GetEstablishmentReturn
+  extends ReturnBase
+  implements IGetEstablishmentReturn
+{
   establishmentDTO!: EstablishmentDTO;
+
+  constructor(data?: IGetEstablishmentReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -1898,12 +2063,25 @@ export class GetEstablishmentReturn extends ReturnBase {
   }
 }
 
-export class EstablishmentDTO {
+export interface IGetEstablishmentReturn extends IReturnBase {
+  establishmentDTO: EstablishmentDTO;
+}
+
+export class EstablishmentDTO implements IEstablishmentDTO {
   id!: string;
   name!: string;
   items!: string[];
   tables!: string[];
   sales!: string[];
+
+  constructor(data?: IEstablishmentDTO) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -1951,8 +2129,23 @@ export class EstablishmentDTO {
   }
 }
 
-export class GetEstablishmentCommand extends CommandBase {
+export interface IEstablishmentDTO {
+  id: string;
+  name: string;
+  items: string[];
+  tables: string[];
+  sales: string[];
+}
+
+export class GetEstablishmentCommand
+  extends CommandBase
+  implements IGetEstablishmentCommand
+{
   establishmentId!: string;
+
+  constructor(data?: IGetEstablishmentCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -1976,8 +2169,19 @@ export class GetEstablishmentCommand extends CommandBase {
   }
 }
 
-export class GetMultipleEstablishmentsReturn extends ReturnBase {
+export interface IGetEstablishmentCommand extends ICommandBase {
+  establishmentId: string;
+}
+
+export class GetMultipleEstablishmentsReturn
+  extends ReturnBase
+  implements IGetMultipleEstablishmentsReturn
+{
   establishmentDTOs!: EstablishmentDTO[];
+
+  constructor(data?: IGetMultipleEstablishmentsReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2009,8 +2213,19 @@ export class GetMultipleEstablishmentsReturn extends ReturnBase {
   }
 }
 
-export class GetMultipleEstablishmentsCommand extends CommandBase {
+export interface IGetMultipleEstablishmentsReturn extends IReturnBase {
+  establishmentDTOs: EstablishmentDTO[];
+}
+
+export class GetMultipleEstablishmentsCommand
+  extends CommandBase
+  implements IGetMultipleEstablishmentsCommand
+{
   establishmentIds!: string[];
+
+  constructor(data?: IGetMultipleEstablishmentsCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2042,8 +2257,16 @@ export class GetMultipleEstablishmentsCommand extends CommandBase {
   }
 }
 
-export class GetItemDTOReturn extends ReturnBase {
+export interface IGetMultipleEstablishmentsCommand extends ICommandBase {
+  establishmentIds: string[];
+}
+
+export class GetItemDTOReturn extends ReturnBase implements IGetItemDTOReturn {
   items!: ItemDTO[];
+
+  constructor(data?: IGetItemDTOReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2073,10 +2296,23 @@ export class GetItemDTOReturn extends ReturnBase {
   }
 }
 
-export class ItemDTO {
+export interface IGetItemDTOReturn extends IReturnBase {
+  items: ItemDTO[];
+}
+
+export class ItemDTO implements IItemDTO {
   id!: string;
   name!: string;
   price!: Price;
+
+  constructor(data?: IItemDTO) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -2104,8 +2340,23 @@ export class ItemDTO {
   }
 }
 
-export abstract class EntityBase {
+export interface IItemDTO {
+  id: string;
+  name: string;
+  price: Price;
+}
+
+export abstract class EntityBase implements IEntityBase {
   id!: string;
+
+  constructor(data?: IEntityBase) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -2125,9 +2376,17 @@ export abstract class EntityBase {
   }
 }
 
-export class Price extends EntityBase {
+export interface IEntityBase {
+  id: string;
+}
+
+export class Price extends EntityBase implements IPrice {
   amount!: number;
   currency!: Currency;
+
+  constructor(data?: IPrice) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2153,6 +2412,11 @@ export class Price extends EntityBase {
   }
 }
 
+export interface IPrice extends IEntityBase {
+  amount: number;
+  currency: Currency;
+}
+
 export enum Currency {
   UNKNOWN = 0,
   DKK = 1,
@@ -2161,9 +2425,16 @@ export enum Currency {
   USD = 4,
 }
 
-export class GetItemDTOCommand extends CommandBase {
+export class GetItemDTOCommand
+  extends CommandBase
+  implements IGetItemDTOCommand
+{
   establishmentId!: string;
   itemsIds!: string[];
+
+  constructor(data?: IGetItemDTOCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2195,8 +2466,17 @@ export class GetItemDTOCommand extends CommandBase {
   }
 }
 
-export class GetItemsReturn extends ReturnBase {
+export interface IGetItemDTOCommand extends ICommandBase {
+  establishmentId: string;
+  itemsIds: string[];
+}
+
+export class GetItemsReturn extends ReturnBase implements IGetItemsReturn {
   items!: string[];
+
+  constructor(data?: IGetItemsReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2226,8 +2506,16 @@ export class GetItemsReturn extends ReturnBase {
   }
 }
 
-export class GetItemsCommand extends CommandBase {
+export interface IGetItemsReturn extends IReturnBase {
+  items: string[];
+}
+
+export class GetItemsCommand extends CommandBase implements IGetItemsCommand {
   establishmentId!: string;
+
+  constructor(data?: IGetItemsCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2251,8 +2539,19 @@ export class GetItemsCommand extends CommandBase {
   }
 }
 
-export class GetSalesDTOReturn extends ReturnBase {
+export interface IGetItemsCommand extends ICommandBase {
+  establishmentId: string;
+}
+
+export class GetSalesDTOReturn
+  extends ReturnBase
+  implements IGetSalesDTOReturn
+{
   sales!: SaleDTO[];
+
+  constructor(data?: IGetSalesDTOReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2282,21 +2581,30 @@ export class GetSalesDTOReturn extends ReturnBase {
   }
 }
 
-export class SaleDTO {
+export interface IGetSalesDTOReturn extends IReturnBase {
+  sales: SaleDTO[];
+}
+
+export class SaleDTO implements ISaleDTO {
   id!: string;
-  saleType!: SaleType | undefined;
-  paymentType!: PaymentType | undefined;
   timestampArrival!: Date | undefined;
   timestampPayment!: Date;
   salesItems!: ValueTupleOfGuidAndInteger[];
   table!: string | undefined;
   employee!: string | undefined;
 
+  constructor(data?: ISaleDTO) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
   init(_data?: any) {
     if (_data) {
       this.id = _data['id'];
-      this.saleType = _data['saleType'];
-      this.paymentType = _data['paymentType'];
       this.timestampArrival = _data['timestampArrival']
         ? new Date(_data['timestampArrival'].toString())
         : <any>undefined;
@@ -2323,8 +2631,6 @@ export class SaleDTO {
   toJSON(data?: any) {
     data = typeof data === 'object' ? data : {};
     data['id'] = this.id;
-    data['saleType'] = this.saleType;
-    data['paymentType'] = this.paymentType;
     data['timestampArrival'] = this.timestampArrival
       ? this.timestampArrival.toISOString()
       : <any>undefined;
@@ -2341,22 +2647,27 @@ export class SaleDTO {
   }
 }
 
-export enum SaleType {
-  EatIn = 0,
-  Delivery = 1,
-  TakeAway = 2,
+export interface ISaleDTO {
+  id: string;
+  timestampArrival: Date | undefined;
+  timestampPayment: Date;
+  salesItems: ValueTupleOfGuidAndInteger[];
+  table: string | undefined;
+  employee: string | undefined;
 }
 
-export enum PaymentType {
-  Cash = 0,
-  Mobilepay = 1,
-  Card = 2,
-  Online = 3,
-}
-
-export class ValueTupleOfGuidAndInteger {
+export class ValueTupleOfGuidAndInteger implements IValueTupleOfGuidAndInteger {
   item1!: string;
   item2!: number;
+
+  constructor(data?: IValueTupleOfGuidAndInteger) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -2380,9 +2691,21 @@ export class ValueTupleOfGuidAndInteger {
   }
 }
 
-export class GetSalesDTOCommand extends CommandBase {
+export interface IValueTupleOfGuidAndInteger {
+  item1: string;
+  item2: number;
+}
+
+export class GetSalesDTOCommand
+  extends CommandBase
+  implements IGetSalesDTOCommand
+{
   establishmentId!: string;
   salesIds!: string[];
+
+  constructor(data?: IGetSalesDTOCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2414,8 +2737,17 @@ export class GetSalesDTOCommand extends CommandBase {
   }
 }
 
-export class GetSalesReturn extends ReturnBase {
+export interface IGetSalesDTOCommand extends ICommandBase {
+  establishmentId: string;
+  salesIds: string[];
+}
+
+export class GetSalesReturn extends ReturnBase implements IGetSalesReturn {
   sales!: string[];
+
+  constructor(data?: IGetSalesReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2445,9 +2777,17 @@ export class GetSalesReturn extends ReturnBase {
   }
 }
 
-export class GetSalesCommand extends CommandBase {
+export interface IGetSalesReturn extends IReturnBase {
+  sales: string[];
+}
+
+export class GetSalesCommand extends CommandBase implements IGetSalesCommand {
   establishmentId!: string;
   salesSorting!: SalesSorting;
+
+  constructor(data?: IGetSalesCommand) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2477,12 +2817,26 @@ export class GetSalesCommand extends CommandBase {
   }
 }
 
-export class SalesSorting {
+export interface IGetSalesCommand extends ICommandBase {
+  establishmentId: string;
+  salesSorting: SalesSorting;
+}
+
+export class SalesSorting implements ISalesSorting {
   any!: string[] | undefined;
   excatly!: string[] | undefined;
   all!: string[] | undefined;
   withinTimeperiods!: ValueTupleOfDateTimeAndDateTime[] | undefined;
   mustContainAllAttributes!: SaleAttributes[] | undefined;
+
+  constructor(data?: ISalesSorting) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -2548,9 +2902,28 @@ export class SalesSorting {
   }
 }
 
-export class ValueTupleOfDateTimeAndDateTime {
+export interface ISalesSorting {
+  any: string[] | undefined;
+  excatly: string[] | undefined;
+  all: string[] | undefined;
+  withinTimeperiods: ValueTupleOfDateTimeAndDateTime[] | undefined;
+  mustContainAllAttributes: SaleAttributes[] | undefined;
+}
+
+export class ValueTupleOfDateTimeAndDateTime
+  implements IValueTupleOfDateTimeAndDateTime
+{
   item1!: Date;
   item2!: Date;
+
+  constructor(data?: IValueTupleOfDateTimeAndDateTime) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
 
   init(_data?: any) {
     if (_data) {
@@ -2578,6 +2951,11 @@ export class ValueTupleOfDateTimeAndDateTime {
   }
 }
 
+export interface IValueTupleOfDateTimeAndDateTime {
+  item1: Date;
+  item2: Date;
+}
+
 export enum SaleAttributes {
   Table = 0,
   Items = 1,
@@ -2585,8 +2963,15 @@ export enum SaleAttributes {
   TimestampPayment = 3,
 }
 
-export class SalesStatisticsReturn extends ReturnBase {
+export class SalesStatisticsReturn
+  extends ReturnBase
+  implements ISalesStatisticsReturn
+{
   data!: { [key: string]: number };
+
+  constructor(data?: ISalesStatisticsReturn) {
+    super(data);
+  }
 
   override init(_data?: any) {
     super.init(_data);
@@ -2622,7 +3007,14 @@ export class SalesStatisticsReturn extends ReturnBase {
   }
 }
 
-export abstract class SalesStatisticsCommand extends CommandBase {
+export interface ISalesStatisticsReturn extends IReturnBase {
+  data: { [key: string]: number };
+}
+
+export abstract class SalesStatisticsCommand
+  extends CommandBase
+  implements ISalesStatisticsCommand
+{
   establishmentId!: string;
   salesIds!: string[];
   start!: Date;
@@ -2631,8 +3023,8 @@ export abstract class SalesStatisticsCommand extends CommandBase {
 
   protected _discriminator: string;
 
-  constructor() {
-    super();
+  constructor(data?: ISalesStatisticsCommand) {
+    super(data);
     this._discriminator = 'SalesStatisticsCommand';
   }
 
@@ -2682,9 +3074,20 @@ export abstract class SalesStatisticsCommand extends CommandBase {
   }
 }
 
-export class SalesStatisticNumber extends SalesStatisticsCommand {
-  constructor() {
-    super();
+export interface ISalesStatisticsCommand extends ICommandBase {
+  establishmentId: string;
+  salesIds: string[];
+  start: Date;
+  end: Date;
+  timeResolution: TimeResolution;
+}
+
+export class SalesStatisticNumber
+  extends SalesStatisticsCommand
+  implements ISalesStatisticNumber
+{
+  constructor(data?: ISalesStatisticNumber) {
+    super(data);
     this._discriminator = 'SalesStatisticNumber';
   }
 
@@ -2705,6 +3108,8 @@ export class SalesStatisticNumber extends SalesStatisticsCommand {
     return data;
   }
 }
+
+export interface ISalesStatisticNumber extends ISalesStatisticsCommand {}
 
 export interface FileResponse {
   data: Blob;

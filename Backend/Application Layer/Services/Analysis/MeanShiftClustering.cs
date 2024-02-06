@@ -58,11 +58,6 @@
 
         private static bool isWithinBandwith(List<double> a, List<double> b, List<double> bandwidth)
         {
-            if (a.Count != b.Count || a.Count != bandwidth.Count)
-            {
-                throw new ArgumentException("Dimensions of vectors and bandwidths must match");
-            }
-
             double distanceSquared = 0;
 
             for (int i = 0; i < a.Count; i++)

@@ -9,6 +9,7 @@ import {
   ItemClient,
   ItemDTO,
   SaleDTO,
+  SalesSorting,
 } from 'api';
 import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
 import { AnalysisClient } from 'api';
@@ -26,6 +27,11 @@ import {
 } from '../cross-correlation/cross-correlation.component';
 import { Observable, Subject, from, lastValueFrom, of } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { SaleService } from '../services/API-implementations/sale.service';
+import {
+  Cluster,
+  ClusterService,
+} from '../services/API-implementations/cluster.service';
 
 export interface ClusteringAssembly {
   assembly: IClusteringImplementaion;
@@ -35,6 +41,12 @@ export type ClusterBandwidths = {
   title: string;
   value: number;
 };
+
+export interface IBuildClusterTable {
+  buildClusterTable(clusteringReturn: ClusteringReturn): Promise<TableModel>;
+  buildClustersTables(clusteringReturn: ClusteringReturn): Promise<TableModel>;
+  buildClusterGraph(clusteringReturn: ClusteringReturn): Promise<GraphModel[]>;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -46,12 +58,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
   graphModels: Subject<{ title: string; graphModel: GraphModel }[]> =
     new Subject<{ title: string; graphModel: GraphModel }[]>();
 
-  getSalesCommand: GetSalesCommand = {
-    establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-    salesSorting: {},
-  } as GetSalesCommand;
-
-  getSalesReturn: GetSalesReturn | undefined;
+  salesSorting: SalesSorting = new SalesSorting();
   bandwidths: ClusterBandwidths[] = [
     {
       title: 'Time of visit',
@@ -62,7 +69,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
       value: 50,
     },
   ];
-  clusteringCommand!: Clustering_TimeOfVisit_TotalPrice_Command;
+
   clusteringReturn: ClusteringReturn | undefined;
 
   constructor(
@@ -70,12 +77,10 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     private readonly sessionStorageService: SessionStorageService,
     private readonly itemClient: ItemClient,
     private readonly dialog: MatDialog,
-    private readonly saleClient: SaleClient
-  ) {
-    this.clusteringCommand = new Clustering_TimeOfVisit_TotalPrice_Command();
-    this.clusteringCommand.establishmentId =
-      this.sessionStorageService.getActiveEstablishment()!;
-  }
+    private readonly saleClient: SaleClient,
+    private readonly salesService: SaleService,
+    private readonly clusterService: ClusterService
+  ) {}
 
   dialogs: IDialogImplementation[] = [
     {
@@ -87,10 +92,9 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
             this.itemClient,
             this.sessionStorageService
           );
-        this.getSalesCommand.salesSorting =
-          await dialogCrossCorrelationSettingsComponent.Open(
-            this.getSalesCommand.salesSorting
-          );
+        this.salesSorting = await dialogCrossCorrelationSettingsComponent.Open(
+          this.salesSorting
+        );
       },
     } as IDialogImplementation,
     {
@@ -121,18 +125,16 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     {
       name: 'Run',
       action: async () => {
-        //Get sales
-        this.getSalesReturn = await lastValueFrom(
-          this.saleClient.getSales(this.getSalesCommand)
+        console.log('hello');
+        var sales = await this.salesService.getSalesWithSortingObject(
+          this.salesSorting
         );
-
-        //Get clustering
-        this.clusteringCommand.salesIds = this.getSalesReturn.sales;
-        this.clusteringCommand.bandwidthTimeOfVisit = this.bandwidths[0].value;
-        this.clusteringCommand.bandwidthTotalPrice = this.bandwidths[1].value;
-        this.clusteringReturn = await lastValueFrom(
-          this.analysisClient.timeOfVisitTotalPrice(this.clusteringCommand)
-        );
+        this.clusteringReturn =
+          await this.clusterService.Cluster_TimeOfVisit_vs_TotalSpend(
+            sales,
+            this.bandwidths[0].value,
+            this.bandwidths[1].value
+          );
 
         this.generateUI();
       },
@@ -140,12 +142,10 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
   ];
 
   private async generateUI(): Promise<void> {
-    //Get salesDTO clusters
-    var saleDTOs = await this.getSalesDTO();
-    var salesDTOClusters = this.ClustersMatchSaleIdsAndSaleDTOs(
-      this.clusteringReturn!.clusters,
-      saleDTOs
-    );
+    var salesDTOClusters =
+      await this.clusterService.SaleIdCluster_to_SaleDTOCluster(
+        this.clusteringReturn!
+      );
 
     //Build tables
     this.clustersTable.next(await this.buildClusterTable(salesDTOClusters));
@@ -154,26 +154,6 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     );
     //Build graphs
     this.graphModels.next(await this.buildClusterGraph(this.clusteringReturn!));
-  }
-
-  private async getSalesDTO(): Promise<SaleDTO[]> {
-    var getSalesDTOCommand: GetSalesDTOCommand = {
-      establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-      salesIds: this.clusteringReturn!.clusters.flat(),
-    } as GetSalesDTOCommand;
-
-    return (
-      await lastValueFrom(this.saleClient.getSalesDTO(getSalesDTOCommand))
-    ).sales;
-  }
-
-  private ClustersMatchSaleIdsAndSaleDTOs(
-    stringArray: string[][],
-    sales: SaleDTO[]
-  ): SaleDTO[][] {
-    return stringArray.map((innerArray) =>
-      innerArray.map((id) => sales.find((sale) => sale.id === id)!)
-    );
   }
 
   private async buildClusterTable(
