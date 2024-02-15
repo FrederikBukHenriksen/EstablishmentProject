@@ -12,8 +12,6 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var timestampPayment = DateTime.Now;
-            var saleType = SaleType.Delivery;
-            var paymentType = PaymentType.Card;
             var timestampArrival = DateTime.Now.AddHours(-1);
             var salesItems = new List<(Item item, int quantity)>
             {
@@ -23,11 +21,9 @@ namespace EstablishmentProject.test.Domain
             var table = new Table();
 
             // Act
-            var sale = new Sale(timestampPayment, saleType, paymentType, timestampArrival, salesItems, table);
+            var sale = new Sale(timestampPayment, timestampArrival, salesItems, table);
 
             // Assert
-            Assert.Equal(saleType, sale.SaleType);
-            Assert.Equal(paymentType, sale.PaymentType);
             Assert.Equal(timestampArrival, sale.TimestampArrival);
             Assert.Equal(timestampPayment, sale.TimestampPayment);
             Assert.Equal(salesItems.Count, sale.SalesItems.Count);

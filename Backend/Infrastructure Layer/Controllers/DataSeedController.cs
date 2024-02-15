@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
@@ -21,7 +20,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        public void SeedDatabase(IFactoryServiceBuilder factoryServiceBuilder, ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
+        public void SeedDatabase(ITestDataCreatorService testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             var totalDataTimePeriod = new DateTimePeriod(new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0).AddMonths(-3), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0)); //Leave out last day of the year to test null values
             var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod.Start, totalDataTimePeriod.End, TimeResolution.Hour);
@@ -82,8 +81,8 @@ namespace WebApplication1.Controllers
             //    .withSales(salesDistribution)
             //    .Build();
 
-            var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
-
+            //var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
+            var user = new User("Frederik@mail.com", "12345678", new List<(Establishment, Role)> { (establishment, Role.Admin) });
 
             using (var uow = unitOfWork)
             {

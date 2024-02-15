@@ -8,6 +8,7 @@
         List<Item> GetItems();
         Item UpdateItem(Item item);
         Item AddItem(Item item);
+        Item CreateItem(string name, double price);
     }
     public partial class Establishment : EntityBase, IEstablishment_Item
     {
@@ -15,6 +16,12 @@
         public Item CreateItem(string name, double price, Currency currency)
         {
             Item item = new Item(name, price, currency);
+            return item;
+        }
+
+        public Item CreateItem(string name, double price)
+        {
+            Item item = new Item(name, price, Currency.DKK);
             return item;
         }
 

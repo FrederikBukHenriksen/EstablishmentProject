@@ -21,6 +21,21 @@ namespace WebApplication1.Utils
         public List<(DateTime start, DateTime end)>? WithinTimeperiods { get; set; }
         public List<SaleAttributes>? MustContainAllAttributes { get; set; }
 
+        public SalesSorting(
+            List<Guid>? any = null,
+            List<Guid>? exactly = null,
+            List<Guid>? all = null,
+            List<(DateTime start, DateTime end)>? withinTimeperiods = null,
+            List<SaleAttributes>? mustContainAllAttributes = null)
+        {
+            this.Any = any;
+            this.Excatly = exactly;
+            this.All = all;
+            this.WithinTimeperiods = withinTimeperiods;
+            this.MustContainAllAttributes = mustContainAllAttributes;
+        }
+
+
     }
 
     public static class SalesSortingParametersExecute

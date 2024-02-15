@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
@@ -10,13 +9,11 @@ namespace EstablishmentProject.test
     public class TestDataCreatorServiceTest : BaseIntegrationTest
     {
         private ITestDataCreatorService testDataCreatorService;
-        private IFactoryServiceBuilder factoryServiceBuilder;
         private Establishment establishment;
 
         public TestDataCreatorServiceTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
             testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
-            factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
 
             establishment = new Establishment("Cafe 1");
         }

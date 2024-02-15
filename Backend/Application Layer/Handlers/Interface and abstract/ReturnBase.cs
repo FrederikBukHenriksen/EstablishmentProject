@@ -7,5 +7,9 @@
 
     public abstract class ReturnBase : IReturn
     {
+        public ReturnBase()
+        {
+
+        }
     }
 }

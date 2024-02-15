@@ -5,14 +5,14 @@ using WebApplication1.CommandHandlers;
 
 namespace WebApplication1.CommandsHandlersReturns
 {
-    public interface IHandlerService
+    public interface ICommandValidatorService
     {
         Task<Return> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
             where Command : ICommand
             where Return : IReturn;
     }
 
-    public class HandlerService : IHandlerService
+    public class HandlerService : ICommandValidatorService
     {
         private IVerifyEstablishmentCommandService verifyEstablishmentCommandService;
         private IVerifySalesCommandService verifySalesCommandService;
@@ -31,9 +31,9 @@ namespace WebApplication1.CommandsHandlersReturns
         {
             try
             {
-                //this.verifyEstablishmentCommandService.VerifyEstablishment(command);
-                //this.verifySalesCommandService.VerifySales(command);
-                //this.verifyItemsCommandService.VerifyItems(command);
+                this.verifyEstablishmentCommandService.VerifyEstablishment(command);
+                this.verifySalesCommandService.VerifySales(command);
+                this.verifyItemsCommandService.VerifyItems(command);
                 return await handler.Handle(command);
             }
             catch (Exception exception)

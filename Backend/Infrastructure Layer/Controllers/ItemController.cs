@@ -9,9 +9,9 @@ namespace WebApplication1.Controllers
     [Route("api/establishment/item")]
     public class ItemController : ControllerBase
     {
-        private IHandlerService handlerService;
+        private ICommandValidatorService handlerService;
 
-        public ItemController([FromServices] IHandlerService handlerService)
+        public ItemController([FromServices] ICommandValidatorService handlerService)
         {
             this.handlerService = handlerService;
         }

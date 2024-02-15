@@ -8,7 +8,6 @@ using WebApplication1.Application_Layer.Services.CommandHandlerServices;
 using WebApplication1.CommandHandlers;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Middelware;
@@ -34,9 +33,8 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IEstablishmentService, EstablishmentService>();
             //serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
             //serviceCollection.AddTransient<IItemBuilderService, ItemBuilderService>();
-            serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
+            //serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
 
-            serviceCollection.AddScoped<IFactoryServiceBuilder, FactoryServiceBuilder>();
             serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
             serviceCollection.AddScoped<IWeatherApi, DmiWeatherApi>();
         }
@@ -54,7 +52,7 @@ namespace WebApplication1.Program
         public static void AddCommandHandlers(this IServiceCollection serviceCollection)
         {
             //CommandHandlerServices
-            serviceCollection.AddScoped<IHandlerService, HandlerService>();
+            serviceCollection.AddScoped<ICommandValidatorService, HandlerService>();
             serviceCollection.AddScoped<IVerifyEstablishmentCommandService, VerifyEstablishmentCommandService>();
             serviceCollection.AddScoped<IVerifySalesCommandService, VerifySalesCommandService>();
             serviceCollection.AddScoped<IVerifyItemsCommandService, VerifyItemsCommandService>();
@@ -78,10 +76,12 @@ namespace WebApplication1.Program
 
 
             //Sale
-            serviceCollection.AddTransient<IHandler<GetSalesDTOCommand, GetSalesDTOReturn>, GetSalesDTOHandler>();
-            serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesReturn>, GetSalesHandler>();
-            serviceCollection.AddTransient<IHandler<SalesStatisticsCommand, SalesStatisticsReturn>, SalesStatisticHandler>();
+            serviceCollection.AddTransient<IHandler<GetSalesDTOCommand, GetSalesDTOReturn>, GetSalesDTOHandler<GetSalesDTOReturn>>();
+            serviceCollection.AddTransient<IHandler<GetSalesDTOCommand, GetSalesRawReturn>, GetSalesDTOHandler<GetSalesRawReturn>>();
 
+            serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesReturn>, GetSalesHandler<GetSalesReturn>>();
+            serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
+            serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
 
             //Item
             serviceCollection.AddTransient<IHandler<GetItemDTOCommand, GetItemDTOReturn>, GetItemDTOHandler>();

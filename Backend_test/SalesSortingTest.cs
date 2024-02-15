@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Utils;
 
 namespace EstablishmentProject.test
@@ -10,7 +9,6 @@ namespace EstablishmentProject.test
     {
         private IUnitOfWork unitOfWork;
         private Establishment establishment;
-        private IFactoryServiceBuilder factoryServiceBuilder;
         private List<Sale> sales;
 
         private Item coffee;

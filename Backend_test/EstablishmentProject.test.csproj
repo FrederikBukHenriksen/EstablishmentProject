@@ -36,8 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Handlers\Establishment\" />
-    <Folder Include="Application\Handlers\HandlerServices\" />
+    <Folder Include="Application_Test\Handlers_Test\HandlerServices\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 ﻿using NJsonSchema.NewtonsoftJson.Converters;
 using System.Runtime.Serialization;
+using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
+using WebApplication1.Application_Layer.Handlers.SalesHandlers;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
@@ -37,7 +39,6 @@ namespace WebApplication1.CommandHandlers
             this.bandwidthTimeOfVisit = bandwidthTimeOfVisit;
             this.bandwidthTotalPrice = bandwidthTotalPrice;
         }
-
     }
 
     public class Clustering_TimeOfVisit_LengthOfVisit_Command : ClusteringCommand
@@ -65,17 +66,19 @@ namespace WebApplication1.CommandHandlers
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>
     {
         private IUnitOfWork unitOfWork;
+        private IHandler<GetSalesDTOCommand, GetSalesRawReturn> getSalesHandler;
 
-        public Clustering_TimeOfVisitVSTotalPrice(IUnitOfWork unitOfWork)
+        public Clustering_TimeOfVisitVSTotalPrice(IUnitOfWork unitOfWork, IHandler<GetSalesDTOCommand, GetSalesRawReturn> getSalesHandler)
         {
             this.unitOfWork = unitOfWork;
+            this.getSalesHandler = getSalesHandler;
         }
 
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
         {
             //Fetch
-            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().GetById(command.EstablishmentId);
-            List<Sale> sales = establishment.GetSales().Where(sale => command.SalesIds.Contains(sale.Id)).ToList();
+            var localCommand = new GetSalesDTOCommand { EstablishmentId = command.EstablishmentId, SalesIds = command.SalesIds };
+            List<Sale> sales = (await this.getSalesHandler.Handle(localCommand)).Sales;
 
             //Arrange
             List<(Sale sale, List<double> values)> saleData = sales

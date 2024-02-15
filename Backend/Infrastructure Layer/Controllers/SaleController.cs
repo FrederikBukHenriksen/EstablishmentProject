@@ -11,9 +11,9 @@ namespace WebApplication1.Controllers
     [Route("api/establishment/sales")]
     public class SaleController : ControllerBase
     {
-        private IHandlerService handlerService;
+        private ICommandValidatorService handlerService;
 
-        public SaleController([FromServices] IHandlerService handlerService)
+        public SaleController([FromServices] ICommandValidatorService handlerService)
         {
             this.handlerService = handlerService;
         }
@@ -26,17 +26,18 @@ namespace WebApplication1.Controllers
         }
 
         [Authorize]
-        [HttpPost("find")]
+        [HttpPost("find-sales")]
         public async Task<GetSalesReturn> GetSales([FromBody] GetSalesCommand command, [FromServices] IHandler<GetSalesCommand, GetSalesReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }
 
-        [Authorize]
-        [HttpPost("statistics")]
-        public async Task<SalesStatisticsReturn> SaleStaticstics([FromBody] SalesStatisticsCommand command, [FromServices] IHandler<SalesStatisticsCommand, SalesStatisticsReturn> handler)
-        {
-            return await this.handlerService.Service(handler, command);
-        }
+
+        //[Authorize]
+        //[HttpPost("statistics")]
+        //public async Task<SalesStatisticsReturn> SaleStaticstics([FromBody] SalesStatisticsCommand command, [FromServices] IHandler<SalesStatisticsCommand, SalesStatisticsReturn> handler)
+        //{
+        //    return await this.handlerService.Service(handler, command);
+        //}
     }
 }

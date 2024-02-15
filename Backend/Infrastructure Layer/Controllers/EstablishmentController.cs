@@ -10,9 +10,9 @@ namespace WebApplication1.Controllers
     [Route("api/establishment/")]
     public class EstablishmentController : ControllerBase
     {
-        private IHandlerService handlerService;
+        private ICommandValidatorService handlerService;
 
-        public EstablishmentController([FromServices] IHandlerService handlerService)
+        public EstablishmentController([FromServices] ICommandValidatorService handlerService)
         {
             this.handlerService = handlerService;
         }

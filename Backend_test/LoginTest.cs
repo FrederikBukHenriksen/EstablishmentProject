@@ -1,10 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 
 namespace EstablishmentProject.test
 {
@@ -14,16 +12,15 @@ namespace EstablishmentProject.test
         private const string apiLogout = "/api/authentication/logout";
         private const string apiIsLoggedIn = "/api/authentication/is-logged-in";
 
-        private IFactoryServiceBuilder factoryServiceBuilder;
-
         public LoginTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
             clearDatabase();
-            factoryServiceBuilder = scope.ServiceProvider.GetRequiredService<IFactoryServiceBuilder>();
 
             List<User> users = new List<User> {
-                factoryServiceBuilder.UserBuilder().WithEmail("frederik@mail.com").WithPassword("hello123").Build(),
-                factoryServiceBuilder.UserBuilder().WithEmail("lydia@mail.com").WithPassword("goodbye123").Build(),
+                new User("frederik@mail.com","hello123"),
+                new User("lydia@mail.com","goodbye123")
+                //factoryServiceBuilder.UserBuilder().WithEmail("frederik@mail.com").WithPassword("hello123").Build(),
+                //factoryServiceBuilder.UserBuilder().WithEmail("lydia@mail.com").WithPassword("goodbye123").Build(),
             };
 
             dbContext.Set<User>().AddRange(users);

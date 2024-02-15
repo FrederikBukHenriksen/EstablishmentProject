@@ -43,7 +43,7 @@ namespace WebApplication1.Services
         {
             if (this._user == null)
             {
-                throw new NotFound();
+                throw new NullReferenceException();
             }
             return this._user;
         }

@@ -2,7 +2,6 @@
 using System.Globalization;
 using WebApplication1.Data.DataModels;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Entity_builders;
 using WebApplication1.Utils;
 
 namespace WebApplication1.Infrastructure.Data
@@ -57,11 +56,9 @@ namespace WebApplication1.Infrastructure.Data
             return x => a * x + b;
         }
 
-        private IFactoryServiceBuilder factoryServiceBuilder;
 
-        public TestDataCreatorService(IFactoryServiceBuilder factoryServiceBuilder)
+        public TestDataCreatorService()
         {
-            this.factoryServiceBuilder = factoryServiceBuilder;
         }
 
         public Dictionary<DateTime, int> SLETTES_GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> valueExtractor, Func<double, double> distributionFunction)
