@@ -1,11 +1,12 @@
-﻿using WebApplication1.Domain_Layer.Entities;
+﻿using EstablishmentProject.test.TestingCode;
+using WebApplication1.Domain_Layer.Entities;
 
-namespace EstablishmentProject.test.Domain
+namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
 {
-    public class EstablishmentItemTest : BaseIntegrationTest
+    public class EstablishmentItemTest : BaseTest
     {
 
-        public EstablishmentItemTest(IntegrationTestWebAppFactory factory) : base(factory)
+        public EstablishmentItemTest() : base()
         {
         }
 

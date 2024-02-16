@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Exceptions;
 using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Services
@@ -57,7 +56,7 @@ namespace WebApplication1.Services
         {
             if (this._activeEstablishment == null)
             {
-                throw new NotFound();
+                throw new NullReferenceException();
             }
             return this._activeEstablishment;
         }
@@ -66,7 +65,7 @@ namespace WebApplication1.Services
         {
             if (this._userRoles == null)
             {
-                throw new NotFound();
+                throw new NullReferenceException();
             }
             return this._userRoles.Select(x => x.Establishment).ToList();
         }
@@ -91,7 +90,7 @@ namespace WebApplication1.Services
         {
             if (this._userRoles == null)
             {
-                throw new NotFound();
+                throw new NullReferenceException();
             }
             return this._userRoles;
         }
@@ -100,7 +99,7 @@ namespace WebApplication1.Services
         {
             if (this._userRoles == null)
             {
-                throw new NotFound();
+                throw new NullReferenceException();
             }
             return this._userRoles.Find(x => x.Establishment == this.GetActiveEstablishment());
         }
@@ -113,7 +112,7 @@ namespace WebApplication1.Services
             {
                 return accessibleEstablishments.Find(x => x.Id == establishmentId);
             }
-            throw new Unauthorised();
+            throw new UnauthorizedAccessException();
 
         }
 

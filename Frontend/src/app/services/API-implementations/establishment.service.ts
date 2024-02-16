@@ -2,15 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import {
   EstablishmentClient,
   EstablishmentDTO,
-  GetEstablishmentCommand,
-  GetMultipleEstablishmentsCommand,
+  GetEstablishmentsCommand,
 } from 'api';
 import { lastValueFrom } from 'rxjs';
 import { SessionStorageService } from '../session-storage/session-storage.service';
 
 export interface IEstablishmentService {
   getEstablishment(establishmentId?: string): Promise<EstablishmentDTO>;
-  getEstablishments(establishmentId: string[]): Promise<EstablishmentDTO[]>;
+  getEstablishmentsDTO(establishmentId: string[]): Promise<EstablishmentDTO[]>;
 }
 
 @Injectable({
@@ -26,17 +25,19 @@ export class EstablishmentService implements IEstablishmentService {
     establishmentId?: string
   ): Promise<EstablishmentDTO> {
     establishmentId = establishmentId ?? this.activeEstablishment ?? '';
-    return (await this.getEstablishments([establishmentId]))[0];
+    return (await this.getEstablishmentsDTO([establishmentId]))[0];
   }
 
-  public async getEstablishments(
+  public async getEstablishmentsDTO(
     establishmentId: string[]
   ): Promise<EstablishmentDTO[]> {
-    var command = new GetMultipleEstablishmentsCommand();
+    var command = new GetEstablishmentsCommand();
     command.establishmentIds = establishmentId;
 
     return (
-      await lastValueFrom(this.establishmentClient.getEstablishments(command))
-    ).establishmentDTOs;
+      await lastValueFrom(
+        this.establishmentClient.getEstablishmentsDTO(command)
+      )
+    ).dtos;
   }
 }

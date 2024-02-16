@@ -16,7 +16,7 @@ namespace WebApplication1.Domain_Layer.Entities
         //CRUD
         public Sale CreateSale(DateTime timestampPayment, Table? table = null, List<(Item, int)>? itemAndQuantity = null, DateTime? timestampArrival = null)
         {
-            Sale sale = new Sale(timestampPayment, timestampArrival, table: table, salesItems: itemAndQuantity);
+            Sale sale = new Sale(timestampPayment, timestampArrival, table: table, ItemAndQuantity: itemAndQuantity);
             this.AddSale(sale);
             return sale;
         }

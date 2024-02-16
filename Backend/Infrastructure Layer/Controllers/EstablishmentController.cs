@@ -18,15 +18,15 @@ namespace WebApplication1.Controllers
         }
 
         [Authorize]
-        [HttpPost("get")]
-        public async Task<GetEstablishmentReturn> GetEstablishment([FromBody] GetEstablishmentCommand command, [FromServices] IHandler<GetEstablishmentCommand, GetEstablishmentReturn> handler)
+        [HttpPost("get-id")]
+        public async Task<GetEstablishmentsIdReturn> GetEstablishmentdID([FromBody] GetEstablishmentsCommand command, [FromServices] IHandler<GetEstablishmentsCommand, GetEstablishmentsIdReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }
 
         [Authorize]
-        [HttpPost("get-multiple")]
-        public async Task<GetMultipleEstablishmentsReturn> GetEstablishments([FromBody] GetMultipleEstablishmentsCommand command, [FromServices] IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn> handler)
+        [HttpPost("get-DTO")]
+        public async Task<GetEstablishmentsDTOReturn> GetEstablishmentsDTO([FromBody] GetEstablishmentsCommand command, [FromServices] IHandler<GetEstablishmentsCommand, GetEstablishmentsDTOReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }

@@ -1,6 +1,6 @@
 ﻿using WebApplication1.Domain_Layer.Entities;
 
-namespace EstablishmentProject.test.Domain
+namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
 {
     public class EstablishmentSaleTest : BaseIntegrationTest
     {
@@ -31,7 +31,7 @@ namespace EstablishmentProject.test.Domain
             // Arrange
             var establishment = new Establishment();
             var timestampPayment = DateTime.Now;
-            var item = establishment.CreateItem("Item1", 10.00, Currency.DKK);
+            var item = establishment.AddItem(establishment.CreateItem("Item1", 10.00));
             var itemAndQuantity = new List<(Item, int)>() { (item, 1) };
 
             // Act
@@ -46,7 +46,7 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var otherEstablishment = new Establishment();
-            var item = otherEstablishment.CreateItem("Item1", 10.00, Currency.DKK);
+            var item = otherEstablishment.CreateItem("Item1", 10.00);
 
             var establishment = new Establishment();
 

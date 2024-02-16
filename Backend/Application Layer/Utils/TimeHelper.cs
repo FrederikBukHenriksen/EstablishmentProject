@@ -91,6 +91,23 @@ namespace WebApplication1.Utils
             return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) < 0;
         }
 
+        public static Func<DateTime, int> DateTimeExtractorFunction(TimeResolution timeResolution)
+        {
+            switch (timeResolution)
+            {
+                case TimeResolution.Hour:
+                    return x => x.Hour;
+                case TimeResolution.Date:
+                    return x => x.Day;
+                case TimeResolution.Month:
+                    return x => x.Month;
+                case TimeResolution.Year:
+                    return x => x.Year;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public static DateTime AddToDateTime(this DateTime datetime, int amount, TimeResolution timeResolution)
         {
             switch (timeResolution)
@@ -107,35 +124,6 @@ namespace WebApplication1.Utils
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        //public static List<DateTime> CreateTimelineAsList(DateTimePeriod timePeriod, TimeResolution resolution)
-        //{
-        //    Func<DateTime, DateTime> res = x =>
-        //    {
-        //        switch (resolution)
-        //        {
-        //            case TimeResolution.Hour:
-        //                return x.AddHours(1);
-        //            case TimeResolution.Date:
-        //                return x.AddDays(1);
-        //            case TimeResolution.Month:
-        //                return x.AddMonths(1);
-        //            case TimeResolution.Year:
-        //                return x.AddYears(1);
-        //            default:
-        //                return x;
-        //        }
-        //    };
-
-        //    List<DateTime> timeline = new List<DateTime>();
-
-        //    for (DateTime date = TimeResolutionUniqueRounder(timePeriod.Start, resolution); date <= timePeriod.End; date = res(date))
-        //    {
-        //        timeline.Add(date);
-        //    }
-
-        //    return timeline;
-        //}
 
         public static List<DateTime> CreateTimelineAsList(DateTime start, DateTime end, TimeResolution resolution)
         {

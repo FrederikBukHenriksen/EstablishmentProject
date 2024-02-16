@@ -1,14 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  EstablishmentClient,
-  EstablishmentDTO,
-  GetMultipleEstablishmentsCommand,
-  UserContextClient,
-} from 'api';
+import { EstablishmentClient, EstablishmentDTO, UserContextClient } from 'api';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import { lastValueFrom } from 'rxjs';
 import { NGX_MAT_CALENDAR_RANGE_STRATEGY_PROVIDER_FACTORY } from '@angular-material-components/datetime-picker';
+import { EstablishmentService } from '../services/API-implementations/establishment.service';
 
 export interface TableOfAccesibleEstablishments {
   name: string;
@@ -22,7 +18,7 @@ export interface TableOfAccesibleEstablishments {
 })
 export class SelectEstablishmentComponent {
   private userContextClient = inject(UserContextClient);
-  private establishmentClient = inject(EstablishmentClient);
+  private establishmentService = inject(EstablishmentService);
 
   private router = inject(Router);
   private sessionStorageService = inject(SessionStorageService);
@@ -50,14 +46,13 @@ export class SelectEstablishmentComponent {
       this.userContextClient.getAccessibleEstablishments()
     );
 
-    var accessibleEstablishmentDTOs = await lastValueFrom(
-      this.establishmentClient.getEstablishments({
-        establishmentIds: accessibleEstablishmentsId,
-      } as GetMultipleEstablishmentsCommand)
-    );
+    var accessibleEstablishmentDTOs =
+      await this.establishmentService.getEstablishmentsDTO(
+        accessibleEstablishmentsId
+      );
 
     this.dataSource = this.mapToTableObjects(
-      accessibleEstablishmentDTOs.establishmentDTOs
+      accessibleEstablishmentDTOs as EstablishmentDTO[]
     );
   }
 

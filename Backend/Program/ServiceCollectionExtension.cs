@@ -1,4 +1,5 @@
 ﻿using DMIOpenData;
+using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
 using WebApplication1.Application_Layer.Handlers.ItemHandler;
@@ -7,7 +8,6 @@ using WebApplication1.Application_Layer.Services;
 using WebApplication1.Application_Layer.Services.CommandHandlerServices;
 using WebApplication1.CommandHandlers;
 using WebApplication1.CommandsHandlersReturns;
-using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Middelware;
@@ -15,7 +15,7 @@ using WebApplication1.Services;
 
 namespace WebApplication1.Program
 {
-
+    [ExcludeFromCodeCoverage]
     public static class ServiceCollectionExtension
     {
         public static void AddServices(this IServiceCollection serviceCollection)
@@ -30,7 +30,7 @@ namespace WebApplication1.Program
             //serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
             //Entity services
-            serviceCollection.AddTransient<IEstablishmentService, EstablishmentService>();
+            //serviceCollection.AddTransient<IEstablishmentService, EstablishmentService>();
             //serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
             //serviceCollection.AddTransient<IItemBuilderService, ItemBuilderService>();
             //serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
@@ -69,11 +69,12 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>, Clustering_TimeOfVisitVSTotalPrice>();
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>, Clustering_TimeOfVisitVSLengthOfVisit>();
 
-
             //Establishment
             serviceCollection.AddTransient<IHandler<GetEstablishmentCommand, GetEstablishmentReturn>, GetEstablishmentHandler>();
-            serviceCollection.AddTransient<IHandler<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn>, GetMultipleEstablishmentsHandler>();
 
+            serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsIdReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsIdReturn>>();
+            serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsEntityReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsEntityReturn>>();
+            serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsDTOReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsDTOReturn>>();
 
             //Sale
             serviceCollection.AddTransient<IHandler<GetSalesDTOCommand, GetSalesDTOReturn>, GetSalesDTOHandler<GetSalesDTOReturn>>();
@@ -85,7 +86,10 @@ namespace WebApplication1.Program
 
             //Item
             serviceCollection.AddTransient<IHandler<GetItemDTOCommand, GetItemDTOReturn>, GetItemDTOHandler>();
-            serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsReturn>, GetItemsHandler>();
+            serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsIdReturn>, GetItemsHandler<GetItemsIdReturn>>();
+            serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsEntityReturn>, GetItemsHandler<GetItemsEntityReturn>>();
+            serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsDTOReturn>, GetItemsHandler<GetItemsDTOReturn>>();
+
 
 
 

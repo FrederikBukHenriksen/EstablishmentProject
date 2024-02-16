@@ -27,19 +27,22 @@ namespace EstablishmentProject.test.TestingCode
     {
         public IServiceScope scope;
 
-        public List<ITestService> testServices;
+        public List<ITestService> testServices = new List<ITestService> { };
 
 
 
-        public BaseTest(List<ITestService> testServices)
+        public BaseTest(List<ITestService>? testServices = null)
         {
-            this.testServices = testServices;
+            if (testServices != null)
+            {
+                this.testServices = testServices;
+            }
             scope = Services.CreateScope();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            if (testServices.Any())
+            if (testServices.Count > 0)
             {
                 foreach (var service in testServices)
                 {

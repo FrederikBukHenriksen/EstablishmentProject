@@ -8,7 +8,6 @@ import {
 } from 'api';
 import { SessionStorageService } from '../session-storage/session-storage.service';
 import { lastValueFrom } from 'rxjs';
-import { ValueTupleOfDateTimeAndDateTime, SaleAttributes } from 'api';
 
 export interface ISaleService {
   getSalesDTO(salesIds: string[], establishmentId?: string): Promise<SaleDTO[]>;

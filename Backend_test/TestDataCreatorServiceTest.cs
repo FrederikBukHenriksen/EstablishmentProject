@@ -41,12 +41,12 @@ namespace EstablishmentProject.test
         public void GenerateHourlyDistibutionFromTimeline()
         {
             //Arrange
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 1, 7, 23, 0, 0), TimeResolution.Hour);
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(new DateTime(2021, 1, 1, 0, 0, 0), new DateTime(2021, 1, 8, 0, 0, 0), TimeResolution.Hour);
 
             var DistributionFunction = TestDataCreatorService.GetLinearFuncition(1, 1);
 
             //Act
-            var distribution = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
+            var distribution = testDataCreatorService.GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
 
             //Assert
             Assert.Equal(24 * 7, distribution.Count()); //Correct number of entries

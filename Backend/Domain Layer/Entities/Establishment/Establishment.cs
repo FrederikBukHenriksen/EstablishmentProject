@@ -1,8 +1,11 @@
-﻿using NodaTime;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public partial class Establishment : EntityBase
+    public interface IEstablishment : IEstablishment_Sale, IEstablishment_Table, IEstablishment_Item, IEstablishment_Information
+    {
+        string SetName(string name);
+    }
+
+    public partial class Establishment : EntityBase, IEstablishment
     {
         public string? Name { get; set; }
         public virtual EstablishmentInformation Information { get; set; } = new EstablishmentInformation();
@@ -27,17 +30,11 @@ namespace WebApplication1.Domain_Layer.Entities
             sales?.ForEach(x => this.AddSale(x));
         }
 
-        public Establishment SetName(string name)
+        public string SetName(string name)
         {
             this.Name = name;
-            return this;
+            return name;
         }
 
-        public Establishment SetOpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
-        {
-            OpeningHours openingHours = new OpeningHours(dayOfWeek, open, close);
-            this.Information.setOpeningHour(openingHours);
-            return this;
-        }
     }
 }

@@ -5,6 +5,7 @@ using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
+using WebApplication1.Utils;
 
 public class Clustering_TimeOfVisitVSLengthOfVisit_Test : BaseTest
 {
@@ -20,7 +21,7 @@ public class Clustering_TimeOfVisitVSLengthOfVisit_Test : BaseTest
 
         List<OpeningHours> openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0));
         List<DateTime> calendar = testDataCreatorService.OpenHoursCalendar(DateTime.Today.AddDays(-7), DateTime.Today, timeResolution: WebApplication1.Utils.TimeResolution.Hour, openingHours);
-        Dictionary<DateTime, int> distribution = testDataCreatorService.DistributionHour(calendar, TestDataCreatorService.GetCosineFunction(period: 8 * Math.PI, verticalShift: 5, horizontalShift: 12));
+        Dictionary<DateTime, int> distribution = testDataCreatorService.DistributionOnTimeres(calendar, TestDataCreatorService.GetCosineFunction(period: 8 * Math.PI, verticalShift: 5, horizontalShift: 12), TimeResolution.Hour);
 
         establsihment = new Establishment("Cafe 1");
 

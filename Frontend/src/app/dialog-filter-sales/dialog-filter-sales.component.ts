@@ -1,33 +1,18 @@
-import { Component, OnInit, inject } from '@angular/core';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
   DialogBase,
   DialogConfig,
-  DropDown,
   DropDownMultipleSelects,
   DropDownOption,
-  SettingsData,
-  SettingsDataBase,
-  DialogSlider,
-  TextInputField,
   DatePicker,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 import {
-  AnalysisClient,
-  EstablishmentClient,
-  GetEstablishmentCommand,
-  GetItemDTOCommand,
   GetItemsCommand,
-  GetSalesCommand,
   ItemClient,
   ItemDTO,
-  SaleClient,
   SalesSorting,
   ValueTupleOfDateTimeAndDateTime,
 } from 'api';
@@ -40,7 +25,7 @@ import {
 export class DialogFilterSalesComponent {
   constructor(
     public dialog: MatDialog,
-    public itemClient: ItemClient,
+    // public itemClient: ItemClient,
     public sessionStorageService: SessionStorageService
   ) {}
 
@@ -113,16 +98,16 @@ export class DialogFilterSalesComponent {
 
     var itemsIds: string[] = (
       await lastValueFrom(this.itemClient.getItems(getItemsCommand))
-    ).items;
+    ).id;
 
-    var getItemDTOCommand: GetItemDTOCommand = {
-      establishmentId: this.sessionStorageService.getActiveEstablishment(),
-      itemsIds: itemsIds,
-    } as GetItemDTOCommand;
+    var getItemDTOCommand = new GetItemsCommand();
+    getItemDTOCommand.establishmentId =
+      this.sessionStorageService.getActiveEstablishment()!;
+    getItemDTOCommand.itemIds = itemsIds;
 
     var itemDTOs: ItemDTO[] = (
       await lastValueFrom(this.itemClient.getItemsDTO(getItemDTOCommand))
-    ).items;
+    ).dto;
 
     return itemDTOs;
   }

@@ -501,8 +501,8 @@ export class EstablishmentClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getEstablishment(command: GetEstablishmentCommand): Observable<GetEstablishmentReturn> {
-        let url_ = this.baseUrl + "/api/establishment/get";
+    getEstablishmentdID(command: GetEstablishmentsCommand): Observable<GetEstablishmentsIdReturn> {
+        let url_ = this.baseUrl + "/api/establishment/get-id";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -519,20 +519,20 @@ export class EstablishmentClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetEstablishment(response_);
+            return this.processGetEstablishmentdID(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetEstablishment(response_ as any);
+                    return this.processGetEstablishmentdID(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetEstablishmentReturn>;
+                    return _observableThrow(e) as any as Observable<GetEstablishmentsIdReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetEstablishmentReturn>;
+                return _observableThrow(response_) as any as Observable<GetEstablishmentsIdReturn>;
         }));
     }
 
-    protected processGetEstablishment(response: HttpResponseBase): Observable<GetEstablishmentReturn> {
+    protected processGetEstablishmentdID(response: HttpResponseBase): Observable<GetEstablishmentsIdReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -543,7 +543,7 @@ export class EstablishmentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetEstablishmentReturn.fromJS(resultData200);
+            result200 = GetEstablishmentsIdReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -554,8 +554,8 @@ export class EstablishmentClient {
         return _observableOf(null as any);
     }
 
-    getEstablishments(command: GetMultipleEstablishmentsCommand): Observable<GetMultipleEstablishmentsReturn> {
-        let url_ = this.baseUrl + "/api/establishment/get-multiple";
+    getEstablishmentsDTO(command: GetEstablishmentsCommand): Observable<GetEstablishmentsDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/get-DTO";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -572,20 +572,20 @@ export class EstablishmentClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetEstablishments(response_);
+            return this.processGetEstablishmentsDTO(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetEstablishments(response_ as any);
+                    return this.processGetEstablishmentsDTO(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetMultipleEstablishmentsReturn>;
+                    return _observableThrow(e) as any as Observable<GetEstablishmentsDTOReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetMultipleEstablishmentsReturn>;
+                return _observableThrow(response_) as any as Observable<GetEstablishmentsDTOReturn>;
         }));
     }
 
-    protected processGetEstablishments(response: HttpResponseBase): Observable<GetMultipleEstablishmentsReturn> {
+    protected processGetEstablishmentsDTO(response: HttpResponseBase): Observable<GetEstablishmentsDTOReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -596,7 +596,7 @@ export class EstablishmentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetMultipleEstablishmentsReturn.fromJS(resultData200);
+            result200 = GetEstablishmentsDTOReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -621,61 +621,8 @@ export class ItemClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getItemsDTO(command: GetItemDTOCommand): Observable<GetItemDTOReturn> {
-        let url_ = this.baseUrl + "/api/establishment/item/get-items-dto";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetItemsDTO(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetItemsDTO(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetItemDTOReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<GetItemDTOReturn>;
-        }));
-    }
-
-    protected processGetItemsDTO(response: HttpResponseBase): Observable<GetItemDTOReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetItemDTOReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    getItems(command: GetItemsCommand): Observable<GetItemsReturn> {
-        let url_ = this.baseUrl + "/api/establishment/item/get-items";
+    getItems(command: GetItemsCommand): Observable<GetItemsIdReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -698,14 +645,14 @@ export class ItemClient {
                 try {
                     return this.processGetItems(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<GetItemsReturn>;
+                    return _observableThrow(e) as any as Observable<GetItemsIdReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<GetItemsReturn>;
+                return _observableThrow(response_) as any as Observable<GetItemsIdReturn>;
         }));
     }
 
-    protected processGetItems(response: HttpResponseBase): Observable<GetItemsReturn> {
+    protected processGetItems(response: HttpResponseBase): Observable<GetItemsIdReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -716,7 +663,60 @@ export class ItemClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetItemsReturn.fromJS(resultData200);
+            result200 = GetItemsIdReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getItemsDTO(command: GetItemsCommand): Observable<GetItemsDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get-DTO";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetItemsDTO(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetItemsDTO(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetItemsDTOReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetItemsDTOReturn>;
+        }));
+    }
+
+    protected processGetItemsDTO(response: HttpResponseBase): Observable<GetItemsDTOReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetItemsDTOReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1417,37 +1417,127 @@ export interface ILoginCommand {
     password: string;
 }
 
-export class GetEstablishmentReturn extends ReturnBase implements IGetEstablishmentReturn {
-    establishmentDTO!: EstablishmentDTO;
+export class GetEstablishmentsIdReturn extends ReturnBase implements IGetEstablishmentsIdReturn {
+    ids!: string[];
 
-    constructor(data?: IGetEstablishmentReturn) {
+    constructor(data?: IGetEstablishmentsIdReturn) {
         super(data);
     }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.establishmentDTO = _data["establishmentDTO"] ? EstablishmentDTO.fromJS(_data["establishmentDTO"]) : <any>undefined;
+            if (Array.isArray(_data["ids"])) {
+                this.ids = [] as any;
+                for (let item of _data["ids"])
+                    this.ids!.push(item);
+            }
         }
     }
 
-    static override fromJS(data: any): GetEstablishmentReturn {
+    static override fromJS(data: any): GetEstablishmentsIdReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new GetEstablishmentReturn();
+        let result = new GetEstablishmentsIdReturn();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["establishmentDTO"] = this.establishmentDTO ? this.establishmentDTO.toJSON() : <any>undefined;
+        if (Array.isArray(this.ids)) {
+            data["ids"] = [];
+            for (let item of this.ids)
+                data["ids"].push(item);
+        }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IGetEstablishmentReturn extends IReturnBase {
-    establishmentDTO: EstablishmentDTO;
+export interface IGetEstablishmentsIdReturn extends IReturnBase {
+    ids: string[];
+}
+
+export class GetEstablishmentsCommand extends CommandBase implements IGetEstablishmentsCommand {
+    establishmentIds!: string[];
+
+    constructor(data?: IGetEstablishmentsCommand) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["establishmentIds"])) {
+                this.establishmentIds = [] as any;
+                for (let item of _data["establishmentIds"])
+                    this.establishmentIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentsCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.establishmentIds)) {
+            data["establishmentIds"] = [];
+            for (let item of this.establishmentIds)
+                data["establishmentIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetEstablishmentsCommand extends ICommandBase {
+    establishmentIds: string[];
+}
+
+export class GetEstablishmentsDTOReturn extends ReturnBase implements IGetEstablishmentsDTOReturn {
+    dtos!: EstablishmentDTO[];
+
+    constructor(data?: IGetEstablishmentsDTOReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["dtos"])) {
+                this.dtos = [] as any;
+                for (let item of _data["dtos"])
+                    this.dtos!.push(EstablishmentDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentsDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentsDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.dtos)) {
+            data["dtos"] = [];
+            for (let item of this.dtos)
+                data["dtos"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetEstablishmentsDTOReturn extends IReturnBase {
+    dtos: EstablishmentDTO[];
 }
 
 export class EstablishmentDTO implements IEstablishmentDTO {
@@ -1526,10 +1616,52 @@ export interface IEstablishmentDTO {
     sales: string[];
 }
 
-export class GetEstablishmentCommand extends CommandBase implements IGetEstablishmentCommand {
-    establishmentId!: string;
+export class GetItemsIdReturn extends ReturnBase implements IGetItemsIdReturn {
+    id!: string[];
 
-    constructor(data?: IGetEstablishmentCommand) {
+    constructor(data?: IGetItemsIdReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["id"])) {
+                this.id = [] as any;
+                for (let item of _data["id"])
+                    this.id!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemsIdReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemsIdReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.id)) {
+            data["id"] = [];
+            for (let item of this.id)
+                data["id"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetItemsIdReturn extends IReturnBase {
+    id: string[];
+}
+
+export class GetItemsCommand extends CommandBase implements IGetItemsCommand {
+    establishmentId!: string;
+    itemIds!: string[];
+
+    constructor(data?: IGetItemsCommand) {
         super(data);
     }
 
@@ -1537,12 +1669,17 @@ export class GetEstablishmentCommand extends CommandBase implements IGetEstablis
         super.init(_data);
         if (_data) {
             this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["itemIds"])) {
+                this.itemIds = [] as any;
+                for (let item of _data["itemIds"])
+                    this.itemIds!.push(item);
+            }
         }
     }
 
-    static override fromJS(data: any): GetEstablishmentCommand {
+    static override fromJS(data: any): GetItemsCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new GetEstablishmentCommand();
+        let result = new GetItemsCommand();
         result.init(data);
         return result;
     }
@@ -1550,136 +1687,60 @@ export class GetEstablishmentCommand extends CommandBase implements IGetEstablis
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.itemIds)) {
+            data["itemIds"] = [];
+            for (let item of this.itemIds)
+                data["itemIds"].push(item);
+        }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IGetEstablishmentCommand extends ICommandBase {
+export interface IGetItemsCommand extends ICommandBase {
     establishmentId: string;
+    itemIds: string[];
 }
 
-export class GetMultipleEstablishmentsReturn extends ReturnBase implements IGetMultipleEstablishmentsReturn {
-    establishmentDTOs!: EstablishmentDTO[];
+export class GetItemsDTOReturn extends ReturnBase implements IGetItemsDTOReturn {
+    dto!: ItemDTO[];
 
-    constructor(data?: IGetMultipleEstablishmentsReturn) {
+    constructor(data?: IGetItemsDTOReturn) {
         super(data);
     }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            if (Array.isArray(_data["establishmentDTOs"])) {
-                this.establishmentDTOs = [] as any;
-                for (let item of _data["establishmentDTOs"])
-                    this.establishmentDTOs!.push(EstablishmentDTO.fromJS(item));
+            if (Array.isArray(_data["dto"])) {
+                this.dto = [] as any;
+                for (let item of _data["dto"])
+                    this.dto!.push(ItemDTO.fromJS(item));
             }
         }
     }
 
-    static override fromJS(data: any): GetMultipleEstablishmentsReturn {
+    static override fromJS(data: any): GetItemsDTOReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new GetMultipleEstablishmentsReturn();
+        let result = new GetItemsDTOReturn();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.establishmentDTOs)) {
-            data["establishmentDTOs"] = [];
-            for (let item of this.establishmentDTOs)
-                data["establishmentDTOs"].push(item.toJSON());
+        if (Array.isArray(this.dto)) {
+            data["dto"] = [];
+            for (let item of this.dto)
+                data["dto"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IGetMultipleEstablishmentsReturn extends IReturnBase {
-    establishmentDTOs: EstablishmentDTO[];
-}
-
-export class GetMultipleEstablishmentsCommand extends CommandBase implements IGetMultipleEstablishmentsCommand {
-    establishmentIds!: string[];
-
-    constructor(data?: IGetMultipleEstablishmentsCommand) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["establishmentIds"])) {
-                this.establishmentIds = [] as any;
-                for (let item of _data["establishmentIds"])
-                    this.establishmentIds!.push(item);
-            }
-        }
-    }
-
-    static override fromJS(data: any): GetMultipleEstablishmentsCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetMultipleEstablishmentsCommand();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.establishmentIds)) {
-            data["establishmentIds"] = [];
-            for (let item of this.establishmentIds)
-                data["establishmentIds"].push(item);
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGetMultipleEstablishmentsCommand extends ICommandBase {
-    establishmentIds: string[];
-}
-
-export class GetItemDTOReturn extends ReturnBase implements IGetItemDTOReturn {
-    items!: ItemDTO[];
-
-    constructor(data?: IGetItemDTOReturn) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(ItemDTO.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): GetItemDTOReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetItemDTOReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGetItemDTOReturn extends IReturnBase {
-    items: ItemDTO[];
+export interface IGetItemsDTOReturn extends IReturnBase {
+    dto: ItemDTO[];
 }
 
 export class ItemDTO implements IItemDTO {
@@ -1803,125 +1864,6 @@ export enum Currency {
     EUR = 2,
     GBP = 3,
     USD = 4,
-}
-
-export class GetItemDTOCommand extends CommandBase implements IGetItemDTOCommand {
-    establishmentId!: string;
-    itemsIds!: string[];
-
-    constructor(data?: IGetItemDTOCommand) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.establishmentId = _data["establishmentId"];
-            if (Array.isArray(_data["itemsIds"])) {
-                this.itemsIds = [] as any;
-                for (let item of _data["itemsIds"])
-                    this.itemsIds!.push(item);
-            }
-        }
-    }
-
-    static override fromJS(data: any): GetItemDTOCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetItemDTOCommand();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["establishmentId"] = this.establishmentId;
-        if (Array.isArray(this.itemsIds)) {
-            data["itemsIds"] = [];
-            for (let item of this.itemsIds)
-                data["itemsIds"].push(item);
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGetItemDTOCommand extends ICommandBase {
-    establishmentId: string;
-    itemsIds: string[];
-}
-
-export class GetItemsReturn extends ReturnBase implements IGetItemsReturn {
-    items!: string[];
-
-    constructor(data?: IGetItemsReturn) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(item);
-            }
-        }
-    }
-
-    static override fromJS(data: any): GetItemsReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetItemsReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item);
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGetItemsReturn extends IReturnBase {
-    items: string[];
-}
-
-export class GetItemsCommand extends CommandBase implements IGetItemsCommand {
-    establishmentId!: string;
-
-    constructor(data?: IGetItemsCommand) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.establishmentId = _data["establishmentId"];
-        }
-    }
-
-    static override fromJS(data: any): GetItemsCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetItemsCommand();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["establishmentId"] = this.establishmentId;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGetItemsCommand extends ICommandBase {
-    establishmentId: string;
 }
 
 export class GetSalesDTOReturn extends ReturnBase implements IGetSalesDTOReturn {

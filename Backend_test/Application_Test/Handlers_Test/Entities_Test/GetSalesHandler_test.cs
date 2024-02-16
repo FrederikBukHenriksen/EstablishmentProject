@@ -7,7 +7,7 @@ using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure_Layer.DataTransferObjects;
 using WebApplication1.Utils;
 
-namespace EstablishmentProject.test.Application.Handlers.Sales_Test
+namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
 {
     public class GetSalesHandler_test : BaseTest
     {
@@ -50,7 +50,7 @@ namespace EstablishmentProject.test.Application.Handlers.Sales_Test
         }
 
         [Fact]
-        public async Task GetSales_WithSalesIds_WithGetSalesReturn_ShoudlReturnIds()
+        public async Task GetSales_WithSalesIds_WithGetSalesReturn_ShouldReturnIds()
         {
             //Arrange
             IHandler<GetSalesCommand, GetSalesReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesCommand, GetSalesReturn>>();
@@ -59,13 +59,12 @@ namespace EstablishmentProject.test.Application.Handlers.Sales_Test
             GetSalesReturn result = await handler.Handle(getSalesCommand_WithSaleIds);
 
             //Assert
-            Assert.Equal(1, result.Sales.Count);
-            Assert.IsType<Guid>(result.Sales[0]);
-            Assert.Equal(sale.Id, result.Sales[0]);
+            Assert.IsType<Guid>(result.Sales.First());
+            Assert.Equal(sale.Id, result.Sales.First());
         }
 
         [Fact]
-        public async Task GetSales_WithSalesIds_WithGetSalesRawReturn_ShoudlReturnEntity()
+        public async Task GetSales_WithSalesIds_WithGetSalesRawReturn_ShouldReturnEntity()
         {
             //Arrange
             IHandler<GetSalesCommand, GetSalesRawReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesCommand, GetSalesRawReturn>>();
@@ -74,14 +73,13 @@ namespace EstablishmentProject.test.Application.Handlers.Sales_Test
             GetSalesRawReturn result = await handler.Handle(getSalesCommand_WithSaleIds);
 
             //Assert
-            Assert.Equal(1, result.Sales.Count);
-            Assert.IsType<Sale>(result.Sales[0]);
-            Assert.Equal(sale.Id, result.Sales[0].Id);
+            Assert.IsType<Sale>(result.Sales.First());
+            Assert.Equal(sale.Id, result.Sales.First().Id);
         }
 
 
         [Fact]
-        public async Task GetSales_WithSalesIds_WithGetSalesDTOReturn_ShoudlReturnDTO()
+        public async Task GetSales_WithSalesIds_WithGetSalesDTOReturn_ShouldReturnDTO()
         {
             //Arrange
             IHandler<GetSalesCommand, GetSalesDTOReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesCommand, GetSalesDTOReturn>>();
@@ -90,13 +88,12 @@ namespace EstablishmentProject.test.Application.Handlers.Sales_Test
             GetSalesDTOReturn result = await handler.Handle(getSalesCommand_WithSaleIds);
 
             //Assert
-            Assert.Equal(1, result.Sales.Count);
-            Assert.IsType<SaleDTO>(result.Sales[0]);
-            Assert.Equal(sale.Id, result.Sales[0].id);
+            Assert.IsType<SaleDTO>(result.Sales.First());
+            Assert.Equal(sale.Id, result.Sales.First().id);
         }
 
         [Fact]
-        public async Task GetSales_WithSalesSorting_WithGetSalesReturn_ShoudlReturnIds()
+        public async Task GetSales_WithSalesSorting_WithGetSalesReturn_ShouldReturnIds()
         {
             //Arrange
             IHandler<GetSalesCommand, GetSalesReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesCommand, GetSalesReturn>>();
@@ -105,9 +102,8 @@ namespace EstablishmentProject.test.Application.Handlers.Sales_Test
             GetSalesReturn result = await handler.Handle(getSalesCommand_WithSalesSorting);
 
             //Assert
-            Assert.Equal(1, result.Sales.Count);
-            Assert.IsType<Guid>(result.Sales[0]);
-            Assert.Equal(sale.Id, result.Sales[0]);
+            Assert.IsType<Guid>(result.Sales.First());
+            Assert.Equal(sale.Id, result.Sales.First());
         }
     }
 

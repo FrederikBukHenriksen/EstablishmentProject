@@ -1,6 +1,6 @@
 ﻿using WebApplication1.Domain_Layer.Entities;
 
-namespace EstablishmentProject.test.Domain
+namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
 {
     public class EstablishmentTableTest : BaseIntegrationTest
     {
@@ -16,7 +16,7 @@ namespace EstablishmentProject.test.Domain
             string tableName = "Table1";
 
             // Act
-            establishment.CreateTable(tableName);
+            establishment.AddTable(establishment.CreateTable(tableName));
 
             // Assert
             Assert.Contains(establishment.GetTables(), t => t.Name == tableName);
@@ -38,7 +38,7 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var establishment = new Establishment();
-            var table = establishment.CreateTable("Table1");
+            var table = establishment.AddTable(establishment.CreateTable("Table1"));
 
             // Act
             establishment.RemoveTable(table);
@@ -65,8 +65,8 @@ namespace EstablishmentProject.test.Domain
         {
             // Arrange
             var establishment = new Establishment();
-            establishment.CreateTable("Table1");
-            establishment.CreateTable("Table2");
+            establishment.AddTable(establishment.CreateTable("Table1"));
+            establishment.AddTable(establishment.CreateTable("Table2"));
 
             // Act
             var tables = establishment.GetTables();

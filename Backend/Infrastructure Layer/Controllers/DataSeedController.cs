@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
+using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Domain_Layer.Services.Repositories;
@@ -9,6 +10,7 @@ using WebApplication1.Utils;
 
 namespace WebApplication1.Controllers
 {
+    [ExcludeFromCodeCoverage]
     [AllowAnonymous]
     [ApiController]
     [Route("api/test")]
@@ -27,9 +29,9 @@ namespace WebApplication1.Controllers
             var openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
             var timelineDaysWithinOpeningHours = testDataCreatorService.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timelineAllDays, openingHours);
 
-            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Hour, TestDataCreatorService.GetLinearFuncition(0.5, 1));
-            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Day, TestDataCreatorService.GetLinearFuncition(0.5, 0));
-            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Month, TestDataCreatorService.GetLinearFuncition(0, 0));
+            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Hour, TestDataCreatorService.GetLinearFuncition(0.5, 1));
+            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Day, TestDataCreatorService.GetLinearFuncition(0.5, 0));
+            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Month, TestDataCreatorService.GetLinearFuncition(0, 0));
 
             Dictionary<DateTime, int> aggregatedDistribution = testDataCreatorService.AggregateDistributions(new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly });
 

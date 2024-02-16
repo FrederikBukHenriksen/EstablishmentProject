@@ -1,5 +1,4 @@
 ﻿using WebApplication1.CommandsHandlersReturns;
-using WebApplication1.Domain_Layer.Exceptions;
 
 namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 {
@@ -25,7 +24,7 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
                 IEnumerable<Guid> allItems = this.unitOfWork.itemRepository.GetAllItemsFromEstablishment(establishmentId).Select(x => x.Id);
                 if (!itemsIds.All(guid => allItems.Contains(guid)))
                 {
-                    throw new Unauthorised();
+                    throw new UnauthorizedAccessException();
                 }
             }
 

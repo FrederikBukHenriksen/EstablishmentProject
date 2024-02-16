@@ -8,7 +8,6 @@ import {
 } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { HomepageComponent } from './homepage/homepage.component';
-import { CreateEstablishmentComponent } from './create-establishment/create-establishment.component';
 import { AuthenticationClient } from 'api';
 import { map } from 'rxjs';
 import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
@@ -31,14 +30,9 @@ import { CrossCorrelationComponent } from './cross-correlation/cross-correlation
 //   };
 
 const routes: Routes = [
-  { path: '', component: HomepageComponent },
+  { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'select-establishment', component: SelectEstablishmentComponent },
-
-  {
-    path: 'create-establishment',
-    component: CreateEstablishmentComponent,
-  },
   {
     path: 'cluster',
     component: ClusterComponent,

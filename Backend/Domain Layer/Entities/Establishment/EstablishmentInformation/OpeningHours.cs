@@ -2,7 +2,14 @@
 
 namespace WebApplication1.Domain_Layer.Entities
 {
-    public class OpeningHours : EntityBase
+    public interface IOpeningHours
+    {
+        public DayOfWeek GetDayOfWeek();
+        public LocalTime GetTimeOfOpening();
+        public LocalTime GetTimeOfClosing();
+    }
+
+    public class OpeningHours : EntityBase, IOpeningHours
     {
         public DayOfWeek dayOfWeek { get; set; }
         public LocalTime open { get; set; }
@@ -13,6 +20,21 @@ namespace WebApplication1.Domain_Layer.Entities
             this.dayOfWeek = dayOfWeek;
             this.open = open;
             this.close = close;
+        }
+
+        public DayOfWeek GetDayOfWeek()
+        {
+            return this.dayOfWeek;
+        }
+
+        public LocalTime GetTimeOfOpening()
+        {
+            return this.open;
+        }
+
+        public LocalTime GetTimeOfClosing()
+        {
+            return this.close;
         }
     }
 }

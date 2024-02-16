@@ -2,7 +2,7 @@ import {
   ClusteringCommand,
   ClusteringReturn,
   Clustering_TimeOfVisit_TotalPrice_Command,
-  GetItemDTOCommand,
+  GetItemsCommand,
   GetSalesCommand,
   GetSalesDTOCommand,
   GetSalesReturn,
@@ -174,10 +174,10 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
       await lastValueFrom(
         this.itemClient.getItemsDTO({
           establishmentId: this.sessionStorageService.getActiveEstablishment(),
-          itemsIds: itemIds,
-        } as GetItemDTOCommand)
+          itemIds: itemIds,
+        } as GetItemsCommand)
       )
-    ).items;
+    ).dto;
 
     var clusters = [
       'Cluster number',

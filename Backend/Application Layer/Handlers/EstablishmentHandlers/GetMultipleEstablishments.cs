@@ -6,17 +6,49 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers
 {
-    public class GetMultipleEstablishmentsCommand : CommandBase, ICmdField_EstablishmentIds
+    public class GetEstablishmentsCommand : CommandBase, ICmdField_EstablishmentIds
     {
-        public List<Guid> EstablishmentIds { get; set; }
+        public List<Guid> EstablishmentIds { get; set; } = new List<Guid>();
     }
 
-    public class GetMultipleEstablishmentsReturn : ReturnBase
+    public interface IEstablishmentReturn : IReturn
     {
-        public List<EstablishmentDTO> EstablishmentDTOs { get; set; }
+        IEstablishmentReturn Create(List<Establishment> establishments);
     }
 
-    public class GetMultipleEstablishmentsHandler : HandlerBase<GetMultipleEstablishmentsCommand, GetMultipleEstablishmentsReturn>
+    public class GetEstablishmentsIdReturn : ReturnBase, IEstablishmentReturn
+    {
+        public List<Guid> ids { get; set; } = new List<Guid>();
+
+        public IEstablishmentReturn Create(List<Establishment> establishments)
+        {
+            this.ids = establishments.Select(x => x.Id).ToList();
+            return this;
+        }
+    }
+    public class GetEstablishmentsDTOReturn : ReturnBase, IEstablishmentReturn
+    {
+        public List<EstablishmentDTO> dtos { get; set; } = new List<EstablishmentDTO>();
+
+        public IEstablishmentReturn Create(List<Establishment> establishments)
+        {
+            this.dtos = establishments.Select(x => new EstablishmentDTO(x)).ToList();
+            return this;
+        }
+    }
+
+    public class GetEstablishmentsEntityReturn : ReturnBase, IEstablishmentReturn
+    {
+        public List<Establishment> entities { get; set; } = new List<Establishment>();
+
+        public IEstablishmentReturn Create(List<Establishment> establishments)
+        {
+            this.entities = establishments;
+            return this;
+        }
+    }
+
+    public class GetMultipleEstablishmentsHandler<T> : HandlerBase<GetEstablishmentsCommand, T> where T : IEstablishmentReturn, new()
     {
         private IUnitOfWork unitOfWork;
 
@@ -25,11 +57,10 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Estab
             this.unitOfWork = unitOfWork;
         }
 
-        public override async Task<GetMultipleEstablishmentsReturn> Handle(GetMultipleEstablishmentsCommand command)
+        public override async Task<T> Handle(GetEstablishmentsCommand command)
         {
             List<Establishment> establishment = this.unitOfWork.establishmentRepository.GetAll().Where(x => command.EstablishmentIds.Any(y => y == x.Id)).ToList();
-            List<EstablishmentDTO> establishmentDTO = establishment.Select(x => new EstablishmentDTO(x)).ToList();
-            return new GetMultipleEstablishmentsReturn { EstablishmentDTOs = establishmentDTO };
+            return (T)new T().Create(establishment);
         }
     }
 }

@@ -22,12 +22,12 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        internal void removeOpeningHour(OpeningHours openingHour)
+        public void removeOpeningHour(OpeningHours openingHour)
         {
             this.getOpeningHours().Remove(openingHour);
         }
 
-        internal List<OpeningHours> getOpeningHours()
+        public List<OpeningHours> getOpeningHours()
         {
             return this.OpeningHours.ToList();
         }

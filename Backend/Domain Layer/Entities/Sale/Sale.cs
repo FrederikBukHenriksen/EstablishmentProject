@@ -3,12 +3,24 @@ using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
-    public class Sale : EntityBase
+    public interface ISale : ISale_SalesItems
+    {
+        DateTime setTimeOfArrival(DateTime datetime);
+        DateTime? GetTimeOfArrival();
+        DateTime setTimeOfPayment(DateTime datetime);
+        DateTime GetTimeOfPayment();
+        DateTime GetTimeOfSale();
+        TimeSpan? GetTimespanOfVisit();
+        double GetTotalPrice();
+        int GetNumberOfSoldItems();
+    }
+
+    public partial class Sale : EntityBase, ISale
     {
         public Guid EstablishmentId { get; set; }
         public DateTime? TimestampArrival { get; set; } = null;
         public DateTime TimestampPayment { get; set; }
-        public virtual List<SalesItems>? SalesItems { get; set; } = new List<SalesItems>();
+        public virtual List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
         public virtual Table? Table { get; set; } = null;
         public Sale()
         {
@@ -17,12 +29,22 @@ namespace WebApplication1.Domain_Layer.Entities
         public Sale(
             DateTime timestampPayment,
             DateTime? timestampArrival = null,
-            List<(Item item, int quantity)>? salesItems = null,
+            List<(Item item, int quantity)>? ItemAndQuantity = null,
             Table? table = null)
         {
-            this.TimestampArrival = timestampArrival;
             this.TimestampPayment = timestampPayment;
-            this.SalesItems = salesItems?.Select(x => new SalesItems(x.item, x.quantity)).ToList();
+
+            this.TimestampArrival = timestampArrival != null ? this.setTimeOfArrival((DateTime)timestampArrival!) : null;
+
+            if (!(ItemAndQuantity.IsNullOrEmpty()))
+            {
+                foreach (var element in ItemAndQuantity)
+                {
+                    SalesItems salesItem = this.CreateSalesItem(element.item, element.quantity);
+                    this.SalesItems.Add(salesItem);
+                }
+            }
+
             this.Table = table;
         }
 
@@ -40,7 +62,7 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        public DateTime? getTimeOfArrival()
+        public DateTime? GetTimeOfArrival()
         {
             return this.TimestampArrival;
         }
@@ -58,7 +80,7 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        public DateTime getTimeOfPayment() { return this.TimestampPayment; }
+        public DateTime GetTimeOfPayment() { return this.TimestampPayment; }
 
         public DateTime GetTimeOfSale()
         {
@@ -90,12 +112,8 @@ namespace WebApplication1.Domain_Layer.Entities
             return totalPrice;
         }
 
-        public int? GetNumberOfSoldItems()
+        public int GetNumberOfSoldItems()
         {
-            if (this.SalesItems == null)
-            {
-                return null;
-            }
             return this.SalesItems.Count();
         }
     }

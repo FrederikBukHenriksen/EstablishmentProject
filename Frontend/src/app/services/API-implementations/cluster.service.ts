@@ -6,8 +6,6 @@ import {
   Clustering_TimeOfVisit_TotalPrice_Command,
   EstablishmentClient,
   EstablishmentDTO,
-  GetEstablishmentCommand,
-  GetMultipleEstablishmentsCommand,
   SaleClient,
   SaleDTO,
 } from 'api';

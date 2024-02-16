@@ -37,9 +37,9 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
                 TimeResolution.Hour,
                 testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0)));
 
-            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.DistributionHour(calendar, TestDataCreatorService.GetLinearFuncition(1, -7));
-            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(calendar, x => x.Day, TestDataCreatorService.GetLinearFuncition(0.5, 0));
-            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.SLETTES_GenerateDistributionFromTimeline(calendar, x => x.Month, TestDataCreatorService.GetLinearFuncition(0, 0));
+            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.DistributionOnTimeres(calendar, TestDataCreatorService.GetLinearFuncition(1, -7), TimeResolution.Hour);
+            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Day, TestDataCreatorService.GetLinearFuncition(0.5, 0));
+            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Month, TestDataCreatorService.GetLinearFuncition(0, 0));
 
             List<Dictionary<DateTime, int>> allDistributions = new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly };
 

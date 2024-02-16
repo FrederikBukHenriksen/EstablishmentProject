@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using WebApplication1.Middelware;
 
 namespace WebApplication1.Program
 {
+    [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)
