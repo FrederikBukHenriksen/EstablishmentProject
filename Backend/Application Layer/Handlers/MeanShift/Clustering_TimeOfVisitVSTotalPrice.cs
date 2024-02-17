@@ -1,6 +1,5 @@
 ﻿using NJsonSchema.NewtonsoftJson.Converters;
 using System.Runtime.Serialization;
-using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
 using WebApplication1.Application_Layer.Handlers.SalesHandlers;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandsHandlersReturns;
@@ -66,9 +65,9 @@ namespace WebApplication1.CommandHandlers
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>
     {
         private IUnitOfWork unitOfWork;
-        private IHandler<GetSalesDTOCommand, GetSalesRawReturn> getSalesHandler;
+        private IHandler<GetSalesCommand, GetSalesRawReturn> getSalesHandler;
 
-        public Clustering_TimeOfVisitVSTotalPrice(IUnitOfWork unitOfWork, IHandler<GetSalesDTOCommand, GetSalesRawReturn> getSalesHandler)
+        public Clustering_TimeOfVisitVSTotalPrice(IUnitOfWork unitOfWork, IHandler<GetSalesCommand, GetSalesRawReturn> getSalesHandler)
         {
             this.unitOfWork = unitOfWork;
             this.getSalesHandler = getSalesHandler;
@@ -77,7 +76,7 @@ namespace WebApplication1.CommandHandlers
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
         {
             //Fetch
-            var localCommand = new GetSalesDTOCommand { EstablishmentId = command.EstablishmentId, SalesIds = command.SalesIds };
+            var localCommand = new GetSalesCommand { EstablishmentId = command.EstablishmentId, SalesIds = command.SalesIds };
             List<Sale> sales = (await this.getSalesHandler.Handle(localCommand)).Sales;
 
             //Arrange
@@ -118,7 +117,8 @@ namespace WebApplication1.CommandHandlers
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_LengthOfVisit_Command command)
         {
             //Fetch
-            List<Sale> sales = this.unitOfWork.salesRepository.GetFromIds(command.SalesIds);
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().GetById(command.EstablishmentId);
+            List<Sale> sales = establishment.GetSales().Where(sale => command.SalesIds.Any(x => x == sale.Id)).ToList();
 
             List<(Sale sale, List<double> values)> saleData = sales
                 .Where(sale => sale.GetTimespanOfVisit != null)

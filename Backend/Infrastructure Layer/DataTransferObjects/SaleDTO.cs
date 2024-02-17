@@ -8,7 +8,7 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
         public DateTime? TimestampArrival { get; set; } = null;
         public DateTime TimestampPayment { get; set; }
         public List<(Guid, int)> SalesItems { get; set; } = new List<(Guid, int)>();
-        public Guid? Table { get; set; } = null;
+        public List<Guid> SalesTables { get; set; } = new List<Guid>();
         public Guid? Employee { get; set; } = null;
 
 
@@ -17,8 +17,8 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
             this.id = sale.Id;
             this.TimestampArrival = sale.TimestampArrival;
             this.TimestampPayment = sale.TimestampPayment;
-            this.SalesItems = sale.SalesItems.ToList().Select(x => (x.Item.Id, x.quantity)).ToList();
-            this.Table = sale.Table?.Id;
+            this.SalesItems = sale.SalesItems.Select(x => (x.Item.Id, x.quantity)).ToList();
+            this.SalesTables = sale.SalesItems.Select(x => x.Id).ToList();
         }
     }
 }

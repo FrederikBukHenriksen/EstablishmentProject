@@ -20,14 +20,11 @@ namespace EstablishmentProject.test
             // Act
             var establishmentRepository = uow.establishmentRepository;
             var userRepository = uow.userRepository;
-            var salesRepository = uow.salesRepository;
-            var itemRepository = uow.itemRepository;
 
             // Assert
             Assert.IsType<EstablishmentRepository>(establishmentRepository);
             Assert.IsType<UserRepository>(userRepository);
-            Assert.IsType<SalesRepository>(salesRepository);
-            Assert.IsType<ItemRepository>(itemRepository);
+
         }
 
         [Fact]

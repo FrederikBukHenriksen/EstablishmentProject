@@ -3,7 +3,7 @@ using WebApplication1.Data.DataModels;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
-    public interface ISale : ISale_SalesItems
+    public interface ISale : ISale_SalesItems, ISale_SalesTables
     {
         DateTime setTimeOfArrival(DateTime datetime);
         DateTime? GetTimeOfArrival();
@@ -21,7 +21,8 @@ namespace WebApplication1.Domain_Layer.Entities
         public DateTime? TimestampArrival { get; set; } = null;
         public DateTime TimestampPayment { get; set; }
         public virtual List<SalesItems> SalesItems { get; set; } = new List<SalesItems>();
-        public virtual Table? Table { get; set; } = null;
+        public virtual List<SalesTables> SalesTables { get; set; } = new List<SalesTables>();
+
         public Sale()
         {
         }
@@ -30,70 +31,66 @@ namespace WebApplication1.Domain_Layer.Entities
             DateTime timestampPayment,
             DateTime? timestampArrival = null,
             List<(Item item, int quantity)>? ItemAndQuantity = null,
-            Table? table = null)
+            List<Table>? tables = null)
         {
-            this.TimestampPayment = timestampPayment;
-
-            this.TimestampArrival = timestampArrival != null ? this.setTimeOfArrival((DateTime)timestampArrival!) : null;
+            this.setTimeOfPayment(timestampPayment);
+            if (timestampArrival != null)
+            {
+                this.setTimeOfArrival((DateTime)timestampArrival!);
+            }
 
             if (!(ItemAndQuantity.IsNullOrEmpty()))
             {
-                foreach (var element in ItemAndQuantity)
+                foreach (var element in ItemAndQuantity!)
                 {
-                    SalesItems salesItem = this.CreateSalesItem(element.item, element.quantity);
+                    SalesItems salesItem = this.CreateSalesItems(element.item, element.quantity);
                     this.SalesItems.Add(salesItem);
                 }
             }
 
-            this.Table = table;
+            if (!(tables.IsNullOrEmpty()))
+            {
+                foreach (var table in tables!)
+                {
+                    SalesTables salesTables = this.CreateSalesTables(table);
+                    this.SalesTables.Add(salesTables);
+                }
+            }
         }
-
 
         public DateTime setTimeOfArrival(DateTime datetime)
         {
-            if (this.TimestampPayment > datetime)
-            {
-                this.TimestampArrival = datetime;
-                return datetime;
-            }
-            else
-            {
-                throw new Exception("Time of arrival must be before time of payment");
-            }
+            this.TimeOfArrivalMustBeBeforeTimeOfPayment(datetime);
+            this.TimestampArrival = datetime;
+            return (DateTime)this.GetTimeOfArrival()!;
         }
 
         public DateTime? GetTimeOfArrival()
         {
-            return this.TimestampArrival;
+            return this.GetTimeOfArrival();
         }
 
         public DateTime setTimeOfPayment(DateTime datetime)
         {
-            if (this.TimestampArrival != null && this.TimestampArrival < datetime)
-            {
-                this.TimestampArrival = datetime;
-                return datetime;
-            }
-            else
-            {
-                throw new Exception("Time of payment must be before time of arrival");
-            }
+            this.TimeOfPaymentMustBeAfterTimeOfArrival(datetime);
+            this.TimestampPayment = datetime;
+            return this.GetTimeOfPayment();
         }
 
-        public DateTime GetTimeOfPayment() { return this.TimestampPayment; }
+        public DateTime GetTimeOfPayment()
+        {
+            return this.GetTimeOfPayment();
+        }
 
         public DateTime GetTimeOfSale()
         {
-            return this.TimestampPayment;
+            return this.GetTimeOfPayment();
         }
 
         public TimeSpan? GetTimespanOfVisit()
         {
-            if (this.TimestampArrival == null || this.TimestampPayment == null)
-            {
-                return null;
-            }
-            return this.TimestampPayment - this.TimestampArrival;
+            this.MustHaveTimeOfArrival();
+            return (this.GetTimeOfPayment() - this.GetTimeOfArrival());
         }
 
         public double GetTotalPrice()
@@ -115,6 +112,50 @@ namespace WebApplication1.Domain_Layer.Entities
         public int GetNumberOfSoldItems()
         {
             return this.SalesItems.Count();
+        }
+
+        //Checkers and validators
+
+        protected void MustHaveTimeOfArrival()
+        {
+            if (this.TimestampArrival == null)
+            {
+                throw new InvalidOperationException("Time of arrival must be set");
+            }
+        }
+
+        protected void TimeOfArrivalMustBeBeforeTimeOfPayment(DateTime datetime)
+        {
+            if (!this.IsTimeOfArrivalValid(datetime))
+            {
+                throw new ArgumentException("Time of arrival must be before time of payment");
+            }
+        }
+
+        public bool IsTimeOfArrivalValid(DateTime datetime)
+        {
+            if (this.TimestampPayment >= datetime)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        protected void TimeOfPaymentMustBeAfterTimeOfArrival(DateTime datetime)
+        {
+            if (!this.IsTimeOfPaymentValid(datetime))
+            {
+                throw new ArgumentException("Time of payment must be after time of arrival");
+            }
+        }
+
+        public bool IsTimeOfPaymentValid(DateTime datetime)
+        {
+            if (this.TimestampArrival != null && this.TimestampArrival > datetime)
+            {
+                return false;
+            }
+            return true;
         }
     }
 

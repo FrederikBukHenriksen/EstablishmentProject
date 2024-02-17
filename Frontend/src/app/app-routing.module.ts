@@ -1,15 +1,6 @@
-import { NgModule, inject } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Router,
-  RouterModule,
-  RouterStateSnapshot,
-  Routes,
-} from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
-import { HomepageComponent } from './homepage/homepage.component';
-import { AuthenticationClient } from 'api';
-import { map } from 'rxjs';
 import { SelectEstablishmentComponent } from './select-establishment/select-establishment.component';
 import { ClusterComponent } from './cluster/cluster.component';
 import { CrossCorrelationComponent } from './cross-correlation/cross-correlation.component';

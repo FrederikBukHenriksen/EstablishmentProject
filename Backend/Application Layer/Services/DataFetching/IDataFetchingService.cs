@@ -66,7 +66,7 @@ namespace WebApplication1.Application_Layer.Services
                 Item item = retrivedItem.Item1();
                 if (joingingTable.Any(x => x.foreignId == retrivedItem.Item2.ThirdPartyId))
                 {
-                    establishment.UpdateItem(item);
+                    //establishment.UpdateItem(item);
                 }
                 else
                 {

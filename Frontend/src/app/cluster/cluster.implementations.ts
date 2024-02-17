@@ -32,6 +32,7 @@ import {
   Cluster,
   ClusterService,
 } from '../services/API-implementations/cluster.service';
+import { ItemService } from '../services/API-implementations/item.service';
 
 export interface ClusteringAssembly {
   assembly: IClusteringImplementaion;
@@ -76,6 +77,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     private readonly analysisClient: AnalysisClient,
     private readonly sessionStorageService: SessionStorageService,
     private readonly itemClient: ItemClient,
+    private readonly itemService: ItemService,
     private readonly dialog: MatDialog,
     private readonly saleClient: SaleClient,
     private readonly salesService: SaleService,
@@ -89,7 +91,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
         var dialogCrossCorrelationSettingsComponent =
           new DialogFilterSalesComponent(
             this.dialog,
-            this.itemClient,
+            this.itemService,
             this.sessionStorageService
           );
         this.salesSorting = await dialogCrossCorrelationSettingsComponent.Open(

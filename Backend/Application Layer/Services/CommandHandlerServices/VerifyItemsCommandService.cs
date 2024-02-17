@@ -21,7 +21,8 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
             {
                 Guid establishmentId = (command as ICmdField_ItemsId).EstablishmentId;
                 List<Guid> itemsIds = (command as ICmdField_ItemsId).ItemsIds;
-                IEnumerable<Guid> allItems = this.unitOfWork.itemRepository.GetAllItemsFromEstablishment(establishmentId).Select(x => x.Id);
+                IEnumerable<Guid> allItems = this.unitOfWork.establishmentRepository.GetById(establishmentId).Items.Select(x => x.Id);
+
                 if (!itemsIds.All(guid => allItems.Contains(guid)))
                 {
                     throw new UnauthorizedAccessException();

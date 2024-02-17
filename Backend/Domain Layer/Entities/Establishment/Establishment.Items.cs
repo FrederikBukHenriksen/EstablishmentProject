@@ -6,13 +6,12 @@
         Item CreateItem(string name, double price, Currency currency);
         void RemoveItem(Item item);
         List<Item> GetItems();
-        Item UpdateItem(Item item);
         Item AddItem(Item item);
         Item CreateItem(string name, double price);
+        string SetName(Item item, string name);
     }
     public partial class Establishment : EntityBase, IEstablishment_Item
     {
-        //CRUD
         public Item CreateItem(string name, double price, Currency currency)
         {
             Item item = new Item(name, price, currency);
@@ -27,6 +26,9 @@
 
         public Item AddItem(Item item)
         {
+            this.ItemMustBeCreatedForEstablishment(item);
+            this.ItemMustNotAlreadyExist(item);
+            this.ItemNameMustBeUnique(item.Name);
             this.Items.Add(item);
             return item;
         }
@@ -38,32 +40,81 @@
 
         public void RemoveItem(Item item)
         {
-            if (this.IsItemUsedInSales(item))
-            {
-                throw new Exception("Item is used in sales, and therefore cannot be deleted");
-            }
+            this.ItemMustExist(item);
+            this.ItemMustNotBeUsedInSales(item);
             this.Items.Remove(item);
         }
 
+        public string SetName(Item item, string name)
+        {
+            this.ItemNameMustBeUnique(name);
+            item.SetName(name);
+            return item.GetName();
+        }
+
+
         //Checkers and validators
-        public bool IsItemUsedInSales(Item item)
+        protected void ItemMustBeCreatedForEstablishment(Item item)
+        {
+            if (!this.isItemCreatedForEstablishment(item))
+            {
+                throw new InvalidOperationException("Item is not created for establishment");
+            }
+        }
+        protected bool isItemCreatedForEstablishment(Item item)
+        {
+            return item.EstablishmentId == this.Id;
+        }
+
+        protected bool ItemNameMustBeUnique(string name)
+        {
+            if (this.isNameAlreadyInUse(name))
+            {
+                throw new ArgumentException("Name is already in use");
+            }
+            return true;
+        }
+
+        protected bool isNameAlreadyInUse(string name)
+        {
+            return this.GetItems().Any(x => x.Name == name);
+        }
+        protected void ItemMustNotBeUsedInSales(Item item)
+        {
+            if (this.IsItemUsedInSales(item))
+            {
+                throw new InvalidOperationException("Item is used in sales, and therefore cannot be deleted");
+            }
+        }
+
+        protected bool IsItemUsedInSales(Item item)
         {
             return this.GetSales().Any(x => x.SalesItems.Any(y => y.Item == item));
         }
 
-        private bool doesItemAlreadyExist(Item item)
+        protected bool ItemMustExist(Item item)
+        {
+            if (!this.doesItemAlreadyExist(item))
+            {
+                throw new InvalidOperationException("Item does not exist within the establishment");
+            }
+            return true;
+        }
+
+        protected bool ItemMustNotAlreadyExist(Item item)
+        {
+            if (this.doesItemAlreadyExist(item))
+            {
+                throw new InvalidOperationException("Item already exists within the establishment");
+            }
+            return true;
+        }
+
+        protected bool doesItemAlreadyExist(Item item)
         {
             return this.Items.Any(x => x.Name == item.Name);
         }
 
-        public Item UpdateItem(Item item)
-        {
-            if (this.doesItemAlreadyExist(item))
-            {
-                this.RemoveItem(item);
-                this.AddItem(item);
-            }
-            return item;
-        }
+
     }
 }

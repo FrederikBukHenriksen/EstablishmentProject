@@ -5,6 +5,7 @@ import { SessionStorageService } from '../services/session-storage/session-stora
 import { lastValueFrom } from 'rxjs';
 import { NGX_MAT_CALENDAR_RANGE_STRATEGY_PROVIDER_FACTORY } from '@angular-material-components/datetime-picker';
 import { EstablishmentService } from '../services/API-implementations/establishment.service';
+import { UserContextService } from '../services/API-implementations/usercontext.service';
 
 export interface TableOfAccesibleEstablishments {
   name: string;
@@ -17,7 +18,7 @@ export interface TableOfAccesibleEstablishments {
   styleUrls: ['./select-establishment.component.scss'],
 })
 export class SelectEstablishmentComponent {
-  private userContextClient = inject(UserContextClient);
+  private userContextService = inject(UserContextService);
   private establishmentService = inject(EstablishmentService);
 
   private router = inject(Router);
@@ -42,10 +43,8 @@ export class SelectEstablishmentComponent {
   }
 
   private async FetchAccesibleEstablishment() {
-    var accessibleEstablishmentsId = await lastValueFrom(
-      this.userContextClient.getAccessibleEstablishments()
-    );
-
+    var accessibleEstablishmentsId =
+      await this.userContextService.getAccessibleEstablishments();
     var accessibleEstablishmentDTOs =
       await this.establishmentService.getEstablishmentsDTO(
         accessibleEstablishmentsId

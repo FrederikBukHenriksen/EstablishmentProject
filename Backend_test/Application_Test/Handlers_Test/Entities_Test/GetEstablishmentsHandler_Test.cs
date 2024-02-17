@@ -9,7 +9,7 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
 {
-    public class GetEstablishmentsHandler_Test : BaseTest
+    public class GetEstablishmentsHandler_Test : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
         private GetSalesCommand getSalesCommand_WithSaleIds;
@@ -18,7 +18,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         private Sale sale;
         private GetEstablishmentsCommand getEstablishmentsCommand;
 
-        public GetEstablishmentsHandler_Test() : base(new List<ITestService> { TestContainer.CreateAsync().Result })
+        public GetEstablishmentsHandler_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             //Inject services
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();

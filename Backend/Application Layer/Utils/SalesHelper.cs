@@ -10,7 +10,6 @@ namespace WebApplication1.Utils
         Items,
         TimestampArrival,
         TimestampPayment,
-
     }
 
     public class SalesSorting
@@ -34,8 +33,6 @@ namespace WebApplication1.Utils
             this.WithinTimeperiods = withinTimeperiods;
             this.MustContainAllAttributes = mustContainAllAttributes;
         }
-
-
     }
 
     public static class SalesSortingParametersExecute
@@ -102,7 +99,7 @@ namespace WebApplication1.Utils
             }
             if (saleAttributes.Contains(SaleAttributes.Table))
             {
-                sales = sales.Where(sale => sale.Table != null).ToList();
+                sales = sales.Where(sale => sale.SalesTables != null).ToList();
             }
             if (saleAttributes.Contains(SaleAttributes.TimestampArrival))
             {

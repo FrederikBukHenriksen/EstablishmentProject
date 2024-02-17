@@ -7,13 +7,13 @@ using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
-public class Clustering_TimeOfVisitVSLengthOfVisit_Test : BaseTest
+public class Clustering_TimeOfVisitVSLengthOfVisit_Test : IntegrationTest
 {
     private IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn> handler;
 
     private Establishment establsihment = new Establishment();
     private List<Sale> sales = new List<Sale>();
-    public Clustering_TimeOfVisitVSLengthOfVisit_Test() : base(new List<ITestService> { TestContainer.CreateAsync().Result })
+    public Clustering_TimeOfVisitVSLengthOfVisit_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
     {
         handler = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>>();
 

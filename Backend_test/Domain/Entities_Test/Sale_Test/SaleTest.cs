@@ -2,11 +2,8 @@
 
 namespace EstablishmentProject.test.Domain
 {
-    public class SaleTest : BaseIntegrationTest
+    public class SaleTest
     {
-        public SaleTest(IntegrationTestWebAppFactory factory) : base(factory)
-        {
-        }
         [Fact]
         public void Constructor_ShouldSetProperties()
         {
@@ -18,16 +15,16 @@ namespace EstablishmentProject.test.Domain
                 (new Item { Price = new Price { Amount = 10 } }, 2),
                 (new Item { Price = new Price { Amount = 5 } }, 1)
             };
-            var table = new Table();
+            Table table = new Table();
 
             // Act
-            var sale = new Sale(timestampPayment, timestampArrival, salesItems, table);
+            var sale = new Sale(timestampPayment, timestampArrival, salesItems, [table]);
 
             // Assert
             Assert.Equal(timestampArrival, sale.TimestampArrival);
             Assert.Equal(timestampPayment, sale.TimestampPayment);
             Assert.Equal(salesItems.Count, sale.SalesItems.Count);
-            Assert.Equal(table, sale.Table);
+            Assert.Equal(table, sale.GetSalesTables().First().Table);
         }
 
         [Fact]

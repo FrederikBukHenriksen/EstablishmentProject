@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
@@ -16,6 +16,7 @@ import {
   SalesSorting,
   ValueTupleOfDateTimeAndDateTime,
 } from 'api';
+import { ItemService } from '../services/API-implementations/item.service';
 
 @Component({
   selector: 'app-dialog-filter-sales',
@@ -25,7 +26,7 @@ import {
 export class DialogFilterSalesComponent {
   constructor(
     public dialog: MatDialog,
-    // public itemClient: ItemClient,
+    private itemService: ItemService,
     public sessionStorageService: SessionStorageService
   ) {}
 
@@ -92,22 +93,18 @@ export class DialogFilterSalesComponent {
   }
 
   private async FetchItems() {
-    var getItemsCommand: GetItemsCommand = {
-      establishmentId: this.sessionStorageService.getActiveEstablishment(),
-    } as GetItemsCommand;
-
-    var itemsIds: string[] = (
-      await lastValueFrom(this.itemClient.getItems(getItemsCommand))
-    ).id;
-
     var getItemDTOCommand = new GetItemsCommand();
     getItemDTOCommand.establishmentId =
       this.sessionStorageService.getActiveEstablishment()!;
-    getItemDTOCommand.itemIds = itemsIds;
 
-    var itemDTOs: ItemDTO[] = (
-      await lastValueFrom(this.itemClient.getItemsDTO(getItemDTOCommand))
-    ).dto;
+    var itemsIds: string[] = await this.itemService.GetItems(
+      this.sessionStorageService.getActiveEstablishment()!
+    );
+
+    var itemDTOs: ItemDTO[] = await this.itemService.GetItemsDTO(
+      itemsIds,
+      this.sessionStorageService.getActiveEstablishment()!
+    );
 
     return itemDTOs;
   }

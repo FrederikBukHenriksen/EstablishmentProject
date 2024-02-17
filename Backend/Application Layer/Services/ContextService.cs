@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Services
 {
@@ -20,17 +20,14 @@ namespace WebApplication1.Services
 
     public class ContextService : IUserContextService
     {
-        private readonly IUserRolesRepository _userRolesRepository;
-        private readonly IEstablishmentRepository _establishmentRepository;
-
+        private IUnitOfWork unitOfWork;
         private User? _user = null;
         private Establishment? _activeEstablishment = null;
         private List<UserRole>? _userRoles = null;
 
-        public ContextService(IUserRolesRepository userRolesRepository, IEstablishmentRepository establishmentRepository)
+        public ContextService(IUnitOfWork unitOfWork)
         {
-            this._userRolesRepository = userRolesRepository;
-            this._establishmentRepository = establishmentRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         public void SetUser(User? user)
@@ -49,7 +46,7 @@ namespace WebApplication1.Services
 
         public void FecthAccesibleEstablishments()
         {
-            this._userRoles = this._userRolesRepository.GetAllIncludeEstablishment().Where(x => x.User.Id == this.GetUser().Id).ToList();
+            this._userRoles = this.unitOfWork.userRepository.GetById(this.GetUser().Id).UserRoles.ToList();
         }
 
         public Establishment GetActiveEstablishment()
@@ -81,7 +78,7 @@ namespace WebApplication1.Services
                 bool isUserAssociatedWithEstablishment = this.GetAccessibleEstablishments().Any(x => x.Id == EstablishmentId);
                 if (isUserAssociatedWithEstablishment)
                 {
-                    this._activeEstablishment = this._establishmentRepository.GetById(EstablishmentId);
+                    this._activeEstablishment = this.unitOfWork.establishmentRepository.GetById(EstablishmentId);
                 }
             }
         }

@@ -1,8 +1,14 @@
 ﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public class Table : EntityBase
+
+    public interface ITable
     {
-        //public Establishment Establishment { get; set; }
+        string GetName();
+        string SetName(string name);
+    }
+    public class Table : EntityBase, ITable
+    {
+        public Guid EstablishmentId { get; set; }
         public string Name { get; set; }
 
         public Table()
@@ -13,6 +19,30 @@
         public Table(string name)
         {
             this.Name = name;
+        }
+
+        public string SetName(string name)
+        {
+            if (!this.IsTableNameValid(name))
+            {
+                throw new ArgumentException("Table name is not valid");
+            }
+            this.Name = name;
+            return this.GetName();
+        }
+        public string GetName()
+        {
+            return this.Name;
+        }
+
+        //Checkers and validators
+        public bool IsTableNameValid(string name)
+        {
+            if (name == "")
+            {
+                return false;
+            }
+            return true;
         }
 
     }

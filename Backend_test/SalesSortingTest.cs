@@ -34,7 +34,7 @@ namespace EstablishmentProject.test
             table = establishment.AddTable(establishment.CreateTable("table 1"));
 
             sale_empty = establishment.AddSale(establishment.CreateSale(DateTime.Today));
-            sale_coffee = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) }, table: table));
+            sale_coffee = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) }, tables: [table]));
             sale_coffee_tea = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-2), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1) }, timestampArrival: DateTime.Today.AddDays(-2).AddHours(-1)));
             sale_coffee_tea_water = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-3), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1), (water, 1) }, timestampArrival: DateTime.Today.AddDays(-3).AddHours(-1)));
 

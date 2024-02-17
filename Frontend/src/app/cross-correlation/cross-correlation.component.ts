@@ -5,6 +5,7 @@ import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { MatDialog } from '@angular/material/dialog';
 import { TableModel } from '../table/table.component';
 import { CrossCorrelation_Sales_Temperature } from './cross-correlation.implementations';
+import { ItemService } from '../services/API-implementations/item.service';
 
 export type GraphModel = {
   chartType: ChartType;
@@ -32,7 +33,7 @@ export interface ICorrelationImplementaion {
 export class CrossCorrelationComponent {
   private sessionStorageService = inject(SessionStorageService);
   private analysisClient = inject(AnalysisClient);
-  private itemClient = inject(ItemClient);
+  private itemService = inject(ItemService);
 
   private salesClient = inject(SaleClient);
   public dialog = inject(MatDialog);
@@ -82,7 +83,7 @@ export class CrossCorrelationComponent {
     new CrossCorrelation_Sales_Temperature(
       this.analysisClient,
       this.sessionStorageService,
-      this.itemClient,
+      this.itemService,
       this.dialog,
       this.salesClient
     ),

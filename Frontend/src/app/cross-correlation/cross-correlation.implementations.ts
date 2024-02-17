@@ -29,6 +29,7 @@ import {
   accountForTimezone,
   removeTimezone,
 } from '../utils/TimeHelper';
+import { ItemService } from '../services/API-implementations/item.service';
 
 export interface CrossCorrealtionAssembly {
   assembly: ICorrelationImplementaion;
@@ -80,7 +81,8 @@ export class CrossCorrelation_Sales_Temperature
   constructor(
     private readonly analysisClient: AnalysisClient,
     private readonly sessionStorageService: SessionStorageService,
-    private readonly itemClient: ItemClient,
+    private readonly itemService: ItemService,
+
     private readonly dialog: MatDialog,
     private readonly saleClient: SaleClient
   ) {}
@@ -92,7 +94,7 @@ export class CrossCorrelation_Sales_Temperature
         var dialogCrossCorrelationSettingsComponent =
           new DialogFilterSalesComponent(
             this.dialog,
-            this.itemClient,
+            this.itemService,
             this.sessionStorageService
           );
         this.salesSorting = await dialogCrossCorrelationSettingsComponent.Open(

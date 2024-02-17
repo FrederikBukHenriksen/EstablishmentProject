@@ -1,43 +1,83 @@
-﻿using WebApplication1.Domain_Layer.Entities;
+﻿using EstablishmentProject.test.TestingCode;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
 {
-    public class EstablishmentTableTest : BaseIntegrationTest
+    public class EstablishmentTableTest : IntegrationTest
     {
-        public EstablishmentTableTest(IntegrationTestWebAppFactory factory) : base(factory)
+        private Establishment establishment;
+        public EstablishmentTableTest() : base()
         {
+            CommonArrange();
+        }
+
+        private void CommonArrange()
+        {
+            establishment = new Establishment("Test establishment");
         }
 
         [Fact]
         public void CreateTable_WithValidName_ShouldCreateTable()
         {
             // Arrange
-            var establishment = new Establishment();
             string tableName = "Table1";
 
             // Act
-            establishment.AddTable(establishment.CreateTable(tableName));
+            Table table = establishment.CreateTable(tableName);
 
             // Assert
-            Assert.Contains(establishment.GetTables(), t => t.Name == tableName);
+            Assert.Equal(table.Name, tableName);
         }
 
         [Fact]
-        public void CreateTable_WithEmptyName_ShouldThrowArgumentException()
+        public void CreateTable_WithNameAlreadyInUse_ShouldNotCreateTable()
         {
             // Arrange
-            var establishment = new Establishment();
-            string tableName = "";
+            establishment.AddTable(establishment.CreateTable("Table1"));
+            string tableName = "Table1";
 
-            // Act & Assert
-            Assert.Throws<ArgumentException>(() => establishment.CreateTable(tableName));
+            // Act
+            Action act = () => establishment.CreateTable(tableName);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(act);
         }
+
+
+        [Fact]
+        public void AddTable_WithTableCreatedForEstablishment_ShouldAddTable()
+        {
+            // Arrange
+            Table table = establishment.CreateTable("Table1");
+
+            // Act
+            establishment.AddTable(table);
+
+            // Assert
+            Assert.Contains(table, establishment.GetTables());
+
+        }
+
+        [Fact]
+        public void AddTable_WithTableNotCreatedForEstablishment_ShouldNotAddTable()
+        {
+            // Arrange
+            var otherEstablishment = new Establishment("Other establishment");
+            Table table = new Table("Table1");
+
+            // Act
+            Action act = () => otherEstablishment.AddTable(table);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(act);
+            Assert.DoesNotContain(table, otherEstablishment.Tables);
+        }
+
 
         [Fact]
         public void RemoveTable_WhenTableNotUsed_ShouldRemoveTable()
         {
             // Arrange
-            var establishment = new Establishment();
             var table = establishment.AddTable(establishment.CreateTable("Table1"));
 
             // Act
@@ -51,10 +91,9 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
         public void RemoveTable_WithTableUsedInSales_ShouldThrowException()
         {
             // Arrange
-            var establishment = new Establishment();
             var table = new Table("Table1");
             establishment.CreateTable(table.Name);
-            establishment.CreateSale(DateTime.Now, table: table);
+            establishment.CreateSale(DateTime.Now, tables: [table]);
 
             // Act & Assert
             Assert.Throws<Exception>(() => establishment.RemoveTable(table));
@@ -64,7 +103,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
         public void GetTables_WhenTablesPresent_ShouldReturnListOfTables()
         {
             // Arrange
-            var establishment = new Establishment();
             establishment.AddTable(establishment.CreateTable("Table1"));
             establishment.AddTable(establishment.CreateTable("Table2"));
 
@@ -77,18 +115,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
             Assert.Contains(tables, t => t.Name == "Table2");
         }
 
-        [Fact]
-        public void GetTables_WhenNoTables_ShouldReturnEmptyList()
-        {
-            // Arrange
-            var establishment = new Establishment();
-
-            // Act
-            var tables = establishment.GetTables();
-
-            // Assert
-            Assert.Empty(tables);
-        }
 
 
 

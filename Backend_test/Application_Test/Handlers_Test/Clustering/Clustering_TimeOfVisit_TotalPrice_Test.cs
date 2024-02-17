@@ -7,7 +7,7 @@ using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
-public class Clustering_TimeOfVisit_TotalPrice_Test : BaseTest
+public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
 {
     private IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> Clustering_TimeOfVisitVSTotalPrice;
     private IUnitOfWork unitOfWork;
@@ -19,7 +19,7 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : BaseTest
     private List<Sale> sales = new List<Sale>();
     private Random random;
 
-    public Clustering_TimeOfVisit_TotalPrice_Test() : base(new List<ITestService> { TestContainer.CreateAsync().Result })
+    public Clustering_TimeOfVisit_TotalPrice_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
     {
         Clustering_TimeOfVisitVSTotalPrice = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>>();
         testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();

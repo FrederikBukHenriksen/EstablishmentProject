@@ -85,7 +85,7 @@ namespace WebApplication1.CommandHandlers
     {
         private IServiceProvider serviceProvider;
 
-        public salesClustering(IServiceProvider serviceProvider, IUserContextService userContextService, IEstablishmentRepository establishmentRepository, ISalesRepository salesRepository)
+        public salesClustering(IServiceProvider serviceProvider, IUserContextService userContextService, IEstablishmentRepository establishmentRepository)
         {
             this.serviceProvider = serviceProvider;
         }

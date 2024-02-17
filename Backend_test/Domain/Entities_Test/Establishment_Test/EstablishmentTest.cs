@@ -1,71 +1,71 @@
-﻿using NodaTime;
-using WebApplication1.Domain_Layer.Entities;
+﻿using WebApplication1.Domain_Layer.Entities;
 
 namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
 {
     public class EstablishmentTest
     {
         [Fact]
-        public void SetOpeningHours_ShouldSetOpeningHours()
+        public void Constructor_ShouldReturnnEstablishment()
         {
             // Arrange
-            var establishment = new Establishment();
-            var dayOfWeek = DayOfWeek.Monday;
-            var openTime = new LocalTime(9, 0);
-            var closeTime = new LocalTime(17, 0);
+            string name = "Test establishment";
+            Table table = new Table("Table");
+            Item item = new Item("Item", 10.00);
+            Sale sale = new Sale(DateTime.Now);
 
             // Act
-            var result = establishment.SetOpeningHours(dayOfWeek, openTime, closeTime);
+
+            Establishment establishment = new Establishment(name, [item], [table], [sale]);
 
             // Assert
-            Assert.NotNull(result);
-
-            var openingHoursMonday = result.Find(x => x.dayOfWeek == dayOfWeek);
-            Assert.Equal(dayOfWeek, openingHoursMonday.dayOfWeek);
-            Assert.Equal(openTime, openingHoursMonday.open);
-            Assert.Equal(closeTime, openingHoursMonday.close);
-        }
-        [Fact]
-        public void GetAllOpeningHours_ShouldReturnOpeningHours()
-        {
-            // Arrange
-            var establishment = new Establishment();
-            var dayOfWeek = DayOfWeek.Monday;
-            var openTime = new LocalTime(9, 0);
-            var closeTime = new LocalTime(17, 0);
-            establishment.SetOpeningHours(dayOfWeek, openTime, closeTime);
-
-            // Act
-            var result = establishment.GetAllOpeningHours();
-
-            // Assert
-            Assert.NotNull(result);
-            var openingHoursMonday = result.Find(x => x.dayOfWeek == dayOfWeek);
-            Assert.Equal(dayOfWeek, openingHoursMonday.dayOfWeek);
-            Assert.Equal(openTime, openingHoursMonday.open);
-            Assert.Equal(closeTime, openingHoursMonday.close);
+            Assert.NotNull(establishment);
+            Assert.Equal(name, establishment.GetName());
+            Assert.Contains(table, establishment.GetTables());
+            Assert.Contains(item, establishment.GetItems());
+            Assert.Contains(sale, establishment.GetSales());
         }
 
         [Fact]
-        public void GetOpeningHours()
+        public void SetName_ShouldSetName()
         {
             // Arrange
-            var establishment = new Establishment();
-            var dayOfWeek = DayOfWeek.Monday;
-            var openTime = new LocalTime(9, 0);
-            var closeTime = new LocalTime(17, 0);
-            establishment.SetOpeningHours(dayOfWeek, openTime, closeTime);
+            Establishment establishment = new Establishment();
+            string name = "New name";
 
             // Act
-            var result = establishment.GetOpeningHours(dayOfWeek);
+            var result = establishment.SetName(name);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(dayOfWeek, result.dayOfWeek);
-            Assert.Equal(openTime, result.open);
-            Assert.Equal(closeTime, result.close);
+            Assert.Equal(name, establishment.GetName());
+        }
+
+        public void SetName_WithEmptyName_ShouldThrowException()
+        {
+            // Arrange
+            Establishment establishment = new Establishment();
+            string name = "";
+
+            // Act
+            Action act = () => establishment.SetName(name);
+
+            // Assert
+            Assert.Throws<ArgumentException>(act);
+        }
+
+
+        [Fact]
+        public void GetName_ShouldReturnName()
+        {
+            // Arrange
+            string name = "Test establishment";
+            Establishment establishment = new Establishment(name);
+
+            // Act
+            var result = establishment.GetName();
+
+            // Assert
+            Assert.Equal(name, result);
         }
     }
-
-
 }

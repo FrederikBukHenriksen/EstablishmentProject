@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
 using WebApplication1.Application_Layer.Handlers.SalesHandlers;
 using WebApplication1.CommandHandlers;
 using WebApplication1.CommandsHandlersReturns;
@@ -16,13 +15,6 @@ namespace WebApplication1.Controllers
         public SaleController([FromServices] ICommandValidatorService handlerService)
         {
             this.handlerService = handlerService;
-        }
-
-        [Authorize]
-        [HttpPost("get-salesDTO")]
-        public async Task<GetSalesDTOReturn> GetSalesDTO([FromBody] GetSalesDTOCommand command, [FromServices] IHandler<GetSalesDTOCommand, GetSalesDTOReturn> handler)
-        {
-            return await this.handlerService.Service(handler, command);
         }
 
         [Authorize]

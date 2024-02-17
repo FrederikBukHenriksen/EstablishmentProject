@@ -15,7 +15,7 @@ namespace WebApplication1.Infrastructure_Layer.Data.EntityTypeConfiguration
 
             builder.Property(e => e.TimestampPayment).IsRequired();
 
-            builder.HasOne(e => e.Table);
+            //builder.HasOne(e => e.Table);
 
 
 

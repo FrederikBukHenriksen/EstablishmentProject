@@ -3,8 +3,11 @@ using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Data.DataModels
 {
+    public interface ISalesItems
+    {
+    }
 
-    public class SalesItems : EntityBase
+    public class SalesItems : EntityBase, ISalesItems
     {
         public virtual Sale Sale { get; set; }
         public virtual Item Item { get; set; }

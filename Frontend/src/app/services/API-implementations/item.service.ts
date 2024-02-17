@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  GetItemDTOCommand,
+  GetItemsCommand,
   GetSalesCommand,
   GetSalesDTOCommand,
   ItemClient,
@@ -27,18 +27,18 @@ export class ItemService implements IItemService {
     this.sessionStorageService.getActiveEstablishment();
 
   public async GetItems(establishmentId?: string): Promise<string[]> {
-    var command = new GetSalesCommand();
+    var command = new GetItemsCommand();
     command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
-    return (await lastValueFrom(this.itemClient.getItems(command))).items;
+    return (await lastValueFrom(this.itemClient.getItems(command))).id;
   }
 
   public async GetItemsDTO(
     itemIds: string[],
     establishmentId?: string
   ): Promise<ItemDTO[]> {
-    var command = new GetItemDTOCommand();
+    var command = new GetItemsCommand();
     command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
-    command.itemsIds = itemIds;
-    return (await lastValueFrom(this.itemClient.getItemsDTO(command))).items;
+    command.itemIds = itemIds;
+    return (await lastValueFrom(this.itemClient.getItemsDTO(command))).dto;
   }
 }

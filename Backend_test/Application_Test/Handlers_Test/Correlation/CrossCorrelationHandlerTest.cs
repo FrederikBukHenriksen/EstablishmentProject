@@ -9,14 +9,14 @@ using WebApplication1.Utils;
 
 namespace EstablishmentProject.test.Application.Handlers.Correlation
 {
-    public class CrossCorrelationHandlerTest : BaseTest
+    public class CrossCorrelationHandlerTest : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
         private IWeatherApi yourClassUnderTest;
         private ITestDataCreatorService testDataCreatorService;
 
 
-        public CrossCorrelationHandlerTest(IntegrationTestWebAppFactory factory) : base(new List<ITestService> { TestContainer.CreateAsync().Result, new WeatherMock() })
+        public CrossCorrelationHandlerTest(IntegrationTestWebAppFactory factory) : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock() })
         {
             //Inject services
             testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();

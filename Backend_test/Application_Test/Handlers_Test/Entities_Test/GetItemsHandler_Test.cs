@@ -10,7 +10,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
 {
 
 
-    public class GetItemsHandler_Test : BaseTest
+    public class GetItemsHandler_Test : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
         private GetItemsCommand getItemsCommand;
@@ -18,7 +18,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         private Item item;
 
 
-        public GetItemsHandler_Test() : base(new List<ITestService> { TestContainer.CreateAsync().Result })
+        public GetItemsHandler_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             //Inject services
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();

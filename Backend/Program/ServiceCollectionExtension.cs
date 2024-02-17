@@ -1,7 +1,6 @@
 ﻿using DMIOpenData;
 using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
-using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.SalesHandlers;
 using WebApplication1.Application_Layer.Handlers.ItemHandler;
 using WebApplication1.Application_Layer.Handlers.SalesHandlers;
 using WebApplication1.Application_Layer.Services;
@@ -25,15 +24,6 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IUserContextService, ContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
-            serviceCollection.AddScoped<ISalesService, SalesService>();
-
-            //serviceCollection.AddScoped<IDatabaseContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
-            //Entity services
-            //serviceCollection.AddTransient<IEstablishmentService, EstablishmentService>();
-            //serviceCollection.AddTransient<ISaleBuilder, SaleBuilder>();
-            //serviceCollection.AddTransient<IItemBuilderService, ItemBuilderService>();
-            //serviceCollection.AddTransient<IUserBuilder, UserBuilder>();
 
             serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
             serviceCollection.AddScoped<IWeatherApi, DmiWeatherApi>();
@@ -43,9 +33,6 @@ namespace WebApplication1.Program
         {
             serviceCollection.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
-            serviceCollection.AddScoped<IUserRolesRepository, UserRolesRepository>();
-            serviceCollection.AddScoped<ISalesRepository, SalesRepository>();
-            serviceCollection.AddScoped<IItemRepository, ItemRepository>();
 
         }
 
@@ -62,7 +49,6 @@ namespace WebApplication1.Program
 
             //Correlation
             serviceCollection.AddTransient<IHandler<CorrelationCommand, CorrelationReturn>, CorrelationHandler>();
-            serviceCollection.AddTransient<IHandler<CorrelationGraphCommand, CorrelationGraphReturn>, CorrelationGraphHandler>();
 
             //Clustering
             serviceCollection.AddTransient<IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn>, salesClustering>();
@@ -77,9 +63,6 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsDTOReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsDTOReturn>>();
 
             //Sale
-            serviceCollection.AddTransient<IHandler<GetSalesDTOCommand, GetSalesDTOReturn>, GetSalesDTOHandler<GetSalesDTOReturn>>();
-            serviceCollection.AddTransient<IHandler<GetSalesDTOCommand, GetSalesRawReturn>, GetSalesDTOHandler<GetSalesRawReturn>>();
-
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesReturn>, GetSalesHandler<GetSalesReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();

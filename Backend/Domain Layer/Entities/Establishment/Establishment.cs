@@ -2,10 +2,11 @@
 {
     public interface IEstablishment : IEstablishment_Sale, IEstablishment_Table, IEstablishment_Item, IEstablishment_Information
     {
+        string GetName();
         string SetName(string name);
     }
 
-    public partial class Establishment : EntityBase, IEstablishment
+    public partial class Establishment : EntityBase
     {
         public string? Name { get; set; }
         public virtual EstablishmentInformation Information { get; set; } = new EstablishmentInformation();
@@ -32,8 +33,24 @@
 
         public string SetName(string name)
         {
+            if (this.IsNameValid(name)) { throw new ArgumentException("Name is not valid"); }
             this.Name = name;
             return name;
+        }
+
+        public string GetName()
+        {
+            return this.Name;
+        }
+
+        //Checkers and validators
+        public bool IsNameValid(string name)
+        {
+            if (name == "")
+            {
+                return false;
+            }
+            return true;
         }
 
     }

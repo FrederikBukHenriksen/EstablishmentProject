@@ -1,35 +1,40 @@
-﻿using WebApplication1.Domain_Layer.Entities;
+﻿using EstablishmentProject.test.TestingCode;
+using WebApplication1.Domain_Layer.Entities;
 
 namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
 {
-    public class EstablishmentSaleTest : BaseIntegrationTest
+    public class EstablishmentSaleTest : IntegrationTest
     {
-        public EstablishmentSaleTest(IntegrationTestWebAppFactory factory) : base(factory)
+        private Establishment establishment;
+
+        public EstablishmentSaleTest() : base()
         {
+            CommonArrange();
+        }
+
+        private void CommonArrange()
+        {
+            establishment = new Establishment("Test establishment");
         }
 
         [Fact]
-        public void CreateSale()
+        public void CreateSale_ShouldReturnSale()
         {
             // Arrange
-            var establishment = new Establishment();
             var timestampPayment = DateTime.Now;
 
             // Act
-            establishment.CreateSale(timestampPayment);
+            Sale sale = establishment.CreateSale(timestampPayment);
 
             // Assert
-            var sales = establishment.GetSales();
-            Assert.Single(sales);
-            Assert.Equal(timestampPayment, sales.First().TimestampPayment);
+            Assert.NotNull(sale);
+            Assert.Equal(timestampPayment, sale.TimestampPayment);
         }
-
 
         [Fact]
         public void CreateSale_WithItemsRegistered()
         {
             // Arrange
-            var establishment = new Establishment();
             var timestampPayment = DateTime.Now;
             var item = establishment.AddItem(establishment.CreateItem("Item1", 10.00));
             var itemAndQuantity = new List<(Item, int)>() { (item, 1) };
@@ -48,8 +53,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
             var otherEstablishment = new Establishment();
             var item = otherEstablishment.CreateItem("Item1", 10.00);
 
-            var establishment = new Establishment();
-
             // Act
             Action act = () => establishment.CreateSale(timestampPayment: DateTime.Now, itemAndQuantity: new List<(Item, int)>() { (item, 1) });
 
@@ -57,12 +60,38 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
             Assert.Throws<Exception>(act);
         }
 
+        [Fact]
+        public void AddSale_WithSaleCreatedForEstablishment_ShouldAddSale()
+        {
+            // Arrange
+            var sale = establishment.CreateSale(DateTime.Now);
+
+            // Act
+            establishment.AddSale(sale);
+
+            // Assert
+            Assert.Contains(sale, establishment.GetSales());
+        }
+
+        [Fact]
+        public void AddSale_WithSaleNotCreatedForEstablishment_ShouldNotAddSale()
+        {
+            // Arrange
+            var otherEstablishment = new Establishment();
+            var sale = otherEstablishment.CreateSale(DateTime.Now);
+
+            // Act
+            Action act = () => establishment.AddSale(sale);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(act);
+        }
+
 
         [Fact]
         public void GetSales()
         {
             // Arrange
-            var establishment = new Establishment();
             var timestampPayment = DateTime.Now;
             establishment.CreateSale(timestampPayment);
 
@@ -79,7 +108,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
         public void RemoveSale_WithExistingSale_RemovesSale()
         {
             // Arrange
-            var establishment = new Establishment();
             var timestampPayment = DateTime.Now;
             establishment.CreateSale(timestampPayment);
             var sale = establishment.GetSales().First();
@@ -99,7 +127,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
             var otherEstablishment = new Establishment();
             var otherSale = otherEstablishment.CreateSale(DateTime.Now);
 
-            var establishment = new Establishment();
             establishment.CreateSale(DateTime.Now);
 
             // Act
@@ -113,12 +140,11 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
         public void UpdateSale_WithExistingSale_UpdatesSale()
         {
             // Arrange
-            var establishment = new Establishment();
             var initialTimestampPayment = DateTime.Now;
             establishment.CreateSale(initialTimestampPayment);
             var sale = establishment.GetSales().First();
             var updatedTimestampPayment = DateTime.Now.AddDays(1);
-            sale.TimestampPayment = updatedTimestampPayment;
+            sale.setTimeOfPayment(updatedTimestampPayment);
 
             // Act
             establishment.UpdateSale(sale);
@@ -133,7 +159,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
         public void UpdateSale_WithNonExistingSale_DoesNotAddSale()
         {
             // Arrange
-            var establishment = new Establishment();
             var nonExistingSale = new Sale(DateTime.Now);
 
             // Act

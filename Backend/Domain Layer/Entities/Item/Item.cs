@@ -11,28 +11,35 @@ namespace WebApplication1.Domain_Layer.Entities
         public Item() { }
         public Item(string name, Price price)
         {
-            this.Name = name;
+            this.SetName(name);
             this.Price = price;
+        }
+
+        public Item(string name, double price)
+        {
+            this.SetName(name);
+            this.SetPrice(price, Currency.DKK);
         }
 
         public Item(string name, double price, Currency currency)
         {
-            this.Name = name;
-            this.Price = new Price(price, currency);
+            this.SetName(name);
+            this.SetPrice(price, currency);
         }
 
-        public Guid GetEstablishmentId()
-        {
-            return this.EstablishmentId;
-        }
         public string GetName()
         {
             return this.Name;
         }
 
-        public void SetName(string name)
+        public string SetName(string name)
         {
+            if (!this.IsItemNameValid(name))
+            {
+                throw new ArgumentException("Item name is not valid");
+            }
             this.Name = name;
+            return this.GetName();
         }
 
         public Price GetPrice()
@@ -42,7 +49,31 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public void SetPrice(double price, Currency currency)
         {
+            if (!this.IsPriceValid(price))
+            {
+                throw new ArgumentException("Price is not valid");
+            }
+
             this.Price = new Price(price, currency);
+        }
+
+        //Checkers and validators
+        public bool IsItemNameValid(string name)
+        {
+            if (name == "")
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsPriceValid(double price)
+        {
+            if (price <= 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 

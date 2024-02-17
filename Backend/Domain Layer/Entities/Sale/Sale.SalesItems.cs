@@ -4,25 +4,25 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface ISale_SalesItems
     {
-        SalesItems AddSalesItem(SalesItems salesItem);
-        SalesItems CreateSalesItem(Item item, int quantity);
+        SalesItems AddSalesItems(SalesItems salesItem);
+        SalesItems CreateSalesItems(Item item, int quantity);
         List<SalesItems> GetSalesItems();
-        void RemoveSalesItem(SalesItems salesItem);
-        SalesItems UpdateSalesItem(SalesItems salesItem);
+        void RemoveSalesItems(SalesItems salesItem);
     }
 
     public partial class Sale : ISale_SalesItems
     {
-        public SalesItems AddSalesItem(SalesItems salesItem)
+        public SalesItems AddSalesItems(SalesItems salesItem)
         {
+            this.SalesItemsMustBeCreatedForSale(salesItem);
+            this.SalesItemsMustNotAlreadyExist(salesItem);
             this.SalesItems.Add(salesItem);
             return salesItem;
         }
 
-        public SalesItems CreateSalesItem(Item item, int quantity)
+        public SalesItems CreateSalesItems(Item item, int quantity)
         {
-            SalesItems salesItem = new SalesItems(item, quantity);
-            return salesItem;
+            return new SalesItems(item, quantity);
         }
 
         public List<SalesItems> GetSalesItems()
@@ -30,27 +30,47 @@ namespace WebApplication1.Domain_Layer.Entities
             return this.SalesItems.ToList();
         }
 
-        public void RemoveSalesItem(SalesItems salesItem)
+        public void RemoveSalesItems(SalesItems salesItem)
         {
-            if (this.DoesSalesItemAlreadyExist(salesItem))
+            this.SalesItemsMustExist(salesItem);
+            this.SalesItems.Remove(salesItem);
+
+        }
+
+        //Checkers and validators
+
+        private void SalesItemsMustExist(SalesItems salesItem)
+        {
+            if (!this.DoesSalesItemExistInSale(salesItem))
             {
-                this.SalesItems.Remove(salesItem);
+                throw new InvalidOperationException("SalesItem does not exist within sale");
             }
         }
 
-        public SalesItems UpdateSalesItem(SalesItems salesItem)
+        private void SalesItemsMustNotAlreadyExist(SalesItems salesItem)
         {
-            if (this.DoesSalesItemAlreadyExist(salesItem))
+            if (this.DoesSalesItemExistInSale(salesItem))
             {
-                this.RemoveSalesItem(salesItem);
-                this.AddSalesItem(salesItem);
+                throw new InvalidOperationException("SalesItem already exists within sale");
             }
-            return salesItem;
         }
 
-        private bool DoesSalesItemAlreadyExist(SalesItems salesItem)
+        private bool DoesSalesItemExistInSale(SalesItems salesItem)
         {
-            return this.SalesItems.Any(x => x.Item == salesItem.Item);
+            return this.GetSalesItems().Any(x => x.Item == salesItem.Item);
+        }
+
+        protected void SalesItemsMustBeCreatedForSale(SalesItems salesItems)
+        {
+            if (!this.IsSalesItemsCreatedForSale(salesItems))
+            {
+                throw new InvalidOperationException("SalesItems is not created for sale");
+            }
+        }
+
+        private bool IsSalesItemsCreatedForSale(SalesItems salesItems)
+        {
+            return salesItems.Sale == this;
         }
     }
 }

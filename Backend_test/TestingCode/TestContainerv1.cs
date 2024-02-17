@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Testcontainers.PostgreSql;
 using WebApplication1.Data;
@@ -19,36 +20,47 @@ namespace EstablishmentProject.test.TestingCode
         public void Config(IWebHostBuilder webHostBuilder);
     }
 
-    public interface IBaseTest
+    public interface IIntegrationTest
     {
     }
 
-    public class BaseTest : WebApplicationFactory<Program>
+    public class IntegrationTest : WebApplicationFactory<Program>
     {
         public IServiceScope scope;
 
-        public List<ITestService> testServices = new List<ITestService> { };
+        public List<ITestService> testServices = new List<ITestService>();
 
-
-
-        public BaseTest(List<ITestService>? testServices = null)
+        public IntegrationTest(List<ITestService>? testServices = null)
         {
-            if (testServices != null)
-            {
-                this.testServices = testServices;
-            }
+            this.testServices = testServices != null ? testServices : this.testServices;
             scope = Services.CreateScope();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            if (testServices.Count > 0)
+            if (!testServices.IsNullOrEmpty())
             {
                 foreach (var service in testServices)
                 {
                     service.Config(builder);
                 }
             }
+            if (!testServices.Any(x => x is DatabaseTestContainer))
+            {
+                //Ensure the integration test does not access system database
+                removeDatabaseConnection(builder);
+            }
+        }
+        private void removeDatabaseConnection(IWebHostBuilder webHostBuilder)
+        {
+            webHostBuilder.ConfigureTestServices(services =>
+            {
+                var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                if (descriptor is not null)
+                {
+                    services.Remove(descriptor);
+                }
+            });
         }
     }
 
@@ -83,48 +95,11 @@ namespace EstablishmentProject.test.TestingCode
         }
     }
 
-
-
-    //public class ByPassUserLoginMock : IVerifyEstablishmentCommandService, ITestService
-    //{
-
-    //    private readonly Mock<IVerifyEstablishmentCommandService> verifyEstablishmentCommandService = new Mock<IVerifyEstablishmentCommandService>();
-
-    //    public ByPassUserLoginMock()
-    //    {
-    //        verifyEstablishmentCommandService.Setup(api => api.VerifyEstablishment(It.IsAny<ICommand>()))
-    //            .Callback<ICommand>(command => { return; });
-
-    //    }
-    //    public void VerifyEstablishment(ICommand command)
-    //    {
-    //        return;
-    //    }
-
-
-
-    //    public void Config(IWebHostBuilder webHostBuilder)
-    //    {
-    //        webHostBuilder.ConfigureTestServices(services =>
-    //        {
-    //            var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IVerifyEstablishmentCommandService));
-    //            if (descriptor is not null)
-    //            {
-    //                services.Remove(descriptor);
-    //            }
-    //            services.AddScoped<IVerifyEstablishmentCommandService, ByPassUserLoginMock>();
-    //        });
-    //    }
-
-
-    //}
-
-    public class TestContainer : IAsyncLifetime, ITestService
+    public class DatabaseTestContainer : IAsyncLifetime, ITestService
     {
         private readonly PostgreSqlContainer _dbContainer;
 
-        // Private constructor, use static method CreateAsync to create an instance
-        private TestContainer(PostgreSqlContainer dbContainer)
+        private DatabaseTestContainer(PostgreSqlContainer dbContainer)
         {
             _dbContainer = dbContainer;
         }
@@ -155,8 +130,7 @@ namespace EstablishmentProject.test.TestingCode
             });
         }
 
-        // Static method to create an instance of TestContainer
-        public static async Task<TestContainer> CreateAsync()
+        public static async Task<DatabaseTestContainer> CreateAsync()
         {
             var dbContainer = new PostgreSqlBuilder()
                 .WithImage("postgres:latest")
@@ -165,11 +139,9 @@ namespace EstablishmentProject.test.TestingCode
                 .WithPassword("postgres")
                 .Build();
 
-            // Initialize the container
             await dbContainer.StartAsync();
 
-            // Create an instance of TestContainer
-            return new TestContainer(dbContainer);
+            return new DatabaseTestContainer(dbContainer);
         }
     }
 

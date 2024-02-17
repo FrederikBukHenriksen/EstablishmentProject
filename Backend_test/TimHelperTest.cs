@@ -3,7 +3,7 @@ using WebApplication1.Utils;
 
 namespace EstablishmentProject.test
 {
-    public class TimHelperTest : BaseTest
+    public class TimHelperTest : IntegrationTest
     {
         public TimHelperTest() : base(new List<ITestService>())
         {
