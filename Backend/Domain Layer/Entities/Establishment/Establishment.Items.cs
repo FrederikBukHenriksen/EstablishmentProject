@@ -3,34 +3,27 @@
 
     public interface IEstablishment_Item
     {
-        Item CreateItem(string name, double price, Currency currency);
         void RemoveItem(Item item);
         List<Item> GetItems();
-        Item AddItem(Item item);
+        void AddItem(Item item);
         Item CreateItem(string name, double price);
-        string SetName(Item item, string name);
+        void SetItemName(Item item, string name);
     }
     public partial class Establishment : EntityBase, IEstablishment_Item
     {
-        public Item CreateItem(string name, double price, Currency currency)
-        {
-            Item item = new Item(name, price, currency);
-            return item;
-        }
-
         public Item CreateItem(string name, double price)
         {
-            Item item = new Item(name, price, Currency.DKK);
+            this.ItemNameMustBeUnique(name);
+            Item item = new Item(name, price);
             return item;
         }
 
-        public Item AddItem(Item item)
+        public void AddItem(Item item)
         {
             this.ItemMustBeCreatedForEstablishment(item);
             this.ItemMustNotAlreadyExist(item);
             this.ItemNameMustBeUnique(item.Name);
             this.Items.Add(item);
-            return item;
         }
 
         public List<Item> GetItems()
@@ -45,11 +38,10 @@
             this.Items.Remove(item);
         }
 
-        public string SetName(Item item, string name)
+        public void SetItemName(Item item, string name)
         {
             this.ItemNameMustBeUnique(name);
             item.SetName(name);
-            return item.GetName();
         }
 
 

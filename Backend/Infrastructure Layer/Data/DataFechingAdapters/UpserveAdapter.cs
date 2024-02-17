@@ -68,7 +68,7 @@ namespace WebApplication1.Application_Layer.Services
             foreach (var itemObject in itemObjects)
             {
                 result.Add((
-                    () => establishment.CreateItem(itemObject.Name, double.Parse(itemObject.Price), establishment.Information.Currency),
+                    () => establishment.CreateItem(itemObject.Name, double.Parse(itemObject.Price)),
                     new RetrivingMetadata(itemObject.ItemId)
                     ));
             }

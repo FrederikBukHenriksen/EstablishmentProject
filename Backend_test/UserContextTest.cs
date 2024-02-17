@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
@@ -11,40 +13,41 @@ namespace EstablishmentProject.test
         //Services
         private UserContextMiddleware _userContextMiddleware;
         private IUserContextService _userContextService;
+        private IUnitOfWork unitOfWork;
         private IAuthService _authService;
 
         //Arrange
-        private Establishment establishment1;
+        private Establishment establishment;
         private Establishment establishment2;
-        private List<Establishment> allEstablishments;
 
         private User userWithUserRole;
         private User userNoUserRole;
-        private List<User> allUsers;
 
         public UserContextTest(IntegrationTestWebAppFactory factory) : base(factory)
         {
+            clearDatabase();
             //Services
             _authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
             _userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
             _userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
+            unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-            //var database = dbContext.Database.GetConnectionString();
-            //var ok = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            CommonArrange();
+        }
 
-            //Arrange
-            establishment1 = new Establishment { Name = "Cafe 1" };
-            establishment2 = new Establishment { Name = "Cafe 2" };
-            allEstablishments = new List<Establishment> { establishment1, establishment2 };
-            dbContext.Set<Establishment>().AddRange(allEstablishments);
+        private void CommonArrange()
+        {
+            establishment = new Establishment("Test Establishment");
 
-            userWithUserRole = new User("Frederik@mail.com", "12345678", new List<(Establishment, Role)> { (establishment1, Role.Admin) });
+            userWithUserRole = new User("Frederik@mail.com", "12345678", new List<(Establishment, Role)> { (establishment, Role.Admin) });
             userNoUserRole = new User("Lydia@mail.com", "12345678");
 
-            allUsers = new List<User> { userWithUserRole, userNoUserRole };
-            dbContext.Set<User>().AddRange(allUsers);
-
-            dbContext.SaveChanges();
+            using (var uow = unitOfWork)
+            {
+                uow.establishmentRepository.Add(establishment);
+                uow.userRepository.Add(userWithUserRole);
+                uow.userRepository.Add(userNoUserRole);
+            }
         }
 
         [Fact]
@@ -58,24 +61,12 @@ namespace EstablishmentProject.test
             //Act
             _userContextMiddleware.InvokeAsync(httpMock, (context) => Task.CompletedTask); //Send request to middleware
             User? actualUser = _userContextService.GetUser();
-            List<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
 
             //ASSERT
-            User expectedUser = userWithUserRole;
-
-            //Assert user
             Assert.NotNull(actualUser);
-            Assert.Equal(expectedUser.Id, actualUser.Id);
-
-            //Assert userrole belongs to user
-            Assert.NotNull(actualUserRoles);
-            Assert.True(actualUserRoles.All(x => x.User == expectedUser));
-
-            //Assert users accesible establishment
-            Assert.True(actualUserRoles.All(x => allEstablishments.Contains(x.Establishment)));
-
-            //Assert users roles per establishment
-            Assert.True(actualUserRoles.Any(x => x.Establishment == establishment1 && x.Role == Role.Admin));
+            Assert.Equal(userWithUserRole.Id, actualUser.Id);
+            Assert.True(!actualUser.UserRoles.IsNullOrEmpty());
+            Assert.Equal(Role.Admin, actualUser.UserRoles.First().Role);
         }
 
         [Fact]
@@ -89,17 +80,11 @@ namespace EstablishmentProject.test
             //ACT
             _userContextMiddleware.InvokeAsync(httpMock, (context) => Task.CompletedTask); //Send request to middleware
             User? actualUser = _userContextService.GetUser();
-            ICollection<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
 
             //ASSERT
-            User expectedUser = userNoUserRole;
-
-            //Assert user
             Assert.NotNull(actualUser);
-            Assert.Equal(expectedUser.Id, actualUser.Id);
-
-            //Assert userroles
-            Assert.Null(actualUserRoles);
+            Assert.Equal(userNoUserRole.Id, actualUser.Id);
+            Assert.True(actualUser.UserRoles.IsNullOrEmpty());
         }
 
         [Fact]
@@ -112,17 +97,10 @@ namespace EstablishmentProject.test
 
             //ACT
             _userContextMiddleware.InvokeAsync(httpMock, (context) => Task.CompletedTask); //Send request to middleware
-            User? actualUser = _userContextService.GetUser();
-            ICollection<UserRole>? actualUserRoles = _userContextService.GetAllUserRoles();
+            Action act = () => _userContextService.GetUser();
 
-            //ASSERT
-
-            //Assert user
-            Assert.Null(actualUser);
-
-            //Assert userroles
-            Assert.Null(actualUserRoles);
-
+            //Assert
+            Assert.Throws<InvalidOperationException>(act);
         }
     }
 }

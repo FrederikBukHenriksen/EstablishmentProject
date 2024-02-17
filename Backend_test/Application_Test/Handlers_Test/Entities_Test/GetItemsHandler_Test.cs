@@ -30,7 +30,8 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         private void createTestData()
         {
             establishment = new Establishment("Test establishment");
-            item = establishment.AddItem(establishment.CreateItem("Test item", 0.0));
+            item = establishment.CreateItem("Test item", 0.0);
+            establishment.AddItem(item);
 
             using (var uow = unitOfWork)
             {

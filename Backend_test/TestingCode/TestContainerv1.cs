@@ -45,11 +45,11 @@ namespace EstablishmentProject.test.TestingCode
                     service.Config(builder);
                 }
             }
-            if (!testServices.Any(x => x is DatabaseTestContainer))
-            {
-                //Ensure the integration test does not access system database
-                removeDatabaseConnection(builder);
-            }
+            //if (!testServices.Any(x => x is DatabaseTestContainer))
+            //{
+            //    //Ensure the integration test does not access system database
+            //    removeDatabaseConnection(builder);
+            //}
         }
         private void removeDatabaseConnection(IWebHostBuilder webHostBuilder)
         {

@@ -27,9 +27,9 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
 
         //ARRANGE
         establsihment = new Establishment("Cafe 1");
-        espresso = establsihment.CreateItem("Espresso", 35, Currency.DKK);
-        coffee = establsihment.CreateItem("Coffee", 35, Currency.DKK);
-        latte = establsihment.CreateItem("Latte", 50, Currency.DKK);
+        espresso = establsihment.CreateItem("Espresso", 35);
+        coffee = establsihment.CreateItem("Coffee", 35);
+        latte = establsihment.CreateItem("Latte", 50);
 
     }
 

@@ -18,10 +18,26 @@ namespace WebApplication1.Data.DataModels
 
         }
 
-        public SalesItems(Item Item, int Quantity)
+        public SalesItems(Sale sale, Item Item, int Quantity)
         {
+            this.QuantityMustBeValid(Quantity);
+            this.Sale = sale;
             this.Item = Item;
             this.quantity = Quantity;
+        }
+
+        protected void QuantityMustBeValid(int quantity)
+        {
+            if (!this.IsQuantityPositive(quantity))
+            {
+                throw new ArgumentException("Quantity is not positive");
+            }
+        }
+
+        protected bool IsQuantityPositive(int quantity)
+        {
+            return quantity >= 0;
+
         }
 
         public class SalesItemsConfiguration : IEntityTypeConfiguration<SalesItems>

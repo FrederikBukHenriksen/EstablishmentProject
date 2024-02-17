@@ -27,16 +27,27 @@ namespace EstablishmentProject.test
 
             establishment = new Establishment("Cafe 1");
 
-            coffee = establishment.AddItem(establishment.CreateItem("coffee", 0, Currency.DKK));
-            tea = establishment.AddItem(establishment.CreateItem("tea", 0, Currency.DKK));
-            water = establishment.AddItem(establishment.CreateItem("water", 0, Currency.DKK));
+            coffee = establishment.CreateItem("coffee", 0);
+            establishment.AddItem(coffee);
 
-            table = establishment.AddTable(establishment.CreateTable("table 1"));
+            tea = establishment.CreateItem("tea", 0);
+            establishment.AddItem(tea);
 
-            sale_empty = establishment.AddSale(establishment.CreateSale(DateTime.Today));
-            sale_coffee = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) }, tables: [table]));
-            sale_coffee_tea = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-2), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1) }, timestampArrival: DateTime.Today.AddDays(-2).AddHours(-1)));
-            sale_coffee_tea_water = establishment.AddSale(establishment.CreateSale(DateTime.Today.AddDays(-3), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1), (water, 1) }, timestampArrival: DateTime.Today.AddDays(-3).AddHours(-1)));
+            water = establishment.CreateItem("water", 0);
+            establishment.AddItem(water);
+
+            table = establishment.CreateTable("table 1");
+            establishment.AddTable(table);
+
+
+            sale_empty = establishment.CreateSale(DateTime.Today);
+            establishment.AddSale(sale_empty);
+            sale_coffee = establishment.CreateSale(DateTime.Today.AddDays(-1), itemAndQuantity: new List<(Item, int)> { (coffee, 1) }, tables: [table]);
+            establishment.AddSale(sale_coffee);
+            sale_coffee_tea = establishment.CreateSale(DateTime.Today.AddDays(-2), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1) }, timestampArrival: DateTime.Today.AddDays(-2).AddHours(-1));
+            establishment.AddSale(sale_coffee_tea);
+            sale_coffee_tea_water = establishment.CreateSale(DateTime.Today.AddDays(-3), itemAndQuantity: new List<(Item, int)> { (coffee, 1), (tea, 1), (water, 1) }, timestampArrival: DateTime.Today.AddDays(-3).AddHours(-1));
+            establishment.AddSale(sale_coffee_tea_water);
 
             //ARRANGE
             sales = [

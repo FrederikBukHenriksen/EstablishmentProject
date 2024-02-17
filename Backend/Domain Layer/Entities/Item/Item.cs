@@ -6,25 +6,14 @@ namespace WebApplication1.Domain_Layer.Entities
     {
         public Guid EstablishmentId { get; set; }
         public string Name { get; set; }
-        public Price Price { get; set; }
+        public double Price { get; set; }
 
         public Item() { }
-        public Item(string name, Price price)
-        {
-            this.SetName(name);
-            this.Price = price;
-        }
 
         public Item(string name, double price)
         {
             this.SetName(name);
-            this.SetPrice(price, Currency.DKK);
-        }
-
-        public Item(string name, double price, Currency currency)
-        {
-            this.SetName(name);
-            this.SetPrice(price, currency);
+            this.SetPrice(price);
         }
 
         public string GetName()
@@ -34,30 +23,32 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public string SetName(string name)
         {
-            if (!this.IsItemNameValid(name))
-            {
-                throw new ArgumentException("Item name is not valid");
-            }
+            this.ItemNameMustBeValid(name);
             this.Name = name;
             return this.GetName();
         }
 
-        public Price GetPrice()
+        public double GetPrice()
         {
             return this.Price;
         }
 
-        public void SetPrice(double price, Currency currency)
+        public void SetPrice(double price)
         {
-            if (!this.IsPriceValid(price))
-            {
-                throw new ArgumentException("Price is not valid");
-            }
-
-            this.Price = new Price(price, currency);
+            this.PriceMustBeValid(price);
+            this.Price = price;
         }
 
         //Checkers and validators
+
+        protected void ItemNameMustBeValid(string name)
+        {
+            if (!this.IsItemNameValid(name))
+            {
+                throw new ArgumentException("Item name is not valid");
+            }
+        }
+
         public bool IsItemNameValid(string name)
         {
             if (name == "")
@@ -67,13 +58,20 @@ namespace WebApplication1.Domain_Layer.Entities
             return true;
         }
 
-        public bool IsPriceValid(double price)
+        protected void PriceMustBeValid(double price)
         {
-            if (price <= 0)
+            if (!this.IsPricePostive(price))
             {
-                return false;
+                throw new ArgumentException("Price is not valid");
             }
-            return true;
+        }
+        public bool IsPricePostive(double price)
+        {
+            if (price >= 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 
@@ -84,16 +82,16 @@ namespace WebApplication1.Domain_Layer.Entities
             builder.Property(e => e.Name).IsRequired();
             builder.HasIndex(e => e.Name).IsUnique();
 
-            builder.OwnsOne(e => e.Price, priceBuilder =>
-            {
-                priceBuilder.Property(p => p.Amount).HasColumnName("PriceValue").IsRequired();
-                priceBuilder.Property(p => p.Currency)
-                    .HasConversion(
-                    currency => currency.ToString(),
-                    currencyName => (Currency)Enum.Parse(typeof(Currency), currencyName))
-                    .HasColumnName("PriceCurrency")
-            .IsRequired(true);
-            });
+            //builder.OwnsOne(e => e.Price, priceBuilder =>
+            //{
+            //    priceBuilder.Property(p => p.Amount).HasColumnName("PriceValue").IsRequired();
+            //    priceBuilder.Property(p => p.Currency)
+            //        .HasConversion(
+            //        currency => currency.ToString(),
+            //        currencyName => (Currency)Enum.Parse(typeof(Currency), currencyName))
+            //        .HasColumnName("PriceCurrency")
+            //.IsRequired(true);
+            //});
         }
     }
 }

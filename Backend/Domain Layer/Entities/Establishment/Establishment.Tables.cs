@@ -6,8 +6,8 @@
         Table CreateTable(string name);
         void RemoveTable(Table table);
         List<Table> GetTables();
-        Table AddTable(Table table);
-        string SetName(Table table, string name);
+        void AddTable(Table table);
+        void SetTableName(Table table, string name);
     }
 
     public partial class Establishment : IEstablishment_Table
@@ -18,13 +18,12 @@
             return table;
         }
 
-        public Table AddTable(Table table)
+        public void AddTable(Table table)
         {
             this.TableMustBeCreatedForEstablishment(table);
             this.TableMustNotAlreadyExist(table);
             this.TableNameMustBeUnique(table.Name);
             this.Tables.Add(table);
-            return table;
         }
 
         public void RemoveTable(Table table)
@@ -39,11 +38,10 @@
             return this.Tables.ToList();
         }
 
-        public string SetName(Table table, string name)
+        public void SetTableName(Table table, string name)
         {
             this.TableNameMustBeUnique(name);
             table.SetName(name);
-            return table.GetName();
         }
 
 

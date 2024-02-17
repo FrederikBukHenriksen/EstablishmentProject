@@ -2,7 +2,7 @@
 {
     public interface ISale_SalesTables
     {
-        SalesTables AddSalesTables(SalesTables salesTables);
+        void AddSalesTables(SalesTables salesTables);
         SalesTables CreateSalesTables(Table table);
         List<SalesTables> GetSalesTables();
         void RemoveSalesTables(SalesTables salesTables);
@@ -10,17 +10,16 @@
 
     public partial class Sale : ISale_SalesTables
     {
-        public SalesTables AddSalesTables(SalesTables salesTables)
+        public void AddSalesTables(SalesTables salesTables)
         {
             this.SalesTablesMustBeCreatedForSale(salesTables);
             this.SalesTablesMustNotAlreadyExist(salesTables);
             this.SalesTables.Add(salesTables);
-            return salesTables;
         }
 
         public SalesTables CreateSalesTables(Table table)
         {
-            return new SalesTables(table);
+            return new SalesTables(this, table);
         }
 
         public List<SalesTables> GetSalesTables()

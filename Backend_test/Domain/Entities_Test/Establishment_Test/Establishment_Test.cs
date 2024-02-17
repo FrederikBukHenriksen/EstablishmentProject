@@ -1,11 +1,11 @@
 ﻿using WebApplication1.Domain_Layer.Entities;
 
-namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
+namespace EstablishmentProject.test.Domain.Entities_Test
 {
-    public class EstablishmentTest
+    public class Establishment_Test
     {
         [Fact]
-        public void Constructor_ShouldReturnnEstablishment()
+        public void Constructor_ShouldCreateEstablishment()
         {
             // Arrange
             string name = "Test establishment";
@@ -33,10 +33,9 @@ namespace EstablishmentProject.test.Domain.Entities_Test.Establishment_Test
             string name = "New name";
 
             // Act
-            var result = establishment.SetName(name);
+            establishment.SetName(name);
 
             // Assert
-            Assert.NotNull(result);
             Assert.Equal(name, establishment.GetName());
         }
 

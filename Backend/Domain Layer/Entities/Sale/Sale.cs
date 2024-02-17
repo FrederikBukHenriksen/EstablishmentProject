@@ -5,9 +5,9 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface ISale : ISale_SalesItems, ISale_SalesTables
     {
-        DateTime setTimeOfArrival(DateTime datetime);
+        void setTimeOfArrival(DateTime datetime);
         DateTime? GetTimeOfArrival();
-        DateTime setTimeOfPayment(DateTime datetime);
+        void SetTimeOfPayment(DateTime datetime);
         DateTime GetTimeOfPayment();
         DateTime GetTimeOfSale();
         TimeSpan? GetTimespanOfVisit();
@@ -33,7 +33,7 @@ namespace WebApplication1.Domain_Layer.Entities
             List<(Item item, int quantity)>? ItemAndQuantity = null,
             List<Table>? tables = null)
         {
-            this.setTimeOfPayment(timestampPayment);
+            this.SetTimeOfPayment(timestampPayment);
             if (timestampArrival != null)
             {
                 this.setTimeOfArrival((DateTime)timestampArrival!);
@@ -58,11 +58,10 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        public DateTime setTimeOfArrival(DateTime datetime)
+        public void setTimeOfArrival(DateTime datetime)
         {
             this.TimeOfArrivalMustBeBeforeTimeOfPayment(datetime);
             this.TimestampArrival = datetime;
-            return (DateTime)this.GetTimeOfArrival()!;
         }
 
         public DateTime? GetTimeOfArrival()
@@ -70,11 +69,10 @@ namespace WebApplication1.Domain_Layer.Entities
             return this.GetTimeOfArrival();
         }
 
-        public DateTime setTimeOfPayment(DateTime datetime)
+        public void SetTimeOfPayment(DateTime datetime)
         {
             this.TimeOfPaymentMustBeAfterTimeOfArrival(datetime);
             this.TimestampPayment = datetime;
-            return this.GetTimeOfPayment();
         }
 
         public DateTime GetTimeOfPayment()
@@ -102,7 +100,7 @@ namespace WebApplication1.Domain_Layer.Entities
                 {
                     if (!(salesItem == null))
                     {
-                        totalPrice += salesItem.Item.Price.Amount * salesItem.quantity;
+                        totalPrice += salesItem.Item.Price * salesItem.quantity;
                     }
                 }
             }
@@ -111,7 +109,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public int GetNumberOfSoldItems()
         {
-            return this.SalesItems.Count();
+            return this.SalesItems.Sum(x => x.quantity);
         }
 
         //Checkers and validators

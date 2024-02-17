@@ -6,7 +6,7 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
     {
         public Guid Id;
         public string Name { get; set; }
-        public Price Price { get; set; }
+        public double Price { get; set; }
 
         public ItemDTO(Item item)
         {

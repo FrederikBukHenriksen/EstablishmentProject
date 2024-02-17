@@ -5,24 +5,21 @@ namespace WebApplication1.Middelware
 {
     public class UserContextMiddleware : IMiddleware
     {
-        private IAuthService _authService;
-        private IUserContextService _userContextService;
+        private IAuthService authService;
+        private IUserContextService userContextService;
 
         public UserContextMiddleware(IAuthService authService, IUserContextService userContextService)
         {
-            this._authService = authService;
-            this._userContextService = userContextService;
+            this.authService = authService;
+            this.userContextService = userContextService;
         }
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            User? user = this._authService.GetUserFromHttp(context);
-
+            User? user = this.authService.GetUserFromHttp(context);
             if (user != null)
             {
-                this._userContextService.SetUser(user);
-                this._userContextService.FecthAccesibleEstablishments();
-                this._userContextService.FetchActiveEstablishmentFromHttpHeader(context);
+                this.userContextService.SetUser(user);
             };
             return next(context);
         }

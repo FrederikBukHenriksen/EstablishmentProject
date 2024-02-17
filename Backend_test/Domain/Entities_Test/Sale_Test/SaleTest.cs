@@ -1,9 +1,16 @@
-﻿using WebApplication1.Domain_Layer.Entities;
+﻿using EstablishmentProject.test.TestingCode;
+using WebApplication1.Domain_Layer.Entities;
 
-namespace EstablishmentProject.test.Domain
+namespace EstablishmentProject.test.Domain.Entities_Test
 {
-    public class SaleTest
+    public class SaleTest : IntegrationTest
     {
+
+        public SaleTest() : base()
+        {
+
+        }
+
         [Fact]
         public void Constructor_ShouldSetProperties()
         {
@@ -12,8 +19,8 @@ namespace EstablishmentProject.test.Domain
             var timestampArrival = DateTime.Now.AddHours(-1);
             var salesItems = new List<(Item item, int quantity)>
             {
-                (new Item { Price = new Price { Amount = 10 } }, 2),
-                (new Item { Price = new Price { Amount = 5 } }, 1)
+                (new Item("Coffee",20), 2),
+                (new Item("Tea",10), 1)
             };
             Table table = new Table();
 
@@ -73,9 +80,10 @@ namespace EstablishmentProject.test.Domain
             // Arrange
             var salesItems = new List<(Item item, int quantity)>
             {
-                (new Item { Price = new Price { Amount = 10 } }, 2),
-                (new Item { Price = new Price { Amount = 5 } }, 3)
+                (new Item("tiem1",10), 2),
+                (new Item("item2",5), 3),
             };
+
             var sale = new Sale(DateTime.Now, ItemAndQuantity: salesItems);
 
             // Act
@@ -99,13 +107,13 @@ namespace EstablishmentProject.test.Domain
         }
 
         [Fact]
-        public void GetNumberOfSoldItems_ShouldReturnCorrectCount()
+        public void GetNumberOfSoldItems_ShouldReturnNumberOfItems()
         {
             // Arrange
             var salesItems = new List<(Item item, int quantity)>
             {
-                (new Item { Price = new Price { Amount = 10 } }, 2),
-                (new Item { Price = new Price { Amount = 5 } }, 1)
+                (new Item("tiem1",10), 2),
+                (new Item("item2",5), 1),
             };
             var sale = new Sale(DateTime.Now, ItemAndQuantity: salesItems);
 
@@ -113,7 +121,7 @@ namespace EstablishmentProject.test.Domain
             var numberOfSoldItems = sale.GetNumberOfSoldItems();
 
             // Assert
-            Assert.Equal(salesItems.Count, numberOfSoldItems);
+            Assert.Equal(salesItems.Count, 3);
         }
 
         [Fact]
@@ -137,11 +145,10 @@ namespace EstablishmentProject.test.Domain
             var newTimeOfArrival = sale.TimestampPayment.AddHours(-1);
 
             // Act
-            var timeOfArrival = sale.setTimeOfArrival(newTimeOfArrival);
+            sale.setTimeOfArrival(newTimeOfArrival);
 
             // Assert
-            Assert.Equal(newTimeOfArrival, sale.TimestampArrival);
-            Assert.Equal(newTimeOfArrival, timeOfArrival);
+            Assert.Equal(newTimeOfArrival, sale.GetTimeOfArrival());
         }
 
         [Fact]
@@ -167,12 +174,11 @@ namespace EstablishmentProject.test.Domain
             var newPaymentTime = dateTimeArrival.AddHours(1);
 
             // Act
-            var paymentTime = sale.setTimeOfPayment(newPaymentTime);
+            sale.SetTimeOfPayment(newPaymentTime);
 
             // Assert
-            Assert.Equal(dateTimeArrival, sale.TimestampArrival);
-            Assert.Equal(newPaymentTime, sale.TimestampPayment);
-            Assert.Equal(newPaymentTime, paymentTime);
+            Assert.Equal(dateTimeArrival, sale.GetTimeOfArrival());
+            Assert.Equal(newPaymentTime, sale.GetTimeOfPayment());
         }
 
         [Fact]
@@ -185,7 +191,7 @@ namespace EstablishmentProject.test.Domain
             var newPaymentTime = DateTime.Now;
 
             // Act & Assert
-            var exception = Assert.Throws<Exception>(() => sale.setTimeOfPayment(newPaymentTime));
+            var exception = Assert.Throws<Exception>(() => sale.SetTimeOfPayment(newPaymentTime));
             Assert.Equal("Time of payment must be before time of arrival", exception.Message);
         }
 
@@ -200,7 +206,7 @@ namespace EstablishmentProject.test.Domain
             var invalidPaymentTime = dateTimeArrival.AddMinutes(-1);
 
             // Act & Assert
-            var exception = Assert.Throws<Exception>(() => sale.setTimeOfPayment(invalidPaymentTime));
+            var exception = Assert.Throws<Exception>(() => sale.SetTimeOfPayment(invalidPaymentTime));
             Assert.Equal("Time of payment must be before time of arrival", exception.Message);
         }
 

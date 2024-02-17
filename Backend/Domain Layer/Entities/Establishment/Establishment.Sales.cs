@@ -4,12 +4,10 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface IEstablishment_Sale
     {
-        Sale AddSale(Sale sale);
-        //Sale CreateSale(DateTime timestampPayment, Table? table = null, List<(Item, int)>? itemAndQuantity = null, DateTime? timestampArrival = null);
+        void AddSale(Sale sale);
         Sale CreateSale(DateTime timestampPayment, List<Table>? table = null, List<(Item, int)>? itemAndQuantity = null, DateTime? timestampArrival = null);
         List<Sale> GetSales();
         void RemoveSale(Sale sale);
-        Sale UpdateSale(Sale sale);
     }
 
     public partial class Establishment : EntityBase, IEstablishment_Sale
@@ -41,14 +39,6 @@ namespace WebApplication1.Domain_Layer.Entities
             return this.Sales.ToList();
         }
 
-        public Sale UpdateSale(Sale sale)
-        {
-            this.SaleMustExist(sale);
-            this.RemoveSale(sale);
-            this.AddSale(sale);
-            return sale;
-        }
-
         public void RemoveSale(Sale sale)
         {
             this.SaleMustExist(sale);
@@ -56,12 +46,11 @@ namespace WebApplication1.Domain_Layer.Entities
         }
 
 
-        public Sale AddSale(Sale sale)
+        public void AddSale(Sale sale)
         {
             this.SaleMustBeCreatedForEstablishment(sale);
             this.SaleMustNotAlreadyExist(sale);
             this.Sales.Add(sale);
-            return sale;
         }
 
         //Checkers and validators

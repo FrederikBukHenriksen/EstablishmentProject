@@ -40,7 +40,7 @@ namespace EstablishmentProject.test
             }
 
             // Assert
-            Assert.Equal(establishment, uow.establishmentRepository.GetById(establishment.Id));
+            Assert.Equal(establishment.Id, uow.establishmentRepository.GetById(establishment.Id).Id);
         }
 
         [Fact]
@@ -49,18 +49,12 @@ namespace EstablishmentProject.test
             // Arrange
             Establishment establishment = new Establishment("Cafe 1");
 
-            uow.establishmentRepository.Add(establishment);
-
             // Act
-            using (var unitOfWork = uow)
-            {
-            }
-
             uow.establishmentRepository.Add(establishment);
 
 
             // Assert
-            Assert.Empty(uow.establishmentRepository.GetAll());
+            Assert.Empty(uow.establishmentRepository.GetAll().ToList());
         }
 
 

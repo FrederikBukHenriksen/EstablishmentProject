@@ -40,8 +40,10 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         private void createTestData()
         {
             establishment = new Establishment("Test establishment");
-            Item item = establishment.AddItem(establishment.CreateItem("Test item", 0.0));
-            sale = establishment.AddSale(establishment.CreateSale(DateTime.Now, itemAndQuantity: new List<(Item, int)> { (item, 1) }));
+            Item item = establishment.CreateItem("Test item", 0.0);
+            establishment.AddItem(item);
+            sale = establishment.CreateSale(DateTime.Now, itemAndQuantity: new List<(Item, int)> { (item, 1) });
+            establishment.AddSale(sale);
 
             using (var uow = unitOfWork)
             {

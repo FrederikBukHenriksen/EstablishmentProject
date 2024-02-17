@@ -83,56 +83,6 @@ export class UserContextClient {
         }
         return _observableOf(null as any);
     }
-
-    getActiveEstablishment(): Observable<string> {
-        let url_ = this.baseUrl + "/api/user-context/get-active-establishment";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetActiveEstablishment(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetActiveEstablishment(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<string>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<string>;
-        }));
-    }
-
-    protected processGetActiveEstablishment(response: HttpResponseBase): Observable<string> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
 }
 
 @Injectable({
@@ -1693,7 +1643,7 @@ export interface IGetItemsDTOReturn extends IReturnBase {
 export class ItemDTO implements IItemDTO {
     id!: string;
     name!: string;
-    price!: Price;
+    price!: number;
 
     constructor(data?: IItemDTO) {
         if (data) {
@@ -1708,7 +1658,7 @@ export class ItemDTO implements IItemDTO {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.price = _data["price"] ? Price.fromJS(_data["price"]) : <any>undefined;
+            this.price = _data["price"];
         }
     }
 
@@ -1723,7 +1673,7 @@ export class ItemDTO implements IItemDTO {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["price"] = this.price ? this.price.toJSON() : <any>undefined;
+        data["price"] = this.price;
         return data;
     }
 }
@@ -1731,86 +1681,7 @@ export class ItemDTO implements IItemDTO {
 export interface IItemDTO {
     id: string;
     name: string;
-    price: Price;
-}
-
-export abstract class EntityBase implements IEntityBase {
-    id!: string;
-
-    constructor(data?: IEntityBase) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): EntityBase {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'EntityBase' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        return data;
-    }
-}
-
-export interface IEntityBase {
-    id: string;
-}
-
-export class Price extends EntityBase implements IPrice {
-    amount!: number;
-    currency!: Currency;
-
-    constructor(data?: IPrice) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.amount = _data["amount"];
-            this.currency = _data["currency"];
-        }
-    }
-
-    static override fromJS(data: any): Price {
-        data = typeof data === 'object' ? data : {};
-        let result = new Price();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["amount"] = this.amount;
-        data["currency"] = this.currency;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IPrice extends IEntityBase {
-    amount: number;
-    currency: Currency;
-}
-
-export enum Currency {
-    UNKNOWN = 0,
-    DKK = 1,
-    EUR = 2,
-    GBP = 3,
-    USD = 4,
+    price: number;
 }
 
 export class GetSalesReturn extends ReturnBase implements IGetSalesReturn {

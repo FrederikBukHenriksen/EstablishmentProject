@@ -1,5 +1,4 @@
 ﻿using NodaTime;
-using WebApplication1.Data.DataModels;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Utils;
 
@@ -202,12 +201,12 @@ namespace WebApplication1.Infrastructure.Data
                 for (int i = 0; i < value; i++)
                 {
                     // Create a new Sale instance for each iteration
-                    Sale sale = new Sale
-                    {
-                        TimestampPayment = date,
-                        SalesItems = items.Select(x => new SalesItems(x.item, x.quanity)).ToList()
-                        // Note: Use null as the Sale reference for now; it will be set later
-                    };
+                    Sale sale = new Sale(
+
+                        timestampPayment: date,
+                        ItemAndQuantity: items.Select(x => (x.item, x.quanity)).ToList()
+                    // Note: Use null as the Sale reference for now; it will be set later
+                    ); ;
 
                     // Set the reference to the Sale instance for each SalesItems
                     foreach (var salesItem in sale.SalesItems)

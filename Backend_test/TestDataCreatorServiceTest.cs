@@ -107,8 +107,8 @@ namespace EstablishmentProject.test
         };
 
             List<(Item, int)> soldItems = new List<(Item, int)> {
-                (establishment.CreateItem("Coffee",25,Currency.DKK),1),
-                (establishment.CreateItem("Bun",50,Currency.DKK),1)
+                (establishment.CreateItem("Coffee",25),1),
+                (establishment.CreateItem("Bun",50),1)
             };
 
             //Act

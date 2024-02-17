@@ -3,12 +3,12 @@
     public interface IEstablishment : IEstablishment_Sale, IEstablishment_Table, IEstablishment_Item, IEstablishment_Information
     {
         string GetName();
-        string SetName(string name);
+        void SetName(string name);
     }
 
     public partial class Establishment : EntityBase
     {
-        public string? Name { get; set; }
+        public string Name { get; set; }
         public virtual EstablishmentInformation Information { get; set; } = new EstablishmentInformation();
         public virtual EstablishmentSettings Settings { get; set; } = new EstablishmentSettings();
         public virtual ICollection<Item> Items { get; set; } = new List<Item>();
@@ -31,11 +31,10 @@
             sales?.ForEach(x => this.AddSale(x));
         }
 
-        public string SetName(string name)
+        public void SetName(string name)
         {
-            if (this.IsNameValid(name)) { throw new ArgumentException("Name is not valid"); }
+            this.EstablishmentNameMustBeValid(name);
             this.Name = name;
-            return name;
         }
 
         public string GetName()
@@ -44,6 +43,14 @@
         }
 
         //Checkers and validators
+
+        protected void EstablishmentNameMustBeValid(string name)
+        {
+            if (!this.IsNameValid(name))
+            {
+                throw new ArgumentException("Establishment name is not valid");
+            }
+        }
         public bool IsNameValid(string name)
         {
             if (name == "")

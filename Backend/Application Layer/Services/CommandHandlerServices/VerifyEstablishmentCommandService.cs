@@ -19,7 +19,7 @@ namespace WebApplication1.Application_Layer.Services
 
         public void VerifyEstablishment(ICommand command)
         {
-            var accesibleEstablishmentsIds = this.userContextService.GetAccessibleEstablishmentsIds();
+            var accesibleEstablishmentsIds = this.userContextService.GetUser().UserRoles.Select(x => x.Establishment.Id);
             if (command is ICmdField_EstablishmentId)
             {
                 Guid establishmentId = (command as ICmdField_EstablishmentId).EstablishmentId;

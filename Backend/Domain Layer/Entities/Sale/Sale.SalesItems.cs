@@ -4,7 +4,7 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface ISale_SalesItems
     {
-        SalesItems AddSalesItems(SalesItems salesItem);
+        void AddSalesItems(SalesItems salesItem);
         SalesItems CreateSalesItems(Item item, int quantity);
         List<SalesItems> GetSalesItems();
         void RemoveSalesItems(SalesItems salesItem);
@@ -12,17 +12,16 @@ namespace WebApplication1.Domain_Layer.Entities
 
     public partial class Sale : ISale_SalesItems
     {
-        public SalesItems AddSalesItems(SalesItems salesItem)
+        public void AddSalesItems(SalesItems salesItem)
         {
             this.SalesItemsMustBeCreatedForSale(salesItem);
             this.SalesItemsMustNotAlreadyExist(salesItem);
             this.SalesItems.Add(salesItem);
-            return salesItem;
         }
 
         public SalesItems CreateSalesItems(Item item, int quantity)
         {
-            return new SalesItems(item, quantity);
+            return new SalesItems(this, item, quantity);
         }
 
         public List<SalesItems> GetSalesItems()
@@ -72,5 +71,6 @@ namespace WebApplication1.Domain_Layer.Entities
         {
             return salesItems.Sale == this;
         }
+
     }
 }

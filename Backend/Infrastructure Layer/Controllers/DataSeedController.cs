@@ -36,11 +36,16 @@ namespace WebApplication1.Controllers
             Dictionary<DateTime, int> aggregatedDistribution = testDataCreatorService.AggregateDistributions(new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly });
 
             var establishment = new Establishment("Cafe Frederik");
-            var water = establishment.AddItem(establishment.CreateItem("Water", 10, Currency.DKK));
-            var coffee = establishment.AddItem(establishment.CreateItem("Coffee", 25, Currency.DKK));
-            var esrepsso = establishment.AddItem(establishment.CreateItem("Espresso", 30, Currency.DKK));
-            var latte = establishment.AddItem(establishment.CreateItem("Latte", 40, Currency.DKK));
-            var bun = establishment.AddItem(establishment.CreateItem("Bun", 50, Currency.DKK));
+            var water = establishment.CreateItem("Water", 10);
+            establishment.AddItem(water);
+            var coffee = establishment.CreateItem("Coffee", 25);
+            establishment.AddItem(coffee);
+            var esrepsso = establishment.CreateItem("Espresso", 30);
+            establishment.AddItem(esrepsso);
+            var latte = establishment.CreateItem("Latte", 40);
+            establishment.AddItem(latte);
+            var bun = establishment.CreateItem("Bun", 50);
+            establishment.AddItem(bun);
 
             List<List<(Item, int)>> baskets = new List<List<(Item, int)>> {
                 new List<(Item, int)> { (esrepsso, 1), (water, 1) },
@@ -58,7 +63,8 @@ namespace WebApplication1.Controllers
                 for (int i = 0; i < entry.Value; i++)
                 {
                     int randomNumber = random.Next(0, baskets.Count);
-                    Sale newSale = establishment.AddSale(establishment.CreateSale(timestampPayment: entry.Key, itemAndQuantity: baskets[randomNumber]));
+                    Sale newSale = establishment.CreateSale(timestampPayment: entry.Key, itemAndQuantity: baskets[randomNumber]);
+                    establishment.AddSale(newSale);
                     salesDistribution.Add(newSale);
                 }
             }

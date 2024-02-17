@@ -18,8 +18,9 @@ namespace WebApplication1.Domain_Layer.Entities
 
         }
 
-        public SalesTables(Table Table)
+        public SalesTables(Sale sale, Table Table)
         {
+            this.Sale = sale;
             this.Table = Table;
         }
 

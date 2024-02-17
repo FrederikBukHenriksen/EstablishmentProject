@@ -60,7 +60,7 @@ namespace WebApplication1.Services
                 return null;
             }
             string? usernameClaim = GetClaimValue(token, "username");
-            User? user = this.userRepository.Find(x => x.Id == Guid.Parse(usernameClaim));
+            User? user = this.userRepository.IncludeUserRoles().GetById(Guid.Parse(usernameClaim));
             if (usernameClaim == null || user == null)
             {
                 return null;
