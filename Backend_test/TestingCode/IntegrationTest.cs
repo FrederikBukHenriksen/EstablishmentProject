@@ -145,4 +145,43 @@ namespace EstablishmentProject.test.TestingCode
         }
     }
 
+    //public class UserContextServiceMock : IUserContextService, ITestService
+    //{
+    //    private User? User = null;
+
+    //    public UserContextServiceMock()
+    //    {
+
+    //    }
+
+
+    //    public void Config(IWebHostBuilder webHostBuilder)
+    //    {
+    //        webHostBuilder.ConfigureTestServices(services =>
+    //        {
+    //            var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IUserContextService));
+    //            if (descriptor is not null)
+    //            {
+    //                services.Remove(descriptor);
+    //            }
+    //            services.AddScoped<IUserContextService, UserContextServiceMock>();
+
+    //        });
+    //    }
+
+    //    public User GetUser()
+    //    {
+    //        if (User == null)
+    //        {
+    //            throw new InvalidOperationException("User profile was not found");
+    //        }
+    //        return User;
+    //    }
+
+    //    public void SetUser(User user)
+    //    {
+    //        User = user;
+    //    }
+    //}
+
 }

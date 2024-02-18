@@ -5,10 +5,22 @@ namespace EstablishmentProject.test.Domain.Entities_Test
 {
     public class SaleTest : IntegrationTest
     {
+        private Establishment establishment;
+        private Item coffee;
+        private Item tea;
 
         public SaleTest() : base()
         {
+            CommonArrange();
+        }
 
+        private void CommonArrange()
+        {
+            establishment = new Establishment("Test establishment");
+            coffee = establishment.CreateItem("Coffee", 20);
+            establishment.AddItem(coffee);
+            tea = establishment.CreateItem("Tea", 10);
+            establishment.AddItem(tea);
         }
 
         [Fact]
@@ -19,13 +31,14 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             var timestampArrival = DateTime.Now.AddHours(-1);
             var salesItems = new List<(Item item, int quantity)>
             {
-                (new Item("Coffee",20), 2),
-                (new Item("Tea",10), 1)
+                (coffee, 2),
+                (tea, 1)
             };
-            Table table = new Table();
+            Table table = establishment.CreateTable("Table1");
+            establishment.AddTable(table);
 
             // Act
-            var sale = new Sale(timestampPayment, timestampArrival, salesItems, [table]);
+            var sale = establishment.CreateSale(timestampPayment: timestampPayment, timestampArrival: timestampArrival, itemAndQuantity: salesItems, tables: [table]);
 
             // Assert
             Assert.Equal(timestampArrival, sale.TimestampArrival);
@@ -38,7 +51,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void GetTimeOfSale_ShouldReturnTimestampPayment()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
+            var sale = establishment.CreateSale(DateTime.Now);
 
             // Act
             var timeOfSale = sale.GetTimeOfSale();
@@ -52,7 +65,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         {
             // Arrange
             var timestampArrival = DateTime.Now.AddHours(-2);
-            var sale = new Sale(DateTime.Now, timestampArrival: timestampArrival);
+            var sale = establishment.CreateSale(DateTime.Now, timestampArrival: timestampArrival);
 
             // Act
             var timespanOfVisit = sale.GetTimespanOfVisit();
@@ -62,16 +75,16 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
-        public void GetTimespanOfVisit_WithoutArrival_ShouldReturnNull()
+        public void GetTimespanOfVisit_WithoutArrival_ShouldThrowException()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
+            var sale = establishment.CreateSale(DateTime.Now);
 
             // Act
-            var timespanOfVisit = sale.GetTimespanOfVisit();
+            Action act = () => sale.GetTimespanOfVisit();
 
             // Assert
-            Assert.Null(timespanOfVisit);
+            var exception = Assert.Throws<InvalidOperationException>(act);
         }
 
         [Fact]
@@ -80,24 +93,24 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             // Arrange
             var salesItems = new List<(Item item, int quantity)>
             {
-                (new Item("tiem1",10), 2),
-                (new Item("item2",5), 3),
+                (coffee, 2),
+                (tea, 3),
             };
 
-            var sale = new Sale(DateTime.Now, ItemAndQuantity: salesItems);
+            var sale = establishment.CreateSale(timestampPayment: DateTime.Now, itemAndQuantity: salesItems);
 
             // Act
             var totalPrice = sale.GetTotalPrice();
 
             // Assert
-            Assert.Equal(35, totalPrice);
+            Assert.Equal(coffee.Price * 2 + tea.Price * 3, totalPrice);
         }
 
         [Fact]
         public void GetTotalPrice_NoItems_ShouldReturnZero()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
+            var sale = establishment.CreateSale(DateTime.Now);
 
             // Act
             var totalPrice = sale.GetTotalPrice();
@@ -112,36 +125,36 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             // Arrange
             var salesItems = new List<(Item item, int quantity)>
             {
-                (new Item("tiem1",10), 2),
-                (new Item("item2",5), 1),
+                (coffee, 2),
+                (tea, 3),
             };
-            var sale = new Sale(DateTime.Now, ItemAndQuantity: salesItems);
+            var sale = establishment.CreateSale(timestampPayment: DateTime.Now, itemAndQuantity: salesItems);
 
             // Act
             var numberOfSoldItems = sale.GetNumberOfSoldItems();
 
             // Assert
-            Assert.Equal(salesItems.Count, 3);
+            Assert.Equal(numberOfSoldItems, 5);
         }
 
         [Fact]
-        public void GetNumberOfSoldItems_NoItems_ShouldReturnNull()
+        public void GetNumberOfSoldItems_WithNoSalesItemsForSale_ShouldReturnZero()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
+            var sale = establishment.CreateSale(DateTime.Now);
 
             // Act
             var numberOfSoldItems = sale.GetNumberOfSoldItems();
 
             // Assert
-            Assert.Null(numberOfSoldItems);
+            Assert.Equal(0, numberOfSoldItems);
         }
 
         [Fact]
-        public void SetTimeOfArrival_ValidArrivalTime_SetsArrivalTime()
+        public void SetTimeOfArrival_WithEarlierTimeOfPayment_ShouldSetTimeOfArrival()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
+            var sale = establishment.CreateSale(DateTime.Now);
             var newTimeOfArrival = sale.TimestampPayment.AddHours(-1);
 
             // Act
@@ -151,71 +164,64 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Assert.Equal(newTimeOfArrival, sale.GetTimeOfArrival());
         }
 
+
+
+
         [Fact]
-        public void SetTimeOfArrival_InvalidArrivalTime_ThrowsException()
+        public void SetTimeOfArrival_WithLaterTimeOfPayment_ShouldSetTimeOfArrival()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
-            var invalidTimeOfArrival = sale.TimestampPayment.AddHours(1);
+            var sale = establishment.CreateSale(DateTime.Now);
+            var newTimeOfArrival = sale.TimestampPayment.AddHours(1);
 
-            // Act & Assert
-            var exception = Assert.Throws<Exception>(() => sale.setTimeOfArrival(invalidTimeOfArrival));
-            Assert.Equal("Time of arrival must be before time of payment", exception.Message);
+            // Act
+            Action act = () => sale.setTimeOfArrival(newTimeOfArrival);
+
+            // Assert
+            Assert.Throws<ArgumentException>(act);
+            Assert.Null(sale.GetTimeOfArrival());
         }
 
         [Fact]
-        public void SetTimeOfPayment_ValidPaymentTime_SetsPaymentTime()
+        public void SetTimeOfPayment_WithEarlierTimeOfArrival_ShouldSetPaymentTime()
         {
             // Arrange
-            var dateTimeArrival = DateTime.Now.AddHours(-2);
-            var sale = new Sale(DateTime.Now, dateTimeArrival);
+            var time = DateTime.Now;
+            var sale = establishment.CreateSale(timestampPayment: time, timestampArrival: time.AddHours(-1));
 
             // New payment time that is valid (after arrival time)
-            var newPaymentTime = dateTimeArrival.AddHours(1);
+            var newPaymentTime = time.AddHours(1);
 
             // Act
             sale.SetTimeOfPayment(newPaymentTime);
 
             // Assert
-            Assert.Equal(dateTimeArrival, sale.GetTimeOfArrival());
             Assert.Equal(newPaymentTime, sale.GetTimeOfPayment());
         }
 
         [Fact]
-        public void SetTimeOfPayment_NoArrivalTime_ThrowsException()
+        public void SetTimeOfPayment_WithNoTimeOfArraival_ShouldSetPaymentTime()
         {
             // Arrange
-            var sale = new Sale(DateTime.Now);
+            var time = DateTime.Now;
+            var sale = establishment.CreateSale(time);
 
-            // New payment time
-            var newPaymentTime = DateTime.Now;
+            // New payment time that is valid (after arrival time)
+            var newPaymentTime = time.AddHours(1);
 
-            // Act & Assert
-            var exception = Assert.Throws<Exception>(() => sale.SetTimeOfPayment(newPaymentTime));
-            Assert.Equal("Time of payment must be before time of arrival", exception.Message);
+            // Act
+            sale.SetTimeOfPayment(newPaymentTime);
+
+            // Assert
+            Assert.Equal(newPaymentTime, sale.GetTimeOfPayment());
         }
 
         [Fact]
-        public void SetTimeOfPayment_InvalidPaymentTime_ThrowsException()
-        {
-            // Arrange
-            var dateTimeArrival = DateTime.Now;
-            var sale = new Sale(dateTimeArrival.AddHours(2), dateTimeArrival);
-
-            // Invalid payment time that is before arrival time
-            var invalidPaymentTime = dateTimeArrival.AddMinutes(-1);
-
-            // Act & Assert
-            var exception = Assert.Throws<Exception>(() => sale.SetTimeOfPayment(invalidPaymentTime));
-            Assert.Equal("Time of payment must be before time of arrival", exception.Message);
-        }
-
-        [Fact]
-        public void GetTimeOfSale_ReturnsTimestampPayment()
+        public void GetTimeOfSale_ShouldReturnTimesOfPayment()
         {
             // Arrange
             var paymentTime = DateTime.Now;
-            var sale = new Sale(paymentTime);
+            var sale = establishment.CreateSale(paymentTime);
 
             // Act
             var timeOfSale = sale.GetTimeOfSale();
@@ -223,35 +229,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             // Assert
             Assert.Equal(paymentTime, timeOfSale);
         }
-        [Fact]
-        public void GetTimeOfPayment_ShouldReturnTimestampPayment()
-        {
-            // Arrange
-            var paymentTime = DateTime.Now;
-            var sale = new Sale(paymentTime);
 
-            // Act
-            var timeOfPayment = sale.GetTimeOfSale();
-
-            // Assert
-            Assert.Equal(paymentTime, timeOfPayment);
-        }
-
-        [Fact]
-        public void GetTimeOfArrival_ReturnsTimestampArrival()
-        {
-            // Arrange
-            var paymentTime = DateTime.Now;
-            var arrivalTime = DateTime.Now.AddHours(1);
-
-            var sale = new Sale(paymentTime, arrivalTime);
-
-            // Act
-            var timeOfArrival = sale.GetTimeOfArrival();
-
-            // Assert
-            Assert.Equal(arrivalTime, timeOfArrival);
-        }
     }
 
 

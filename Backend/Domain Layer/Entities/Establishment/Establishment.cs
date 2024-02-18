@@ -10,7 +10,6 @@
     {
         public string Name { get; set; }
         public virtual EstablishmentInformation Information { get; set; } = new EstablishmentInformation();
-        public virtual EstablishmentSettings Settings { get; set; } = new EstablishmentSettings();
         public virtual ICollection<Item> Items { get; set; } = new List<Item>();
         public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
         public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
@@ -19,16 +18,12 @@
         {
 
         }
+
+
         public Establishment(
-            string name,
-            List<Item>? items = null,
-            List<Table>? tables = null,
-            List<Sale>? sales = null)
+            string name)
         {
             this.SetName(name);
-            items?.ForEach(x => this.AddItem(x));
-            tables?.ForEach(x => this.AddTable(x));
-            sales?.ForEach(x => this.AddSale(x));
         }
 
         public void SetName(string name)

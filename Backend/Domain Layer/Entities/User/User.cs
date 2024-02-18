@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace WebApplication1.Domain_Layer.Entities
 {
@@ -7,7 +6,9 @@ namespace WebApplication1.Domain_Layer.Entities
     public interface IUser
     {
         void SetEmail(string email);
+        string GetEmail();
         void SetPassword(string password);
+        string GetPassword();
     }
 
 
@@ -22,29 +23,40 @@ namespace WebApplication1.Domain_Layer.Entities
         {
 
         }
-        public User(string email, string password, List<(Establishment, Role)>? userRoles = null)
+        public User(string email, string password)
         {
             this.SetEmail(email);
             this.SetPassword(password);
-            if (!userRoles.IsNullOrEmpty())
-            {
-                userRoles!.ForEach(x => this.AddUserRole(this.CreateUserRole(x.Item1, x.Item2)));
-            }
         }
 
         public void SetEmail(string email)
         {
-            if (!this.IsEmailValid(email)) throw new Exception("Email is not valid");
+            this.EmailMustBeValid(email);
             this.Email = email;
         }
 
+        public string GetEmail() { return this.Email; }
+
         public void SetPassword(string password)
         {
-            if (!this.IsPasswordValid(password)) throw new Exception("Password is not valid");
+            this.PasswordMustBeValid(password);
             this.Password = password;
         }
 
+        public string GetPassword() { return this.Password; }
+
+
+
+        protected void PasswordMustBeValid(string password)
+        {
+            if (!this.IsPasswordValid(password)) throw new ArgumentException("Password is not valid");
+        }
         private bool IsPasswordValid(string password) => password.Length >= 8;
+
+        protected void EmailMustBeValid(string email)
+        {
+            if (!this.IsEmailValid(email)) throw new ArgumentException("Email is not valid");
+        }
 
         private bool IsEmailValid(string email)
         {

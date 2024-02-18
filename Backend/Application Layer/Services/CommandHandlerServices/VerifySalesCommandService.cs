@@ -22,7 +22,7 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
             {
                 Guid establishmentId = (command as ICmdField_SalesIds).EstablishmentId;
                 List<Guid> salesIds = (command as ICmdField_SalesIds).SalesIds;
-                IEnumerable<Guid> allSales = this.unitOfWork.establishmentRepository.GetById(establishmentId).Sales.Select(x => x.Id);
+                List<Guid> allSales = this.unitOfWork.establishmentRepository.IncludeSales().GetById(establishmentId).Sales.Select(x => x.Id).ToList();
                 if (!salesIds.All(guid => allSales.Contains(guid)))
                 {
                     throw new UnauthorizedAccessException();

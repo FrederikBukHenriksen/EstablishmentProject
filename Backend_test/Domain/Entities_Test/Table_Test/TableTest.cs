@@ -4,6 +4,17 @@ namespace EstablishmentProject.test.Domain.Entities_Test
 {
     public class TableTest
     {
+        private Establishment establishment;
+
+        public TableTest()
+        {
+            CommonArrange();
+        }
+
+        private void CommonArrange()
+        {
+            establishment = new Establishment("Test establishment");
+        }
         [Fact]
         public void Constructor_ShouldCreateTable()
         {
@@ -11,7 +22,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             string name = "Table";
 
             // Act
-            Table table = new Table(name);
+            Table table = new Table(establishment, name);
 
 
             // Assert

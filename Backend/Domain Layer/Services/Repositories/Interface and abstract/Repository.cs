@@ -64,5 +64,11 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
             this.context.Entry(entity).State = EntityState.Modified;
 
         }
+
+        public IRepository<TEntity> EnableLazyLoading()
+        {
+            this.context.ChangeTracker.LazyLoadingEnabled = true;
+            return this;
+        }
     }
 }

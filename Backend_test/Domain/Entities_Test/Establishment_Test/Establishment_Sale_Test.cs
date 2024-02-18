@@ -23,7 +23,9 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             var timestampPayment = DateTime.Now;
             var timestampArrival = DateTime.Now.AddHours(-1);
             var table = establishment.CreateTable("Table1");
+            establishment.AddTable(table);
             var item = establishment.CreateItem("Item1", 10.00);
+            establishment.AddItem(item);
             List<Table> tables = new List<Table>() { table };
             List<(Item, int)> itemsAndQuan = new List<(Item, int)>() { (item, 1) };
 
@@ -129,37 +131,37 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Assert.Contains(sale2, sales);
         }
 
-
         [Fact]
-        public void RemoveSale_WithSales_RemovesSale()
+        public void RemoveSale_WithSaleFromEstablishment_ShouldRemoveSale()
         {
             // Arrange
-            var timestampPayment = DateTime.Now;
-            establishment.CreateSale(timestampPayment);
-            var sale = establishment.GetSales().First();
+            var sale = establishment.CreateSale(DateTime.Now);
+            establishment.AddSale(sale);
 
             // Act
             establishment.RemoveSale(sale);
 
             // Assert
-            var sales = establishment.GetSales();
-            Assert.Empty(sales);
+            Assert.DoesNotContain(sale, establishment.GetSales());
         }
 
         [Fact]
-        public void RemoveSale_WithSaleFromDifferentEstablishmetn_DoesNotRemoveAnySale()
+        public void RemoveSale_WithSaleFromDifferentEstablishment_ShouldNotRemoveSale()
         {
             // Arrange
+            var sale = establishment.CreateSale(DateTime.Now);
+            establishment.AddSale(sale);
+
+
             var otherEstablishment = new Establishment();
             var otherSale = otherEstablishment.CreateSale(DateTime.Now);
 
-            establishment.CreateSale(DateTime.Now);
-
             // Act
-            establishment.RemoveSale(otherSale);
+            Action act = () => establishment.RemoveSale(otherSale);
 
             // Assert
-            Assert.Single(establishment.GetSales());
+            Assert.Throws<InvalidOperationException>(act);
+            Assert.Contains(sale, establishment.GetSales());
         }
     }
 }

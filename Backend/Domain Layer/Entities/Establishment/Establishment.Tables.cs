@@ -14,7 +14,7 @@
     {
         public Table CreateTable(string name)
         {
-            Table table = new Table(name);
+            Table table = new Table(this, name);
             return table;
         }
 

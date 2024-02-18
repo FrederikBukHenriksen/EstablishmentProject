@@ -90,7 +90,9 @@ namespace WebApplication1.Controllers
             //    .Build();
 
             //var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
-            var user = new User("Frederik@mail.com", "12345678", new List<(Establishment, Role)> { (establishment, Role.Admin) });
+            var user = new User("Frederik@mail.com", "12345678");
+            user.CreateUserRole(establishment, user, Role.Admin);
+            user.AddUserRole(user.UserRoles.First());
 
             using (var uow = unitOfWork)
             {

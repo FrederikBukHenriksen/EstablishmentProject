@@ -64,7 +64,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Action act = () => establishment.SetItemName(otherItem, itemName);
 
             // Assert
-            Assert.Throws<InvalidOperationException>(act);
+            Assert.Throws<ArgumentException>(act);
         }
 
 

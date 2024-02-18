@@ -24,12 +24,18 @@ namespace WebApplication1.CommandsHandlersReturns
         public List<Guid> SalesIds { get; set; }
     }
 
-
-    public interface ICmdField_ItemsId : ICmdField_EstablishmentId
+    public interface ICmdField_ItemsIds : ICmdField_EstablishmentId
     {
         public List<Guid> ItemsIds { get; set; }
 
     }
+
+    public interface ICmdField_TablesIds : ICmdField_EstablishmentId
+    {
+        public List<Guid> TablesIds { get; set; }
+    }
+
+
     public interface ICmdField_SalesSorting
     {
         public SalesSorting Sorting { get; set; }

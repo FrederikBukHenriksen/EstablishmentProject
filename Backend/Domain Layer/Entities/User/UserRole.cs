@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
 
     public class UserRole : EntityBase
@@ -23,35 +21,5 @@ namespace WebApplication1.Domain_Layer.Entities
         }
     }
 
-    public class UserRolesConfiguration : IEntityTypeConfiguration<UserRole>
-    {
-        public void Configure(EntityTypeBuilder<UserRole> builder)
-        {
-            builder.Property(x => x.Id)
-            .ValueGeneratedOnAdd();
-
-            builder.Property<Guid>("UserId");
-            builder.Property<Guid>("EstablishmentId");
-
-            builder.HasKey(new string[] { "UserId", "EstablishmentId" });
-
-            builder.HasIndex("UserId");
-            builder.HasIndex("EstablishmentId");
-
-            builder.HasOne(e => e.User)
-                .WithMany(e => e.UserRoles)
-                .HasForeignKey("UserId");
-
-            builder.HasOne(e => e.Establishment)
-                .WithMany()
-                .HasForeignKey("EstablishmentId");
-
-            builder.Property(x => x.Role)
-                .HasConversion(
-                    role => role.ToString(),
-                    roleName => (Role)Enum.Parse(typeof(Role), roleName))
-            .IsRequired(true);
-        }
-    }
 
 }

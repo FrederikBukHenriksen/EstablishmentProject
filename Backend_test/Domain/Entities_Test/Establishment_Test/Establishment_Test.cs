@@ -9,20 +9,14 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         {
             // Arrange
             string name = "Test establishment";
-            Table table = new Table("Table");
-            Item item = new Item("Item", 10.00);
-            Sale sale = new Sale(DateTime.Now);
 
             // Act
 
-            Establishment establishment = new Establishment(name, [item], [table], [sale]);
+            Establishment establishment = new Establishment(name);
 
             // Assert
             Assert.NotNull(establishment);
             Assert.Equal(name, establishment.GetName());
-            Assert.Contains(table, establishment.GetTables());
-            Assert.Contains(item, establishment.GetItems());
-            Assert.Contains(sale, establishment.GetSales());
         }
 
         [Fact]
@@ -39,7 +33,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Assert.Equal(name, establishment.GetName());
         }
 
-        public void SetName_WithEmptyName_ShouldThrowException()
+        public void SetName_WithEmptyName_ShouldNotSetName()
         {
             // Arrange
             Establishment establishment = new Establishment();

@@ -16,8 +16,9 @@
 
         }
 
-        public Table(string name)
+        public Table(Establishment establishment, string name)
         {
+            this.EstablishmentId = establishment.Id;
             this.Name = name;
         }
 

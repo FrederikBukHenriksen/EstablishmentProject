@@ -4,7 +4,17 @@ namespace EstablishmentProject.test.Domain.Entities_Test
 {
     public class ItemTest
     {
+        private Establishment establishment;
 
+        public ItemTest()
+        {
+            CommonArrange();
+        }
+
+        private void CommonArrange()
+        {
+            establishment = new Establishment("Test Establishment");
+        }
 
         [Fact]
         public void Constructor_ShouldCreateItem()
@@ -14,7 +24,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             double price = 10.00;
 
             // Act
-            Item item = new Item(name, price);
+            Item item = new Item(establishment, name, price);
 
             // Assert
             Assert.NotNull(item);
@@ -26,7 +36,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void SetName_ShouldSetName()
         {
             // Arrange
-            Item item = new Item();
+            Item item = new Item(establishment, "Item", 0);
             string name = "New name";
 
             // Act
@@ -40,7 +50,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void SetName_WithEmptyName_ShouldNotSetName()
         {
             // Arrange
-            Item item = new Item();
+            Item item = new Item(establishment, "Item", 0);
             string name = "";
 
             // Act
@@ -55,7 +65,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void SetPrice_ShouldSetPrice()
         {
             // Arrange
-            Item item = new Item();
+            Item item = new Item(establishment, "Item", 0);
             double price = 10.00;
 
             // Act
@@ -69,7 +79,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void SetPrice_WithNegativePrice_ShouldNotSetPrice()
         {
             // Arrange
-            Item item = new Item();
+            Item item = new Item(establishment, "Item", 0);
             double price = -10.00;
 
             // Act

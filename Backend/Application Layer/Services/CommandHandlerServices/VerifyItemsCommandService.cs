@@ -17,11 +17,11 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 
         public void VerifyItems(ICommand command)
         {
-            if (command is ICmdField_ItemsId)
+            if (command is ICmdField_ItemsIds)
             {
-                Guid establishmentId = (command as ICmdField_ItemsId).EstablishmentId;
-                List<Guid> itemsIds = (command as ICmdField_ItemsId).ItemsIds;
-                IEnumerable<Guid> allItems = this.unitOfWork.establishmentRepository.GetById(establishmentId).Items.Select(x => x.Id);
+                Guid establishmentId = (command as ICmdField_ItemsIds).EstablishmentId;
+                List<Guid> itemsIds = (command as ICmdField_ItemsIds).ItemsIds;
+                List<Guid> allItems = this.unitOfWork.establishmentRepository.IncludeItems().GetById(establishmentId).Items.Select(x => x.Id).ToList();
 
                 if (!itemsIds.All(guid => allItems.Contains(guid)))
                 {

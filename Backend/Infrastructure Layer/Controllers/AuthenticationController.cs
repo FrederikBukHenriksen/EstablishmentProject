@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
 {
+    [ExcludeFromCodeCoverage]
     [ApiController]
     [Route("api/authentication")]
     public class AuthenticationController : ControllerBase

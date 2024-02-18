@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WebApplication1.ControllersBui
 {
+    [ExcludeFromCodeCoverage]
     [ApiController]
     [Route("api/weather/")]
     public class WeatherController : ControllerBase

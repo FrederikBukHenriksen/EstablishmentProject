@@ -43,6 +43,8 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<IVerifyEstablishmentCommandService, VerifyEstablishmentCommandService>();
             serviceCollection.AddScoped<IVerifySalesCommandService, VerifySalesCommandService>();
             serviceCollection.AddScoped<IVerifyItemsCommandService, VerifyItemsCommandService>();
+            serviceCollection.AddScoped<IVerifyTablesCommandService, VerifyTablesCommandService>();
+
 
             //Login
             serviceCollection.AddTransient<IHandler<LoginCommand, LoginReturn>, LoginCommandHandler>();
@@ -56,7 +58,6 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>, Clustering_TimeOfVisitVSLengthOfVisit>();
 
             //Establishment
-            serviceCollection.AddTransient<IHandler<GetEstablishmentCommand, GetEstablishmentReturn>, GetEstablishmentHandler>();
 
             serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsIdReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsIdReturn>>();
             serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsEntityReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsEntityReturn>>();
@@ -68,7 +69,6 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
 
             //Item
-            serviceCollection.AddTransient<IHandler<GetItemDTOCommand, GetItemDTOReturn>, GetItemDTOHandler>();
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsIdReturn>, GetItemsHandler<GetItemsIdReturn>>();
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsEntityReturn>, GetItemsHandler<GetItemsEntityReturn>>();
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsDTOReturn>, GetItemsHandler<GetItemsDTOReturn>>();

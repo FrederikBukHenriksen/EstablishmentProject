@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace WebApplication1.Domain_Layer.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public class EstablishmentInformation : EntityBase
     {
@@ -9,43 +7,6 @@ namespace WebApplication1.Domain_Layer.Entities
 
         }
         public Location Location { get; set; } = new Location();
-        public Currency Currency = Currency.UNKNOWN;
-        public virtual ICollection<OpeningHours> OpeningHours { get; set; } = new List<OpeningHours>();
-
-
-        internal void setOpeningHour(OpeningHours openingHours)
-        {
-            if (this.getOpeningHours().Any(x => x.dayOfWeek == openingHours.dayOfWeek))
-            {
-                OpeningHours openingHour = this.getOpeningHours().Find(x => x.dayOfWeek == openingHours.dayOfWeek)!;
-                this.removeOpeningHour(openingHour);
-            }
-        }
-
-        public void removeOpeningHour(OpeningHours openingHour)
-        {
-            this.getOpeningHours().Remove(openingHour);
-        }
-
-        public List<OpeningHours> getOpeningHours()
-        {
-            return this.OpeningHours.ToList();
-        }
-
-
-
     }
 
-    public class EstablishmentInformationConfiguration : IEntityTypeConfiguration<EstablishmentInformation>
-    {
-        public void Configure(EntityTypeBuilder<EstablishmentInformation> builder)
-        {
-            builder.OwnsOne(e => e.Location);
-
-
-
-
-
-        }
-    }
 }

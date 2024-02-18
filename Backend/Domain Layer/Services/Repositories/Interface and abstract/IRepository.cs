@@ -16,5 +16,6 @@
         void AddRange(IEnumerable<TEntity> entities);
         void Update(TEntity entity);
         void Remove(TEntity entity);
+        IRepository<TEntity> EnableLazyLoading();
     }
 }

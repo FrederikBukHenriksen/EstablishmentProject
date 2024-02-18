@@ -5,7 +5,7 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface ISale : ISale_SalesItems, ISale_SalesTables
     {
-        void setTimeOfArrival(DateTime datetime);
+        //void setTimeOfArrival(DateTime datetime);
         DateTime? GetTimeOfArrival();
         void SetTimeOfPayment(DateTime datetime);
         DateTime GetTimeOfPayment();
@@ -29,10 +29,13 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public Sale(
             DateTime timestampPayment,
+            Establishment establishment,
             DateTime? timestampArrival = null,
             List<(Item item, int quantity)>? ItemAndQuantity = null,
             List<Table>? tables = null)
         {
+            this.EstablishmentId = establishment.Id;
+
             this.SetTimeOfPayment(timestampPayment);
             if (timestampArrival != null)
             {
@@ -58,7 +61,7 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        public void setTimeOfArrival(DateTime datetime)
+        protected internal void setTimeOfArrival(DateTime datetime)
         {
             this.TimeOfArrivalMustBeBeforeTimeOfPayment(datetime);
             this.TimestampArrival = datetime;
@@ -66,7 +69,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public DateTime? GetTimeOfArrival()
         {
-            return this.GetTimeOfArrival();
+            return this.TimestampArrival;
         }
 
         public void SetTimeOfPayment(DateTime datetime)
@@ -77,12 +80,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public DateTime GetTimeOfPayment()
         {
-            return this.GetTimeOfPayment();
-        }
-
-        public DateTime GetTimeOfSale()
-        {
-            return this.GetTimeOfPayment();
+            return this.TimestampPayment;
         }
 
         public TimeSpan? GetTimespanOfVisit()
@@ -109,7 +107,8 @@ namespace WebApplication1.Domain_Layer.Entities
 
         public int GetNumberOfSoldItems()
         {
-            return this.SalesItems.Sum(x => x.quantity);
+            return this.SalesItems.Aggregate(0, (acc, x) => acc + x.quantity);
+
         }
 
         //Checkers and validators
@@ -154,6 +153,11 @@ namespace WebApplication1.Domain_Layer.Entities
                 return false;
             }
             return true;
+        }
+
+        public DateTime GetTimeOfSale()
+        {
+            return this.GetTimeOfPayment();
         }
     }
 

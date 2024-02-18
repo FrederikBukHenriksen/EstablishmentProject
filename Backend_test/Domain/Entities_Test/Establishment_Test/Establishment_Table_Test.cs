@@ -28,6 +28,8 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Assert.Equal(table.Name, tableName);
         }
 
+
+
         [Fact]
         public void SetName_WithTableNameAlreadyInUse_ShouldNotSetName()
         {
@@ -41,7 +43,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Action act = () => establishment.SetTableName(table2, "Table1");
 
             // Assert
-            Assert.Throws<InvalidOperationException>(act);
+            Assert.Throws<ArgumentException>(act);
             Assert.Equal("Table2", table2.Name);
         }
 
@@ -64,7 +66,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void AddTable_WithTableCreatedForDifferentEstablishment_ShouldNotAddTable()
         {
             // Arrange
-            var otherEstablishment = new Establishment();
+            var otherEstablishment = new Establishment("Other establishment");
             Table table = otherEstablishment.CreateTable("Table1");
 
             // Act

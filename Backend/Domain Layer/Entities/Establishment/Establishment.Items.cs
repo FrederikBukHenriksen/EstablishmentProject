@@ -8,13 +8,14 @@
         void AddItem(Item item);
         Item CreateItem(string name, double price);
         void SetItemName(Item item, string name);
+        void SetItemPrice(Item item, double price);
     }
     public partial class Establishment : EntityBase, IEstablishment_Item
     {
         public Item CreateItem(string name, double price)
         {
             this.ItemNameMustBeUnique(name);
-            Item item = new Item(name, price);
+            Item item = new Item(this, name, price);
             return item;
         }
 
@@ -42,6 +43,11 @@
         {
             this.ItemNameMustBeUnique(name);
             item.SetName(name);
+        }
+
+        public void SetItemPrice(Item item, double price)
+        {
+            item.SetPrice(price);
         }
 
 
@@ -106,7 +112,5 @@
         {
             return this.Items.Any(x => x.Name == item.Name);
         }
-
-
     }
 }

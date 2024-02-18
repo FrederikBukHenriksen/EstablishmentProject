@@ -1,19 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using EstablishmentProject.test.TestingCode;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Application_Layer.Services;
+using WebApplication1.Data;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace EstablishmentProject.test.Repositories
 {
-    public class RepositoryTest : BaseIntegrationTest
+    public class RepositoryTest : IntegrationTest
     {
-        private IEstablishmentRepository repository;
+        private DbContext dbContext;
         private IUnitOfWork unitOfWork;
 
-        public RepositoryTest(IntegrationTestWebAppFactory factory) : base(factory)
+        public RepositoryTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            clearDatabase();
-            //repository = scope.ServiceProvider.GetRequiredService<IEstablishmentRepository>();
+            dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         }
 
@@ -122,7 +123,7 @@ namespace EstablishmentProject.test.Repositories
 
             // Act
             var newName = "Cafe 4.1";
-            databaseFetchedEstablishment.Name = newName;
+            databaseFetchedEstablishment.SetName(newName);
             using (unitOfWork)
             {
                 unitOfWork.establishmentRepository.Update(databaseFetchedEstablishment);

@@ -39,7 +39,10 @@ namespace EstablishmentProject.test
         {
             establishment = new Establishment("Test Establishment");
 
-            userWithUserRole = new User("Frederik@mail.com", "12345678", new List<(Establishment, Role)> { (establishment, Role.Admin) });
+            userWithUserRole = new User("Frederik@mail.com", "12345678");
+            var userRole = userWithUserRole.CreateUserRole(establishment, userWithUserRole, Role.Admin);
+            userWithUserRole.AddUserRole(userRole);
+
             userNoUserRole = new User("Lydia@mail.com", "12345678");
 
             using (var uow = unitOfWork)

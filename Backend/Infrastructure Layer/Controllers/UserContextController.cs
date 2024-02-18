@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Services;
 
 namespace WebApplication1.ControllersBui
 {
+    [ExcludeFromCodeCoverage]
     [ApiController]
     [Route("api/user-context/")]
     public class UserContextController : ControllerBase

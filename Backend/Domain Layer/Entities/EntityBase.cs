@@ -14,7 +14,8 @@
     {
 
         [Key]
-        public Guid Id { get; set; } = new Guid();
+        public Guid Id { get; set; } = Guid.NewGuid();
+
     }
 }
 

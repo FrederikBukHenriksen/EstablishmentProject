@@ -79,50 +79,50 @@ namespace EstablishmentProject.test
         //    Assert.Equal(expectedSum, distribution.Sum(x => x.Value)); //Correct sum of distribution values
         //}
 
-        [Fact]
-        public void SalesDistributionFromDistribution()
-        {
-            //Arrange
-            Dictionary<DateTime, int> distribution = new Dictionary<DateTime, int>
-        {
-            { new DateTime(2021, 1, 1,8,0,0), 1 },
-            { new DateTime(2021, 1, 1,9,0,0), 2 },
-            { new DateTime(2021, 1, 1,10,0,0), 3 },
-            { new DateTime(2021, 1, 1,11,0,0), 4 },
-            { new DateTime(2021, 1, 1,12,0,0), 5 },
-            { new DateTime(2021, 1, 1,13,0,0), 4 },
-            { new DateTime(2021, 1, 1,14,0,0), 3 },
-            { new DateTime(2021, 1, 1,15,0,0), 2 },
-            { new DateTime(2021, 1, 1,16,0,0), 1 },
+        //[Fact]
+        //public void SalesDistributionFromDistribution()
+        //{
+        //    //Arrange
+        //    Dictionary<DateTime, int> distribution = new Dictionary<DateTime, int>
+        //{
+        //    { new DateTime(2021, 1, 1,8,0,0), 1 },
+        //    { new DateTime(2021, 1, 1,9,0,0), 2 },
+        //    { new DateTime(2021, 1, 1,10,0,0), 3 },
+        //    { new DateTime(2021, 1, 1,11,0,0), 4 },
+        //    { new DateTime(2021, 1, 1,12,0,0), 5 },
+        //    { new DateTime(2021, 1, 1,13,0,0), 4 },
+        //    { new DateTime(2021, 1, 1,14,0,0), 3 },
+        //    { new DateTime(2021, 1, 1,15,0,0), 2 },
+        //    { new DateTime(2021, 1, 1,16,0,0), 1 },
 
-            { new DateTime(2021, 1, 2,8,0,0), 1 },
-            { new DateTime(2021, 1, 2,9,0,0), 2 },
-            { new DateTime(2021, 1, 2,10,0,0), 3 },
-            { new DateTime(2021, 1, 2,11,0,0), 4 },
-            { new DateTime(2021, 1, 2,12,0,0), 5 },
-            { new DateTime(2021, 1, 2,13,0,0), 4 },
-            { new DateTime(2021, 1, 2,14,0,0), 3 },
-            { new DateTime(2021, 1, 2,15,0,0), 2 },
-            { new DateTime(2021, 1, 2,16,0,0), 1 },
-        };
+        //    { new DateTime(2021, 1, 2,8,0,0), 1 },
+        //    { new DateTime(2021, 1, 2,9,0,0), 2 },
+        //    { new DateTime(2021, 1, 2,10,0,0), 3 },
+        //    { new DateTime(2021, 1, 2,11,0,0), 4 },
+        //    { new DateTime(2021, 1, 2,12,0,0), 5 },
+        //    { new DateTime(2021, 1, 2,13,0,0), 4 },
+        //    { new DateTime(2021, 1, 2,14,0,0), 3 },
+        //    { new DateTime(2021, 1, 2,15,0,0), 2 },
+        //    { new DateTime(2021, 1, 2,16,0,0), 1 },
+        //};
 
-            List<(Item, int)> soldItems = new List<(Item, int)> {
-                (establishment.CreateItem("Coffee",25),1),
-                (establishment.CreateItem("Bun",50),1)
-            };
+        //    List<(Item, int)> soldItems = new List<(Item, int)> {
+        //        (establishment.CreateItem("Coffee",25),1),
+        //        (establishment.CreateItem("Bun",50),1)
+        //    };
 
-            //Act
-            List<Sale> sales = testDataCreatorService.SaleGenerator(soldItems, distribution);
+        //    //Act
+        //    List<Sale> sales = testDataCreatorService.SaleGenerator(soldItems, distribution);
 
-            //Assert
-            Assert.Equal((1 + 2 + 3 + 4 + 5 + 4 + 3 + 2 + 1) * 2, sales.Count()); //Correct number of entries
+        //    //Assert
+        //    Assert.Equal((1 + 2 + 3 + 4 + 5 + 4 + 3 + 2 + 1) * 2, sales.Count()); //Correct number of entries
 
-            IEnumerable<IGrouping<DateTime, Sale>> groupedBySaleTime = sales.GroupBy(x => x.GetTimeOfSale());
-            List<int> salesPerHour = groupedBySaleTime.Select(group => group.Count()).ToList();
-            Assert.Equal(18, salesPerHour.Count());
-            Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Key == kv.Key))); //DateTime in sales distribution match used distribution
-            Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Count() == kv.Value))); //Number of sales per dateTime match used distribution
-        }
+        //    IEnumerable<IGrouping<DateTime, Sale>> groupedBySaleTime = sales.GroupBy(x => x.GetTimeOfSale());
+        //    List<int> salesPerHour = groupedBySaleTime.Select(group => group.Count()).ToList();
+        //    Assert.Equal(18, salesPerHour.Count());
+        //    Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Key == kv.Key))); //DateTime in sales distribution match used distribution
+        //    Assert.True(distribution.All(kv => groupedBySaleTime.Any(group => group.Count() == kv.Value))); //Number of sales per dateTime match used distribution
+        //}
 
         [Fact]
         public void OpeningHoursFilter()

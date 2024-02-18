@@ -8,6 +8,8 @@ namespace WebApplication1.Domain_Layer.Entities
         Sale CreateSale(DateTime timestampPayment, List<Table>? table = null, List<(Item, int)>? itemAndQuantity = null, DateTime? timestampArrival = null);
         List<Sale> GetSales();
         void RemoveSale(Sale sale);
+        void SetSaleTimeOfArrival(Sale sale, DateTime datetime);
+        void SetSaleTimeOfPayment(Sale sale, DateTime datetime);
     }
 
     public partial class Establishment : EntityBase, IEstablishment_Sale
@@ -31,7 +33,7 @@ namespace WebApplication1.Domain_Layer.Entities
                 }
             }
 
-            return new Sale(timestampPayment, timestampArrival, tables: tables, ItemAndQuantity: itemAndQuantity);
+            return new Sale(timestampPayment, this, timestampArrival, tables: tables, ItemAndQuantity: itemAndQuantity);
         }
 
         public List<Sale> GetSales()
@@ -51,6 +53,16 @@ namespace WebApplication1.Domain_Layer.Entities
             this.SaleMustBeCreatedForEstablishment(sale);
             this.SaleMustNotAlreadyExist(sale);
             this.Sales.Add(sale);
+        }
+
+        public void SetSaleTimeOfArrival(Sale sale, DateTime datetime)
+        {
+            sale.setTimeOfArrival(datetime);
+        }
+
+        public void SetSaleTimeOfPayment(Sale sale, DateTime datetime)
+        {
+            sale.SetTimeOfPayment(datetime);
         }
 
         //Checkers and validators
