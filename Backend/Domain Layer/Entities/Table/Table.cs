@@ -24,10 +24,7 @@
 
         public string SetName(string name)
         {
-            if (!this.IsTableNameValid(name))
-            {
-                throw new ArgumentException("Table name is not valid");
-            }
+            this.TableNameMustBeValid(name);
             this.Name = name;
             return this.GetName();
         }
@@ -37,6 +34,14 @@
         }
 
         //Checkers and validators
+
+        public void TableNameMustBeValid(string name)
+        {
+            if (!this.IsTableNameValid(name))
+            {
+                throw new ArgumentException("Table name is not valid");
+            }
+        }
         public bool IsTableNameValid(string name)
         {
             if (name == "")
@@ -47,19 +52,4 @@
         }
 
     }
-
-
-    //public class TableConfiguration : IEntityTypeConfiguration<Establishment>
-    //{
-    //    public void Configure(EntityTypeBuilder<Establishment> builder)
-    //    {
-    //        builder.ToTable(nameof(Establishment));
-
-    //        builder.Property(e => e.Name).IsRequired();
-
-    //        builder.HasMany(e => e.Sales)
-    //        .WithOne(e => e.Establishment)
-    //        .IsRequired();
-    //    }
-    //}
 }

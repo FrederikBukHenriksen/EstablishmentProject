@@ -28,7 +28,19 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Assert.Equal(table.Name, tableName);
         }
 
+        [Fact]
+        public void SetName_WithValidName_ShouldSetName()
+        {
+            // Arrange
+            var table = establishment.CreateTable("Table1");
+            string newName = "Table2";
 
+            // Act
+            establishment.SetTableName(table, newName);
+
+            // Assert
+            Assert.Equal(newName, table.Name);
+        }
 
         [Fact]
         public void SetName_WithTableNameAlreadyInUse_ShouldNotSetName()
@@ -75,6 +87,20 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             // Assert
             Assert.Throws<InvalidOperationException>(act);
             Assert.DoesNotContain(table, establishment.GetTables());
+        }
+
+        [Fact]
+        public void AddTable_WithTableAlreadyInEstablishment_ShouldNotAddTable()
+        {
+            // Arrange
+            var table = establishment.CreateTable("Table1");
+            establishment.AddTable(table);
+
+            // Act
+            Action act = () => establishment.AddTable(table);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(act);
         }
 
 

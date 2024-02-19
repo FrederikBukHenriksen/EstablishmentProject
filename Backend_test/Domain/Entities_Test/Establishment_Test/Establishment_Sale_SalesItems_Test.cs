@@ -93,7 +93,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
-        public void AddSalesItems_WithSalesItemsCreatedForDifferentSale_ShouldNotAddSalesItems()
+        public void AddSalesItems_WithSalesItemsFromDifferentSale_ShouldNotAddSalesItems()
         {
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");

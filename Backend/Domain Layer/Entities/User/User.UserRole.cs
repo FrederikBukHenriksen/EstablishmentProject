@@ -24,6 +24,19 @@
             return new UserRole(this, establishment, role);
         }
 
+
+        public List<UserRole> GetUserRoles()
+        {
+            return this.UserRoles.ToList();
+        }
+
+        public void RemoveUserRole(UserRole userRole)
+        {
+            this.UserRoleMustExist(userRole);
+            this.UserRoles.Remove(userRole);
+            this.AddUserRole(userRole);
+        }
+
         //Checkers and validators
 
         protected void UserRoleMustNotExist(UserRole userRole)
@@ -50,16 +63,6 @@
             return this.GetUserRoles().Any(x => x.Establishment == establishment);
         }
 
-        public List<UserRole> GetUserRoles()
-        {
-            return this.UserRoles.ToList();
-        }
 
-        public void RemoveUserRole(UserRole userRole)
-        {
-            this.UserRoleMustExist(userRole);
-            this.UserRoles.Remove(userRole);
-            this.AddUserRole(userRole);
-        }
     }
 }

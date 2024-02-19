@@ -59,7 +59,7 @@ namespace WebApplication1.Services
             {
                 return null;
             }
-            string? usernameClaim = GetClaimValue(token, "username");
+            string usernameClaim = GetClaimValue(token, "username");
             User? user = this.userRepository.IncludeUserRoles().GetById(Guid.Parse(usernameClaim));
             if (usernameClaim == null || user == null)
             {
@@ -68,14 +68,10 @@ namespace WebApplication1.Services
             return user;
         }
 
-        private static string? GetClaimValue(string token, string claimType)
+        private static string GetClaimValue(string token, string claimType)
         {
             JwtSecurityToken securityToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
             var claim = securityToken.Claims.FirstOrDefault(c => c.Type == claimType);
-            if (claim == null)
-            {
-                return null;
-            }
             return claim.Value;
         }
     }

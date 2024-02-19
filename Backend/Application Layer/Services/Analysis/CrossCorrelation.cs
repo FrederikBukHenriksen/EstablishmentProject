@@ -4,61 +4,58 @@ namespace WebApplication1.Services.Analysis
 {
     public class CrossCorrelation
     {
-        public static List<(TimeSpan, double)> DoAnalysis(List<(DateTime, double)> list1WithTime, List<(DateTime, double)> list2WithTime)
+        public static List<(TimeSpan, double)> DoAnalysis(List<(DateTime, double)> ReferenceData, List<(DateTime, double)> ShiftingData)
         {
+            ListMustNotBeEmpty(ReferenceData);
+            ListMustNotBeEmpty(ShiftingData);
+            ShiftingDataMustBeLongerThanRefernece(reference: ReferenceData, shifting: ShiftingData);
+            DataElementsInListMustNotAllBeTheSame(ReferenceData);
+            DataElementsInListMustNotAllBeTheSame(ShiftingData);
 
-            if (list1WithTime.Count == 0 || list2WithTime.Count == 0)
-            {
-                throw new ArgumentException("Lists cannot be empty");
-            }
-
-            int times = (list2WithTime.Count - list1WithTime.Count) + 1;
+            int NumberPossibleOfCorrelations = (ShiftingData.Count - ReferenceData.Count) + 1;
 
             List<(TimeSpan, double)> LagAndCorrelation = new List<(TimeSpan, double)>();
 
-            for (int i = 0; i < times; i++)
+            for (int i = 0; i < NumberPossibleOfCorrelations; i++)
             {
-                var trimmedList2WithTime = list2WithTime.GetRange(i, list1WithTime.Count).ToArray();
-                var lag = trimmedList2WithTime.First().Item1 - list1WithTime.First().Item1;
+                var trimmedList2WithTime = ShiftingData.GetRange(i, ReferenceData.Count).ToArray();
 
-                var list1Value = list1WithTime.Select(x => x.Item2).ToList();
+                var list1Value = ReferenceData.Select(x => x.Item2).ToList();
                 var list2Value = trimmedList2WithTime.Select(x => x.Item2).ToList();
 
                 var correlation = Correlation.Spearman(list1Value, list2Value);
+
+                var lag = trimmedList2WithTime.First().Item1 - ReferenceData.First().Item1;
 
                 LagAndCorrelation.Add((lag, correlation));
             }
             return LagAndCorrelation;
         }
 
+        private static void ShiftingDataMustBeLongerThanRefernece<T>(List<T> reference, List<T> shifting)
+        {
+            if (reference.Count <= shifting.Count)
+            {
+                throw new ArgumentException("Reference data cannot be longer than shifting data");
+            }
 
-        //public static List<(TimeSpan, double)> DoAnalysis(List<(DateTime, double)> list1WithTime, List<(DateTime, double)> list2WithTime)
-        //{
-        //    int times = Math.Max(0, list2WithTime.Count - list1WithTime.Count) + 1;
+        }
 
-        //    List<(TimeSpan, double)> LagAndCorrelation = new List<(TimeSpan, double)>();
+        private static void DataElementsInListMustNotAllBeTheSame(List<(DateTime, double)> list)
+        {
+            if (list.Select(x => x.Item2).Distinct().Count() == 1)
+            {
+                throw new ArgumentException("Data in list must have variation");
+            }
+        }
 
-        //    for (int i = 0; i < times; i++)
-        //    {
-        //        var endIndex = i + list1WithTime.Count;
-        //        if (endIndex > list2WithTime.Count)
-        //        {
-        //            // If endIndex goes beyond the length of list2WithTime, adjust it
-        //            endIndex = list2WithTime.Count;
-        //        }
+        private static void ListMustNotBeEmpty<T>(List<T> list)
+        {
+            if (list.Count == 0)
+            {
+                throw new ArgumentException("List cannot be empty");
+            }
+        }
 
-        //        var trimmedList2WithTime = list2WithTime.Skip(i).Take(list1WithTime.Count).ToArray();
-
-        //        var lag = trimmedList2WithTime.First().Item1 - list1WithTime.First().Item1;
-
-        //        var list1Value = list1WithTime.Select(x => x.Item2).ToList();
-        //        var list2Value = trimmedList2WithTime.Select(x => x.Item2).ToList();
-
-        //        var correlation = Correlation.Spearman(list1Value, list2Value);
-
-        //        LagAndCorrelation.Add((lag, correlation));
-        //    }
-        //    return LagAndCorrelation;
-        //}
     }
 }

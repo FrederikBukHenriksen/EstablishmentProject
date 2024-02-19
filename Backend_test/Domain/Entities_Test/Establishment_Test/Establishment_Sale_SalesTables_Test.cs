@@ -127,9 +127,35 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
 
+        [Fact]
+        public void RemoveSalesTables_WithSalesTableForSale_ShouldRemoveSalesTables()
+        {
+            //Arrange
+            var salesTables = establishment.CreateSalesTables(sale, table);
+            establishment.AddSalesTables(sale, salesTables);
+
+            //Act
+            sale.RemoveSalesTables(salesTables);
+
+            //Assert
+            Assert.Empty(sale.SalesTables);
+        }
+        [Fact]
+        public void RemoveSalesTables_WithSalesTableNotFromSale_ShouldRemoveSalesTables()
+        {
+            //Arrange
+            var otherEstablishment = new Establishment("Other establishment");
+            var otherTable = otherEstablishment.CreateTable("Other table");
+            var otherSale = otherEstablishment.CreateSale(DateTime.Now);
+            var salesTables = otherEstablishment.CreateSalesTables(otherSale, otherTable);
+
+            //Act
+            Action act = () => sale.RemoveSalesTables(salesTables);
+
+            //Assert
+            Assert.Throws<InvalidOperationException>(act);
+            Assert.Empty(sale.SalesTables);
+        }
     }
-
-
-
 }
 

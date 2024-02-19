@@ -12,7 +12,7 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
     private IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> Clustering_TimeOfVisitVSTotalPrice;
     private IUnitOfWork unitOfWork;
     private ITestDataCreatorService testDataCreatorService;
-    private Establishment establsihment = new Establishment();
+    private Establishment establishment = new Establishment();
     private Item espresso;
     private Item coffee;
     private Item latte;
@@ -26,11 +26,13 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
         unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         //ARRANGE
-        establsihment = new Establishment("Cafe 1");
-        espresso = establsihment.CreateItem("Espresso", 35);
-        coffee = establsihment.CreateItem("Coffee", 35);
-        latte = establsihment.CreateItem("Latte", 50);
-
+        establishment = new Establishment("Cafe 1");
+        espresso = establishment.CreateItem("Espresso", 35);
+        establishment.AddItem(espresso);
+        coffee = establishment.CreateItem("Coffee", 35);
+        establishment.AddItem(coffee);
+        latte = establishment.CreateItem("Latte", 50);
+        establishment.AddItem(latte);
     }
 
     [Fact]
@@ -39,12 +41,12 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
         //ARRANGE
         Arrange_SimpleButRandomSales();
 
-        var bandwidthTimeOfVisit = 80;
-        var bandwidthTotalPrice = 80;
+        var bandwidthTimeOfVisit = 30;
+        var bandwidthTotalPrice = 30;
         Clustering_TimeOfVisit_TotalPrice_Command command =
             new Clustering_TimeOfVisit_TotalPrice_Command(
-            establishmentId: establsihment.Id,
-            salesIds: establsihment.GetSales().Select(x => x.Id).ToList(),
+            establishmentId: establishment.Id,
+            salesIds: establishment.GetSales().Select(x => x.Id).ToList(),
             bandwidthTimeOfVisit: bandwidthTimeOfVisit,
             bandwidthTotalPrice: bandwidthTotalPrice);
 
@@ -52,7 +54,7 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
         ClusteringReturn result = await Clustering_TimeOfVisitVSTotalPrice.Handle(command);
 
         //ASSERT
-        List<List<Sale>> salesInClusters = result.clusters.Select(x => x.Select(y => establsihment.GetSales().Find(z => z.Id == y)).ToList()).ToList();
+        List<List<Sale>> salesInClusters = result.clusters.Select(x => x.Select(y => establishment.GetSales().Find(z => z.Id == y)).ToList()).ToList();
         List<List<Item>> items = salesInClusters.Select(x => x.Select(y => y.SalesItems[0].Item).ToList()).ToList();
 
         //Correct clusters
@@ -81,25 +83,27 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
                 if (kvp.Key < kvp.Key.Date.AddHours(11))
                 {
                     int randomNumber = random.Next(1, 3);
-                    establsihment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (espresso, randomNumber) });
+                    var sale = establishment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (espresso, randomNumber) });
+                    establishment.AddSale(sale);
                 }
                 else if (kvp.Key > kvp.Key.Date.AddHours(12) && kvp.Key < kvp.Key.Date.AddHours(14))
                 {
                     int randomNumber = random.Next(1, 2);
-                    establsihment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (coffee, randomNumber) });
+                    var sale = establishment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (coffee, randomNumber) });
+                    establishment.AddSale(sale);
                 }
                 else if (kvp.Key > kvp.Key.Date.AddHours(15))
                 {
                     int randomNumber = random.Next(1, 2);
-                    establsihment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (latte, randomNumber) });
+                    var sale = establishment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (latte, randomNumber) });
+                    establishment.AddSale(sale);
                 }
-
             }
         }
 
         using (unitOfWork)
         {
-            unitOfWork.establishmentRepository.Add(establsihment);
+            unitOfWork.establishmentRepository.Add(establishment);
         }
     }
 

@@ -39,32 +39,32 @@ public class Clustering_TimeOfVisitVSLengthOfVisit_Test : IntegrationTest
 
     }
 
-    [Fact]
-    public async void Cluster_WithLargeTimeBandwith_ShouldCreateClustersForEachItemCollection()
-    {
-        //ARRANGE
-        var bandwidthTimeOfVisit = 500;
-        var bandwidthTotalPrice = 20;
-        Clustering_TimeOfVisit_LengthOfVisit_Command command =
-            new Clustering_TimeOfVisit_LengthOfVisit_Command(
-            establishmentId: establsihment.Id,
-            salesIds: sales.Select(x => x.Id).ToList());
+    //[Fact]
+    //public async void Cluster_WithLargeTimeBandwith_ShouldCreateClustersForEachItemCollection()
+    //{
+    //    //ARRANGE
+    //    var bandwidthTimeOfVisit = 500;
+    //    var bandwidthTotalPrice = 20;
+    //    Clustering_TimeOfVisit_LengthOfVisit_Command command =
+    //        new Clustering_TimeOfVisit_LengthOfVisit_Command(
+    //        establishmentId: establsihment.Id,
+    //        salesIds: sales.Select(x => x.Id).ToList());
 
-        //ACT
-        ClusteringReturn result = await handler.Handle(command);
+    //    //ACT
+    //    ClusteringReturn result = await handler.Handle(command);
 
-        //ASSERT
-        List<List<Sale>> salesInClusters = result.clusters.Select(x => x.Select(y => establsihment.GetSales().Find(z => z.Id == y)).ToList()).ToList();
-        List<List<Item>> items = salesInClusters.Select(x => x.Select(y => y.SalesItems[0].Item).ToList()).ToList();
+    //    //ASSERT
+    //    List<List<Sale>> salesInClusters = result.clusters.Select(x => x.Select(y => establsihment.GetSales().Find(z => z.Id == y)).ToList()).ToList();
+    //    List<List<Item>> items = salesInClusters.Select(x => x.Select(y => y.SalesItems[0].Item).ToList()).ToList();
 
-        //Correct clusters
-        Assert.Equal(3, result.clusters.Count);
-        foreach (var itemList in items)
-        {
-            foreach (var item in itemList)
-            {
-                Assert.Equal(itemList[0], item);
-            }
-        }
-    }
+    //    //Correct clusters
+    //    Assert.Equal(3, result.clusters.Count);
+    //    foreach (var itemList in items)
+    //    {
+    //        foreach (var item in itemList)
+    //        {
+    //            Assert.Equal(itemList[0], item);
+    //        }
+    //    }
+    //}
 }

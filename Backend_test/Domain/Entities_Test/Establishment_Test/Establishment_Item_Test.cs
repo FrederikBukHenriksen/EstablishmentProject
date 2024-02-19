@@ -75,7 +75,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             double price = 20.00;
 
             // Act
-            item.SetPrice(price);
+            establishment.SetItemPrice(item, price);
 
             // Assert
             Assert.Equal(price, item.GetPrice());
@@ -88,7 +88,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             double price = -20.00;
 
             // Act
-            Action act = () => item.SetPrice(price);
+            Action act = () => establishment.SetItemPrice(item, price);
 
             // Assert
             Assert.Throws<ArgumentException>(act);

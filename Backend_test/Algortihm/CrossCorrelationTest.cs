@@ -17,6 +17,7 @@ namespace EstablishmentProject.test.Algortihm
                 normalDistributionTestData.Add((DateTime.Today.AddHours(i), normalDistribution(i)));
             }
         }
+        [Fact]
         public void Analysis_WithPerfectData()
         {
             // Arrange
@@ -32,6 +33,7 @@ namespace EstablishmentProject.test.Algortihm
             Assert.Equal(1.0, result.First().Item2);
         }
 
+        [Fact]
         public void Analysis_WithPerfectData_WithLag()
         {
             // Arrange
