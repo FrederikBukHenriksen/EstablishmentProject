@@ -8,9 +8,12 @@ namespace WebApplication1.Services.Analysis
         {
             ListMustNotBeEmpty(ReferenceData);
             ListMustNotBeEmpty(ShiftingData);
-            ShiftingDataMustBeLongerThanRefernece(reference: ReferenceData, shifting: ShiftingData);
+            ShiftingCannotBeShorterThanReference(reference: ReferenceData, shifting: ShiftingData);
             DataElementsInListMustNotAllBeTheSame(ReferenceData);
             DataElementsInListMustNotAllBeTheSame(ShiftingData);
+
+            ReferenceData = ReferenceData.OrderBy(x => x.Item1).ToList();
+            ShiftingData = ShiftingData.OrderBy(x => x.Item1).ToList();
 
             int NumberPossibleOfCorrelations = (ShiftingData.Count - ReferenceData.Count) + 1;
 
@@ -32,9 +35,9 @@ namespace WebApplication1.Services.Analysis
             return LagAndCorrelation;
         }
 
-        private static void ShiftingDataMustBeLongerThanRefernece<T>(List<T> reference, List<T> shifting)
+        private static void ShiftingCannotBeShorterThanReference<T>(List<T> reference, List<T> shifting)
         {
-            if (reference.Count <= shifting.Count)
+            if (reference.Count > shifting.Count)
             {
                 throw new ArgumentException("Reference data cannot be longer than shifting data");
             }

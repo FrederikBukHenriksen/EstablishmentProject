@@ -4,13 +4,13 @@ namespace WebApplication1.Domain_Layer.Entities
 {
     public interface IEstablishment_Sale_SalesItems
     {
-        void AddSalesItem(Sale sale, SalesItems salesItem);
+        void AddSalesItems(Sale sale, SalesItems salesItem);
         SalesItems CreateSalesItem(Sale sale, Item item, int quantity);
     }
 
     public partial class Establishment : IEstablishment_Sale_SalesItems
     {
-        public void AddSalesItem(Sale sale, SalesItems salesItem)
+        public void AddSalesItems(Sale sale, SalesItems salesItem)
         {
             this.ItemMustExist(salesItem.Item);
             this.SaleMustExist(sale);

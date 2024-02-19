@@ -2,15 +2,34 @@
 
 namespace WebApplication1.Application_Layer.Services.DataFetching
 {
-    public interface IDataFetching
+    public interface IRetrieveItemsData
     {
-        Task<List<(Func<Item>, RetrivingMetadata)>> FetchItems(Establishment establishment);
-        Task<List<(Func<Table>, RetrivingMetadata)>> FetchTables(Establishment establishment);
-        Task<List<(Func<Sale>, RetrivingMetadata)>> FetchSales(Establishment establishment);
+        Task<List<(Func<Establishment, List<ForeingIDAnEntityID>, Item>, RetrivingMetadata)>> RetrieveItems();
     }
 
-    public interface IRetrieveItems
+    public interface IRetrieveTablesData
     {
-        Task<List<(Func<Item>, RetrivingMetadata)>> FetchItems(Establishment establishment);
+        Task<List<(Func<Establishment, List<ForeingIDAnEntityID>, Table>, RetrivingMetadata)>> RetrieveTables();
+    }
+
+
+
+    public interface IRetrieveSalesData
+    {
+        Task<List<(Func<Establishment, List<ForeingIDAnEntityID>, Sale>, RetrivingMetadata)>> RetrieveSales();
+    }
+
+
+
+    public class ForeingIDAnEntityID
+    {
+        public Guid entityId;
+        public string ForeingId;
+
+        public ForeingIDAnEntityID(Guid entityId, string foreingId)
+        {
+            this.entityId = entityId;
+            this.ForeingId = foreingId;
+        }
     }
 }

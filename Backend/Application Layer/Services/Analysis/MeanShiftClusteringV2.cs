@@ -66,9 +66,8 @@
                     List<double> mean = new List<double>(data[dataIndex].Item2);
 
                     bool isWithinTolerance = false;
-                    //WHILE, tidligere
+
                     var neighbouringPoints = new List<(T, List<double>)>();
-                    // Find the neighbour datapoints
                     for (int i = 0; i < data.Count; i++)
                     {
                         var item = data[i];

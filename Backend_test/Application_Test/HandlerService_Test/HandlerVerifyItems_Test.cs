@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Application_Layer.Services.CommandHandlerServices;
+using WebApplication1.CommandHandlers;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services;
@@ -51,7 +52,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
 
 
         [Fact]
-        public void VerifyItems_WithValidItemsFromEstablishment_ShouldPassValidation()
+        public async void VerifyItems_WithValidItemsFromEstablishment_ShouldPassValidation()
         {
             // Arrange
             var command = new CommandTestObject
@@ -63,13 +64,12 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             // Act
             validator.VerifyItems(command);
 
-
             // Assert
-            Assert.True(true);
+            Assert.NotNull(true);
         }
 
         [Fact]
-        public void VerifyItems_WithInvalidItemsFromEstablishment_ShouldNotPassValidation()
+        public async void VerifyItems_WithInvalidItemsFromEstablishment_ShouldNotPassValidation()
         {
             // Arrange
             var command = new CommandTestObject
@@ -83,12 +83,25 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
 
             // Assert
             Assert.Throws<UnauthorizedAccessException>(act);
+
         }
 
         private class CommandTestObject : ICommand, ICmdField_ItemsIds
         {
             public Guid EstablishmentId { get; set; }
             public List<Guid> ItemsIds { get; set; }
+        }
+
+        private class TestHandler : IHandler<CommandTestObject, TestReturn>
+        {
+            public Task<TestReturn> Handle(CommandTestObject command)
+            {
+                return Task.FromResult(new TestReturn());
+            }
+        }
+
+        private class TestReturn : IReturn
+        {
         }
     }
 }

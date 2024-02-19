@@ -91,7 +91,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
 
             //Assert
             Assert.IsType<SaleDTO>(result.Sales.First());
-            Assert.Equal(sale.Id, result.Sales.First().id);
+            Assert.Equal(sale.Id, result.Sales.First().Id);
         }
 
         [Fact]

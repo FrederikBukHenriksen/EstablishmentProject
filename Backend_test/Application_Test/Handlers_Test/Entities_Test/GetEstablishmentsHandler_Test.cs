@@ -65,7 +65,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
 
             //Assert
             Assert.IsType<EstablishmentDTO>(result.dtos.First());
-            Assert.Equal(establishment.Id, result.dtos.First().id);
+            Assert.Equal(establishment.Id, result.dtos.First().Id);
         }
 
 

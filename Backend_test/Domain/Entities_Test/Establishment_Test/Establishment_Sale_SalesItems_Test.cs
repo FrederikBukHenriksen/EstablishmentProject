@@ -69,7 +69,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             var salesItems = establishment.CreateSalesItem(sale, item, 1);
 
             //Act
-            establishment.AddSalesItem(sale, salesItems);
+            establishment.AddSalesItems(sale, salesItems);
 
             //Assert
             Assert.Contains(salesItems, sale.GetSalesItems());
@@ -85,7 +85,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             var salesItems = otherEstablishment.CreateSalesItem(otherEstablishment.CreateSale(DateTime.Now), item, 1);
 
             //Act
-            Action act = () => establishment.AddSalesItem(sale, salesItems);
+            Action act = () => establishment.AddSalesItems(sale, salesItems);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);
@@ -104,7 +104,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             var salesItems = otherEstablishment.CreateSalesItem(overSale, otherItem, 1);
 
             //Act
-            Action act = () => establishment.AddSalesItem(sale, salesItems);
+            Action act = () => establishment.AddSalesItems(sale, salesItems);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);
@@ -116,11 +116,11 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         {
             //Arrange
             var salesItems1 = establishment.CreateSalesItem(sale, item, 1);
-            establishment.AddSalesItem(sale, salesItems1);
+            establishment.AddSalesItems(sale, salesItems1);
             var salesItems2 = establishment.CreateSalesItem(sale, item, 2);
 
             //Act
-            Action act = () => establishment.AddSalesItem(sale, salesItems2);
+            Action act = () => establishment.AddSalesItems(sale, salesItems2);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);

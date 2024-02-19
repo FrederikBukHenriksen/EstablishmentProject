@@ -21,7 +21,7 @@ namespace WebApplication1.Controllers
 
         [Authorize]
         [HttpPost("find-sales")]
-        public async Task<GetSalesReturn> GetSales([FromBody] GetSalesCommand command, [FromServices] IHandler<GetSalesCommand, GetSalesReturn> handler)
+        public async Task<ActionResult<GetSalesReturn>> GetSales([FromBody] GetSalesCommand command, [FromServices] IHandler<GetSalesCommand, GetSalesReturn> handler)
         {
             return await this.handlerService.Service(handler, command);
         }

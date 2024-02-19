@@ -7,7 +7,7 @@ namespace WebApplication1.CommandsHandlersReturns
 {
     public interface ICommandValidatorService
     {
-        Task<Return> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
+        Task<ActionResult<Return>> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
             where Command : ICommand
             where Return : IReturn;
     }
@@ -28,7 +28,7 @@ namespace WebApplication1.CommandsHandlersReturns
 
         }
 
-        public async Task<Return> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
+        public async Task<ActionResult<Return>> Service<Command, Return>(IHandler<Command, Return> handler, Command command)
             where Command : ICommand
             where Return : IReturn
         {
@@ -38,7 +38,12 @@ namespace WebApplication1.CommandsHandlersReturns
                 this.verifySalesCommandService.VerifySales(command);
                 this.verifyItemsCommandService.VerifyItems(command);
                 this.verifyTablesCommandService.VerifyTables(command);
-                return await handler.Handle(command);
+                var res = await handler.Handle(command);
+                return new OkObjectResult(res);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                return new UnauthorizedResult();
             }
             catch (Exception exception)
             {

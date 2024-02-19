@@ -3,11 +3,8 @@ using WebApplication1.Services.Analysis;
 
 namespace EstablishmentProject.test.Algortihm
 {
-    public class MeanShiftClusteringTest : BaseIntegrationTest
+    public class MeanShiftClusteringTest
     {
-        public MeanShiftClusteringTest(IntegrationTestWebAppFactory factory) : base(factory)
-        {
-        }
 
         [Fact]
         public void Cluster_ReturnsCorrectClusters()

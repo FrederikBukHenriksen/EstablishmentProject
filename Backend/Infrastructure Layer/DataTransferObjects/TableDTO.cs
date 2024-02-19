@@ -2,15 +2,17 @@
 
 namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
 {
-    public class TableDTO
+    public class ItemDTO
     {
         public Guid Id;
         public string Name { get; set; }
+        public double Price { get; set; }
 
-        public TableDTO(Table table)
+        public ItemDTO(Item item)
         {
-            this.Id = table.Id;
-            this.Name = table.Name;
+            this.Id = item.Id;
+            this.Name = item.Name;
+            this.Price = item.Price;
         }
     }
 }
