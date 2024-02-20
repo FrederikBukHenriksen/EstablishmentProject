@@ -54,7 +54,7 @@ export class ClusterService {
   public async SaleIdCluster_to_SaleDTOCluster(
     clusterReturn: ClusteringReturn
   ): Promise<SaleDTO[][]> {
-    var saleDTO = await this.saleService.getSalesDTO(
+    var saleDTO = await this.saleService.getSalesDTOFromIds(
       clusterReturn.clusters.flatMap((cluster) => cluster)
     );
     return this.ClustersMatchSaleIdsAndSaleDTOs(

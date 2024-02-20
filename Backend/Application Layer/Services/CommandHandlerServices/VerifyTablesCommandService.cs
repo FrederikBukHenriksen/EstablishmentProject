@@ -1,4 +1,5 @@
-﻿using WebApplication1.CommandsHandlersReturns;
+﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 {
@@ -23,7 +24,7 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
                 List<Guid> tablesIds = (command as ICmdField_TablesIds).TablesIds;
                 List<Guid> allTables = this.unitOfWork.establishmentRepository.IncludeTables().GetById(establishmentId).Tables.Select(x => x.Id).ToList();
 
-                if (!tablesIds.All(guid => allTables.Contains(guid)))
+                if (!allTables.IsNullOrEmpty() && !tablesIds.All(guid => allTables.Contains(guid)))
                 {
                     throw new UnauthorizedAccessException();
                 }

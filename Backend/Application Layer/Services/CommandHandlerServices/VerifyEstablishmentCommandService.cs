@@ -1,4 +1,5 @@
-﻿using WebApplication1.CommandsHandlersReturns;
+﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Services;
 
 namespace WebApplication1.Application_Layer.Services
@@ -30,8 +31,8 @@ namespace WebApplication1.Application_Layer.Services
             }
             if (command is ICmdField_EstablishmentIds)
             {
-                List<Guid> establishmentId = (command as ICmdField_EstablishmentIds).EstablishmentIds;
-                if (!establishmentId.All(x => accesibleEstablishmentsIds.Contains(x)))
+                List<Guid> establishmentIds = (command as ICmdField_EstablishmentIds).EstablishmentIds;
+                if (!establishmentIds.IsNullOrEmpty() && !establishmentIds.All(x => accesibleEstablishmentsIds.Contains(x)))
                 {
                     throw new UnauthorizedAccessException();
                 }

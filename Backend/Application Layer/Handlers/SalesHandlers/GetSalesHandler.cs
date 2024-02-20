@@ -11,8 +11,10 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
     public class GetSalesCommand : CommandBase, ICmdField_EstablishmentId, ICmdField_SalesIds
     {
         public Guid EstablishmentId { get; set; }
-        public List<Guid> SalesIds { get; set; } = new List<Guid>();
-        public SalesSorting? SalesSorting { get; set; }
+        public List<Guid>? SalesIds { get; set; } = null;
+        public FilterSales? FilterSales { get; set; } = null;
+        public FilterSalesBySalesItems? FilterSalesBySalesItems { get; set; } = null;
+        public FilterSalesBySalesTables? FilterSalesBySalesTables { get; set; } = null;
     }
 
     public interface ISalesReturn : IReturn
@@ -45,7 +47,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
     public class GetSalesRawReturn : ReturnBase, ISalesReturn
     {
-        public List<Sale> Sales { get; set; }
+        public List<Sale> Sales { get; set; } = new List<Sale>();
 
 
         public ISalesReturn Create(List<Sale> sales)
@@ -66,15 +68,23 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
         public async override Task<T> Handle(GetSalesCommand command)
         {
-            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().GetById(command.EstablishmentId)!;
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().IncludeSalesTables().GetById(command.EstablishmentId)!;
             List<Sale> sales = establishment.GetSales();
             if (!command.SalesIds.IsNullOrEmpty())
             {
                 sales = sales.Where(sale => command.SalesIds.Any(saleId => saleId == sale.Id)).ToList();
             }
-            if (command.SalesSorting != null)
+            if (command.FilterSalesBySalesItems != null)
             {
-                sales = SalesSortingParametersExecute.SortSales(sales, command.SalesSorting);
+                sales = SalesFilterHelper.FilterSalesOnSalesItems(sales, command.FilterSalesBySalesItems);
+            }
+            if (command.FilterSalesBySalesTables != null)
+            {
+                sales = SalesFilterHelper.FilterSalesOnSalesTables(sales, command.FilterSalesBySalesTables);
+            }
+            if (command.FilterSales != null)
+            {
+                sales = SalesFilterHelper.FilterSales(sales, command.FilterSales);
             }
             return (T)(new T()).Create(sales);
         }

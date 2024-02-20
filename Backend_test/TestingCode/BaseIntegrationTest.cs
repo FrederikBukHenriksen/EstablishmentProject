@@ -1,4 +1,4 @@
-﻿using EstablishmentProject.test;
+﻿using EstablishmentProject.test.TestingCode;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using WebApplication1.Data;

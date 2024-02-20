@@ -19,7 +19,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { TableModule } from '../table/table.module';
 import { MatMenuModule } from '@angular/material/menu';
-import { DialogFilterSalesModule } from '../dialog-filter-sales/dialog-filter-sales.module';
+import { DialogFilterSalesBySalestablesModule } from '../dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.module';
 
 @NgModule({
   declarations: [CrossCorrelationComponent],
@@ -44,7 +44,7 @@ import { DialogFilterSalesModule } from '../dialog-filter-sales/dialog-filter-sa
     GraphModule,
     TableModule,
     MatMenuModule,
-    DialogFilterSalesModule,
+    DialogFilterSalesBySalestablesModule,
   ],
 })
 export class CrossCorrelationModule {}

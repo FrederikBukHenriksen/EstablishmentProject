@@ -117,9 +117,10 @@ export class DropDownOption extends SettingsDataBase {
 export class DatePicker extends SettingsDataBase {
   override value = this.FormControl.value;
 
-  constructor(id: string, value?: Date) {
+  constructor(id: string, value?: Date, title?: string) {
     super(id);
     this.value = value;
+    this.title = title ?? '';
   }
 }
 

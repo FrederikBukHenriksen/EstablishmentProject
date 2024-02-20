@@ -5,7 +5,6 @@ using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure_Layer.DataTransferObjects;
-using WebApplication1.Utils;
 
 namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
 {
@@ -33,7 +32,6 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
             getSalesCommand_WithSalesSorting = new GetSalesCommand
             {
                 EstablishmentId = establishment.Id,
-                SalesSorting = new SalesSorting(withinTimeperiods: new List<(DateTime start, DateTime end)> { (DateTime.Now.AddHours(-1), DateTime.Now.AddHours(1)) })
             };
         }
 

@@ -1,16 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import {
+  FilterSales,
+  FilterSalesBySalesItems,
+  FilterSalesBySalesTables,
   GetSalesCommand,
-  GetSalesDTOCommand,
   SaleClient,
   SaleDTO,
-  SalesSorting,
 } from 'api';
 import { SessionStorageService } from '../session-storage/session-storage.service';
 import { lastValueFrom } from 'rxjs';
 
 export interface ISaleService {
-  getSalesDTO(salesIds: string[], establishmentId?: string): Promise<SaleDTO[]>;
+  getSalesDTOFromIds(
+    salesIds: string[],
+    establishmentId?: string
+  ): Promise<SaleDTO[]>;
 }
 
 @Injectable({
@@ -22,32 +26,29 @@ export class SaleService implements ISaleService {
   private readonly activeEstablishment =
     this.sessionStorageService.getActiveEstablishment();
 
-  public async getSalesDTO(
+  public async getSalesDTOFromIds(
     salesIds: string[],
     establishmentId?: string
   ): Promise<SaleDTO[]> {
-    var command = new GetSalesDTOCommand();
+    var command = new GetSalesCommand();
     command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
     command.salesIds = salesIds;
     return (await lastValueFrom(this.saleClient.getSalesDTO(command))).sales;
   }
 
-  public async getSalesWithoutSorting(
-    SalesSortingestablishmentId?: string,
+  public async getSalesFromFiltering(
+    filterSales?: FilterSales,
+    filterSalesBySalesItems?: FilterSalesBySalesItems,
+    filterSalesBySalesTables?: FilterSalesBySalesTables,
+    filterBySalesIds?: string[],
     establishmentId?: string
   ): Promise<string[]> {
     var command = new GetSalesCommand();
+    command.salesIds = filterBySalesIds;
+    command.filterSales = filterSales;
+    command.filterSalesBySalesItems = filterSalesBySalesItems;
+    command.filterSalesBySalesTables = filterSalesBySalesTables;
     command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
-    return (await lastValueFrom(this.saleClient.getSales(command))).sales;
-  }
-
-  public async getSalesWithSortingObject(
-    salesSorting: SalesSorting,
-    establishmentId?: string
-  ): Promise<string[]> {
-    var command = new GetSalesCommand();
-    command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
-    command.salesSorting = salesSorting ?? new SalesSorting();
     return (await lastValueFrom(this.saleClient.getSales(command))).sales;
   }
 }

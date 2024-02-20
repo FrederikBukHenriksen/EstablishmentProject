@@ -1,4 +1,5 @@
-﻿using WebApplication1.CommandsHandlersReturns;
+﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 {
@@ -23,7 +24,7 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
                 List<Guid> itemsIds = (command as ICmdField_ItemsIds).ItemsIds;
                 List<Guid> allItems = this.unitOfWork.establishmentRepository.IncludeItems().GetById(establishmentId).Items.Select(x => x.Id).ToList();
 
-                if (!itemsIds.All(guid => allItems.Contains(guid)))
+                if (!itemsIds.IsNullOrEmpty() && !itemsIds.All(guid => allItems.Contains(guid)))
                 {
                     throw new UnauthorizedAccessException();
                 }

@@ -4,9 +4,9 @@ import {
   CorrelationCommand,
   CorrelationReturn,
   DateTimePeriod,
+  FilterSalesBySalesItems,
   GetSalesCommand,
   ItemClient,
-  SalesSorting,
   TimeResolution,
 } from 'api';
 import { ChartDataset } from 'chart.js';
@@ -22,7 +22,7 @@ import {
 } from './cross-correlation.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogCrossCorrelationSettingsComponent } from '../dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
-import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
+import { DialogFilterSalesBySalesitemsComponent } from '../dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import {
   DateForGraph,
   getDifferenceInHours,
@@ -76,7 +76,7 @@ export class CrossCorrelation_Sales_Temperature
   graphModel: GraphModel | undefined;
 
   salesIds: string[] = [];
-  salesSorting: SalesSorting = {} as SalesSorting;
+  salesSorting: FilterSalesBySalesItems = {} as FilterSalesBySalesItems;
 
   constructor(
     private readonly analysisClient: AnalysisClient,
@@ -92,7 +92,7 @@ export class CrossCorrelation_Sales_Temperature
       name: 'Sales',
       action: async () => {
         var dialogCrossCorrelationSettingsComponent =
-          new DialogFilterSalesComponent(
+          new DialogFilterSalesBySalesitemsComponent(
             this.dialog,
             this.itemService,
             this.sessionStorageService
@@ -133,8 +133,8 @@ export class CrossCorrelation_Sales_Temperature
 
   async run() {
     var getSalesCommand: GetSalesCommand = {
-      establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-      salesSorting: this.salesSorting,
+      // establishmentId: this.sessionStorageService.getActiveEstablishment()!,
+      // salesSorting: this.salesSorting,
     } as GetSalesCommand;
 
     this.salesIds = (

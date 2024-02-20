@@ -21,7 +21,7 @@
 
     <div *ngIf="getType(input) == 'DropDown'">
       <mat-form-field>
-        <mat-label>Items</mat-label>
+        <mat-label></mat-label>
         <mat-select [formControlName]="input.id">
           <mat-option
             *ngFor="let item of GetDropdownOptions(input)"
@@ -34,7 +34,7 @@
 
     <div *ngIf="getType(input) == 'DropDownMultipleSelects'">
       <mat-form-field>
-        <mat-label>Items</mat-label>
+        <mat-label></mat-label>
         <mat-select [formControlName]="input.id" multiple [value]="input.value">
           <mat-option
             *ngFor="let item of GetDropdownOptions(input)"

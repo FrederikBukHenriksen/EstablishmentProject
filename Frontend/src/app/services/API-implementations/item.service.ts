@@ -1,14 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  GetItemsCommand,
-  GetSalesCommand,
-  GetSalesDTOCommand,
-  ItemClient,
-  ItemDTO,
-  SaleClient,
-  SaleDTO,
-  SalesSorting,
-} from 'api';
+import { GetItemsCommand, ItemClient, ItemDTO } from 'api';
 import { SessionStorageService } from '../session-storage/session-storage.service';
 import { lastValueFrom } from 'rxjs';
 

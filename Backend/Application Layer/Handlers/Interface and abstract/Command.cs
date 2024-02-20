@@ -38,7 +38,7 @@ namespace WebApplication1.CommandsHandlersReturns
 
     public interface ICmdField_SalesSorting
     {
-        public SalesSorting Sorting { get; set; }
+        public FilterSalesBySalesItems Sorting { get; set; }
 
     }
 

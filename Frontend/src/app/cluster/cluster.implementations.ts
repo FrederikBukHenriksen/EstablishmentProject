@@ -2,14 +2,15 @@ import {
   ClusteringCommand,
   ClusteringReturn,
   Clustering_TimeOfVisit_TotalPrice_Command,
+  FilterSales,
+  FilterSalesBySalesItems,
+  FilterSalesBySalesTables,
   GetItemsCommand,
   GetSalesCommand,
-  GetSalesDTOCommand,
   GetSalesReturn,
   ItemClient,
   ItemDTO,
   SaleDTO,
-  SalesSorting,
 } from 'api';
 import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
 import { AnalysisClient } from 'api';
@@ -18,7 +19,7 @@ import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
 import { MatDialog } from '@angular/material/dialog';
-import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
+import { DialogFilterSalesBySalesitemsComponent } from '../dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import { DialogClusterSettingsComponent } from '../dialog-cluster-settings/dialog-cluster-settings.component';
 import { IClusteringImplementaion } from './cluster.component';
 import {
@@ -33,6 +34,9 @@ import {
   ClusterService,
 } from '../services/API-implementations/cluster.service';
 import { ItemService } from '../services/API-implementations/item.service';
+import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
+import { TableService } from '../services/API-implementations/table.service';
+import { DialogFilterSalesBySalestablesComponent } from '../dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
 
 export interface ClusteringAssembly {
   assembly: IClusteringImplementaion;
@@ -59,7 +63,11 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
   graphModels: Subject<{ title: string; graphModel: GraphModel }[]> =
     new Subject<{ title: string; graphModel: GraphModel }[]>();
 
-  salesSorting: SalesSorting = new SalesSorting();
+  filterSales: FilterSales = new FilterSales();
+  filterSalesBySalesItems: FilterSalesBySalesItems =
+    new FilterSalesBySalesItems();
+  filterSalesBySalesTables: FilterSalesBySalesTables =
+    new FilterSalesBySalesTables();
   bandwidths: ClusterBandwidths[] = [
     {
       title: 'Time of visit',
@@ -78,6 +86,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     private readonly sessionStorageService: SessionStorageService,
     private readonly itemClient: ItemClient,
     private readonly itemService: ItemService,
+    private readonly tableService: TableService,
     private readonly dialog: MatDialog,
     private readonly saleClient: SaleClient,
     private readonly salesService: SaleService,
@@ -89,14 +98,40 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
       name: 'Sales',
       action: async () => {
         var dialogCrossCorrelationSettingsComponent =
-          new DialogFilterSalesComponent(
+          new DialogFilterSalesComponent(this.dialog);
+        this.filterSales = await dialogCrossCorrelationSettingsComponent.Open(
+          this.filterSales
+        );
+      },
+    } as IDialogImplementation,
+    {
+      name: 'Items',
+      action: async () => {
+        var dialogCrossCorrelationSettingsComponent =
+          new DialogFilterSalesBySalesitemsComponent(
             this.dialog,
             this.itemService,
             this.sessionStorageService
           );
-        this.salesSorting = await dialogCrossCorrelationSettingsComponent.Open(
-          this.salesSorting
-        );
+        this.filterSalesBySalesItems =
+          await dialogCrossCorrelationSettingsComponent.Open(
+            this.filterSalesBySalesItems
+          );
+      },
+    } as IDialogImplementation,
+    {
+      name: 'Tables',
+      action: async () => {
+        var dialogCrossCorrelationSettingsComponent =
+          new DialogFilterSalesBySalestablesComponent(
+            this.dialog,
+            this.tableService,
+            this.sessionStorageService
+          );
+        this.filterSalesBySalesTables =
+          await dialogCrossCorrelationSettingsComponent.Open(
+            this.filterSalesBySalesItems
+          );
       },
     } as IDialogImplementation,
     {
@@ -127,9 +162,14 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     {
       name: 'Run',
       action: async () => {
-        console.log('hello');
-        var sales = await this.salesService.getSalesWithSortingObject(
-          this.salesSorting
+        console.log('filterSales', this.filterSales);
+        console.log('filterSalesBySalesItems', this.filterSalesBySalesItems);
+        console.log('filterSalesBySalesTables', this.filterSalesBySalesTables);
+
+        var sales = await this.salesService.getSalesFromFiltering(
+          this.filterSales,
+          this.filterSalesBySalesItems,
+          this.filterSalesBySalesTables
         );
         this.clusteringReturn =
           await this.clusterService.Cluster_TimeOfVisit_vs_TotalSpend(
@@ -201,8 +241,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
       var averageSpendOfCluster =
         itemsDTOmapped
           .flat()
-          .reduce((prev, current) => prev + current.price.amount, 0) /
-        element.length;
+          .reduce((prev, current) => prev + current.price, 0) / element.length;
 
       tableEntries.push({
         id: index,
@@ -236,7 +275,10 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
             id: sale.id,
             elements: [
               new TableString('Time', sale.timestampPayment.toString()),
-              new TableString('Sale type', sale.table ? sale.table : ''),
+              new TableString(
+                'Tables',
+                sale.salesTables ? sale.salesTables.toString() : ''
+              ),
               new TableString('No. items', sale.salesItems.length.toString()),
             ],
           } as TableEntry;

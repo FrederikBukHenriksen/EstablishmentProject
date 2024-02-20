@@ -52,8 +52,8 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
     {
         public override double Caldulate(List<Sale> sales)
         {
-            var SalesSorting = new SalesSorting(mustContainAllAttributes: new List<SaleAttributes> { SaleAttributes.TimestampArrival });
-            List<Sale> SalesWithTimeOfArrival = SalesSortingParametersExecute.SortSales(sales, SalesSorting);
+            var SalesSorting = new FilterSales(mustContainAllAttributes: new List<SaleAttributes> { SaleAttributes.TimestampArrival });
+            List<Sale> SalesWithTimeOfArrival = SalesFilterHelper.FilterSales(sales, SalesSorting);
             if (SalesWithTimeOfArrival.IsNullOrEmpty())
             {
                 throw new Exception("No sales with time of arrival");
@@ -66,8 +66,8 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
     {
         public override double Caldulate(List<Sale> sales)
         {
-            var SalesSorting = new SalesSorting(mustContainAllAttributes: new List<SaleAttributes> { SaleAttributes.TimestampArrival, SaleAttributes.TimestampPayment });
-            List<Sale> SalesWithTimeOfArrival = SalesSortingParametersExecute.SortSales(sales, SalesSorting);
+            var SalesSorting = new FilterSales(mustContainAllAttributes: new List<SaleAttributes> { SaleAttributes.TimestampArrival, SaleAttributes.TimestampPayment });
+            List<Sale> SalesWithTimeOfArrival = SalesFilterHelper.FilterSales(sales, SalesSorting);
             if (SalesWithTimeOfArrival.IsNullOrEmpty())
             {
                 throw new Exception("No sales with a seattime");

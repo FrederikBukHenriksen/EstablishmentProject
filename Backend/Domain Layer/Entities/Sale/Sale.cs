@@ -123,13 +123,13 @@ namespace WebApplication1.Domain_Layer.Entities
 
         protected void TimeOfArrivalMustBeBeforeTimeOfPayment(DateTime datetime)
         {
-            if (!this.IsTimeOfArrivalValid(datetime))
+            if (!this.IsTimeOfArrivalBeforePayment(datetime))
             {
                 throw new ArgumentException("Time of arrival must be before time of payment");
             }
         }
 
-        public bool IsTimeOfArrivalValid(DateTime datetime)
+        public bool IsTimeOfArrivalBeforePayment(DateTime datetime)
         {
             if (this.TimestampPayment >= datetime)
             {

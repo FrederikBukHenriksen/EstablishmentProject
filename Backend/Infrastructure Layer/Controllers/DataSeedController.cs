@@ -69,30 +69,15 @@ namespace WebApplication1.Controllers
                 }
             }
 
-
-
-            //var salesDistribution1 = testDataCreatorService.SaleGenerator(new List<(Item, int)> { (coffee, 1), (water, 2) }, distributionHourly);
-            //var salesDistribution2 = testDataCreatorService.SaleGenerator(new List<(Item, int)> { (coffee, 2), (water, 1), (bun, 2) }, distributionDaily);
-
-            //var salesDistribution = salesDistribution1.Concat(salesDistribution2).ToList();
-
             foreach (var sale in salesDistribution)
             {
                 int randomNumber = random.Next(-30, 31);
                 sale.TimestampPayment = sale.TimestampPayment.AddMinutes(randomNumber);
             }
 
-            //var establishmentBack = factoryServiceBuilder
-            //    .EstablishmentBuilder()
-            //    .withName("Cafe Frederik")
-            //    .withItems(new List<Item> { coffee, latte, esrepsso, bun, water })
-            //    .withSales(salesDistribution)
-            //    .Build();
-
-            //var user = factoryServiceBuilder.UserBuilder().WithEmail("Frederik@mail.com").WithPassword("12345678").WithUserRoles(new List<(Establishment, Role)> { (establishment, Role.Admin) }).Build();
             var user = new User("Frederik@mail.com", "12345678");
-            user.CreateUserRole(establishment, user, Role.Admin);
-            user.AddUserRole(user.UserRoles.First());
+            var userRole = user.CreateUserRole(establishment, user, Role.Admin);
+            user.AddUserRole(userRole);
 
             using (var uow = unitOfWork)
             {

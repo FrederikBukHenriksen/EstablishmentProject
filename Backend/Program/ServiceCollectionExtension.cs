@@ -73,6 +73,11 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsEntityReturn>, GetItemsHandler<GetItemsEntityReturn>>();
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsDTOReturn>, GetItemsHandler<GetItemsDTOReturn>>();
 
+            //Table
+            serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesIdReturn>, GetTablesHandler<GetTablesIdReturn>>();
+            serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesDTOReturn>, GetTablesHandler<GetTablesDTOReturn>>();
+            serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesRawReturn>, GetTablesHandler<GetTablesRawReturn>>();
+
 
 
 

@@ -7,7 +7,7 @@ using Testcontainers.PostgreSql;
 using WebApplication1.Data;
 using WebApplication1.Program;
 
-namespace EstablishmentProject.test
+namespace EstablishmentProject.test.TestingCode
 {
     public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {

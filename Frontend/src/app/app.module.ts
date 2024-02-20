@@ -23,21 +23,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClusterModule } from './cluster/cluster.module';
 import { CrossCorrelationModule } from './cross-correlation/cross-correlation.module';
-import { DialogFilterSalesModule } from './dialog-filter-sales/dialog-filter-sales.module';
+import { DialogFilterSalesBySalestablesModule } from './dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.module';
 import { DialogGraphSettingsModule } from './dialog-graph-settings/dialog-graph-settings.module';
-import { DialogCrossCorrelationSettingsComponent } from './dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
 import { registerLocaleData } from '@angular/common';
-import localeEn from '@angular/common/locales/en'; // Import the locale for English
+import localeEn from '@angular/common/locales/en';
 
 registerLocaleData(localeEn);
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavbarComponent,
-    NavbarComponent,
-    DialogCrossCorrelationSettingsComponent,
-  ],
+  declarations: [AppComponent, NavbarComponent, NavbarComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -58,7 +52,7 @@ registerLocaleData(localeEn);
     MatInputModule,
     ClusterModule,
     CrossCorrelationModule,
-    DialogFilterSalesModule,
+    DialogFilterSalesBySalestablesModule,
     DialogGraphSettingsModule,
   ],
   providers: [

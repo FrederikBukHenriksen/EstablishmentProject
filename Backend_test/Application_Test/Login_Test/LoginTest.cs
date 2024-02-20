@@ -1,10 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
+using EstablishmentProject.test.TestingCode;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
 
-namespace EstablishmentProject.test
+namespace EstablishmentProject.test.Application_Test.Login_Test
 {
     public class LoginTest : BaseIntegrationTest
     {

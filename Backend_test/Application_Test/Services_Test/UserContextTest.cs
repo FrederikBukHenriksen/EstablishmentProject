@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EstablishmentProject.test.TestingCode;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Application_Layer.Services;
@@ -6,7 +7,7 @@ using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
 
-namespace EstablishmentProject.test
+namespace EstablishmentProject.test.Application_Test.Services_Test
 {
     public class UserContextTest : BaseIntegrationTest
     {

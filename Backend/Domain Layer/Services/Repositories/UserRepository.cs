@@ -16,7 +16,7 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         public IUserRepository IncludeUserRoles()
         {
-            this.query = this.query.Include(x => x.UserRoles);
+            this.query = this.query.Include(x => x.UserRoles).ThenInclude(x => x.Establishment);
             return this;
         }
 
