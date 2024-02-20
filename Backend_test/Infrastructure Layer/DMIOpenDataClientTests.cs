@@ -27,7 +27,7 @@ namespace EstablishmentProject.test
             var client = new DmiWeatherApi(mockHttpClient);
 
             // Act
-            var result = await client.GetTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
+            var result = await client.GetMeanTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
 
             // Assert
             Assert.All(result, date => Assert.InRange(date.Item1, startTime, endTime));
@@ -51,7 +51,7 @@ namespace EstablishmentProject.test
 
             try
             {
-                result = await client.GetTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
+                result = await client.GetMeanTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
             }
             catch (ArgumentException e)
             {

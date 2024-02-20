@@ -9,8 +9,11 @@ namespace WebApplication1.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            this.ChangeTracker.LazyLoadingEnabled = false;  // Enable lazy loading
-            this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            //this.ChangeTracker.LazyLoadingEnabled = false;  // Enable lazy loading
+            //this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            this.ChangeTracker.LazyLoadingEnabled = true;  // Enable lazy loading
+            this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

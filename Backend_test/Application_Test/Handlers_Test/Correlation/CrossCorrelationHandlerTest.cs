@@ -23,7 +23,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             yourClassUnderTest = scope.ServiceProvider.GetRequiredService<IWeatherApi>();
             Coordinates coordinates = new Coordinates(55.676098, 12.568337);
-            var ok = yourClassUnderTest.GetTemperature(coordinates, new DateTime(2021, 1, 1), new DateTime(2021, 1, 1), TimeResolution.Hour);
+            var ok = yourClassUnderTest.GetMeanTemperature(coordinates, new DateTime(2021, 1, 1), new DateTime(2021, 1, 1), TimeResolution.Hour);
 
 
 

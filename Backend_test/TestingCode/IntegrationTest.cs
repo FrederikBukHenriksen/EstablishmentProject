@@ -72,13 +72,13 @@ namespace EstablishmentProject.test.TestingCode
 
         public WeatherMock()
         {
-            mockWeatherApi.Setup(api => api.GetTemperature(It.IsAny<Coordinates>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TimeResolution>()))
+            mockWeatherApi.Setup(api => api.GetMeanTemperature(It.IsAny<Coordinates>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TimeResolution>()))
                 .ReturnsAsync(returnValue);
         }
 
-        public Task<List<(DateTime, double)>> GetTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution)
+        public Task<List<(DateTime, double)>> GetMeanTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution)
         {
-            return mockWeatherApi.Object.GetTemperature(coordinates, startTime, endTime, timeresolution);
+            return mockWeatherApi.Object.GetMeanTemperature(coordinates, startTime, endTime, timeresolution);
         }
         public void Config(IWebHostBuilder webHostBuilder)
         {

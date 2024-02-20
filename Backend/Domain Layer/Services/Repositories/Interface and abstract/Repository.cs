@@ -65,10 +65,10 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
 
         }
 
-        public IRepository<TEntity> EnableLazyLoading()
-        {
-            this.context.ChangeTracker.LazyLoadingEnabled = true;
-            return this;
-        }
+        //public IRepository<TEntity> EnableLazyLoading()
+        //{
+        //    this.context.ChangeTracker.LazyLoadingEnabled = true;
+        //    return this;
+        //}
     }
 }

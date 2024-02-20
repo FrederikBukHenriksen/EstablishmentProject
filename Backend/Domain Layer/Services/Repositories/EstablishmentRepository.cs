@@ -8,6 +8,7 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         IEstablishmentRepository IncludeItems();
         IEstablishmentRepository IncludeTables();
         IEstablishmentRepository IncludeSalesItems();
+        IEstablishmentRepository IncludeSalesTables();
         IEstablishmentRepository IncludeSales();
     }
 
@@ -40,6 +41,12 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         public IEstablishmentRepository IncludeSalesItems()
         {
             this.query = this.query.Include(x => x.Sales).ThenInclude(x => x.SalesItems).ThenInclude(x => x.Item);
+            return this;
+        }
+
+        public IEstablishmentRepository IncludeSalesTables()
+        {
+            this.query = this.query.Include(x => x.Sales).ThenInclude(x => x.SalesTables).ThenInclude(x => x.Table);
             return this;
         }
     }

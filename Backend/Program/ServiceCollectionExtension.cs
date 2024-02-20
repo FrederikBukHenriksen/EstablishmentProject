@@ -27,6 +27,7 @@ namespace WebApplication1.Program
 
             serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
             serviceCollection.AddScoped<IWeatherApi, DmiWeatherApi>();
+            serviceCollection.AddTransient<IDataFetcingAndStoringService, DataFetcingAndStoringService>();
         }
 
         public static void AddRepositories(this IServiceCollection serviceCollection)

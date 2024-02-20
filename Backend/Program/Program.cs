@@ -62,15 +62,12 @@ namespace WebApplication1.Program
         private static void AddDatabase(WebApplicationBuilder builder)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); //Make postgres use timestamp instead of 'timestamptz'-datatype.
-
             string connectionString = "Host=localhost; Database=EstablishmentProject; Username=postgres; password=postgres";
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-
-                options.UseLazyLoadingProxies(false);
+                //options.UseLazyLoadingProxies(true);
                 options.UseNpgsql(connectionString);
-                //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
         }
 

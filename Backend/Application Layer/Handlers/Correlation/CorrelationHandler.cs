@@ -66,7 +66,7 @@ namespace WebApplication1.CommandHandlers
             //FETCH and ARRANGE weather
             var lagDateStart = command.TimePeriod.Start.Date.AddToDateTime(command.LowerLag * (-1), command.TimeResolution);
             var lagDateEnd = command.TimePeriod.End.Date.AddToDateTime(command.UpperLag, command.TimeResolution);
-            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetTemperature(coordinates, lagDateStart, lagDateEnd, command.TimeResolution);
+            List<(DateTime, double)> temperaturePerHour = await this.weatherApi.GetMeanTemperature(coordinates, lagDateStart, lagDateEnd, command.TimeResolution);
             var weatherDateTimeList = TimeHelper.CreateTimelineAsList(lagDateStart, lagDateEnd, command.TimeResolution);
 
             Dictionary<DateTime, List<(DateTime, double)>> tempMappedToTimeline = TimeHelper.MapObjectsToTimeline(temperaturePerHour, x => x.Item1, weatherDateTimeList, command.TimeResolution);
