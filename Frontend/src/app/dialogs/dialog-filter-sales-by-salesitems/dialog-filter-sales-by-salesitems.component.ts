@@ -7,9 +7,9 @@ import {
   DropDownMultipleSelects,
   DropDownOption,
 } from '../dialog-checkbox/dialog-checkbox.component';
-import { SessionStorageService } from '../services/session-storage/session-storage.service';
+import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 import { FilterSalesBySalesItems, GetItemsCommand, ItemDTO } from 'api';
-import { ItemService } from '../services/API-implementations/item.service';
+import { ItemService } from '../../services/API-implementations/item.service';
 
 @Component({
   selector: 'app-dialog-filter-sales',

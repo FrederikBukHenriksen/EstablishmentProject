@@ -19,8 +19,8 @@ import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
 import { MatDialog } from '@angular/material/dialog';
-import { DialogFilterSalesBySalesitemsComponent } from '../dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
-import { DialogClusterSettingsComponent } from '../dialog-cluster-settings/dialog-cluster-settings.component';
+import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
+import { DialogClusterSettingsComponent } from '../dialogs/dialog-cluster-settings/dialog-cluster-settings.component';
 import { IClusteringImplementaion } from './cluster.component';
 import {
   GraphModel,
@@ -34,9 +34,9 @@ import {
   ClusterService,
 } from '../services/API-implementations/cluster.service';
 import { ItemService } from '../services/API-implementations/item.service';
-import { DialogFilterSalesComponent } from '../dialog-filter-sales/dialog-filter-sales.component';
+import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialog-filter-sales.component';
 import { TableService } from '../services/API-implementations/table.service';
-import { DialogFilterSalesBySalestablesComponent } from '../dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
+import { DialogFilterSalesBySalestablesComponent } from '../dialogs/dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
 
 export interface ClusteringAssembly {
   assembly: IClusteringImplementaion;
@@ -57,7 +57,7 @@ export interface IBuildClusterTable {
   providedIn: 'root',
 })
 export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
-  title: string = 'Time of dat vs Total spending';
+  title: string = 'Time of day vs Total spending';
   clustersTable: Subject<TableModel> = new Subject<TableModel>();
   eachClustersTables: Subject<TableModel[]> = new Subject<TableModel[]>();
   graphModels: Subject<{ title: string; graphModel: GraphModel }[]> =

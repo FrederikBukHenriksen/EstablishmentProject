@@ -1,5 +1,18 @@
 <mat-toolbar color="primary">
-  <span>Establishment Project</span>
-  <a mat-button>All establishments</a>
-  <a mat-button>Analysis</a>
+  <div class="toolbar-content">
+    <div>
+      <a mat-button (click)="onClustering()">Clustering</a>
+      <a mat-button (click)="onCorrelation()">Correlation</a>
+    </div>
+    <div class="spacer"></div>
+    <div>
+      <a
+        mat-button
+        (click)="onSelectEstablishment()"
+        [style.font-style]="'italic'"
+        >{{ activeEstablishment }}</a
+      >
+      <a mat-button (click)="onLogout()">Logout</a>
+    </div>
+  </div>
 </mat-toolbar>

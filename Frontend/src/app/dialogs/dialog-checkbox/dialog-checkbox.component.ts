@@ -14,7 +14,7 @@ import {
 } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CommandBase } from 'api';
-import { SessionStorageService } from '../services/session-storage/session-storage.service';
+import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 
 export class DialogConfig {
   dialogElements: SettingsData[];

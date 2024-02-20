@@ -206,7 +206,7 @@ export function CreateTimelineOfObjects<T>(
 
   while (startDate <= endDateInput) {
     if (!timeline.has(startDate)) {
-      timeline.set(new Date(startDate), []); //Create clone of date, so the updated Date object is not added to the map
+      timeline.set(new Date(startDate), []);
     }
     var test = ExtractDateByTimeResolution(groupedObjects[1].date, resolution);
     var test1 = ExtractDateByTimeResolution(startDate, resolution);
@@ -238,16 +238,13 @@ export function groupObjectsByTimeResolution<T>(
       ExtractDateByTimeResolution(DateSelector(obj), resolution)
     );
 
-    // Check if there's an existing entry for the key
     const existingEntry = groupedObjects.find(
       (entry) => entry.date.getTime() === key.getTime()
     );
 
     if (existingEntry) {
-      // Add the object to the existing entry
       existingEntry.objects.push(obj);
     } else {
-      // Create a new entry
       groupedObjects.push({ date: key, objects: [obj] });
     }
   });

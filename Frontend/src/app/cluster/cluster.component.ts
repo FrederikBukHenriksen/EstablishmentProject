@@ -23,7 +23,6 @@ export interface IClusteringImplementaion {
 @Component({
   selector: 'app-cluster',
   templateUrl: './cluster.component.html',
-  styleUrls: ['./cluster.component.css'],
 })
 export class ClusterComponent {
   private analysisClient = inject(AnalysisClient);

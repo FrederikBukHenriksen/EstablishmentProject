@@ -15,15 +15,12 @@ export interface TableOfAccesibleEstablishments {
 @Component({
   selector: 'app-select-establishment',
   templateUrl: './select-establishment.component.html',
-  styleUrls: ['./select-establishment.component.scss'],
 })
 export class SelectEstablishmentComponent {
   private userContextService = inject(UserContextService);
   private establishmentService = inject(EstablishmentService);
 
-  private router = inject(Router);
   private sessionStorageService = inject(SessionStorageService);
-
   protected accesibleEstablishments: TableOfAccesibleEstablishments[] = [];
 
   displayedColumns: string[] = ['name', 'actions'];
@@ -32,14 +29,7 @@ export class SelectEstablishmentComponent {
   accesibleEstablishmentsIds: string[] = [];
 
   constructor() {
-    console.log('select-establishment');
     this.FetchAccesibleEstablishment();
-    this.dataSource = this.accesibleEstablishments.map((x) => {
-      return {
-        id: x.id,
-        name: 'hello',
-      };
-    });
   }
 
   private async FetchAccesibleEstablishment() {
@@ -68,6 +58,5 @@ export class SelectEstablishmentComponent {
 
   protected onSelectEstablishment(establishmentId: string) {
     this.sessionStorageService.setActiveEstablishment(establishmentId);
-    this.router.navigate(['/create-establishment']);
   }
 }

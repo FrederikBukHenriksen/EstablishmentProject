@@ -34,6 +34,8 @@ export class LoginService {
         this.loginSuccessful.error(Error(error.message));
       },
       complete: () => {
+        document.cookie =
+          'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; //Delete JWT.
         this.LogoutSuccessful.emit();
       },
     });

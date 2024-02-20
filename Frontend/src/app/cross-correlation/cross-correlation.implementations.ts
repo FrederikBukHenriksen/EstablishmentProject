@@ -21,8 +21,8 @@ import {
   IDialogImplementation,
 } from './cross-correlation.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogCrossCorrelationSettingsComponent } from '../dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
-import { DialogFilterSalesBySalesitemsComponent } from '../dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
+import { DialogCrossCorrelationSettingsComponent } from '../dialogs/dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
+import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import {
   DateForGraph,
   getDifferenceInHours,

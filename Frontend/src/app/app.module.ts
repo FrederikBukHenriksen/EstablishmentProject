@@ -5,9 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginModule } from './login/login.module';
-import { HomepageModule } from './homepage/homepage.module';
 import { API_BASE_URL } from 'api';
-import { HttpInterceptService } from './services/authentication-authorization-httpinterceptor-service/http-intercepter.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SelectEstablishmentModule } from './select-establishment/select-establishment.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,7 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
-import { DialogBaseModule } from './dialog-checkbox/dialog.checkbox.component.module';
+import { DialogBaseModule } from './dialogs/dialog-checkbox/dialog.checkbox.component.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -23,8 +21,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClusterModule } from './cluster/cluster.module';
 import { CrossCorrelationModule } from './cross-correlation/cross-correlation.module';
-import { DialogFilterSalesBySalestablesModule } from './dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.module';
-import { DialogGraphSettingsModule } from './dialog-graph-settings/dialog-graph-settings.module';
+import { DialogFilterSalesBySalestablesModule } from './dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.module';
+import { DialogGraphSettingsModule } from './dialogs/dialog-graph-settings/dialog-graph-settings.module';
 import { registerLocaleData } from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 
@@ -39,7 +37,6 @@ registerLocaleData(localeEn);
     DialogBaseModule,
     LoginModule,
     HttpClientModule,
-    HomepageModule,
     BrowserAnimationsModule,
     MatDialogModule,
     ReactiveFormsModule,
@@ -55,14 +52,7 @@ registerLocaleData(localeEn);
     DialogFilterSalesBySalestablesModule,
     DialogGraphSettingsModule,
   ],
-  providers: [
-    { provide: API_BASE_URL, useValue: '' },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpInterceptService,
-      multi: true,
-    },
-  ],
+  providers: [{ provide: API_BASE_URL, useValue: '' }],
 
   bootstrap: [AppComponent],
 })

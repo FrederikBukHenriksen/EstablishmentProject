@@ -8,8 +8,8 @@ import {
   DropDownOption,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { FilterSalesBySalesTables, TableDTO } from 'api';
-import { SessionStorageService } from '../services/session-storage/session-storage.service';
-import { TableService } from '../services/API-implementations/table.service';
+import { SessionStorageService } from '../../services/session-storage/session-storage.service';
+import { TableService } from '../../services/API-implementations/table.service';
 
 @Component({
   selector: 'app-dialog-filter-sales-by-salestables',
