@@ -1,129 +1,148 @@
-﻿//namespace WebApplication1.Services.Analysis
-//{
-//    public static class MeanShiftClustering
-//    {
-//        //public static List<List<T>> Cluster<T>(List<(T element, List<double> point)> data, List<double> bandwidths)
-//        //{
-//        //    List<List<T>> result = new List<List<T>>();
+﻿namespace WebApplication1.Services.Analysis
+{
+    public static class MeanShiftClustering
+    {
+        public static List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
+        {
+            double toleranceForCovergence = 0.001;
 
-//        //    foreach (var point in data)
-//        //    {
-//        //        // Find points within the bandwidth for each dimension
-//        //        var neighbors = data.Where(p =>
-//        //            Enumerable.Range(0, bandwidths.Count)
-//        //                      .All(dim => Math.Abs(point.point[dim] - p.point[dim]) < bandwidths[dim])).ToList();
+            double toleranceForGrouping = 0.01;
 
-//        //        // Update the point's position to the mean of its neighbors
-//        //        for (int i = 0; i < bandwidths.Count; i++)
-//        //        {
-//        //            point.point[i] = neighbors.Select(p => p.point[i]).Average();
-//        //        }
-//        //    }
+            double learningFactor = 0.5;
 
-//        //    // Assign clusters based on the final positions
-//        //    foreach (var point in data)
-//        //    {
-//        //        if (!result.Any(cluster => cluster.Any(p => p.Equals(point.element))))
-//        //        {
-//        //            // Find and update points in the same cluster
-//        //            var cluster = data.Where(p =>
-//        //                Enumerable.Range(0, bandwidths.Count)
-//        //                          .All(dim => Math.Abs(point.point[dim] - p.point[dim]) < bandwidths[dim])).ToList();
+            for (int q = 0; q < 100; q++)
+            {
 
-//        //            result.Add(cluster.Select(p => p.Item1).ToList());
-//        //        }
-//        //    }
+                for (int dataIndex = 0; dataIndex < data.Count; dataIndex++)
+                {
+                    List<double> mean = new List<double>(data[dataIndex].Item2);
 
-//        //    return result;
-//        //}
+                    bool isWithinTolerance = false;
 
-//        private static List<double> CalculateMean(List<List<double>> data)
-//        {
-//            List<double> mean = new List<double>();
+                    var neighbouringPoints = new List<(T, List<double>)>();
+                    for (int i = 0; i < data.Count; i++)
+                    {
+                        var item = data[i];
+                        if (isWithinBandwith(mean, item.Item2, bandwidth) && dataIndex != i)
+                        {
+                            neighbouringPoints.Add(item);
+                        }
+                    }
 
-//            for (int i = 0; i < data[0].Count; i++)
-//            {
-//                double sum = 0;
+                    if (!(neighbouringPoints.Count > 0))
+                    {
+                        break;
+                    }
 
-//                for (int j = 0; j < data.Count; j++)
-//                {
-//                    sum += data[j][i];
-//                }
+                    List<double> shift = CalculateShift(mean, neighbouringPoints.Select(x => x.Item2).ToList(), bandwidth);
+                    shift = shift.Select(x => x * learningFactor).ToList();
+                    List<double> newMean = mean.Zip(shift, (m, s) => m + s).ToList();
 
-//                mean.Add(sum / data.Count);
-//            }
+                    //Update location
+                    data[dataIndex] = (data[dataIndex].Item1, newMean);
 
-//            return mean;
-//        }
-
-//        private static bool isWithinBandwith(List<double> a, List<double> b, List<double> bandwidth)
-//        {
-//            double distanceSquared = 0;
-
-//            for (int i = 0; i < a.Count; i++)
-//            {
-//                double normalizedDistance = (a[i] - b[i]) / bandwidth[i];
-
-//                distanceSquared += Math.Pow(normalizedDistance, 2);
-//            }
-//            return Math.Sqrt(distanceSquared) < 1.0;
-//        }
-
-//        public static List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
-//        {
-//            List<List<T>> clusters = new List<List<T>>();
-
-//            while (data.Count > 0)
-//            {
-//                var mean = new List<double>(data[0].Item2);
-//                var inCluster = new List<(T, List<double>)>();
-
-//                //Find the neighbours of the mean (first data point in the list)
-//                for (int i = 0; i < data.Count; i++)
-//                {
-//                    if (isWithinBandwith(mean, data[i].Item2, bandwidth))
-//                    {
-//                        inCluster.Add(data[i]);
-//                    }
-//                }
-
-//                //Iterate over the neighbours until the mean converges
-//                while (inCluster.Count > 0)
-//                {
-//                    var newMean = new List<double>(inCluster[0].Item2);
-//                    var newInCluster = new List<(T, List<double>)>();
-
-//                    for (int i = 0; i < inCluster.Count; i++)
-//                    {
-//                        if (isWithinBandwith(newMean, inCluster[i].Item2, bandwidth))
-//                        {
-//                            newInCluster.Add(inCluster[i]);
-//                        }
-//                    }
-
-//                    if (newInCluster.Count == inCluster.Count)
-//                    {
-//                        break;
-//                    }
-
-//                    inCluster = newInCluster;
-//                    mean = CalculateMean(inCluster.Select(item => item.Item2).ToList());
-//                }
-
-//                clusters.Add(inCluster.Select(item => item.Item1).ToList());
-//                foreach (var point in inCluster)
-//                {
-//                    data.Remove(point);
-//                }
-//            }
-
-//            return clusters;
-//        }
-//    }
-//}
+                }
+            }
+            var res = GroupPoints(data, toleranceForGrouping);
+            return res;
+        }
 
 
+        private static List<double> CalculateShift(List<double> dataPoint, List<List<double>> neighouringDataPoints, List<double> bandwidth)
+        {
+            List<List<double>> shifts = new List<List<double>>();
+            foreach (var neiDataPoint in neighouringDataPoints)
+            {
+                List<double> vector = VectorFromTo(dataPoint, neiDataPoint);
+                List<double> absVectorValues = vector.Select(x => Math.Abs(x)).ToList();
+                double weight = absVectorValues.Zip(bandwidth, (dif, band) => 1 - (dif / band)).ToList().Average();
+                shifts.Add(vector.Select(x => x * weight).ToList());
+            }
+            List<double> shift = CalculateAverage(shifts);
+            return shift;
+        }
+
+        private static List<double> VectorFromTo(List<double> point1, List<double> point2)
+        {
+            List<double> ABvector = point1.Zip(point2, (a, b) => b - a).ToList();
+            return ABvector;
+        }
 
 
+        private static List<double> CalculateAverage(List<List<double>> shifts)
+        {
+            int count = shifts.Count;
+            int length = shifts.First().Count;
+
+            // Calculate the sum of corresponding elements across all lists
+            var sums = shifts
+                .SelectMany(innerList => innerList.Select((value, index) => new { value, index }))
+                .GroupBy(pair => pair.index)
+                .Select(group => group.Sum(pair => pair.value));
+
+            // Calculate the average by dividing each sum by the total count of lists
+            List<double> average = sums.Select(sum => sum / (double)count).ToList();
+
+            return average;
+        }
+
+        private static bool CheckElementwiseDifference(List<double> list1, List<double> list2, double threshold)
+        {
+            var vetor = VectorFromTo(list1, list2);
+            var absVectorValues = vetor.Select(x => Math.Abs(x)).ToList();
+            return absVectorValues.All(x => x <= threshold);
+        }
+
+        public static List<List<T>> GroupPoints<T>(List<(T, List<double>)> points, double tolerance)
+        {
+            List<List<(T, List<double>)>> groupedPoints = new List<List<(T, List<double>)>>();
+
+            foreach (var point in points)
+            {
+                bool added = false;
+
+                foreach (var group in groupedPoints)
+                {
+                    if (group.Any(p => CalculateDistance(p.Item2, point.Item2) <= tolerance))
+                    {
+                        group.Add(point);
+                        added = true;
+                        break;
+                    }
+                }
+
+                if (!added)
+                {
+                    groupedPoints.Add(new List<(T, List<double>)> { point });
+                }
+            }
+
+            return groupedPoints.Select(group => group.Select(p => p.Item1).ToList()).ToList();
+        }
 
 
+        public static double CalculateDistance(List<double> point1, List<double> point2)
+        {
+            double sumOfSquares = 0.0;
+            for (int i = 0; i < point1.Count; i++)
+            {
+                double diff = point1[i] - point2[i];
+                sumOfSquares += diff * diff;
+            }
+
+            return Math.Sqrt(sumOfSquares);
+        }
+
+        private static bool isWithinBandwith(List<double> point1, List<double> point2, List<double> bandwidth)
+        {
+            double distanceSquared = 0;
+            for (int i = 0; i < point1.Count; i++)
+            {
+                double normalizedDistance = (point1[i] - point2[i]) / bandwidth[i];
+
+                distanceSquared += Math.Pow(normalizedDistance, 2);
+            }
+            return Math.Sqrt(distanceSquared) <= 1.0;
+        }
+    }
+}
