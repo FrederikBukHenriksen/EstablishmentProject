@@ -8,6 +8,7 @@
             public List<double> Location { get; set; }
             public bool HasConverged { get; set; } = false;
             public bool IsGrouped { get; set; } = false;
+            public int shifts { get; set; } = 0;
             public MeanShiftDataPoint(T obj, List<double> loc)
             {
                 this.Object = obj;
@@ -18,16 +19,12 @@
 
         public static List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
-            double toleranceForCovergence = 0.001;
-            double toleranceForGrouping = 0.01;
+            double toleranceForCovergence = 0.01;
+            double toleranceForGrouping = 0.1;
 
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
-            //while (!dataWithConvergence.All(x => x.HasConverged))
-            for (int q = 0; q < 100; q++)
-
-
-
+            while (!dataWithConvergence.All(x => x.HasConverged))
             {
                 for (int dataIndex = 0; dataIndex < dataWithConvergence.Count; dataIndex++)
                 {
@@ -35,7 +32,7 @@
 
                     if (dataPoint.HasConverged)
                     {
-                        break;
+                        continue;
                     }
 
                     //Identify neighbouring data points
@@ -43,21 +40,10 @@
                     for (int i = 0; i < dataWithConvergence.Count; i++)
                     {
                         var neighbourDataPoint = dataWithConvergence[i];
-                        if (dataIndex == i)
-                        {
-                            break;
-                        }
-                        if (isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth))
+                        if (isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth) && dataIndex != i)
                         {
                             neighbouringPoints.Add(neighbourDataPoint);
                         }
-                    }
-
-                    //If no neighbouring points, convergence is reached
-                    if (neighbouringPoints.Count <= 0)
-                    {
-                        dataPoint.HasConverged = true;
-                        break;
                     }
 
                     //Calculate and perform shift
@@ -73,6 +59,7 @@
 
                     //Update location
                     dataPoint.Location = newLocation;
+                    dataPoint.shifts++;
                 }
             }
             //Send the all datapoints to grouping after convergenve
@@ -136,7 +123,7 @@
                         break;
                     }
                 }
-                if (dataPoint.IsGrouped)
+                if (!dataPoint.IsGrouped)
                 {
                     Clusters.Add(new List<MeanShiftDataPoint<T>> { dataPoint });
                 }
