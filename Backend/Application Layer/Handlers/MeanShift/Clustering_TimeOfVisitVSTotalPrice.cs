@@ -93,7 +93,7 @@ namespace WebApplication1.CommandHandlers
 
 
             //Act
-            List<List<Sale>> clusteredSales = MeanShiftClustering.Cluster(saleData, bandwith);
+            List<List<Sale>> clusteredSales = new MeanShiftClusteringStepByStep().Cluster(saleData, bandwith);
 
             //Return
             var ok = saleData.Select(x => (x.sale.Id, x.values)).ToList();
@@ -131,7 +131,7 @@ namespace WebApplication1.CommandHandlers
             var bandwith = new List<double> { 1, 1 };
 
             //Act
-            List<List<Sale>> clusteredSales = MeanShiftClustering.Cluster(saleData, bandwith);
+            List<List<Sale>> clusteredSales = new MeanShiftClusteringDirectly().Cluster(saleData, bandwith);
 
             //Return
             return new ClusteringReturn

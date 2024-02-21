@@ -24,7 +24,8 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 1.0, 1.0 };
 
             // Act
-            var result = MeanShiftClustering.Cluster(data, bandwidth);
+
+            var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
 
             // Assert
             Assert.Equal(3, result.Count);
@@ -41,7 +42,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 0.2, 0.2 };
 
             // Act
-            var result = MeanShiftClustering.Cluster(emptyData, bandwidth);
+            var result = new MeanShiftClusteringStepByStep().Cluster(emptyData, bandwidth);
 
             // Assert
             Assert.Empty(result);
@@ -61,7 +62,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 0.5, 0.5 };
 
             // Act
-            var result = MeanShiftClustering.Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
 
             // Assert
             Assert.Single(result);
@@ -82,7 +83,7 @@ namespace EstablishmentProject.test.Algortihm
             var largeBandwidth = new List<double> { 15.0, 15.0 };
 
             // Act
-            var result = MeanShiftClustering.Cluster(data, largeBandwidth);
+            var result = new MeanShiftClusteringStepByStep().Cluster(data, largeBandwidth);
 
             // Assert
             Assert.Single(result);
@@ -90,7 +91,7 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_2DNormalCenteredMass()
+        public void Cluster_With2DNormalCenteredMass_WithStepByStepApproach_ShouldReturnASingleCluster()
         {
             // Arrange
             var number = 100;
@@ -109,7 +110,34 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 5, 5 };
 
             // Act
-            var result = MeanShiftClustering.Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(number, result[0].Count);
+        }
+
+        [Fact]
+        public void Cluster_With2DNormalCenteredMass_WithStepDirectApproach_ShouldReturnASingleCluster()
+        {
+            // Arrange
+            var number = 100;
+            Func<double, double> normFunc = TestDataCreatorService.GetNormalFunction(0, 10);
+            Random random = new Random(1);
+
+            var data = new List<(string, List<double>)>();
+            for (int i = 0; i < number; i++)
+            {
+                //Random double between -10 and 10.
+                var x = normFunc(random.NextDouble() * 20.0 - 10.0);
+                var y = normFunc(random.NextDouble() * 20.0 - 10.0);
+                data.Add(("point", new List<double> { x, y }));
+            };
+
+            var bandwidth = new List<double> { 5, 5 };
+
+            // Act
+            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
 
             // Assert
             Assert.Single(result);
