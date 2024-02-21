@@ -15,6 +15,14 @@ export interface ISaleService {
     salesIds: string[],
     establishmentId?: string
   ): Promise<SaleDTO[]>;
+
+  getSalesFromFiltering(
+    filterSales?: FilterSales,
+    filterSalesBySalesItems?: FilterSalesBySalesItems,
+    filterSalesBySalesTables?: FilterSalesBySalesTables,
+    filterBySalesIds?: string[],
+    establishmentId?: string
+  ): Promise<string[]>;
 }
 
 @Injectable({

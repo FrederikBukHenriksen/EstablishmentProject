@@ -35,11 +35,11 @@ namespace WebApplication1.Controllers
         }
 
 
-        //[Authorize]
-        //[HttpPost("statistics")]
-        //public async Task<SalesStatisticsReturn> SaleStaticstics([FromBody] SalesStatisticsCommand command, [FromServices] IHandler<SalesStatisticsCommand, SalesStatisticsReturn> handler)
-        //{
-        //    return await this.handlerService.Service(handler, command);
-        //}
+        [Authorize]
+        [HttpPost("statistics")]
+        public async Task<ActionResult<GetSalesStatisticsReturn>> SaleStaticstics([FromBody] GetSalesStatisticsCommand command, [FromServices] IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn> handler)
+        {
+            return await this.handlerService.Service(handler, command);
+        }
     }
 }

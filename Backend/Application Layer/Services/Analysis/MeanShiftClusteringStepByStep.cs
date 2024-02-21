@@ -25,44 +25,53 @@
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
+            ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
             while (!dataWithConvergence.All(x => x.HasConverged))
             {
-                foreach (var dataPoint in dataWithConvergence)
+                var dataPoint = this.findNextPoint(dataWithConvergence, bandwidth);
+
+                //Identify neighbouring data points
+                var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
+
+                //Calculate and perform shift
+                List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
+                List<double> newLocation = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
+
+                //Check for convergence
+                var hasPointConverged = ClusterHelper.HasPointsConverged(dataPoint.Location, newLocation, this.toleranceForCovergence);
+                if (hasPointConverged)
                 {
-                    if (dataPoint.HasConverged)
-                    {
-                        continue;
-                    }
-
-                    //Identify neighbouring data points
-                    var neighbouringPoints = new List<MeanShiftDataPoint<T>>();
-                    foreach (var neighbourDataPoint in dataWithConvergence)
-                    {
-                        if (ClusterHelper.isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth) && dataPoint != neighbourDataPoint)
-                        {
-                            neighbouringPoints.Add(neighbourDataPoint);
-                        }
-                    }
-
-                    //Calculate and perform shift
-                    List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
-                    List<double> newLocation = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
-
-                    //Check for convergence
-                    var hasPointConverged = ClusterHelper.HasPointsConverged(dataPoint.Location, newLocation, this.toleranceForCovergence);
-                    if (hasPointConverged)
-                    {
-                        dataPoint.HasConverged = true;
-                    }
-
-                    //Update location
-                    dataPoint.Location = newLocation;
+                    dataPoint.HasConverged = true;
                 }
+
+                //Update location
+                dataPoint.Location = newLocation;
+
             }
             //Send the all datapoints to grouping after convergenve
             return ClusterHelper.GroupPoints(dataWithConvergence, this.toleranceForGrouping);
+        }
+
+
+
+
+
+        private MeanShiftDataPoint<T> findNextPoint<T>(List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth)
+        {
+            List<(MeanShiftDataPoint<T> Object, double ShiftMagnitude, int Neighbours)> shiftingMagnitudeAndNeighbours = new List<(MeanShiftDataPoint<T>, double, int)>();
+
+            foreach (var dataPoint in dataWithConvergence)
+            {
+                var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
+                List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
+
+                shiftingMagnitudeAndNeighbours.Add((dataPoint, ClusterHelper.VectorLength(shift), neighbouringPoints.Count));
+            }
+            var ordered = shiftingMagnitudeAndNeighbours.OrderBy(x => x.Neighbours).ThenBy(x => x.ShiftMagnitude).ToList();
+            var res = ordered.First().Object;
+            return res;
         }
     }
 
@@ -73,6 +82,7 @@
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
+            ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
             foreach (var dataPoint in dataWithConvergence)
@@ -80,14 +90,7 @@
                 while (!dataPoint.HasConverged)
                 {
                     //Identify neighbouring data points
-                    var neighbouringPoints = new List<MeanShiftDataPoint<T>>();
-                    foreach (var neighbourDataPoint in dataWithConvergence)
-                    {
-                        if (ClusterHelper.isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth) && dataPoint != neighbourDataPoint)
-                        {
-                            neighbouringPoints.Add(neighbourDataPoint);
-                        }
-                    }
+                    var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
 
                     //Calculate and perform shift
                     List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
@@ -111,6 +114,29 @@
 
     public static class ClusterHelper
     {
+
+        public static void DataAndBandwidthDimensionMustMatch(List<List<double>> data, List<double> bandwidth)
+        {
+            if (!data.All(x => x.Count == bandwidth.Count))
+            {
+                throw new ArgumentException("Data and bandwidth dimension must match");
+            }
+        }
+
+
+        public static List<MeanShiftDataPoint<T>> FindNeighbours<T>(MeanShiftDataPoint<T> dataPoint, List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth)
+        {
+            var neighbouringPoints = new List<MeanShiftDataPoint<T>>();
+            foreach (var neighbourDataPoint in dataWithConvergence)
+            {
+                if (ClusterHelper.isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth) && dataPoint != neighbourDataPoint)
+                {
+                    neighbouringPoints.Add(neighbourDataPoint);
+                }
+            }
+            return neighbouringPoints;
+        }
+
 
         public static bool isWithinBandwith(List<double> point1, List<double> point2, List<double> bandwidth)
         {
@@ -200,7 +226,18 @@
             }
 
             return Math.Sqrt(sumOfSquares);
+        }
 
+        public static double VectorLength(List<double> vector)
+        {
+            double sumOfSquares = 0.0;
+
+            foreach (double component in vector)
+            {
+                sumOfSquares += component * component;
+            }
+
+            return Math.Sqrt(sumOfSquares);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<UserContextMiddleware>();
 
             serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
-            serviceCollection.AddScoped<IWeatherApi, DmiWeatherApi>();
+            serviceCollection.AddScoped<IWeatherApi, DMIOpenData.DmiWeatherApi>();
             serviceCollection.AddTransient<IDataFetcingAndStoringService, DataFetcingAndStoringService>();
         }
 
@@ -45,7 +45,6 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<IVerifySalesCommandService, VerifySalesCommandService>();
             serviceCollection.AddScoped<IVerifyItemsCommandService, VerifyItemsCommandService>();
             serviceCollection.AddScoped<IVerifyTablesCommandService, VerifyTablesCommandService>();
-
 
             //Login
             serviceCollection.AddTransient<IHandler<LoginCommand, LoginReturn>, LoginCommandHandler>();
@@ -67,6 +66,8 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesReturn>, GetSalesHandler<GetSalesReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
+            serviceCollection.AddTransient<IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn>, GetSalesStatistics>();
+
 
             //Item
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsIdReturn>, GetItemsHandler<GetItemsIdReturn>>();

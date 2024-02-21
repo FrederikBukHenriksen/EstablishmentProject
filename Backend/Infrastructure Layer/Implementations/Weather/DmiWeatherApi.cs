@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Reflection;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Utils;
-using static WebApplication1.Services.DmiWeatherApiItems;
+using static WebApplication1.Services.DmiWeatherApi;
 
 namespace DMIOpenData
 {

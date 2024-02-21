@@ -13,7 +13,6 @@ namespace EstablishmentProject.test.Algortihm
             var data = new List<(string, List<double>)>
             {
                 ("A", new List<double> { 1.0, 2.0 }),
-                ("AB", new List<double> { 1.05, 2.05 }),
                 ("B", new List<double> { 1.1, 2.1 }),
                 ("C", new List<double> { 5.0, 6.0 }),
                 ("D", new List<double> { 5.1, 6.1 }),
@@ -91,7 +90,13 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_With2DNormalCenteredMass_WithStepByStepApproach_ShouldReturnASingleCluster()
+        public void Cluster_WithTwoVeryDifferentBandwidths_ShoulReturnTwoClusters()
+        {
+
+        }
+
+        [Fact]
+        public void Cluster_With3DNormalCenteredMass_WithStepByStepApproach_ShouldReturnASingleCluster()
         {
             // Arrange
             var number = 100;
@@ -104,10 +109,12 @@ namespace EstablishmentProject.test.Algortihm
                 //Random double between -10 and 10.
                 var x = normFunc(random.NextDouble() * 20.0 - 10.0);
                 var y = normFunc(random.NextDouble() * 20.0 - 10.0);
-                data.Add(("point", new List<double> { x, y }));
+                var z = normFunc(random.NextDouble() * 20.0 - 10.0);
+
+                data.Add(("point", new List<double> { x, y, z }));
             };
 
-            var bandwidth = new List<double> { 5, 5 };
+            var bandwidth = new List<double> { 5, 5, 5 };
 
             // Act
             var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
@@ -118,7 +125,7 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_With2DNormalCenteredMass_WithStepDirectApproach_ShouldReturnASingleCluster()
+        public void Cluster_With3DNormalCenteredMass_WithDirectApproach_ShouldReturnASingleCluster()
         {
             // Arrange
             var number = 100;
@@ -131,10 +138,11 @@ namespace EstablishmentProject.test.Algortihm
                 //Random double between -10 and 10.
                 var x = normFunc(random.NextDouble() * 20.0 - 10.0);
                 var y = normFunc(random.NextDouble() * 20.0 - 10.0);
-                data.Add(("point", new List<double> { x, y }));
+                var z = normFunc(random.NextDouble() * 20.0 - 10.0);
+                data.Add(("point", new List<double> { x, y, z }));
             };
 
-            var bandwidth = new List<double> { 5, 5 };
+            var bandwidth = new List<double> { 5, 5, 5 };
 
             // Act
             var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
@@ -144,35 +152,76 @@ namespace EstablishmentProject.test.Algortihm
             Assert.Equal(number, result[0].Count);
         }
 
-        //[Fact]
-        //public void Cluster_2DMultipleCosinePeaks()
-        //{
-        //    // Arrange
-        //    var cosFunc = TestDataCreatorService.GetCosineFunction(amplitude: 4, verticalShift: 2, period: 10);
+        [Fact]
+        public void Cluster_With2OverlappingNormal_WithDirectApproach_ShouldReturnTwoClusters()
+        {
+            // Arrange
+            var number = 100;
+            Func<double, double> normFunc = TestDataCreatorService.GetNormalFunction(0, 2);
+            Random random = new Random(1);
 
-        //    var data = new List<(string, List<double>)>();
-        //    for (int i = -10; i <= 10; i++)
-        //    {
-        //        for (int j = -10; j <= 10; j++)
-        //        {
-        //            for (int k = 0; k < (cosFunc(i) + cosFunc(j)); k++)
-        //            {
-        //                var x = i;
-        //                var y = j;
-        //                data.Add(("point", new List<double> { x, y }));
-        //            }
+            var data = new List<(string, List<double>)>();
+            for (int i = 0; i < number; i++)
+            {
+                //Random double between -10 and 10.
+                var x = normFunc(random.NextDouble() * 20.0 - 10.0);
+                var y = normFunc(random.NextDouble() * 20.0 - 10.0);
+                var point = new List<double> { x, y, };
+                if (i < number / 2)
+                {
+                    point = point.Zip(new List<double> { 5, 5 }, (m, s) => m + s).ToList();
+                }
+                else
+                {
+                    point = point.Zip(new List<double> { -5, -5 }, (m, s) => m + s).ToList();
+                }
+                data.Add(("point", point));
+            };
 
-        //        }
-        //    };
+            var bandwidth = new List<double> { 1, 1 };
 
-        //    var bandwidth = new List<double> { 3, 3 };
+            // Act
+            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
 
-        //    // Act
-        //    var result = MeanShiftClustering.Cluster(data, bandwidth);
+            // Assert
+            Assert.Equal(2, result.Count);
+        }
 
-        //    // Assert
-        //    Assert.Equal(9, result.Count());
+        [Fact]
+        public void Cluster_With2OverlappingNormal_WithStepByStepApproach_ShouldReturnTwoClusters()
+        {
+            // Arrange
+            var number = 100;
+            Func<double, double> normFunc = TestDataCreatorService.GetNormalFunction(0, 2);
+            Random random = new Random(1);
 
-        //}
+            var data = new List<(string, List<double>)>();
+            for (int i = 0; i < number; i++)
+            {
+                //Random double between -10 and 10.
+                var x = normFunc(random.NextDouble() * 20.0 - 10.0);
+                var y = normFunc(random.NextDouble() * 20.0 - 10.0);
+                var point = new List<double> { x, y, };
+                if (i < number / 2)
+                {
+                    point = point.Zip(new List<double> { 5, 5 }, (m, s) => m + s).ToList();
+                }
+                else
+                {
+                    point = point.Zip(new List<double> { -5, -5 }, (m, s) => m + s).ToList();
+                }
+                data.Add(("point", point));
+            };
+
+            var bandwidth = new List<double> { 1, 1 };
+
+            // Act
+            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+        }
+
+
     }
 }

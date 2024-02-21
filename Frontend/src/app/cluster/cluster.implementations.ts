@@ -1,20 +1,12 @@
 import {
-  ClusteringCommand,
   ClusteringReturn,
-  Clustering_TimeOfVisit_TotalPrice_Command,
   FilterSales,
   FilterSalesBySalesItems,
   FilterSalesBySalesTables,
-  GetItemsCommand,
-  GetSalesCommand,
-  GetSalesReturn,
-  ItemClient,
   ItemDTO,
   SaleDTO,
 } from 'api';
 import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
-import { AnalysisClient } from 'api';
-import { SaleClient } from 'api';
 import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
 
@@ -26,13 +18,10 @@ import {
   GraphModel,
   IDialogImplementation,
 } from '../cross-correlation/cross-correlation.component';
-import { Observable, Subject, from, lastValueFrom, of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { SaleService } from '../services/API-implementations/sale.service';
-import {
-  Cluster,
-  ClusterService,
-} from '../services/API-implementations/cluster.service';
+import { ClusterService } from '../services/API-implementations/cluster.service';
 import { ItemService } from '../services/API-implementations/item.service';
 import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialog-filter-sales.component';
 import { TableService } from '../services/API-implementations/table.service';
@@ -80,15 +69,13 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
   ];
 
   clusteringReturn: ClusteringReturn | undefined;
+  salesDTOClusters: SaleDTO[][] = [];
 
   constructor(
-    private readonly analysisClient: AnalysisClient,
     private readonly sessionStorageService: SessionStorageService,
-    private readonly itemClient: ItemClient,
     private readonly itemService: ItemService,
     private readonly tableService: TableService,
     private readonly dialog: MatDialog,
-    private readonly saleClient: SaleClient,
     private readonly salesService: SaleService,
     private readonly clusterService: ClusterService
   ) {}
@@ -162,10 +149,6 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     {
       name: 'Run',
       action: async () => {
-        console.log('filterSales', this.filterSales);
-        console.log('filterSalesBySalesItems', this.filterSalesBySalesItems);
-        console.log('filterSalesBySalesTables', this.filterSalesBySalesTables);
-
         var sales = await this.salesService.getSalesFromFiltering(
           this.filterSales,
           this.filterSalesBySalesItems,
@@ -177,58 +160,44 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
             this.bandwidths[0].value,
             this.bandwidths[1].value
           );
-
         this.generateUI();
       },
     } as IDialogImplementation,
   ];
 
   private async generateUI(): Promise<void> {
-    var salesDTOClusters =
+    this.salesDTOClusters =
       await this.clusterService.SaleIdCluster_to_SaleDTOCluster(
         this.clusteringReturn!
       );
 
-    //Build tables
-    this.clustersTable.next(await this.buildClusterTable(salesDTOClusters));
-    this.eachClustersTables.next(
-      await this.buildClustersTables(salesDTOClusters)
-    );
-    //Build graphs
-    this.graphModels.next(await this.buildClusterGraph(this.clusteringReturn!));
+    this.clustersTable.next(await this.buildClusterTable());
+    this.eachClustersTables.next(await this.buildClustersTables());
+    this.graphModels.next(await this.buildClusterGraph());
   }
 
-  private async buildClusterTable(
-    salesDTOClusters: SaleDTO[][]
-  ): Promise<TableModel> {
-    var tableEntries: TableEntry[] = [];
-
+  private async buildClusterTable(): Promise<TableModel> {
     var itemIds = Array.from(
       new Set(
-        salesDTOClusters
+        this.salesDTOClusters
           .flat()
           .map((sale) => sale.salesItems.map((x) => x.item1))
           .flat()
       )
     );
 
-    var itemDTOs: ItemDTO[] = (
-      await lastValueFrom(
-        this.itemClient.getItemsDTO({
-          establishmentId: this.sessionStorageService.getActiveEstablishment(),
-          itemIds: itemIds,
-        } as GetItemsCommand)
-      )
-    ).dto;
+    var itemDTOs: ItemDTO[] = await this.itemService.GetItemsDTO(itemIds);
 
-    var clusters = [
+    var columns = [
       'Cluster number',
       'Avg. no. item',
       'Avg. spend',
       'No. of sales',
     ];
 
-    salesDTOClusters.forEach((element, index) => {
+    var tableEntries: TableEntry[] = [];
+
+    this.salesDTOClusters.forEach((element, index) => {
       var itemsDTOmapped: ItemDTO[][] = element.map((sale) =>
         sale.salesItems.map(
           (itemId) => itemDTOs.find((item) => item.id === itemId.item1)!
@@ -246,28 +215,28 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
       tableEntries.push({
         id: index,
         elements: [
-          new TableString(clusters[0], index.toString()),
+          new TableString(columns[0], index.toString()),
           new TableString(
-            clusters[1],
+            columns[1],
             averageNumberOfItemsOfCluster.toFixed(1).toString()
           ),
           new TableString(
-            clusters[2],
+            columns[2],
             averageSpendOfCluster.toFixed(1).toString()
           ),
-          new TableString(clusters[3], element.length.toString()),
+          new TableString(columns[3], element.length.toString()),
         ],
       } as TableEntry);
     });
     return {
-      columns: clusters,
+      columns: columns,
       elements: tableEntries,
     } as TableModel;
   }
 
-  private async buildClustersTables(salesDTOClusters: SaleDTO[][]) {
+  private async buildClustersTables() {
     var tableModels: TableModel[] = [];
-    salesDTOClusters.forEach((cluster, index) => {
+    this.salesDTOClusters.forEach((cluster) => {
       tableModels.push({
         columns: ['Time', 'Table', 'No. items'],
         elements: cluster.map((sale) => {
@@ -289,21 +258,22 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     return tableModels;
   }
 
-  private async buildClusterGraph(
-    data: ClusteringReturn
-  ): Promise<{ title: string; graphModel: GraphModel }[]> {
-    var points: { x: number; y: number }[][] = data.clusters.map((cluster) =>
-      cluster.map((saleId) => {
-        var caluationData = data.calculationValues.find(
-          (x) => x.item1 === saleId
-        )!.item2 as number[];
+  private async buildClusterGraph(): Promise<
+    { title: string; graphModel: GraphModel }[]
+  > {
+    var points: { x: number; y: number }[][] =
+      this.clusteringReturn!.clusters.map((cluster) =>
+        cluster.map((saleId) => {
+          var caluationData = this.clusteringReturn!.calculationValues.find(
+            (x) => x.item1 === saleId
+          )!.item2 as number[];
 
-        return {
-          x: caluationData[0],
-          y: caluationData[1],
-        } as { x: number; y: number };
-      })
-    );
+          return {
+            x: caluationData[0],
+            y: caluationData[1],
+          } as { x: number; y: number };
+        })
+      );
 
     var scatterChartData: ChartDataset[] = points.map((cluster, index) => {
       return {
@@ -338,7 +308,6 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
         } as GraphModel,
       },
     ];
-    console.log('graphs', graphs);
     return graphs;
   }
 

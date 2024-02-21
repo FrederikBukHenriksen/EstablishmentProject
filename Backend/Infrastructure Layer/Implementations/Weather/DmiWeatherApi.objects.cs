@@ -1,7 +1,9 @@
-﻿namespace WebApplication1.Services
-{
+﻿using System.Diagnostics.CodeAnalysis;
 
-    public static class DmiWeatherApiItems
+namespace WebApplication1.Services
+{
+    [ExcludeFromCodeCoverage]
+    public partial class DmiWeatherApi
     {
         public class Geometry
         {
