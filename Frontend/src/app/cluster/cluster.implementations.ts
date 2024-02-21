@@ -37,15 +37,17 @@ export type ClusterBandwidths = {
 };
 
 export interface IBuildClusterTable {
-  buildClusterTable(clusteringReturn: ClusteringReturn): Promise<TableModel>;
-  buildClustersTables(clusteringReturn: ClusteringReturn): Promise<TableModel>;
-  buildClusterGraph(clusteringReturn: ClusteringReturn): Promise<GraphModel[]>;
+  buildClusterTable(): Promise<TableModel>;
+  buildClustersTables(): Promise<TableModel[]>;
+  buildClusterGraph(): Promise<{ title: string; graphModel: GraphModel }[]>;
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
+export class Cluster_TimeOfDay_Spending
+  implements IClusteringImplementaion, IBuildClusterTable
+{
   title: string = 'Time of day vs Total spending';
   clustersTable: Subject<TableModel> = new Subject<TableModel>();
   eachClustersTables: Subject<TableModel[]> = new Subject<TableModel[]>();
@@ -176,7 +178,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     this.graphModels.next(await this.buildClusterGraph());
   }
 
-  private async buildClusterTable(): Promise<TableModel> {
+  public async buildClusterTable(): Promise<TableModel> {
     var itemIds = Array.from(
       new Set(
         this.salesDTOClusters
@@ -234,7 +236,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     } as TableModel;
   }
 
-  private async buildClustersTables() {
+  public async buildClustersTables(): Promise<TableModel[]> {
     var tableModels: TableModel[] = [];
     this.salesDTOClusters.forEach((cluster) => {
       tableModels.push({
@@ -258,7 +260,7 @@ export class Cluster_TimeOfDay_Spending implements IClusteringImplementaion {
     return tableModels;
   }
 
-  private async buildClusterGraph(): Promise<
+  public async buildClusterGraph(): Promise<
     { title: string; graphModel: GraphModel }[]
   > {
     var points: { x: number; y: number }[][] =

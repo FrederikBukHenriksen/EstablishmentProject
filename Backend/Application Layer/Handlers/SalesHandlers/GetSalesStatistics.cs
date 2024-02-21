@@ -44,7 +44,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
     {
         public override double Caldulate(List<Sale> sales)
         {
-            return sales.Average(x => (double)x.GetTimeOfPayment().TimeOfDay.Minutes);
+            return sales.Average(x => (double)x.GetTimeOfPayment().TimeOfDay.TotalMinutes);
         }
     }
 
@@ -58,7 +58,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
             {
                 throw new Exception("No sales with time of arrival");
             }
-            return SalesWithTimeOfArrival.Average(x => (double)x.GetTimeOfArrival()?.TimeOfDay.Minutes);
+            return SalesWithTimeOfArrival.Average(x => (double)x.GetTimeOfArrival()?.TimeOfDay.TotalMinutes);
         }
     }
 
@@ -72,7 +72,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
             {
                 throw new Exception("No sales with a seattime");
             }
-            return SalesWithTimeOfArrival.Average(x => (double)(x.GetTimeOfPayment().TimeOfDay.Minutes - (int)x.GetTimeOfArrival()?.TimeOfDay.Minutes));
+            return SalesWithTimeOfArrival.Average(x => (double)(x.GetTimeOfPayment().TimeOfDay.TotalMinutes - (int)x.GetTimeOfArrival()?.TimeOfDay.TotalMinutes));
         }
     }
 
