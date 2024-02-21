@@ -4,73 +4,79 @@
     {
         public class MeanShiftDataPoint<T>
         {
-            public T Object { get; set; }
+            public T Object { get; }
             public List<double> Location { get; set; }
-            public bool HasConverged { get; set; }
-
+            public bool HasConverged { get; set; } = false;
+            public bool IsGrouped { get; set; } = false;
+            public MeanShiftDataPoint(T obj, List<double> loc)
+            {
+                this.Object = obj;
+                this.Location = loc;
+            }
         }
 
 
         public static List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
-
-            double toleranceForCovergence = 0.01;
-
+            double toleranceForCovergence = 0.001;
             double toleranceForGrouping = 0.01;
 
-            double learningFactor = 0.5;
+            List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
-            List<(T, List<double>, bool)> dataWithConvergence = data.Select(x => (x.Item1, x.Item2, false)).ToList();
+            //while (!dataWithConvergence.All(x => x.HasConverged))
+            for (int q = 0; q < 100; q++)
 
 
-            //for (int q = 0; q < 100; q++)
-            while (!dataWithConvergence.All(x => x.Item3 == true))
+
             {
                 for (int dataIndex = 0; dataIndex < dataWithConvergence.Count; dataIndex++)
                 {
-                    if (dataWithConvergence[dataIndex].Item3 == true)
+                    var dataPoint = dataWithConvergence[dataIndex];
+
+                    if (dataPoint.HasConverged)
                     {
                         break;
                     }
 
-                    List<double> location = new List<double>(dataWithConvergence[dataIndex].Item2);
-
-                    bool isWithinTolerance = false;
-
-                    var neighbouringPoints = new List<(T, List<double>)>();
+                    //Identify neighbouring data points
+                    var neighbouringPoints = new List<MeanShiftDataPoint<T>>();
                     for (int i = 0; i < dataWithConvergence.Count; i++)
                     {
-                        var item = dataWithConvergence[i];
-                        if (isWithinBandwith(location, item.Item2, bandwidth) && dataIndex != i)
+                        var neighbourDataPoint = dataWithConvergence[i];
+                        if (dataIndex == i)
                         {
-                            neighbouringPoints.Add((item.Item1, item.Item2));
+                            break;
+                        }
+                        if (isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth))
+                        {
+                            neighbouringPoints.Add(neighbourDataPoint);
                         }
                     }
 
                     //If no neighbouring points, convergence is reached
-                    if (!(neighbouringPoints.Count > 0))
+                    if (neighbouringPoints.Count <= 0)
                     {
-                        dataWithConvergence[dataIndex] = (dataWithConvergence[dataIndex].Item1, dataWithConvergence[dataIndex].Item2, true);
+                        dataPoint.HasConverged = true;
                         break;
                     }
+
                     //Calculate and perform shift
-                    List<double> shift = CalculateShift(location, neighbouringPoints.Select(x => x.Item2).ToList(), bandwidth);
-                    shift = shift.Select(x => x * learningFactor).ToList();
-                    List<double> newLocation = location.Zip(shift, (m, s) => m + s).ToList();
+                    List<double> shift = CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
+                    List<double> newLocation = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
 
                     //Check for convergence
-                    var hasPointConverged = HasPointsConverged(dataWithConvergence[dataIndex].Item2, newLocation, toleranceForCovergence);
+                    var hasPointConverged = HasPointsConverged(dataWithConvergence[dataIndex].Location, newLocation, toleranceForCovergence);
                     if (hasPointConverged)
                     {
-                        dataWithConvergence[dataIndex] = (dataWithConvergence[dataIndex].Item1, dataWithConvergence[dataIndex].Item2, true);
+                        dataPoint.HasConverged = true;
                     }
 
                     //Update location
-                    dataWithConvergence[dataIndex] = (dataWithConvergence[dataIndex].Item1, newLocation, dataWithConvergence[dataIndex].Item3);
+                    dataPoint.Location = newLocation;
                 }
             }
-            var res = GroupPoints(dataWithConvergence.Select(x => (x.Item1, x.Item2)).ToList(), toleranceForGrouping);
-            return res;
+            //Send the all datapoints to grouping after convergenve
+            return GroupPoints(dataWithConvergence, toleranceForGrouping);
         }
 
 
@@ -115,33 +121,29 @@
             return average;
         }
 
-        public static List<List<T>> GroupPoints<T>(List<(T, List<double>)> points, double tolerance)
+        public static List<List<T>> GroupPoints<T>(List<MeanShiftDataPoint<T>> AllPointsConverged, double tolerance)
         {
-            List<List<(T, List<double>)>> groupedPoints = new List<List<(T, List<double>)>>();
+            List<List<MeanShiftDataPoint<T>>> Clusters = new List<List<MeanShiftDataPoint<T>>>();
 
-            foreach (var point in points)
+            foreach (var dataPoint in AllPointsConverged)
             {
-                bool added = false;
-
-                foreach (var group in groupedPoints)
+                foreach (var cluster in Clusters)
                 {
-                    if (group.Any(p => CalculateDistance(p.Item2, point.Item2) <= tolerance))
+                    if (cluster.Any(dataPointInCluster => CalculateDistance(dataPoint.Location, dataPointInCluster.Location) <= tolerance))
                     {
-                        group.Add(point);
-                        added = true;
+                        cluster.Add(dataPoint);
+                        dataPoint.IsGrouped = true;
                         break;
                     }
                 }
-
-                if (!added)
+                if (dataPoint.IsGrouped)
                 {
-                    groupedPoints.Add(new List<(T, List<double>)> { point });
+                    Clusters.Add(new List<MeanShiftDataPoint<T>> { dataPoint });
                 }
             }
 
-            return groupedPoints.Select(group => group.Select(p => p.Item1).ToList()).ToList();
+            return Clusters.Select(cluster => cluster.Select(dataPoint => dataPoint.Object).ToList()).ToList();
         }
-
 
         private static bool HasPointsConverged(List<double> list1, List<double> list2, double threshold)
         {
@@ -167,8 +169,5 @@
 
             return Math.Sqrt(sumOfSquares);
         }
-
-
-
     }
 }
