@@ -1,3 +1,7 @@
+import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
+import { Subject } from 'rxjs';
 import {
   ClusteringReturn,
   FilterSales,
@@ -6,41 +10,29 @@ import {
   ItemDTO,
   SaleDTO,
 } from 'api';
-import { ChartData, ChartDataset, ChartOptions, ChartType } from 'chart.js';
-import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
-
-import { MatDialog } from '@angular/material/dialog';
-import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import { DialogClusterSettingsComponent } from '../dialogs/dialog-cluster-settings/dialog-cluster-settings.component';
-import { IClusteringImplementaion } from './cluster.component';
+import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialog-filter-sales.component';
+import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
+import { DialogFilterSalesBySalestablesComponent } from '../dialogs/dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
+import {
+  IBuildClusterTable,
+  IClusteringImplementaion,
+} from './cluster.component';
 import {
   GraphModel,
   IDialogImplementation,
 } from '../cross-correlation/cross-correlation.component';
-import { Subject } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { SaleService } from '../services/API-implementations/sale.service';
 import { ClusterService } from '../services/API-implementations/cluster.service';
 import { ItemService } from '../services/API-implementations/item.service';
-import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialog-filter-sales.component';
 import { TableService } from '../services/API-implementations/table.service';
-import { DialogFilterSalesBySalestablesComponent } from '../dialogs/dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
-
-export interface ClusteringAssembly {
-  assembly: IClusteringImplementaion;
-}
+import { TableEntry, TableModel, TableString } from '../table/table.component';
 
 export type ClusterBandwidths = {
   title: string;
   value: number;
 };
-
-export interface IBuildClusterTable {
-  buildClusterTable(): Promise<TableModel>;
-  buildClustersTables(): Promise<TableModel[]>;
-  buildClusterGraph(): Promise<{ title: string; graphModel: GraphModel }[]>;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -48,29 +40,18 @@ export interface IBuildClusterTable {
 export class Cluster_TimeOfDay_Spending
   implements IClusteringImplementaion, IBuildClusterTable
 {
-  title: string = 'Time of day vs Total spending';
-  clustersTable: Subject<TableModel> = new Subject<TableModel>();
-  eachClustersTables: Subject<TableModel[]> = new Subject<TableModel[]>();
-  graphModels: Subject<{ title: string; graphModel: GraphModel }[]> =
-    new Subject<{ title: string; graphModel: GraphModel }[]>();
-
-  filterSales: FilterSales = new FilterSales();
-  filterSalesBySalesItems: FilterSalesBySalesItems =
-    new FilterSalesBySalesItems();
-  filterSalesBySalesTables: FilterSalesBySalesTables =
-    new FilterSalesBySalesTables();
+  title = 'Time of day vs Total spending';
+  clustersTable = new Subject<TableModel>();
+  eachClustersTables = new Subject<TableModel[]>();
+  graphModels = new Subject<{ title: string; graphModel: GraphModel }[]>();
+  filterSales = new FilterSales();
+  filterSalesBySalesItems = new FilterSalesBySalesItems();
+  filterSalesBySalesTables = new FilterSalesBySalesTables();
   bandwidths: ClusterBandwidths[] = [
-    {
-      title: 'Time of visit',
-      value: 120,
-    },
-    {
-      title: 'Total price',
-      value: 50,
-    },
+    { title: 'Time of visit', value: 120 },
+    { title: 'Total price', value: 50 },
   ];
-
-  clusteringReturn: ClusteringReturn | undefined;
+  clusteringReturn?: ClusteringReturn;
   salesDTOClusters: SaleDTO[][] = [];
 
   constructor(
@@ -86,50 +67,41 @@ export class Cluster_TimeOfDay_Spending
     {
       name: 'Sales',
       action: async () => {
-        var dialogCrossCorrelationSettingsComponent =
-          new DialogFilterSalesComponent(this.dialog);
-        this.filterSales = await dialogCrossCorrelationSettingsComponent.Open(
-          this.filterSales
-        );
+        const dialogComponent = new DialogFilterSalesComponent(this.dialog);
+        this.filterSales = await dialogComponent.Open(this.filterSales);
       },
-    } as IDialogImplementation,
+    },
     {
       name: 'Items',
       action: async () => {
-        var dialogCrossCorrelationSettingsComponent =
-          new DialogFilterSalesBySalesitemsComponent(
-            this.dialog,
-            this.itemService,
-            this.sessionStorageService
-          );
-        this.filterSalesBySalesItems =
-          await dialogCrossCorrelationSettingsComponent.Open(
-            this.filterSalesBySalesItems
-          );
+        const dialogComponent = new DialogFilterSalesBySalesitemsComponent(
+          this.dialog,
+          this.itemService,
+          this.sessionStorageService
+        );
+        this.filterSalesBySalesItems = await dialogComponent.Open(
+          this.filterSalesBySalesItems
+        );
       },
-    } as IDialogImplementation,
+    },
     {
       name: 'Tables',
       action: async () => {
-        var dialogCrossCorrelationSettingsComponent =
-          new DialogFilterSalesBySalestablesComponent(
-            this.dialog,
-            this.tableService,
-            this.sessionStorageService
-          );
-        this.filterSalesBySalesTables =
-          await dialogCrossCorrelationSettingsComponent.Open(
-            this.filterSalesBySalesItems
-          );
+        const dialogComponent = new DialogFilterSalesBySalestablesComponent(
+          this.dialog,
+          this.tableService,
+          this.sessionStorageService
+        );
+        this.filterSalesBySalesTables = await dialogComponent.Open(
+          this.filterSalesBySalesTables
+        );
       },
-    } as IDialogImplementation,
+    },
     {
       name: 'Bandwidths',
       action: async () => {
-        var dialogClusterSettingsComponent = new DialogClusterSettingsComponent(
-          this.dialog
-        );
-        this.bandwidths = await dialogClusterSettingsComponent.Open([
+        const dialogComponent = new DialogClusterSettingsComponent(this.dialog);
+        this.bandwidths = await dialogComponent.Open([
           {
             title: this.bandwidths[0].title,
             min: 0,
@@ -146,12 +118,11 @@ export class Cluster_TimeOfDay_Spending
           },
         ]);
       },
-    } as IDialogImplementation,
-
+    },
     {
       name: 'Run',
       action: async () => {
-        var sales = await this.salesService.getSalesFromFiltering(
+        const sales = await this.salesService.getSalesFromFiltering(
           this.filterSales,
           this.filterSalesBySalesItems,
           this.filterSalesBySalesTables
@@ -164,7 +135,7 @@ export class Cluster_TimeOfDay_Spending
           );
         this.generateUI();
       },
-    } as IDialogImplementation,
+    },
   ];
 
   private async generateUI(): Promise<void> {
@@ -179,82 +150,68 @@ export class Cluster_TimeOfDay_Spending
   }
 
   public async buildClusterTable(): Promise<TableModel> {
-    var itemIds = Array.from(
-      new Set(
-        this.salesDTOClusters
-          .flat()
-          .map((sale) => sale.salesItems.map((x) => x.item1))
-          .flat()
-      )
-    );
+    const itemIds = [
+      ...new Set(
+        this.salesDTOClusters.flatMap((sale) =>
+          sale.flatMap((item) => item.salesItems.map((x) => x.item1))
+        )
+      ),
+    ];
+    const itemDTOs: ItemDTO[] = await this.itemService.GetItemsDTO(itemIds);
 
-    var itemDTOs: ItemDTO[] = await this.itemService.GetItemsDTO(itemIds);
-
-    var columns = [
+    const columns = [
       'Cluster number',
       'Avg. no. item',
       'Avg. spend',
       'No. of sales',
     ];
-
-    var tableEntries: TableEntry[] = [];
+    const tableEntries: TableEntry[] = [];
 
     this.salesDTOClusters.forEach((element, index) => {
-      var itemsDTOmapped: ItemDTO[][] = element.map((sale) =>
+      const itemsDTOmapped: ItemDTO[] = element.flatMap((sale) =>
         sale.salesItems.map(
           (itemId) => itemDTOs.find((item) => item.id === itemId.item1)!
         )
       );
 
-      var averageNumberOfItemsOfCluster =
-        itemsDTOmapped.flat().length / element.length;
-
-      var averageSpendOfCluster =
-        itemsDTOmapped
-          .flat()
-          .reduce((prev, current) => prev + current.price, 0) / element.length;
+      const averageNumberOfItemsOfCluster =
+        itemsDTOmapped.length / element.length;
+      const averageSpendOfCluster =
+        itemsDTOmapped.reduce((prev, current) => prev + current.price, 0) /
+        element.length;
 
       tableEntries.push({
         id: index,
         elements: [
           new TableString(columns[0], index.toString()),
-          new TableString(
-            columns[1],
-            averageNumberOfItemsOfCluster.toFixed(1).toString()
-          ),
-          new TableString(
-            columns[2],
-            averageSpendOfCluster.toFixed(1).toString()
-          ),
+          new TableString(columns[1], averageNumberOfItemsOfCluster.toFixed(1)),
+          new TableString(columns[2], averageSpendOfCluster.toFixed(1)),
           new TableString(columns[3], element.length.toString()),
         ],
-      } as TableEntry);
+      });
     });
-    return {
-      columns: columns,
-      elements: tableEntries,
-    } as TableModel;
+
+    return { columns: columns, elements: tableEntries };
   }
 
   public async buildClustersTables(): Promise<TableModel[]> {
-    var tableModels: TableModel[] = [];
+    const tableModels: TableModel[] = [];
+
     this.salesDTOClusters.forEach((cluster) => {
       tableModels.push({
         columns: ['Time', 'Table', 'No. items'],
-        elements: cluster.map((sale) => {
-          return {
-            id: sale.id,
-            elements: [
-              new TableString('Time', sale.timestampPayment.toString()),
-              new TableString(
-                'Tables',
-                sale.salesTables ? sale.salesTables.toString() : ''
-              ),
-              new TableString('No. items', sale.salesItems.length.toString()),
-            ],
-          } as TableEntry;
-        }),
-      } as TableModel);
+        elements: cluster.map((sale) => ({
+          id: sale.id,
+          elements: [
+            new TableString('Time', sale.timestampPayment.toString()),
+            new TableString(
+              'Tables',
+              sale.salesTables ? sale.salesTables.toString() : ''
+            ),
+            new TableString('No. items', sale.salesItems.length.toString()),
+          ],
+        })),
+      });
     });
 
     return tableModels;
@@ -263,57 +220,42 @@ export class Cluster_TimeOfDay_Spending
   public async buildClusterGraph(): Promise<
     { title: string; graphModel: GraphModel }[]
   > {
-    var points: { x: number; y: number }[][] =
-      this.clusteringReturn!.clusters.map((cluster) =>
-        cluster.map((saleId) => {
-          var caluationData = this.clusteringReturn!.calculationValues.find(
-            (x) => x.item1 === saleId
-          )!.item2 as number[];
+    const points = this.clusteringReturn!.clusters.map((cluster) =>
+      cluster.map((saleId) => {
+        const caluationData = this.clusteringReturn!.calculationValues.find(
+          (x) => x.item1 === saleId
+        )!.item2 as number[];
+        return { x: caluationData[0], y: caluationData[1] };
+      })
+    );
 
-          return {
-            x: caluationData[0],
-            y: caluationData[1],
-          } as { x: number; y: number };
-        })
-      );
+    const scatterChartData: ChartDataset[] = points.map((cluster, index) => ({
+      data: cluster,
+      label: `Cluster ${index}`,
+      backgroundColor: this.getRandomColor(),
+      showLine: false,
+      pointRadius: 5,
+    }));
 
-    var scatterChartData: ChartDataset[] = points.map((cluster, index) => {
-      return {
-        data: cluster,
-        label: `Cluster ${index}`,
-        backgroundColor: this.getRandomColor(),
-        showLine: false,
-        pointRadius: 5,
-      } as ChartDataset;
-    });
-
-    var graphs: { title: string; graphModel: GraphModel }[] = [
+    const graphs: { title: string; graphModel: GraphModel }[] = [
       {
         title: 'Time of day vs Total spending',
         graphModel: {
           chartType: 'scatter' as ChartType,
-          chartData: {
-            datasets: scatterChartData,
-          } as ChartData,
+          chartData: { datasets: scatterChartData } as ChartData,
           chartOptions: {
             scales: {
-              x: {
-                type: 'linear',
-                position: 'bottom',
-              },
-              y: {
-                type: 'linear',
-                position: 'left',
-              },
+              x: { type: 'linear', position: 'bottom' },
+              y: { type: 'linear', position: 'left' },
             },
           } as ChartOptions,
-        } as GraphModel,
+        },
       },
     ];
     return graphs;
   }
 
-  private getRandomColor() {
+  private getRandomColor(): string {
     var letters = '0123456789ABCDEF';
     var color = '#';
     for (var i = 0; i < 6; i++) {

@@ -20,32 +20,20 @@ export interface IClusteringImplementaion {
   graphModels: Subject<{ title: string; graphModel: GraphModel }[]>;
 }
 
+export interface IBuildClusterTable {
+  buildClusterTable(): Promise<TableModel>;
+  buildClustersTables(): Promise<TableModel[]>;
+  buildClusterGraph(): Promise<{ title: string; graphModel: GraphModel }[]>;
+}
+
 @Component({
   selector: 'app-cluster',
   templateUrl: './cluster.component.html',
 })
 export class ClusterComponent {
-  private analysisClient = inject(AnalysisClient);
-  private saleClient = inject(SaleClient);
-  private itemClient = inject(ItemClient);
-  public dialog = inject(MatDialog);
-  private sessionStorageService = inject(SessionStorageService);
-
-  /**
-   *
-   */
-  constructor(public cluster_TimeOfDay_Spending: Cluster_TimeOfDay_Spending) {
-    console.log(cluster_TimeOfDay_Spending);
-  }
+  constructor(public cluster_TimeOfDay_Spending: Cluster_TimeOfDay_Spending) {}
 
   protected FetchDictionary: IClusteringImplementaion[] = [
-    // new Cluster_TimeOfDay_Spending(
-    //   this.analysisClient,
-    //   this.sessionStorageService,
-    //   this.itemClient,
-    //   this.dialog,
-    //   this.saleClient
-    // ),
     this.cluster_TimeOfDay_Spending,
   ] as IClusteringImplementaion[];
 }

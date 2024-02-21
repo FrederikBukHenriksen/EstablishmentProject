@@ -31,61 +31,11 @@ export interface ICorrelationImplementaion {
   styleUrls: ['./cross-correlation.component.scss'],
 })
 export class CrossCorrelationComponent {
-  private sessionStorageService = inject(SessionStorageService);
-  private analysisClient = inject(AnalysisClient);
-  private itemService = inject(ItemService);
-
-  private salesClient = inject(SaleClient);
-  public dialog = inject(MatDialog);
-
-  // ngOnInit(): void {
-  //   this.collectionOfImplementaions.forEach((element) => {});
-  // }
-
-  // private initGetSalesCommand(): GetSalesCommand {
-  //   return {
-  //     establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-  //     salesSorting: {},
-  //   } as GetSalesCommand;
-  // }
-
-  // private initCorrelationCommand(): CorrelationCommand {
-  //   //Allowed Lag
-  //   const lowerLag = 5;
-  //   const upperLag = 5;
-
-  //   //Period
-  //   var offset = lowerLag;
-  //   var timeFrameAmountOfDays = 7;
-  //   var today = new Date();
-  //   var endDate = new Date();
-  //   endDate.setDate(today.getDate() - offset);
-  //   var startDate = new Date(endDate);
-  //   startDate.setDate(endDate.getDate() - timeFrameAmountOfDays);
-
-  //   startDate = new Date('2024-01-10T00:00:00.000Z');
-  //   endDate = new Date('2024-01-17T00:00:00.000Z');
-
-  //   return {
-  //     establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-  //     salesIds: [] as string[],
-  //     timePeriod: {
-  //       start: startDate,
-  //       end: endDate,
-  //     } as DateTimePeriod,
-  //     timeResolution: TimeResolution.Date,
-  //     lowerLag: lowerLag,
-  //     upperLag: upperLag,
-  //   } as CorrelationCommand;
-  // }
+  constructor(
+    public crossCorrelation_Sales_Temperature: CrossCorrelation_Sales_Temperature
+  ) {}
 
   public collectionOfImplementaions: ICorrelationImplementaion[] = [
-    new CrossCorrelation_Sales_Temperature(
-      this.analysisClient,
-      this.sessionStorageService,
-      this.itemService,
-      this.dialog,
-      this.salesClient
-    ),
+    this.crossCorrelation_Sales_Temperature,
   ];
 }

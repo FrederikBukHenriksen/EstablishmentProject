@@ -1,17 +1,19 @@
-// cross-correlation.model.ts
+import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ChartDataset } from 'chart.js';
+import { lastValueFrom } from 'rxjs';
 import {
-  CommandBase,
+  AnalysisClient,
   CorrelationCommand,
   CorrelationReturn,
   DateTimePeriod,
+  FilterSales,
   FilterSalesBySalesItems,
+  FilterSalesBySalesTables,
   GetSalesCommand,
   ItemClient,
   TimeResolution,
 } from 'api';
-import { ChartDataset } from 'chart.js';
-import { lastValueFrom } from 'rxjs';
-import { AnalysisClient } from 'api';
 import { SaleClient } from 'api';
 import { TableEntry, TableModel, TableString } from '../table/table.component';
 import { SessionStorageService } from '../services/session-storage/session-storage.service';
@@ -20,49 +22,23 @@ import {
   GraphModel,
   IDialogImplementation,
 } from './cross-correlation.component';
-import { MatDialog } from '@angular/material/dialog';
 import { DialogCrossCorrelationSettingsComponent } from '../dialogs/dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
 import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import {
   DateForGraph,
   getDifferenceInHours,
   accountForTimezone,
-  removeTimezone,
 } from '../utils/TimeHelper';
 import { ItemService } from '../services/API-implementations/item.service';
+import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialog-filter-sales.component';
+import { DialogFilterSalesBySalestablesComponent } from '../dialogs/dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
+import { TableService } from '../services/API-implementations/table.service';
+import { SaleService } from '../services/API-implementations/sale.service';
+import { CorrelationService } from '../services/API-implementations/correlation.service';
 
-export interface CrossCorrealtionAssembly {
-  assembly: ICorrelationImplementaion;
-}
-
-export type LagAndCorrelation = {
-  lag: number;
-  correlation: number;
-};
-
-export type CorrelationCalculations = {
-  date: Date;
-  value1: number;
-  value2: number;
-};
-
-// export class CrossCorrelation_haha implements CrossCorrelationImplementaion {
-//   constructor(
-//     private readonly analysisClient: AnalysisClient,
-//     private readonly sessionStorageService: SessionStorageService,
-//     private readonly itemClient: ItemClient,
-//     private readonly dialog: MatDialog,
-//     private readonly saleClient: SaleClient
-//   ) {}
-
-//   title: 'Seat time vs Temperature';
-//   getSalesCommand: GetSalesCommand;
-//   correlationCommand: CorrelationCommand;
-//   dialogs: ImplementationDialog[];
-//   tableModel: TableModel | undefined;
-//   graphModel: GraphModel | undefined;
-// }
-
+@Injectable({
+  providedIn: 'root',
+})
 export class CrossCorrelation_Sales_Temperature
   implements ICorrelationImplementaion
 {
@@ -71,44 +47,64 @@ export class CrossCorrelation_Sales_Temperature
   dialogCrossCorrelationSettingsComponent: DialogCrossCorrelationSettingsComponent =
     {} as DialogCrossCorrelationSettingsComponent;
 
-  result: CorrelationReturn | undefined;
+  correlationReturn: CorrelationReturn | undefined;
   tableModel: TableModel | undefined;
   graphModel: GraphModel | undefined;
 
-  salesIds: string[] = [];
-  salesSorting: FilterSalesBySalesItems = {} as FilterSalesBySalesItems;
+  filterSales = new FilterSales();
+  filterSalesBySalesItems = new FilterSalesBySalesItems();
+  filterSalesBySalesTables = new FilterSalesBySalesTables();
 
   constructor(
-    private readonly analysisClient: AnalysisClient,
     private readonly sessionStorageService: SessionStorageService,
     private readonly itemService: ItemService,
-
     private readonly dialog: MatDialog,
-    private readonly saleClient: SaleClient
+    private readonly tableService: TableService,
+    private readonly saleService: SaleService,
+    private readonly correlationService: CorrelationService
   ) {}
 
   dialogs: IDialogImplementation[] = [
     {
       name: 'Sales',
       action: async () => {
-        var dialogCrossCorrelationSettingsComponent =
-          new DialogFilterSalesBySalesitemsComponent(
-            this.dialog,
-            this.itemService,
-            this.sessionStorageService
-          );
-        this.salesSorting = await dialogCrossCorrelationSettingsComponent.Open(
-          this.salesSorting
+        const dialogComponent = new DialogFilterSalesComponent(this.dialog);
+        this.filterSales = await dialogComponent.Open(this.filterSales);
+      },
+    },
+    {
+      name: 'Items',
+      action: async () => {
+        const dialogComponent = new DialogFilterSalesBySalesitemsComponent(
+          this.dialog,
+          this.itemService,
+          this.sessionStorageService
+        );
+        this.filterSalesBySalesItems = await dialogComponent.Open(
+          this.filterSalesBySalesItems
         );
       },
-    } as IDialogImplementation,
+    },
+    {
+      name: 'Tables',
+      action: async () => {
+        const dialogComponent = new DialogFilterSalesBySalestablesComponent(
+          this.dialog,
+          this.tableService,
+          this.sessionStorageService
+        );
+        this.filterSalesBySalesTables = await dialogComponent.Open(
+          this.filterSalesBySalesTables
+        );
+      },
+    },
 
     {
       name: 'Settings',
       action: async () => {
-        var dialogCrossCorrelationSettingsComponent =
+        const dialogCrossCorrelationSettingsComponent =
           new DialogCrossCorrelationSettingsComponent(this.dialog);
-        var dialogCrossCorrelationSettingsReturn =
+        const dialogCrossCorrelationSettingsReturn =
           await dialogCrossCorrelationSettingsComponent.Open();
 
         this.correlationCommand.lowerLag =
@@ -132,38 +128,35 @@ export class CrossCorrelation_Sales_Temperature
   ];
 
   async run() {
-    var getSalesCommand: GetSalesCommand = {
-      // establishmentId: this.sessionStorageService.getActiveEstablishment()!,
-      // salesSorting: this.salesSorting,
-    } as GetSalesCommand;
+    var salesIds = await this.saleService.getSalesFromFiltering(
+      this.filterSales,
+      this.filterSalesBySalesItems,
+      this.filterSalesBySalesTables
+    );
 
-    this.salesIds = (
-      await lastValueFrom(this.saleClient.getSales(getSalesCommand))
-    ).sales;
+    this.correlationReturn =
+      await this.correlationService.Correlation_NumberOfSales_Vs_Temperature(
+        salesIds,
+        this.correlationCommand.timePeriod.start,
+        this.correlationCommand.timePeriod.end,
+        this.correlationCommand.timeResolution,
+        this.correlationCommand.upperLag,
+        this.correlationCommand.lowerLag
+      );
 
-    this.correlationCommand.salesIds = this.salesIds;
-
-    this.result = await this.fetch(this.correlationCommand);
     this.graphModel = await this.buildGraph();
     this.tableModel = await this.buildTable();
   }
 
-  async fetch(command: CorrelationCommand): Promise<CorrelationReturn> {
-    this.result = await lastValueFrom(
-      this.analysisClient.correlationCoefficientAndLag(command)
-    );
-    return this.result;
-  }
-
   async buildTable(): Promise<TableModel> {
-    var timeRes = this.correlationCommand.timeResolution;
+    const timeRes = this.correlationCommand.timeResolution;
 
-    var columns = ['[' + getLagUnit(timeRes) + ']', 'Correlation'];
+    const columns = ['[' + getLagUnit(timeRes) + ']', 'Correlation'];
 
     this.tableModel = {
       columns: [getLagUnit(timeRes), 'Correlation'],
       elements:
-        this.result?.lagAndCorrelation.map(
+        this.correlationReturn?.lagAndCorrelation.map(
           (element, index) =>
             ({
               id: index,
@@ -181,28 +174,25 @@ export class CrossCorrelation_Sales_Temperature
   }
 
   async buildGraph(): Promise<GraphModel> {
-    var values: CorrelationCalculations[] =
-      this.result?.calculationValues.map(
-        (x) =>
-          ({
-            date: x.item1,
-            value1: x.item2?.[0] ?? 0,
-            value2: x.item2?.[1] ?? 0,
-          } as CorrelationCalculations)
-      ) || [];
+    let values: any[] =
+      this.correlationReturn?.calculationValues.map((x) => ({
+        date: x.item1,
+        value1: x.item2?.[0] ?? 0,
+        value2: x.item2?.[1] ?? 0,
+      })) || [];
 
-    var lagAndCorrelation: LagAndCorrelation[] =
-      this.result?.lagAndCorrelation.map((x) => ({
+    let lagAndCorrelation: any[] =
+      this.correlationReturn?.lagAndCorrelation.map((x) => ({
         lag: x.item1,
         correlation: x.item2,
       })) || [];
 
     values = values.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    var bestLag = GetLargestCorrelation(lagAndCorrelation);
+    const bestLag = GetLargestCorrelation(lagAndCorrelation);
 
-    var timeres = this.correlationCommand.timeResolution;
-    var chartDatasets: ChartDataset[] = [
+    const timeres = this.correlationCommand.timeResolution;
+    const chartDatasets: ChartDataset[] = [
       {
         data: values.map((x) => x.value1),
         label: `Number of sales`,
@@ -223,8 +213,8 @@ export class CrossCorrelation_Sales_Temperature
       } as ChartDataset,
     ];
 
-    var startDate = this.correlationCommand.timePeriod.start;
-    var endDate = this.correlationCommand.timePeriod.end;
+    const startDate = this.correlationCommand.timePeriod.start;
+    const endDate = this.correlationCommand.timePeriod.end;
     this.graphModel = {
       chartType: 'line',
       chartData: {
@@ -280,11 +270,7 @@ export function getLagAmount(
 }
 
 export function getLagUnit(timeResolution: TimeResolution): string {
-  if (timeResolution === TimeResolution.Hour) {
-    return 'Hour(s)';
-  } else {
-    return 'Day(s)';
-  }
+  return timeResolution === TimeResolution.Hour ? 'Hour(s)' : 'Day(s)';
 }
 
 export function getGraphLabel(
