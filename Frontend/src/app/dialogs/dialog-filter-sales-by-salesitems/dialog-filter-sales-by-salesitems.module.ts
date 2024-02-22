@@ -14,7 +14,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 @NgModule({
-  declarations: [DialogFilterSalesBySalesitemsComponent],
   imports: [
     CommonModule,
     MatDialogModule,

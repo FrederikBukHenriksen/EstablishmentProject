@@ -14,4 +14,8 @@ export class SessionStorageService {
   getActiveEstablishment(): string | null {
     return sessionStorage.getItem(this.ActiveEstablishmentIdLocation);
   }
+
+  clearActiveEstablishment(): void {
+    sessionStorage.removeItem(this.ActiveEstablishmentIdLocation);
+  }
 }

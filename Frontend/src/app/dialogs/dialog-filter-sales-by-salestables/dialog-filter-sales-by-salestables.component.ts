@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
@@ -11,10 +11,8 @@ import { FilterSalesBySalesTables, TableDTO } from 'api';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 import { TableService } from '../../services/API-implementations/table.service';
 
-@Component({
-  selector: 'app-dialog-filter-sales-by-salestables',
-  templateUrl: './dialog-filter-sales-by-salestables.component.html',
-  styleUrls: ['./dialog-filter-sales-by-salestables.component.scss'],
+@Injectable({
+  providedIn: 'root',
 })
 export class DialogFilterSalesBySalestablesComponent {
   constructor(

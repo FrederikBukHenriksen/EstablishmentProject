@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
@@ -8,43 +8,68 @@ import {
   DialogSlider,
   DropDown,
   DropDownOption,
+  TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TimeResolution } from 'api';
-import { CreateDate, removeTimezone } from '../../utils/TimeHelper';
+import { removeTimezone } from '../../utils/TimeHelper';
 
-export type DialogCrossCorrelationSettingsReturn = {
-  lowerLag: number | undefined;
-  upperLag: number | undefined;
-  startDate: Date | undefined;
+export class DialogCrossCorrelationSettings {
+  lowerLag: number;
+  upperLag: number;
+  startDate: Date;
   endDate: Date | undefined;
-  timeResolution: TimeResolution | undefined;
-};
+  timeResolution: TimeResolution;
 
-@Component({
-  selector: 'app-dialog-cross-correlation-settings',
-  templateUrl: './dialog-cross-correlation-settings.component.html',
-  styleUrls: ['./dialog-cross-correlation-settings.component.scss'],
+  constructor(
+    lowerLag: number,
+    upperLag: number,
+    startDate: Date,
+    endDate: Date | undefined,
+    timeResolution: TimeResolution
+  ) {
+    this.lowerLag = lowerLag;
+    this.upperLag = upperLag;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.timeResolution = timeResolution;
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
 })
 export class DialogCrossCorrelationSettingsComponent {
   constructor(public dialog: MatDialog) {}
 
-  private async buildDialog(): Promise<DialogConfig> {
+  private async buildDialog(
+    settings: DialogCrossCorrelationSettings
+  ): Promise<DialogConfig> {
     return new DialogConfig([
-      new DialogSlider('lowerLag', 'Lower allows lag', 1, 24, 1),
-      new DialogSlider('upperLag', 'Upper allowed lag', 1, 24, 1),
-      new DatePicker('timeframetart'),
-      new DatePicker('timeframeend'),
+      new TextInputField(
+        'lowerLag',
+        'Lower allowed lag',
+        settings.lowerLag.toString()
+      ),
+      new TextInputField(
+        'lowerLag',
+        'Upper allowed lag',
+        settings.upperLag.toString()
+      ),
+      new DatePicker('timeframetart', settings.startDate),
+      new DatePicker('timeframeend', settings.endDate),
       new DropDown('timeresolution', 'Time resolution', [
-        new DropDownOption('Hourly', 0, true),
-        new DropDownOption('Daily', 1, false),
-        new DropDownOption('Monthly', 2, false),
-        new DropDownOption('Yearly', 3, false),
+        new DropDownOption('Hourly', 0, settings.timeResolution == 0),
+        new DropDownOption('Daily', 1, settings.timeResolution == 0),
+        new DropDownOption('Monthly', 2, settings.timeResolution == 0),
+        new DropDownOption('Yearly', 3, settings.timeResolution == 0),
       ]),
     ]);
   }
 
-  public async Open(): Promise<DialogCrossCorrelationSettingsReturn> {
-    var dialogConfig = await this.buildDialog();
+  public async Open(
+    settings: DialogCrossCorrelationSettings
+  ): Promise<DialogCrossCorrelationSettings> {
+    var dialogConfig = await this.buildDialog(settings);
     var data: { [key: string]: any } = await lastValueFrom(
       this.dialog
         .open(DialogBase, {
@@ -60,6 +85,6 @@ export class DialogCrossCorrelationSettingsComponent {
       startDate: removeTimezone(startDate) ?? undefined,
       endDate: removeTimezone(endDate) ?? undefined,
       timeResolution: (data['timeresolution'] as TimeResolution) ?? undefined,
-    } as DialogCrossCorrelationSettingsReturn;
+    } as DialogCrossCorrelationSettings;
   }
 }

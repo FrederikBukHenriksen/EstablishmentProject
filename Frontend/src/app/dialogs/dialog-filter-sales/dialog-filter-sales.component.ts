@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
@@ -8,10 +8,8 @@ import {
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { FilterSales, ValueTupleOfDateTimeAndDateTime } from 'api';
 
-@Component({
-  selector: 'app-dialog-filter-sales',
-  templateUrl: './dialog-filter-sales.component.html',
-  styleUrls: ['./dialog-filter-sales.component.scss'],
+@Injectable({
+  providedIn: 'root',
 })
 export class DialogFilterSalesComponent {
   constructor(public dialog: MatDialog) {}

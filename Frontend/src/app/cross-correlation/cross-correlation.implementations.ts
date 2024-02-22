@@ -22,12 +22,17 @@ import {
   GraphModel,
   IDialogImplementation,
 } from './cross-correlation.component';
-import { DialogCrossCorrelationSettingsComponent } from '../dialogs/dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
+import {
+  DialogCrossCorrelationSettings,
+  DialogCrossCorrelationSettingsComponent,
+} from '../dialogs/dialog-cross-correlation-settings/dialog-cross-correlation-settings.component';
 import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import {
   DateForGraph,
   getDifferenceInHours,
   accountForTimezone,
+  AddToDateTimeResolution,
+  todayDateUtc,
 } from '../utils/TimeHelper';
 import { ItemService } from '../services/API-implementations/item.service';
 import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialog-filter-sales.component';
@@ -44,8 +49,6 @@ export class CrossCorrelation_Sales_Temperature
 {
   title: string = 'Sales vs Temperature';
   correlationCommand!: CorrelationCommand;
-  dialogCrossCorrelationSettingsComponent: DialogCrossCorrelationSettingsComponent =
-    {} as DialogCrossCorrelationSettingsComponent;
 
   correlationReturn: CorrelationReturn | undefined;
   tableModel: TableModel | undefined;
@@ -54,69 +57,58 @@ export class CrossCorrelation_Sales_Temperature
   filterSales = new FilterSales();
   filterSalesBySalesItems = new FilterSalesBySalesItems();
   filterSalesBySalesTables = new FilterSalesBySalesTables();
+  dialogCrossCorrelationSettings = new DialogCrossCorrelationSettings(
+    1,
+    1,
+    AddToDateTimeResolution(todayDateUtc(), -1, TimeResolution.Date),
+    todayDateUtc(),
+    TimeResolution.Hour
+  );
 
   constructor(
-    private readonly sessionStorageService: SessionStorageService,
-    private readonly itemService: ItemService,
-    private readonly dialog: MatDialog,
-    private readonly tableService: TableService,
     private readonly saleService: SaleService,
-    private readonly correlationService: CorrelationService
+    private readonly correlationService: CorrelationService,
+    private readonly dialogFilterSalesComponent: DialogFilterSalesComponent,
+    private readonly dialogFilterSalesBySalesitemsComponent: DialogFilterSalesBySalesitemsComponent,
+    private readonly dialogFilterSalesBySalestablesComponent: DialogFilterSalesBySalestablesComponent,
+    private readonly dialogCrossCorrelationSettingsComponent: DialogCrossCorrelationSettingsComponent
   ) {}
 
   dialogs: IDialogImplementation[] = [
     {
       name: 'Sales',
       action: async () => {
-        const dialogComponent = new DialogFilterSalesComponent(this.dialog);
-        this.filterSales = await dialogComponent.Open(this.filterSales);
+        this.filterSales = await this.dialogFilterSalesComponent.Open(
+          this.filterSales
+        );
       },
     },
     {
       name: 'Items',
       action: async () => {
-        const dialogComponent = new DialogFilterSalesBySalesitemsComponent(
-          this.dialog,
-          this.itemService,
-          this.sessionStorageService
-        );
-        this.filterSalesBySalesItems = await dialogComponent.Open(
-          this.filterSalesBySalesItems
-        );
+        this.filterSalesBySalesItems =
+          await this.dialogFilterSalesBySalesitemsComponent.Open(
+            this.filterSalesBySalesItems
+          );
       },
     },
     {
       name: 'Tables',
       action: async () => {
-        const dialogComponent = new DialogFilterSalesBySalestablesComponent(
-          this.dialog,
-          this.tableService,
-          this.sessionStorageService
-        );
-        this.filterSalesBySalesTables = await dialogComponent.Open(
-          this.filterSalesBySalesTables
-        );
+        this.filterSalesBySalesTables =
+          await this.dialogFilterSalesBySalestablesComponent.Open(
+            this.filterSalesBySalesTables
+          );
       },
     },
 
     {
       name: 'Settings',
       action: async () => {
-        const dialogCrossCorrelationSettingsComponent =
-          new DialogCrossCorrelationSettingsComponent(this.dialog);
-        const dialogCrossCorrelationSettingsReturn =
-          await dialogCrossCorrelationSettingsComponent.Open();
-
-        this.correlationCommand.lowerLag =
-          dialogCrossCorrelationSettingsReturn.lowerLag!;
-        this.correlationCommand.upperLag =
-          dialogCrossCorrelationSettingsReturn.upperLag!;
-        this.correlationCommand.timePeriod = {
-          start: dialogCrossCorrelationSettingsReturn.startDate,
-          end: dialogCrossCorrelationSettingsReturn.endDate,
-        } as DateTimePeriod;
-        this.correlationCommand.timeResolution =
-          dialogCrossCorrelationSettingsReturn.timeResolution!;
+        this.dialogCrossCorrelationSettings =
+          await this.dialogCrossCorrelationSettingsComponent.Open(
+            this.dialogCrossCorrelationSettings
+          );
       },
     } as IDialogImplementation,
     {
@@ -137,11 +129,11 @@ export class CrossCorrelation_Sales_Temperature
     this.correlationReturn =
       await this.correlationService.Correlation_NumberOfSales_Vs_Temperature(
         salesIds,
-        this.correlationCommand.timePeriod.start,
-        this.correlationCommand.timePeriod.end,
-        this.correlationCommand.timeResolution,
-        this.correlationCommand.upperLag,
-        this.correlationCommand.lowerLag
+        this.dialogCrossCorrelationSettings.startDate!,
+        this.dialogCrossCorrelationSettings.endDate!,
+        this.dialogCrossCorrelationSettings.timeResolution!,
+        this.dialogCrossCorrelationSettings.upperLag!,
+        this.dialogCrossCorrelationSettings.lowerLag!
       );
 
     this.graphModel = await this.buildGraph();

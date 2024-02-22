@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import {
@@ -28,10 +28,8 @@ export type DialogCrossCorrelationSettingsReturn = {
   endDate: Date | undefined;
   timeResolution: TimeResolution | undefined;
 };
-@Component({
-  selector: 'app-dialog-cluster-settings',
-  templateUrl: './dialog-cluster-settings.component.html',
-  styleUrls: ['./dialog-cluster-settings.component.scss'],
+@Injectable({
+  providedIn: 'root',
 })
 export class DialogClusterSettingsComponent {
   constructor(public dialog: MatDialog) {}

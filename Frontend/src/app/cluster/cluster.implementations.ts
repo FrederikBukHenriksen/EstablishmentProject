@@ -60,48 +60,44 @@ export class Cluster_TimeOfDay_Spending
     private readonly tableService: TableService,
     private readonly dialog: MatDialog,
     private readonly salesService: SaleService,
-    private readonly clusterService: ClusterService
+    private readonly clusterService: ClusterService,
+    private readonly dialogFilterSalesComponent: DialogFilterSalesComponent,
+    private readonly dialogFilterSalesBySalesitemsComponent: DialogFilterSalesBySalesitemsComponent,
+    private readonly dialogFilterSalesBySalestablesComponent: DialogFilterSalesBySalestablesComponent,
+    private readonly dialogClusterSettingsComponent: DialogClusterSettingsComponent
   ) {}
 
   dialogs: IDialogImplementation[] = [
     {
       name: 'Sales',
       action: async () => {
-        const dialogComponent = new DialogFilterSalesComponent(this.dialog);
-        this.filterSales = await dialogComponent.Open(this.filterSales);
+        this.filterSales = await this.dialogFilterSalesComponent.Open(
+          this.filterSales
+        );
       },
     },
     {
       name: 'Items',
       action: async () => {
-        const dialogComponent = new DialogFilterSalesBySalesitemsComponent(
-          this.dialog,
-          this.itemService,
-          this.sessionStorageService
-        );
-        this.filterSalesBySalesItems = await dialogComponent.Open(
-          this.filterSalesBySalesItems
-        );
+        this.filterSalesBySalesItems =
+          await this.dialogFilterSalesBySalesitemsComponent.Open(
+            this.filterSalesBySalesItems
+          );
       },
     },
     {
       name: 'Tables',
       action: async () => {
-        const dialogComponent = new DialogFilterSalesBySalestablesComponent(
-          this.dialog,
-          this.tableService,
-          this.sessionStorageService
-        );
-        this.filterSalesBySalesTables = await dialogComponent.Open(
-          this.filterSalesBySalesTables
-        );
+        this.filterSalesBySalesTables =
+          await this.dialogFilterSalesBySalestablesComponent.Open(
+            this.filterSalesBySalesTables
+          );
       },
     },
     {
       name: 'Bandwidths',
       action: async () => {
-        const dialogComponent = new DialogClusterSettingsComponent(this.dialog);
-        this.bandwidths = await dialogComponent.Open([
+        this.bandwidths = await this.dialogClusterSettingsComponent.Open([
           {
             title: this.bandwidths[0].title,
             min: 0,

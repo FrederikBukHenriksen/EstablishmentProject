@@ -30,7 +30,6 @@ export function DateToString(dateTime: Date): string {
 }
 
 export function removeTimezone(date: Date) {
-  // Create a new Date object with the same year, month, and day
   const dateWithoutTimezone = new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
   );
@@ -42,11 +41,9 @@ export function accountForTimezone(
   dateWithoutTimezone: Date,
   offsetMinutes: number = -60
 ) {
-  // Add the specified number of minutes to reintroduce the timezone
   const adjustedTime =
     dateWithoutTimezone.getTime() + offsetMinutes * 60 * 1000;
 
-  // Create a new Date object using the adjusted time
   const dateWithTimezone = new Date(adjustedTime);
 
   return dateWithTimezone;

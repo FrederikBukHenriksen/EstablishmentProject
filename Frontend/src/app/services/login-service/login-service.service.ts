@@ -1,12 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { AuthenticationClient, LoginCommand } from 'api';
+import { SessionStorageService } from '../session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
-  constructor(private authenticationClient: AuthenticationClient) {}
+  constructor(
+    private authenticationClient: AuthenticationClient,
+    private sessionStorageService: SessionStorageService
+  ) {}
 
   @Output() loginSuccessful = new EventEmitter<void>();
   @Output() LogoutSuccessful = new EventEmitter<void>();
@@ -29,6 +33,7 @@ export class LoginService {
   }
 
   public LogOut() {
+    this.sessionStorageService.clearActiveEstablishment();
     this.authenticationClient.logOut().subscribe({
       error: (error: HttpErrorResponse) => {
         this.loginSuccessful.error(Error(error.message));
@@ -39,15 +44,5 @@ export class LoginService {
         this.LogoutSuccessful.emit();
       },
     });
-  }
-
-  public async IsLoggedIn(): Promise<boolean> {
-    let isLoggedIn = false;
-    await this.authenticationClient.isLoggedIn().subscribe({
-      next: (x) => {
-        isLoggedIn = true;
-      },
-    });
-    return isLoggedIn;
   }
 }
