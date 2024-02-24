@@ -17,11 +17,11 @@ public class Clustering_TimeOfVisitVSLengthOfVisit_Test : IntegrationTest
     {
         handler = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>>();
 
-        var testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
+        var testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataBuilder>();
 
         List<OpeningHours> openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0));
         List<DateTime> calendar = testDataCreatorService.OpenHoursCalendar(DateTime.Today.AddDays(-7), DateTime.Today, timeResolution: WebApplication1.Utils.TimeResolution.Hour, openingHours);
-        Dictionary<DateTime, int> distribution = testDataCreatorService.DistributionOnTimeres(calendar, TestDataCreatorService.GetCosineFunction(period: 8 * Math.PI, verticalShift: 5, horizontalShift: 12), TimeResolution.Hour);
+        Dictionary<DateTime, int> distribution = testDataCreatorService.DistributionByTimeresolution(calendar, TestDataBuilder.GetCosineFunction(period: 8 * Math.PI, verticalShift: 5, horizontalShift: 12), TimeResolution.Hour);
 
         establsihment = new Establishment("Cafe 1");
 

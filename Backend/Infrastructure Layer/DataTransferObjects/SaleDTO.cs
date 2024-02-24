@@ -17,7 +17,7 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
             this.TimestampArrival = sale.TimestampArrival;
             this.TimestampPayment = sale.TimestampPayment;
             this.SalesItems = sale.SalesItems.Select(x => (x.Item.Id, x.quantity)).ToList();
-            this.SalesTables = sale.SalesItems.Select(x => x.Id).ToList();
+            this.SalesTables = sale.SalesTables.Select(x => x.Table.Id).ToList();
         }
     }
 }

@@ -6,17 +6,17 @@ using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace EstablishmentProject.test
 {
-    public class UnitOfWorkTest : BaseIntegrationTest
+    public class UnitOfWorkTest : IntegrationTest
     {
         private IUnitOfWork uow;
 
-        public UnitOfWorkTest(IntegrationTestWebAppFactory factory) : base(factory)
+        public UnitOfWorkTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         }
 
         [Fact]
-        public void RepositoryProperties_ReturnRepositories()
+        public void AccessRepository_ReturnRepositories()
         {
             // Act
             var establishmentRepository = uow.establishmentRepository;
@@ -29,7 +29,7 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public void SuccesfullyUseUOW()
+        public void UsingUnitOfWorkToSave_SuccesfullyUseUOW()
         {
             // Arrange
             Establishment establishment = new Establishment("Cafe 1");
@@ -45,7 +45,7 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public void UnsuccesfullyUseUOW()
+        public void UsingUnitOfWorkToSave_UnsuccesfullyUseUOW()
         {
             // Arrange
             Establishment establishment = new Establishment("Cafe 1");

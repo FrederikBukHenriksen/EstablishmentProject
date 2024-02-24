@@ -12,7 +12,7 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         IEstablishmentRepository IncludeSales();
     }
 
-    public class EstablishmentRepository : Repository<Establishment>, IEstablishmentRepository
+    public class EstablishmentRepository : RepositoryBase<Establishment>, IEstablishmentRepository
     {
 
 

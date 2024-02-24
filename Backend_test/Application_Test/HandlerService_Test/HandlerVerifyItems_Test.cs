@@ -46,7 +46,6 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
                 uow.establishmentRepository.Add(establishment2);
                 uow.userRepository.Add(user);
             }
-
             userContextService.SetUser(user);
         }
 

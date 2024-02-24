@@ -63,7 +63,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
         public async override Task<T> Handle(GetTablesCommand command)
         {
-            Establishment establishment = this.unitOfWork.establishmentRepository.GetById(command.EstablishmentId)!;
+            Establishment establishment = this.unitOfWork.establishmentRepository.IncludeTables().GetById(command.EstablishmentId)!;
             List<Table> tables = establishment.GetTables();
             return (T)(new T()).Create(tables);
         }

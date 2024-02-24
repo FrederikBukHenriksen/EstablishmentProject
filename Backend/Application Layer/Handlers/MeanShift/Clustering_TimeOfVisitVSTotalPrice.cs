@@ -11,7 +11,6 @@ namespace WebApplication1.CommandHandlers
     [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
     [KnownType(typeof(Clustering_TimeOfVisit_TotalPrice_Command))]
     [KnownType(typeof(Clustering_TimeOfVisit_LengthOfVisit_Command))]
-
     public abstract class ClusteringCommand : CommandBase, ICmdField_SalesIds
     {
         public ClusteringCommand(
@@ -64,12 +63,10 @@ namespace WebApplication1.CommandHandlers
 
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>
     {
-        private IUnitOfWork unitOfWork;
         private IHandler<GetSalesCommand, GetSalesRawReturn> getSalesHandler;
 
-        public Clustering_TimeOfVisitVSTotalPrice(IUnitOfWork unitOfWork, IHandler<GetSalesCommand, GetSalesRawReturn> getSalesHandler)
+        public Clustering_TimeOfVisitVSTotalPrice(IHandler<GetSalesCommand, GetSalesRawReturn> getSalesHandler)
         {
-            this.unitOfWork = unitOfWork;
             this.getSalesHandler = getSalesHandler;
         }
 
@@ -94,6 +91,8 @@ namespace WebApplication1.CommandHandlers
 
             //Act
             List<List<Sale>> clusteredSales = new MeanShiftClusteringStepByStep().Cluster(saleData, bandwith);
+            //List<List<Sale>> clusteredSales = new MeanShiftClusteringDirectly().Cluster(saleData, bandwith);
+
 
             //Return
             var ok = saleData.Select(x => (x.sale.Id, x.values)).ToList();

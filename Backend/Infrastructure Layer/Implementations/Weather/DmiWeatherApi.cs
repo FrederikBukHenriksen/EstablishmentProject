@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using System.Reflection;
-using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Utils;
 using static WebApplication1.Services.DmiWeatherApi;
 
@@ -12,6 +11,18 @@ namespace DMIOpenData
     {
         [Description("temp_mean_past1h")]
         Temperature,
+    }
+
+    public class Coordinates
+    {
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+
+        public Coordinates(double latitude, double longitude)
+        {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
     }
 
     public interface IWeatherApi
@@ -36,7 +47,7 @@ namespace DMIOpenData
             var parameters = new Dictionary<string, dynamic>
             {
                 { "limit", 100000 },
-                { "parameterId", weatherParameter.GetDescription() },
+                { "parameterId", GetDescription(weatherParameter) },
             };
 
             var url = $"{BaseUrlStation}?api-key={this.apiKey}&{string.Join("&", parameters.Select(p => $"{p.Key}={p.Value}"))}";
@@ -65,7 +76,7 @@ namespace DMIOpenData
                 { "limit", 100000 },
                 { "stationId", stationId }, //"06181" = Jægersborg
                 { "datetime", $"{startTime.ToString("s")}Z/{endTime.ToString("s")}Z" },
-                { "parameterId", weatherParameter.GetDescription() },
+                { "parameterId", GetDescription(weatherParameter) },
             };
 
             var url = $"{BaseUrlData}?api-key={this.apiKey}&{string.Join("&", parameters.Select(p => $"{p.Key}={p.Value}"))}";
@@ -101,11 +112,9 @@ namespace DMIOpenData
         {
             return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
         }
-    }
 
-    public static class WeatherParameterExtensions
-    {
-        public static string GetDescription(this WeatherParameter value)
+
+        public static string GetDescription(WeatherParameter value)
         {
             FieldInfo field = value.GetType().GetField(value.ToString());
             if (field == null) return null;

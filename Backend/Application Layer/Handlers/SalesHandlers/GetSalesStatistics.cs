@@ -9,24 +9,31 @@ using WebApplication1.Utils;
 
 namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 {
+
+    public interface IGetSalesStatisticsCommand : ICommand, ICmdField_SalesIds
+    {
+        public Guid EstablishmentId { get; set; }
+        public List<Guid> SalesIds { get; set; }
+        public abstract double Calculate(List<Sale> sales);
+    }
+
+
     [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
     [KnownType(typeof(GetSalesAverageSpend))]
     [KnownType(typeof(GetSalesAverageNumberOfItems))]
     [KnownType(typeof(GetSalesAverageTimeOfPayment))]
     [KnownType(typeof(GetSalesAverageTimeOfArrival))]
     [KnownType(typeof(GetSalesAverageSeatTime))]
-
-    public abstract class GetSalesStatisticsCommand : CommandBase, ICmdField_SalesIds
+    public abstract class GetSalesStatisticsCommand : IGetSalesStatisticsCommand
     {
         public Guid EstablishmentId { get; set; }
         public List<Guid> SalesIds { get; set; } = new List<Guid>();
-
-        public abstract double Caldulate(List<Sale> sales);
+        public abstract double Calculate(List<Sale> sales);
     }
 
     public class GetSalesAverageSpend : GetSalesStatisticsCommand
     {
-        public override double Caldulate(List<Sale> sales)
+        public override double Calculate(List<Sale> sales)
         {
             return sales.Average(x => x.GetTotalPrice());
         }
@@ -34,7 +41,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
     public class GetSalesAverageNumberOfItems : GetSalesStatisticsCommand
     {
-        public override double Caldulate(List<Sale> sales)
+        public override double Calculate(List<Sale> sales)
         {
             return sales.Average(x => x.GetNumberOfSoldItems());
         }
@@ -42,7 +49,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
     public class GetSalesAverageTimeOfPayment : GetSalesStatisticsCommand
     {
-        public override double Caldulate(List<Sale> sales)
+        public override double Calculate(List<Sale> sales)
         {
             return sales.Average(x => (double)x.GetTimeOfPayment().TimeOfDay.TotalMinutes);
         }
@@ -50,7 +57,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
     public class GetSalesAverageTimeOfArrival : GetSalesStatisticsCommand
     {
-        public override double Caldulate(List<Sale> sales)
+        public override double Calculate(List<Sale> sales)
         {
             var SalesSorting = new FilterSales(mustContainAllAttributes: new List<SaleAttributes> { SaleAttributes.TimestampArrival });
             List<Sale> SalesWithTimeOfArrival = SalesFilterHelper.FilterSales(sales, SalesSorting);
@@ -64,7 +71,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
 
     public class GetSalesAverageSeatTime : GetSalesStatisticsCommand
     {
-        public override double Caldulate(List<Sale> sales)
+        public override double Calculate(List<Sale> sales)
         {
             var SalesSorting = new FilterSales(mustContainAllAttributes: new List<SaleAttributes> { SaleAttributes.TimestampArrival, SaleAttributes.TimestampPayment });
             List<Sale> SalesWithTimeOfArrival = SalesFilterHelper.FilterSales(sales, SalesSorting);
@@ -72,7 +79,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
             {
                 throw new Exception("No sales with a seattime");
             }
-            return SalesWithTimeOfArrival.Average(x => (double)(x.GetTimeOfPayment().TimeOfDay.TotalMinutes - (int)x.GetTimeOfArrival()?.TimeOfDay.TotalMinutes));
+            return SalesWithTimeOfArrival.Average(x => x.GetTimespanOfVisit().Value.TotalMinutes);
         }
     }
 
@@ -80,10 +87,7 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
     {
         public double metric;
     }
-
-
-
-    public class GetSalesStatistics : HandlerBase<GetSalesStatisticsCommand, GetSalesStatisticsReturn>
+    public class GetSalesStatistics<T> : HandlerBase<T, GetSalesStatisticsReturn> where T : IGetSalesStatisticsCommand
     {
         private IUnitOfWork unitOfWork;
 
@@ -92,11 +96,11 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
             this.unitOfWork = unitOfWork;
         }
 
-        public async override Task<GetSalesStatisticsReturn> Handle(GetSalesStatisticsCommand command)
+        public async override Task<GetSalesStatisticsReturn> Handle(T command)
         {
             Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().GetById(command.EstablishmentId)!;
             List<Sale> sales = establishment.GetSales();
-            var metric = command.Caldulate(sales);
+            var metric = command.Calculate(sales);
             return new GetSalesStatisticsReturn { metric = metric };
         }
     }

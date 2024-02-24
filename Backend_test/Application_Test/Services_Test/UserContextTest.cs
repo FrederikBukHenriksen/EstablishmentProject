@@ -9,7 +9,7 @@ using WebApplication1.Services;
 
 namespace EstablishmentProject.test.Application_Test.Services_Test
 {
-    public class UserContextTest : BaseIntegrationTest
+    public class UserContextTest : IntegrationTest
     {
         //Services
         private UserContextMiddleware _userContextMiddleware;
@@ -24,10 +24,8 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
         private User userWithUserRole;
         private User userNoUserRole;
 
-        public UserContextTest(IntegrationTestWebAppFactory factory) : base(factory)
+        public UserContextTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            clearDatabase();
-            //Services
             _authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
             _userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
             _userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();

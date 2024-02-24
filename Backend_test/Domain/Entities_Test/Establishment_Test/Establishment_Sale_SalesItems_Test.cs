@@ -63,6 +63,23 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
+        public void AddSalesItem_WithSalesItemsCreatedForDifferentEstablishment_ShouldAddSalesItems()
+        {
+            //Arrange
+            var otherEstablishment = new Establishment("Other establishment");
+            var otherItem = otherEstablishment.CreateItem("Other item", 10);
+            otherEstablishment.AddItem(otherItem);
+            var salesItems = otherEstablishment.CreateSalesItem(sale, otherItem, 1);
+
+            //Act
+            Action act = () => establishment.AddSalesItems(sale, salesItems);
+
+            //Assert
+            Assert.Throws<InvalidOperationException>(act);
+            Assert.Empty(sale.GetSalesItems());
+        }
+
+        [Fact]
         public void AddSalesItems_WithSalesItemsForSale_ShouldAddSalesItems()
         {
             //Arrange
@@ -81,11 +98,12 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");
             var otherSale = otherEstablishment.CreateSale(DateTime.Now);
-            otherEstablishment.AddSale(otherSale);
-            var salesItems = otherEstablishment.CreateSalesItem(otherEstablishment.CreateSale(DateTime.Now), item, 1);
+            //otherEstablishment.AddSale(otherSale);
+
+            var salesItem = establishment.CreateSalesItem(sale, item, 1);
 
             //Act
-            Action act = () => establishment.AddSalesItems(sale, salesItems);
+            Action act = () => establishment.AddSalesItems(otherSale, salesItem);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);
@@ -93,7 +111,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
-        public void AddSalesItems_WithSalesItemsFromDifferentSale_ShouldNotAddSalesItems()
+        public void AddSalesItems_WithSalesItemsCreatedForDifferentSale_ShouldNotAddSalesItems()
         {
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");

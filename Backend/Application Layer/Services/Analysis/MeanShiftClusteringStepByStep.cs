@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.Services.Analysis
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace WebApplication1.Services.Analysis
 {
     public interface IMeanShiftClustering
     {
@@ -20,13 +22,17 @@
 
     public class MeanShiftClusteringStepByStep : IMeanShiftClustering
     {
-        private double toleranceForCovergence = 0.01;
-        private double toleranceForGrouping = 0.1;
+        private double toleranceForCovergence = 0.001;
+        private double toleranceForGrouping = 0.01;
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
+            ClusterHelper.DimensionWithinTheDataMustBeTheSame(data.Select(x => x.Item2).ToList());
+            ClusterHelper.BandwidthMustBePositive(bandwidth);
             ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
+
+
 
             while (!dataWithConvergence.All(x => x.HasConverged))
             {
@@ -44,32 +50,40 @@
                 if (hasPointConverged)
                 {
                     dataPoint.HasConverged = true;
-                }
-
+                };
                 //Update location
                 dataPoint.Location = newLocation;
 
+                this.ReevaluateConvergenceForAllDataPoints(dataWithConvergence, bandwidth, this.toleranceForCovergence);
             }
             //Send the all datapoints to grouping after convergenve
             return ClusterHelper.GroupPoints(dataWithConvergence, this.toleranceForGrouping);
         }
 
-
-
-
-
-        private MeanShiftDataPoint<T> findNextPoint<T>(List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth)
+        private void ReevaluateConvergenceForAllDataPoints<T>(List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth, double threshold)
         {
-            List<(MeanShiftDataPoint<T> Object, double ShiftMagnitude, int Neighbours)> shiftingMagnitudeAndNeighbours = new List<(MeanShiftDataPoint<T>, double, int)>();
-
             foreach (var dataPoint in dataWithConvergence)
             {
                 var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
                 List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
+                double length = ClusterHelper.VectorLength(shift);
+                if (length > threshold)
+                {
+                    dataPoint.HasConverged = false;
+                }
+            }
+        }
 
+        private MeanShiftDataPoint<T> findNextPoint<T>(List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth)
+        {
+            List<(MeanShiftDataPoint<T> Object, double ShiftMagnitude, int Neighbours)> shiftingMagnitudeAndNeighbours = new List<(MeanShiftDataPoint<T>, double, int)>();
+            foreach (var dataPoint in dataWithConvergence)
+            {
+                var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
+                List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
                 shiftingMagnitudeAndNeighbours.Add((dataPoint, ClusterHelper.VectorLength(shift), neighbouringPoints.Count));
             }
-            var ordered = shiftingMagnitudeAndNeighbours.OrderBy(x => x.Neighbours).ThenBy(x => x.ShiftMagnitude).ToList();
+            var ordered = shiftingMagnitudeAndNeighbours.Where(x => x.Object.HasConverged == false).OrderBy(x => x.Neighbours).ThenBy(x => x.ShiftMagnitude).ToList();
             var res = ordered.First().Object;
             return res;
         }
@@ -77,11 +91,13 @@
 
     public class MeanShiftClusteringDirectly : IMeanShiftClustering
     {
-        private double toleranceForCovergence = 0.01;
+        private double toleranceForCovergence = 0.001;
         private double toleranceForGrouping = 0.1;
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
+            ClusterHelper.DimensionWithinTheDataMustBeTheSame(data.Select(x => x.Item2).ToList());
+            ClusterHelper.BandwidthMustBePositive(bandwidth);
             ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
@@ -104,7 +120,7 @@
                     }
 
                     //Update location
-                    dataPoint.Location = newLocation;
+                    dataPoint.Location = new List<double>(newLocation);
                 }
             }
             //Send the all datapoints to grouping after convergenve
@@ -123,13 +139,32 @@
             }
         }
 
+        public static void BandwidthMustBePositive(List<double> bandwidth)
+        {
+            if (bandwidth.Any(x => x <= 0))
+            {
+                throw new ArgumentException("Bandwidth must be positive");
+            }
+        }
+
+        public static void DimensionWithinTheDataMustBeTheSame(List<List<double>> data)
+        {
+            if (!data.All(x => x.Count == data.First().Count))
+            {
+                throw new ArgumentException("Dimension of the data must be the same");
+            }
+        }
+
 
         public static List<MeanShiftDataPoint<T>> FindNeighbours<T>(MeanShiftDataPoint<T> dataPoint, List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth)
         {
             var neighbouringPoints = new List<MeanShiftDataPoint<T>>();
+
             foreach (var neighbourDataPoint in dataWithConvergence)
             {
-                if (ClusterHelper.isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth) && dataPoint != neighbourDataPoint)
+
+
+                if (isWithinBandwith(dataPoint.Location, neighbourDataPoint.Location, bandwidth) && dataPoint != neighbourDataPoint)
                 {
                     neighbouringPoints.Add(neighbourDataPoint);
                 }
@@ -147,20 +182,30 @@
 
                 distanceSquared += Math.Pow(normalizedDistance, 2);
             }
-            return Math.Sqrt(distanceSquared) <= 1.0;
+            var distance = Math.Sqrt(distanceSquared);
+            var isWithin = distance <= 1.0;
+            return isWithin;
         }
 
         public static List<double> CalculateShift(List<double> dataPoint, List<List<double>> neighouringDataPoints, List<double> bandwidth)
         {
             List<List<double>> shifts = new List<List<double>>();
-            foreach (var neiDataPoint in neighouringDataPoints)
+            if (!neighouringDataPoints.IsNullOrEmpty())
             {
-                List<double> vector = VectorFromTo(dataPoint, neiDataPoint);
-                List<double> absVectorValues = vector.Select(x => Math.Abs(x)).ToList();
-                double weight = absVectorValues.Zip(bandwidth, (dif, band) => 1 - (dif / band)).ToList().Average();
-                shifts.Add(vector.Select(x => x * weight).ToList());
+                foreach (var neiDataPoint in neighouringDataPoints)
+                {
+                    List<double> vector = VectorFromTo(dataPoint, neiDataPoint);
+                    List<double> absVectorValues = vector.Select(x => Math.Abs(x)).ToList();
+                    double weight = absVectorValues.Zip(bandwidth, (dif, band) => 1 - (dif / band)).ToList().Average();
+                    shifts.Add(vector.Select(x => x * weight).ToList());
+                }
+            }
+            if (shifts.IsNullOrEmpty())
+            {
+                return Enumerable.Repeat(0.0, dataPoint.Count).ToList();
             }
             List<double> shift = CalculateAverage(shifts);
+
             return shift;
         }
 
@@ -174,7 +219,7 @@
                 .GroupBy(pair => pair.index)
                 .Select(group => group.Sum(pair => pair.value));
 
-            List<double> average = sums.Select(sum => sum / (double)count).ToList();
+            List<double> average = sums.Select(sum => sum == 0 ? 0 : sum / count).ToList();
 
             return average;
         }

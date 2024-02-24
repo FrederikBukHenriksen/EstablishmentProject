@@ -6,7 +6,7 @@ namespace WebApplication1.Data.DataModels
     {
     }
 
-    public class SalesItems : EntityBase, ISalesItems
+    public class SalesItems : JoiningTableBase, ISalesItems
     {
         public virtual Sale Sale { get; set; }
         public virtual Item Item { get; set; }

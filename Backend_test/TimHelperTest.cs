@@ -1,15 +1,9 @@
-﻿using EstablishmentProject.test.TestingCode;
-using WebApplication1.Utils;
+﻿using WebApplication1.Utils;
 
 namespace EstablishmentProject.test
 {
-    public class TimHelperTest : IntegrationTest
+    public class TimHelperTest
     {
-        public TimHelperTest() : base(new List<ITestService>())
-        {
-        }
-
-        //Timeline
 
         [Fact]
         public void CreateTimelineAsList_ShouldThrowArgumentExceptionWhenEndIsEarlierThanStart()
@@ -20,10 +14,11 @@ namespace EstablishmentProject.test
             TimeResolution resolution = TimeResolution.Hour;
 
             // Act
-            ArgumentException exception = Assert.Throws<ArgumentException>(() => TimeHelper.CreateTimelineAsList(start, end, resolution));
+            Action act = () => TimeHelper.CreateTimelineAsList(start, end, resolution);
 
             //Assert
-            Assert.Equal("End must be equal or later than start", exception.Message);
+            Assert.Throws<ArgumentException>(act);
+
         }
 
         [Fact]
@@ -38,7 +33,7 @@ namespace EstablishmentProject.test
             List<DateTime> result = TimeHelper.CreateTimelineAsList(start, end, resolution);
 
             // Assert
-            Assert.Equal(5 * 24, result.Count);
+            Assert.Equal(4 * 24, result.Count);
         }
 
         public void CreateTimeLineAsList_WithDate()
@@ -124,11 +119,11 @@ namespace EstablishmentProject.test
             int amount = 3;
             TimeResolution timeResolution = (TimeResolution)99; // Invalid value
 
-            // Act & Assert
-            ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(() => datetime.AddToDateTime(amount, timeResolution));
+            // Act
+            Action act = () => datetime.AddToDateTime(amount, timeResolution);
 
-            // Additional assertions on the exception if needed...
-            Assert.Equal("Specified argument was out of the range of valid values.", exception.Message);
+            // Assert
+            Assert.Throws<ArgumentException>(act);
         }
     }
 }

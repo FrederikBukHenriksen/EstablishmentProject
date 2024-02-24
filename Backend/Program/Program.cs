@@ -66,7 +66,7 @@ namespace WebApplication1.Program
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                //options.UseLazyLoadingProxies(true);
+                options.UseLazyLoadingProxies(true);
                 options.UseNpgsql(connectionString);
             });
         }

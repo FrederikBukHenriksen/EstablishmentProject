@@ -38,7 +38,7 @@ namespace WebApplication1.Domain_Layer.Entities
 
         //Checkers and validators
 
-        private void SalesItemsMustExist(SalesItems salesItem)
+        protected void SalesItemsMustExist(SalesItems salesItem)
         {
             if (!this.DoesSalesItemExistInSale(salesItem))
             {
@@ -46,17 +46,12 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        private void SalesItemsMustNotAlreadyExist(SalesItems salesItem)
+        protected void SalesItemsMustNotAlreadyExist(SalesItems salesItem)
         {
             if (this.DoesSalesItemExistInSale(salesItem))
             {
                 throw new InvalidOperationException("SalesItem already exists within sale");
             }
-        }
-
-        private bool DoesSalesItemExistInSale(SalesItems salesItem)
-        {
-            return this.GetSalesItems().Any(x => x.Item == salesItem.Item);
         }
 
         protected void SalesItemsMustBeCreatedForSale(SalesItems salesItems)
@@ -65,6 +60,10 @@ namespace WebApplication1.Domain_Layer.Entities
             {
                 throw new InvalidOperationException("SalesItems is not created for sale");
             }
+        }
+        private bool DoesSalesItemExistInSale(SalesItems salesItem)
+        {
+            return this.GetSalesItems().Any(x => x.Item == salesItem.Item);
         }
 
         private bool IsSalesItemsCreatedForSale(SalesItems salesItems)

@@ -5,11 +5,10 @@ import { lastValueFrom } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class UserContextService {
+export class UserService {
   private readonly userContextClient = inject(UserContextClient);
 
   public async getAccessibleEstablishments(): Promise<string[]> {
-    console.log('hello');
     return lastValueFrom(this.userContextClient.getAccessibleEstablishments());
   }
 }

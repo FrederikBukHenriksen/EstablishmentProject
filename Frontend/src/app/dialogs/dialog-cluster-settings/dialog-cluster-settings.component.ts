@@ -5,6 +5,7 @@ import {
   DialogBase,
   DialogConfig,
   DialogSlider,
+  TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TimeResolution } from 'api';
 
@@ -40,13 +41,10 @@ export class DialogClusterSettingsComponent {
     return new DialogConfig(
       bandwidths.map(
         (bandwidth) =>
-          new DialogSlider(
+          new TextInputField(
             bandwidth.title,
             `Bandwidth for ${bandwidth.title}`,
-            bandwidth.min,
-            bandwidth.max,
-            bandwidth.step,
-            bandwidth.value
+            bandwidth.value.toString()
           )
       )
     );

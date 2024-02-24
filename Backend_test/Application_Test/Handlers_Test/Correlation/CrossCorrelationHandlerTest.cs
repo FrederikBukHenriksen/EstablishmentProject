@@ -3,7 +3,6 @@ using EstablishmentProject.test.TestingCode;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using WebApplication1.Application_Layer.Services;
-using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
@@ -13,13 +12,13 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
     {
         private IUnitOfWork unitOfWork;
         private IWeatherApi yourClassUnderTest;
-        private ITestDataCreatorService testDataCreatorService;
+        private ITestDataBuilder testDataCreatorService;
 
 
-        public CrossCorrelationHandlerTest(IntegrationTestWebAppFactory factory) : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock() })
+        public CrossCorrelationHandlerTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock() })
         {
             //Inject services
-            testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
+            testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataBuilder>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             yourClassUnderTest = scope.ServiceProvider.GetRequiredService<IWeatherApi>();
             Coordinates coordinates = new Coordinates(55.676098, 12.568337);
@@ -37,13 +36,13 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
                 TimeResolution.Hour,
                 testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0)));
 
-            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.DistributionOnTimeres(calendar, TestDataCreatorService.GetLinearFuncition(1, -7), TimeResolution.Hour);
-            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Day, TestDataCreatorService.GetLinearFuncition(0.5, 0));
-            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Month, TestDataCreatorService.GetLinearFuncition(0, 0));
+            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.DistributionByTimeresolution(calendar, TestDataBuilder.GetLinearFuncition(1, -7), TimeResolution.Hour);
+            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Day, TestDataBuilder.GetLinearFuncition(0.5, 0));
+            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Month, TestDataBuilder.GetLinearFuncition(0, 0));
 
             List<Dictionary<DateTime, int>> allDistributions = new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly };
 
-            var aggregatedDistribution = testDataCreatorService.AggregateDistributions(allDistributions);
+            var aggregatedDistribution = testDataCreatorService.FINALAggregateDistributions(allDistributions);
         }
 
 

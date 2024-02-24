@@ -32,9 +32,9 @@ namespace EstablishmentProject.test.Infrastructure_Layer.DTO
             Assert.Equal(sale.Id, DTO.Id);
             Assert.Equal(sale.GetTimeOfArrival(), DTO.TimestampArrival);
             Assert.Equal(sale.GetTimeOfPayment(), DTO.TimestampPayment);
-            Assert.Equal(sale.GetSalesItems()[0].Id, DTO.SalesItems[0].Item1);
+            Assert.Equal(sale.GetSalesItems()[0].Item.Id, DTO.SalesItems[0].Item1);
             Assert.Equal(sale.GetSalesItems()[0].quantity, DTO.SalesItems[0].Item2);
-            Assert.Equal(sale.GetSalesTables()[0].Id, DTO.SalesTables[0]);
+            Assert.Equal(sale.GetSalesTables()[0].Table.Id, DTO.SalesTables[0]);
         }
     }
 }

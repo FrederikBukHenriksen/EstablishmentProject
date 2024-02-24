@@ -23,7 +23,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
-        public void CreateSalesTables_ShouldCreateSalesTables()
+        public void CreateSalesTables_WithSaleAndTableForEstablishment_ShouldCreateSalesTables()
         {
             //Arrange
             var salesTables = establishment.CreateSalesTables(sale, table);
@@ -32,40 +32,44 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             //Assert
             Assert.Equal(salesTables, sale.SalesTables[0]);
         }
+
         [Fact]
         public void CreateSalesTables_WithTableCreatedForDifferentEstalishment_ShouldNotCreateSalesTables()
         {
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");
             var otherTable = otherEstablishment.CreateTable("Other table");
-            var otherSale = otherEstablishment.CreateSale(DateTime.Now);
-            var salesTables = otherEstablishment.CreateSalesTables(otherSale, otherTable);
+            otherEstablishment.AddTable(otherTable);
+            //var otherSale = otherEstablishment.CreateSale(DateTime.Now);
 
             //Act
-            Action act = () => establishment.AddSalesTables(sale, salesTables);
+            Action act = () => otherEstablishment.CreateSalesTables(sale, otherTable);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);
             Assert.Empty(sale.SalesTables);
         }
+
         [Fact]
         public void CreateSalesTables_WithSaleCreatedForDifferentEstalishment_ShouldNotCreateSalesTables()
         {
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");
             var otherTable = otherEstablishment.CreateTable("Other table");
-            var salesTables = otherEstablishment.CreateSalesTables(sale, otherTable);
+            otherEstablishment.AddTable(otherTable);
+            var otherSale = otherEstablishment.CreateSale(DateTime.Now);
 
             //Act
-            Action act = () => establishment.AddSalesTables(sale, salesTables);
+            Action act = () => establishment.CreateSalesTables(otherSale, table);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);
             Assert.Empty(sale.SalesTables);
         }
 
+
         [Fact]
-        public void AddSalesTables_WithTableCreatedForEstalishment_ShouldAddSalesTables()
+        public void AddSalesTables_WithSalesTablesCreatedForEstablishment_ShouldAddSalesTables()
         {
             //Arrange
             var salesTables = establishment.CreateSalesTables(sale, table);
@@ -74,24 +78,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             //Assert
             Assert.Equal(salesTables, sale.SalesTables[0]);
         }
-        [Fact]
-        public void AddSalesTables_WithSaleCreatedForDifferentEstalishment_ShouldNotAddSalesTables()
-        {
-            //Arrange
-            var otherEstablishment = new Establishment("Other establishment");
-            var otherTable = otherEstablishment.CreateTable("Other table");
-            otherEstablishment.AddTable(otherTable);
-            var otherSale = otherEstablishment.CreateSale(DateTime.Now);
-            otherEstablishment.AddSale(otherSale);
-            var salesTables = otherEstablishment.CreateSalesTables(sale, otherTable);
 
-            //Act
-            Action act = () => establishment.AddSalesTables(sale, salesTables);
-
-            //Assert
-            Assert.Throws<InvalidOperationException>(act);
-            Assert.Empty(sale.SalesTables);
-        }
 
         [Fact]
         public void AddSalesTables_WithSalesTablesCreatedForDifferentEstalishment_ShouldNotAddSalesTables()
@@ -99,7 +86,9 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");
             var otherTable = otherEstablishment.CreateTable("Other table");
+            otherEstablishment.AddTable(otherTable);
             var otherSale = otherEstablishment.CreateSale(DateTime.Now);
+            otherEstablishment.AddSale(otherSale);
             var salesTables = otherEstablishment.CreateSalesTables(otherSale, otherTable);
 
             //Act
@@ -141,12 +130,14 @@ namespace EstablishmentProject.test.Domain.Entities_Test
             Assert.Empty(sale.SalesTables);
         }
         [Fact]
-        public void RemoveSalesTables_WithSalesTableNotFromSale_ShouldRemoveSalesTables()
+        public void RemoveSalesTables_WithSalesTableFromDifferentFromSale_ShouldRemoveSalesTables()
         {
             //Arrange
             var otherEstablishment = new Establishment("Other establishment");
             var otherTable = otherEstablishment.CreateTable("Other table");
+            otherEstablishment.AddTable(otherTable);
             var otherSale = otherEstablishment.CreateSale(DateTime.Now);
+            otherEstablishment.AddSale(otherSale);
             var salesTables = otherEstablishment.CreateSalesTables(otherSale, otherTable);
 
             //Act

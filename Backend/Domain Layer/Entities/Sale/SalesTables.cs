@@ -5,7 +5,7 @@
 
     }
 
-    public partial class SalesTables : EntityBase, ISalesTables
+    public partial class SalesTables : JoiningTableBase, ISalesTables
     {
 
         public virtual Sale Sale { get; set; }

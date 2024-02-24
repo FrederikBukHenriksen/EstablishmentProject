@@ -14,6 +14,7 @@
     {
         public void AddUserRole(UserRole userRole)
         {
+            this.UserRoleMustBeCreatedForUser(userRole);
             this.UserRoleMustNotExist(userRole);
             this.UserRoleMustNotAlreadyExistForTheSameEstablishment(userRole.Establishment);
             this.UserRoles.Add(userRole);
@@ -34,7 +35,6 @@
         {
             this.UserRoleMustExist(userRole);
             this.UserRoles.Remove(userRole);
-            this.AddUserRole(userRole);
         }
 
         //Checkers and validators
@@ -58,9 +58,14 @@
         {
             if (this.GetUserRoles().Any(x => x.Establishment == establishment)) throw new InvalidOperationException("User already has a userrole for establishment");
         }
+
         protected bool DoesRoleForEstablishmentExist(Establishment establishment)
         {
             return this.GetUserRoles().Any(x => x.Establishment == establishment);
+        }
+        protected void UserRoleMustBeCreatedForUser(UserRole userRole)
+        {
+            if (userRole.User != this) throw new InvalidOperationException("Userrole is not created for user");
         }
 
 

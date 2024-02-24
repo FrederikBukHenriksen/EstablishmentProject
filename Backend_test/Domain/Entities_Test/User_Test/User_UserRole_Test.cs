@@ -67,12 +67,12 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         public void AddUserRole_WithUserRoleCreatedForDifferentUser_ShouldNotAddUserRole()
         {
             // Arrange
-            User differentUser = new User("Lydia@mail.com", "12345678");
-            UserRole userRole = differentUser.CreateUserRole(establishment, differentUser, Role.Admin);
-            differentUser.AddUserRole(userRole);
+            User otherUser = new User("Lydia@mail.com", "12345678");
+            UserRole otherUserRole = otherUser.CreateUserRole(establishment, otherUser, Role.Admin);
+            otherUser.AddUserRole(otherUserRole);
 
             // Act
-            Action act = () => user.AddUserRole(userRole);
+            Action act = () => user.AddUserRole(otherUserRole);
 
             //Assert
             Assert.Throws<InvalidOperationException>(act);
@@ -80,7 +80,7 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
-        public void RemoveUserRole_WithUserRole_ShouldRemoveUserRole()
+        public void RemoveUserRole_WithValidUserRole_ShouldRemoveUserRole()
         {
             // Arrange
             UserRole userRole = user.CreateUserRole(establishment, user, Role.Admin);

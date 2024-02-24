@@ -16,7 +16,7 @@ namespace EstablishmentProject.test.Algortihm
 
         private void CommonArrange()
         {
-            normalDistribution = TestDataCreatorService.GetNormalFunction(12, 2);
+            normalDistribution = TestDataBuilder.GetNormalFunction(12, 2);
             for (int i = 8; i <= 16; i++)
             {
                 normalDistributionTestData.Add((DateTime.Today.AddHours(i), normalDistribution(i)));
@@ -111,7 +111,7 @@ namespace EstablishmentProject.test.Algortihm
         public void Analysis_WithMonotonicAllignedNormalAndSinusDistribution_ShouldReturn1()
         {
             var list1 = new List<(DateTime, double)>(normalDistributionTestData);
-            Func<double, double> cosineFunction = TestDataCreatorService.GetCosineFunction(1, 5, 12, 1);
+            Func<double, double> cosineFunction = TestDataBuilder.GetCosineFunction(1, 5, 12, 1);
             var list2 = new List<(DateTime, double)>();
             for (int i = 8; i <= 16; i++)
             {

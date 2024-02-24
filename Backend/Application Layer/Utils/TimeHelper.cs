@@ -104,7 +104,7 @@ namespace WebApplication1.Utils
                 case TimeResolution.Year:
                     return x => x.Year;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentException();
             }
         }
 
@@ -121,7 +121,7 @@ namespace WebApplication1.Utils
                 case TimeResolution.Year:
                     return datetime.AddYears(amount);
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentException();
             }
         }
 

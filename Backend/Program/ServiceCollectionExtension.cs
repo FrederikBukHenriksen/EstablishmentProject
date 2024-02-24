@@ -25,7 +25,7 @@ namespace WebApplication1.Program
             serviceCollection.AddScoped<IUserContextService, ContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
 
-            serviceCollection.AddScoped<ITestDataCreatorService, TestDataCreatorService>();
+            serviceCollection.AddScoped<ITestDataBuilder, TestDataBuilder>();
             serviceCollection.AddScoped<IWeatherApi, DMIOpenData.DmiWeatherApi>();
             serviceCollection.AddTransient<IDataFetcingAndStoringService, DataFetcingAndStoringService>();
         }
@@ -66,7 +66,12 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesReturn>, GetSalesHandler<GetSalesReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
-            serviceCollection.AddTransient<IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn>, GetSalesStatistics>();
+            serviceCollection.AddTransient<IHandler<GetSalesAverageSpend, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageSpend>>();
+            serviceCollection.AddTransient<IHandler<GetSalesAverageNumberOfItems, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageNumberOfItems>>();
+            serviceCollection.AddTransient<IHandler<GetSalesAverageTimeOfArrival, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageTimeOfArrival>>();
+            serviceCollection.AddTransient<IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageTimeOfPayment>>();
+            serviceCollection.AddTransient<IHandler<GetSalesAverageSeatTime, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageSeatTime>>();
+
 
 
             //Item

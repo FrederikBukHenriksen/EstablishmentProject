@@ -1,6 +1,7 @@
 ﻿using EstablishmentProject.test.TestingCode;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Random;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
@@ -11,44 +12,38 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
 {
     private IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> Clustering_TimeOfVisitVSTotalPrice;
     private IUnitOfWork unitOfWork;
-    private ITestDataCreatorService testDataCreatorService;
+    private ITestDataBuilder testDataBuilder;
     private Establishment establishment = new Establishment();
-    private Item espresso;
-    private Item coffee;
-    private Item latte;
-    private List<Sale> sales = new List<Sale>();
-    private Random random;
+    private Item testItem;
 
     public Clustering_TimeOfVisit_TotalPrice_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
     {
         Clustering_TimeOfVisitVSTotalPrice = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>>();
-        testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataCreatorService>();
+        testDataBuilder = new TestDataBuilder();
         unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         //ARRANGE
         establishment = new Establishment("Cafe 1");
-        espresso = establishment.CreateItem("Espresso", 35);
-        establishment.AddItem(espresso);
-        coffee = establishment.CreateItem("Coffee", 35);
-        establishment.AddItem(coffee);
-        latte = establishment.CreateItem("Latte", 50);
-        establishment.AddItem(latte);
+        testItem = establishment.CreateItem("test", 1);
+        establishment.AddItem(testItem);
+
+        CreateTestData();
+        using (var uow = unitOfWork)
+        {
+            uow.establishmentRepository.Add(establishment);
+        }
     }
 
     [Fact]
     public async void Cluster_WithLargeTimeBandwith_ShouldCreateClustersWithOnlyOneTypeOfItem()
     {
         //ARRANGE
-        Arrange_SimpleButRandomSales();
-
-        var bandwidthTimeOfVisit = 30;
-        var bandwidthTotalPrice = 30;
         Clustering_TimeOfVisit_TotalPrice_Command command =
             new Clustering_TimeOfVisit_TotalPrice_Command(
             establishmentId: establishment.Id,
             salesIds: establishment.GetSales().Select(x => x.Id).ToList(),
-            bandwidthTimeOfVisit: bandwidthTimeOfVisit,
-            bandwidthTotalPrice: bandwidthTotalPrice);
+            bandwidthTimeOfVisit: 80,
+            bandwidthTotalPrice: 100);
 
         //ACT
         ClusteringReturn result = await Clustering_TimeOfVisitVSTotalPrice.Handle(command);
@@ -67,48 +62,43 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
         }
     }
 
-    private void Arrange_SimpleButRandomSales()
+
+    private void CreateTestData()
     {
-        List<OpeningHours> openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0));
-        List<DateTime> calendar = testDataCreatorService.OpenHoursCalendar(DateTime.Today.AddDays(-7), DateTime.Today, timeResolution: WebApplication1.Utils.TimeResolution.Hour, openingHours);
-        Dictionary<DateTime, int> distribution = testDataCreatorService.DistributionOnTimeres(calendar, TestDataCreatorService.GetCosineFunction(8, verticalShift: 10, horizontalShift: 12), TimeResolution.Hour);
+        Func<double, double> morningSalesDistribution = (x) => TestDataBuilder.GetNormalFunction(10, 2)(x) * 20;
+        Func<double, double> afternoonSalesDistribution = (x) => TestDataBuilder.GetNormalFunction(14, 2)(x) * 15;
+        Func<double, double> wholeDaySalesDistribution = (x) => TestDataBuilder.GetNormalFunction(14, 2)(x) * 10;
 
-        random = new Random(1);
-        var tVar = 15;
+        var morningBreakfast = testDataBuilder.FINALFilterOnOpeningHours(8, 12, testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-7), DateTime.Today, morningSalesDistribution, TimeResolution.Hour));
+        var afternoonLunch = testDataBuilder.FINALFilterOnOpeningHours(12, 16, testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-7), DateTime.Today, afternoonSalesDistribution, TimeResolution.Hour));
+        var wholeDayCoffee = testDataBuilder.FINALFilterOnOpeningHours(8, 16, testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-7), DateTime.Today, wholeDaySalesDistribution, TimeResolution.Hour));
 
-        foreach (KeyValuePair<DateTime, int> kvp in distribution)
+        var normalRandomSeed = new SystemRandomSource(1);
+
+
+        Normal morningDistribution = new Normal(60, 10, normalRandomSeed);
+        foreach (var distribution in morningBreakfast.ToList())
         {
-            for (int i = 0; i < kvp.Value; i++)
+            for (int i = 0; i < distribution.Value; i++)
             {
-                if (kvp.Key < kvp.Key.Date.AddHours(11))
-                {
-                    int randomNumber = random.Next(1, 3);
-                    var sale = establishment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (espresso, randomNumber) });
-                    establishment.AddSale(sale);
-                }
-                else if (kvp.Key > kvp.Key.Date.AddHours(12) && kvp.Key < kvp.Key.Date.AddHours(14))
-                {
-                    int randomNumber = random.Next(1, 2);
-                    var sale = establishment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (coffee, randomNumber) });
-                    establishment.AddSale(sale);
-                }
-                else if (kvp.Key > kvp.Key.Date.AddHours(15))
-                {
-                    int randomNumber = random.Next(1, 2);
-                    var sale = establishment.CreateSale(timestampPayment: timeVariance(kvp.Key, tVar), itemAndQuantity: new List<(Item, int)> { (latte, randomNumber) });
-                    establishment.AddSale(sale);
-                }
+                var randomNormalDistributionNumber = morningDistribution.RandomSource.Next(80, 121);
+                var sale = establishment.CreateSale(distribution.Key);
+                establishment.AddSale(sale);
+                establishment.AddSalesItems(sale, establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber));
             }
         }
 
-        using (unitOfWork)
-        {
-            unitOfWork.establishmentRepository.Add(establishment);
-        }
-    }
+        Normal afternoonDistribution = new Normal(60, 10, normalRandomSeed);
 
-    private DateTime timeVariance(DateTime datetime, int minutes)
-    {
-        return datetime.AddMinutes(random.Next(-minutes, minutes + 1));
+        foreach (var distribution in afternoonLunch.ToList())
+        {
+            for (int i = 0; i < distribution.Value; i++)
+            {
+                var randomNormalDistributionNumber = afternoonDistribution.RandomSource.Next(80, 121);
+                var sale = establishment.CreateSale(distribution.Key);
+                establishment.AddSale(sale);
+                establishment.AddSalesItems(sale, establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber));
+            }
+        }
     }
 }

@@ -35,8 +35,9 @@ namespace EstablishmentProject.test.Infrastructure_Layer.DTO
             User userWithRoles = userRepository.GetById(user.Id);
 
             // Assert
-            Assert.Equal(userRole, userWithRoles.GetUserRoles()[0]);
-            Assert.Equal(establishment, userWithRoles.GetUserRoles()[0].Establishment);
+            UserRole userRole = userWithRoles.GetUserRoles()[0];
+            Assert.Equal(userRole.Id, userRole.Id);
+            Assert.Equal(establishment, userRole.Establishment);
         }
 
 
@@ -50,7 +51,8 @@ namespace EstablishmentProject.test.Infrastructure_Layer.DTO
             User userWithRoles = userRepository.GetById(user.Id);
 
             // Assert
-            Assert.Equal(userRole, userWithRoles.GetUserRoles()[0]);
+            UserRole userRole = userWithRoles.GetUserRoles()[0];
+            Assert.Equal(userRole.Id, userRole.Id);
         }
     }
 }

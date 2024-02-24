@@ -35,8 +35,4 @@
     <ProjectReference Include="..\Backend\WebApplication1.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application_Test\Handlers_Test\HandlerServices\" />
-  </ItemGroup>
-
 </Project>

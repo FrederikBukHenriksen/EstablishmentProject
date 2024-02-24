@@ -1,29 +1,29 @@
+using EstablishmentProject.test.TestingCode;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
-using EstablishmentProject.test.TestingCode;
 using WebApplication1.CommandHandlers;
+using WebApplication1.Data;
 using WebApplication1.Domain_Layer.Entities;
 
 namespace EstablishmentProject.test.Application_Test.Login_Test
 {
-    public class LoginTest : BaseIntegrationTest
+    public class LoginTest : IntegrationTest
     {
         private const string apiLogin = "/api/authentication/login";
         private const string apiLogout = "/api/authentication/logout";
         private const string apiIsLoggedIn = "/api/authentication/is-logged-in";
+        private HttpClient httpClient;
 
-        public LoginTest(IntegrationTestWebAppFactory factory) : base(factory)
+        public LoginTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            clearDatabase();
-
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             List<User> users = new List<User> {
                 new User("frederik@mail.com","hello123"),
                 new User("lydia@mail.com","goodbye123")
-                //factoryServiceBuilder.UserBuilder().WithEmail("frederik@mail.com").WithPassword("hello123").Build(),
-                //factoryServiceBuilder.UserBuilder().WithEmail("lydia@mail.com").WithPassword("goodbye123").Build(),
             };
-
+            httpClient = new HttpClient();
             dbContext.Set<User>().AddRange(users);
             dbContext.SaveChanges();
         }
@@ -175,7 +175,6 @@ namespace EstablishmentProject.test.Application_Test.Login_Test
         private async Task<HttpResponseMessage> logOut()
         {
             var response = await httpClient.GetAsync(apiLogout);
-            httpClient = webApplicationFactory.CreateDefaultClient();
             return response;
         }
     }

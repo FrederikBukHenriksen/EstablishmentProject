@@ -19,7 +19,6 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         {
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             createTestData();
-
             command = new GetTablesCommand
             {
                 EstablishmentId = establishment.Id
@@ -29,8 +28,8 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         private void createTestData()
         {
             establishment = new Establishment("Test establishment");
-            establishment.AddTable(establishment.CreateTable("Test table"));
-
+            var table = establishment.CreateTable("Test table");
+            establishment.AddTable(table);
             using (var uow = unitOfWork)
             {
                 uow.establishmentRepository.Add(establishment);

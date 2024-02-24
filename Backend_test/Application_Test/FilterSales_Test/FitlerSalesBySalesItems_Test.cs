@@ -42,7 +42,7 @@ namespace EstablishmentProject.test.Application_Test.FilterSales_Test
         }
 
         [Fact]
-        public void Any()
+        public void Any_WithFilteringOnCoffee_ShouldReturnAllSalesWhichIncludesCoffee()
         {
             //ARRANGE
             FilterSalesBySalesItems salesSorting = new FilterSalesBySalesItems(any: [coffee.Id]);
@@ -59,7 +59,7 @@ namespace EstablishmentProject.test.Application_Test.FilterSales_Test
         }
 
         [Fact]
-        public void All()
+        public void All_WithFilteringOnCoffeeAndTea_ShouldReturnAllSalesWhichContainsAtLeastCoffeeAndTea()
         {
             //ARRANGE
             var salesSorting = new FilterSalesBySalesItems(all: [coffee.Id, tea.Id]);
@@ -75,7 +75,7 @@ namespace EstablishmentProject.test.Application_Test.FilterSales_Test
         }
 
         [Fact]
-        public void Excatly()
+        public void Excatly_WithFilteringOnCoffeeAndTea_ShouldReturnAllSalesWhichOnlyContainsCoffeeAndTea()
         {
             //ARRANGE
             var salesSorting = new FilterSalesBySalesItems(exactly: [coffee.Id, tea.Id]);

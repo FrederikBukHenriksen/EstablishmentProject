@@ -8,7 +8,7 @@ namespace WebApplication1.Domain_Layer.Services.Repositories
         IUserRepository IncludeUserRoles();
     }
 
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : RepositoryBase<User>, IUserRepository
     {
         public UserRepository(ApplicationDbContext context) : base(context)
         {

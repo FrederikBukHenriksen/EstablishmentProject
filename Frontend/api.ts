@@ -2441,19 +2441,23 @@ export interface IGetSalesStatisticsReturn extends IReturnBase {
     metric: number;
 }
 
-export abstract class GetSalesStatisticsCommand extends CommandBase implements IGetSalesStatisticsCommand {
+export abstract class GetSalesStatisticsCommand implements IGetSalesStatisticsCommand {
     establishmentId!: string;
     salesIds!: string[];
 
     protected _discriminator: string;
 
     constructor(data?: IGetSalesStatisticsCommand) {
-        super(data);
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
         this._discriminator = "GetSalesStatisticsCommand";
     }
 
-    override init(_data?: any) {
-        super.init(_data);
+    init(_data?: any) {
         if (_data) {
             this.establishmentId = _data["establishmentId"];
             if (Array.isArray(_data["salesIds"])) {
@@ -2464,7 +2468,7 @@ export abstract class GetSalesStatisticsCommand extends CommandBase implements I
         }
     }
 
-    static override fromJS(data: any): GetSalesStatisticsCommand {
+    static fromJS(data: any): GetSalesStatisticsCommand {
         data = typeof data === 'object' ? data : {};
         if (data["$type"] === "GetSalesAverageSpend") {
             let result = new GetSalesAverageSpend();
@@ -2494,7 +2498,7 @@ export abstract class GetSalesStatisticsCommand extends CommandBase implements I
         throw new Error("The abstract class 'GetSalesStatisticsCommand' cannot be instantiated.");
     }
 
-    override toJSON(data?: any) {
+    toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["$type"] = this._discriminator;
         data["establishmentId"] = this.establishmentId;
@@ -2503,12 +2507,11 @@ export abstract class GetSalesStatisticsCommand extends CommandBase implements I
             for (let item of this.salesIds)
                 data["salesIds"].push(item);
         }
-        super.toJSON(data);
         return data;
     }
 }
 
-export interface IGetSalesStatisticsCommand extends ICommandBase {
+export interface IGetSalesStatisticsCommand {
     establishmentId: string;
     salesIds: string[];
 }

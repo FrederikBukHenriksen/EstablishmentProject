@@ -2,11 +2,18 @@
 {
     public interface ICommon
     {
-
+        public Guid Id { get; set; }
     }
 
     public interface IEntity : ICommon
     {
+        [Key]
+        public Guid Id { get; set; }
+    }
+
+    public interface IJoiningTable : ICommon
+    {
+        [Key]
         public Guid Id { get; set; }
     }
 
@@ -17,6 +24,10 @@
         public Guid Id { get; set; } = Guid.NewGuid();
 
     }
-}
 
-//[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public abstract class JoiningTableBase : IJoiningTable
+    {
+        [Key]
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+}
