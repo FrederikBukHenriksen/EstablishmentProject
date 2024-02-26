@@ -18,7 +18,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
 
         public HandlerVerifyEstablishment_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            validator = (VerifyEstablishmentCommandService)scope.ServiceProvider.GetRequiredService<IVerifyEstablishmentCommandService>();
+            validator = scope.ServiceProvider.GetRequiredService<VerifyEstablishmentCommandService>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
             CommonArrange();
@@ -55,7 +55,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             var command = new CommandTestObject { EstablishmentId = establishment1.Id };
 
             //Act
-            validator.VerifyEstablishment(command);
+            validator.Verify(command);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             var command = new CommandTestObject { EstablishmentId = establishment3.Id };
 
             //Act
-            Action act = () => validator.VerifyEstablishment(command);
+            Action act = () => validator.Verify(command);
 
             //Assert
             Assert.Throws<UnauthorizedAccessException>(act);
@@ -77,7 +77,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             var command = new CommandTestObjectMultiple { EstablishmentIds = new List<Guid> { establishment1.Id, establishment2.Id } };
 
             //Act
-            validator.VerifyEstablishment(command);
+            validator.Verify(command);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             var command = new CommandTestObjectMultiple { EstablishmentIds = new List<Guid> { establishment1.Id, establishment3.Id } };
 
             //Act
-            Action act = () => validator.VerifyEstablishment(command);
+            Action act = () => validator.Verify(command);
 
             //Assert
             Assert.Throws<UnauthorizedAccessException>(act);

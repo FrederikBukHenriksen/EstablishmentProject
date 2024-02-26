@@ -10,28 +10,33 @@ namespace WebApplication1.Application_Layer.Services.Authentication_and_login
 
     public interface IJWTService
     {
-        public User? ExtractUserFromJwt(HttpContext httpContext);
-        internal string GenerateJwtToken(Guid userId);
+        public User? ExtractUserFromRequest(HttpContext httpContext);
+        public string? ExtractJwtFromRequest(HttpContext httpContext);
+
+        public User? ExtractUserFromJWT(string JWT);
+        internal string GenerateJwtTokenForUser(User user);
     }
     public class JWTService : IJWTService
     {
         private IUnitOfWork unitOfWork;
 
         private static readonly string _securityKey = "this is my custom Secret key for authentication";
+        private const string _usernameClaimType = "username";
+        private const string _jwtPlacementName = "jwt";
 
         public JWTService([FromServices] IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
-
         }
-        public string GenerateJwtToken(Guid id)
+        public string GenerateJwtTokenForUser(User user)
         {
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_securityKey));
             SigningCredentials credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
 
-            Claim[] claims = new[] { new Claim("username", id.ToString()),
-            };
+            Claim[] claims = [
+                new Claim(_usernameClaimType, user.Id.ToString())
+            ];
 
             JwtSecurityToken token = new JwtSecurityToken(
                 claims: claims,
@@ -42,14 +47,26 @@ namespace WebApplication1.Application_Layer.Services.Authentication_and_login
             return jwt;
         }
 
-        public User? ExtractUserFromJwt(HttpContext httpContext)
+        public User? ExtractUserFromRequest(HttpContext httpContext)
         {
-            string? token = httpContext.Request.Cookies["jwt"];
-            if (token.IsNullOrEmpty())
+            string? JWT = httpContext.Request.Cookies[_jwtPlacementName];
+            if (JWT.IsNullOrEmpty())
             {
                 return null;
             }
-            string usernameClaim = GetClaimValue(token, "username");
+            return this.ExtractUserFromJWT(JWT);
+        }
+
+        private static string GetClaimValue(string token, string claimType)
+        {
+            JwtSecurityToken securityToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            var claim = securityToken.Claims.FirstOrDefault(c => c.Type == claimType);
+            return claim.Value;
+        }
+
+        public User? ExtractUserFromJWT(string JWT)
+        {
+            string usernameClaim = GetClaimValue(JWT, _usernameClaimType);
             User? user = this.unitOfWork.userRepository.IncludeUserRoles().GetById(Guid.Parse(usernameClaim));
             if (usernameClaim == null || user == null)
             {
@@ -58,11 +75,14 @@ namespace WebApplication1.Application_Layer.Services.Authentication_and_login
             return user;
         }
 
-        private static string GetClaimValue(string token, string claimType)
+        public string? ExtractJwtFromRequest(HttpContext httpContext)
         {
-            JwtSecurityToken securityToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
-            var claim = securityToken.Claims.FirstOrDefault(c => c.Type == claimType);
-            return claim.Value;
+            string? JWT = httpContext.Request.Cookies[_jwtPlacementName];
+            if (JWT.IsNullOrEmpty())
+            {
+                return null;
+            }
+            return JWT;
         }
     }
 }

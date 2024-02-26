@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
+using WebApplication1.Application_Layer.Handlers.Login_and_Authentication;
+using WebApplication1.Application_Layer.Services.Authentication_and_login;
 using WebApplication1.CommandHandlers;
-using WebApplication1.Services;
+using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Controllers
 {
@@ -11,31 +13,34 @@ namespace WebApplication1.Controllers
     [Route("api/authentication")]
     public class AuthenticationController : ControllerBase
     {
+        private ICommandValidatorService handlerService;
+
+        public AuthenticationController(ICommandValidatorService handlerService
+)
+        {
+            this.handlerService = handlerService;
+        }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult> LogIn(
-            [FromBody] LoginCommand loginCommand,
-            [FromServices] IHandler<LoginCommand, LoginReturn> loginCommandHandler
+            [FromBody] LoginCommand command,
+            [FromServices] IHandler<LoginCommand, LoginReturn> handler
             )
         {
-            try
-            {
-                LoginReturn loginReturn = await loginCommandHandler.Handle(loginCommand);
-                this.HttpContext.Response.Cookies.Append("jwt", loginReturn.Token, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
-                return this.Ok();
-            }
-            catch (Exception e)
-            {
-                return this.Unauthorized(e);
-            }
+            LoginReturn loginReturn = (await this.handlerService.Service(handler, command)).Value;
+            this.HttpContext.Response.Cookies.Append("jwt", loginReturn.JWT, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
+            return this.Ok();
         }
+
 
         [AllowAnonymous]
         [HttpGet("is-logged-in")]
-        public ActionResult<bool> IsLoggedIn([FromServices] IAuthenticationService authenticationService)
+        public async Task<ActionResult<IsLoggedInReturn>> IsLoggedIn([FromServices] IJWTService JWTService, IHandler<IsLoggedInCommand, IsLoggedInReturn> handler)
         {
-            return this.Ok(authenticationService.ExtractUserFromJwt(this.HttpContext) != null);
+            string JWT = JWTService.ExtractJwtFromRequest(this.HttpContext);
+            IsLoggedInCommand command = new IsLoggedInCommand { JWT = JWT };
+            return await this.handlerService.Service(handler, command);
         }
 
         [Authorize]

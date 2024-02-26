@@ -19,7 +19,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
 
         public HandlerVerifyItems_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            validator = (VerifyItemsCommandService)scope.ServiceProvider.GetRequiredService<IVerifyItemsCommandService>();
+            validator = scope.ServiceProvider.GetRequiredService<VerifyItemsCommandService>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
             CommonArrange();
@@ -61,7 +61,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             };
 
             // Act
-            validator.VerifyItems(command);
+            validator.Verify(command);
 
             // Assert
             Assert.NotNull(true);
@@ -78,7 +78,7 @@ namespace EstablishmentProject.test.Application_Test.HandlerService_Test
             };
 
             // Act
-            Action act = () => validator.VerifyItems(command);
+            Action act = () => validator.Verify(command);
 
             // Assert
             Assert.Throws<UnauthorizedAccessException>(act);

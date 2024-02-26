@@ -218,11 +218,11 @@ export class AuthenticationClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    logIn(loginCommand: LoginCommand): Observable<FileResponse> {
+    logIn(command: LoginCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/authentication/login";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(loginCommand);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -275,7 +275,7 @@ export class AuthenticationClient {
         return _observableOf(null as any);
     }
 
-    isLoggedIn(): Observable<boolean> {
+    isLoggedIn(): Observable<IsLoggedInReturn> {
         let url_ = this.baseUrl + "/api/authentication/is-logged-in";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -295,14 +295,14 @@ export class AuthenticationClient {
                 try {
                     return this.processIsLoggedIn(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<boolean>;
+                    return _observableThrow(e) as any as Observable<IsLoggedInReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<boolean>;
+                return _observableThrow(response_) as any as Observable<IsLoggedInReturn>;
         }));
     }
 
-    protected processIsLoggedIn(response: HttpResponseBase): Observable<boolean> {
+    protected processIsLoggedIn(response: HttpResponseBase): Observable<IsLoggedInReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -313,8 +313,7 @@ export class AuthenticationClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = IsLoggedInReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1538,6 +1537,42 @@ export class LoginCommand implements ILoginCommand {
 export interface ILoginCommand {
     username: string;
     password: string;
+}
+
+export class IsLoggedInReturn implements IIsLoggedInReturn {
+    isLoggedIn!: boolean;
+
+    constructor(data?: IIsLoggedInReturn) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isLoggedIn = _data["isLoggedIn"];
+        }
+    }
+
+    static fromJS(data: any): IsLoggedInReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new IsLoggedInReturn();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isLoggedIn"] = this.isLoggedIn;
+        return data;
+    }
+}
+
+export interface IIsLoggedInReturn {
+    isLoggedIn: boolean;
 }
 
 export class GetEstablishmentsIdReturn extends ReturnBase implements IGetEstablishmentsIdReturn {

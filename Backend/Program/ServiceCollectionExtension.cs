@@ -2,8 +2,10 @@
 using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
 using WebApplication1.Application_Layer.Handlers.ItemHandler;
+using WebApplication1.Application_Layer.Handlers.Login_and_Authentication;
 using WebApplication1.Application_Layer.Handlers.SalesHandlers;
 using WebApplication1.Application_Layer.Services;
+using WebApplication1.Application_Layer.Services.Authentication_and_login;
 using WebApplication1.Application_Layer.Services.CommandHandlerServices;
 using WebApplication1.CommandHandlers;
 using WebApplication1.CommandsHandlersReturns;
@@ -21,13 +23,12 @@ namespace WebApplication1.Program
         {
             serviceCollection.AddTransient<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddTransient<ApplicationDbContext>();
-            serviceCollection.AddScoped<IAuthenticationService, AuthenticationService>();
-            serviceCollection.AddScoped<IUserContextService, ContextService>();
+            serviceCollection.AddScoped<IUserContextService, UserContextService>();
             serviceCollection.AddScoped<UserContextMiddleware>();
-
             serviceCollection.AddScoped<ITestDataBuilder, TestDataBuilder>();
             serviceCollection.AddScoped<IWeather, DMIOpenData.DmiWeather>();
             serviceCollection.AddTransient<IDataFetcingAndStoringService, DataFetcingAndStoringService>();
+            serviceCollection.AddScoped<IJWTService, JWTService>();
         }
 
         public static void AddRepositories(this IServiceCollection serviceCollection)
@@ -47,6 +48,7 @@ namespace WebApplication1.Program
 
             //Login
             serviceCollection.AddTransient<IHandler<LoginCommand, LoginReturn>, LoginCommandHandler>();
+            serviceCollection.AddTransient<IHandler<IsLoggedInCommand, IsLoggedInReturn>, IsLoggedInCommandHandler>();
 
             //Correlation
             serviceCollection.AddTransient<IHandler<CorrelationCommand, CorrelationReturn>, CorrelationHandler>();
@@ -56,7 +58,6 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>, Clustering_TimeOfVisitVSLengthOfVisit>();
 
             //Establishment
-
             serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsIdReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsIdReturn>>();
             serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsEntityReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsEntityReturn>>();
             serviceCollection.AddTransient<IHandler<GetEstablishmentsCommand, GetEstablishmentsDTOReturn>, GetMultipleEstablishmentsHandler<GetEstablishmentsDTOReturn>>();
@@ -65,14 +66,7 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesReturn>, GetSalesHandler<GetSalesReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
-            //serviceCollection.AddTransient<IHandler<GetSalesAverageSpend, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageSpend>>();
-            //serviceCollection.AddTransient<IHandler<GetSalesAverageNumberOfItems, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageNumberOfItems>>();
-            //serviceCollection.AddTransient<IHandler<GetSalesAverageTimeOfArrival, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageTimeOfArrival>>();
-            //serviceCollection.AddTransient<IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageTimeOfPayment>>();
-            //serviceCollection.AddTransient<IHandler<GetSalesAverageSeatTime, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageSeatTime>>();
             serviceCollection.AddTransient<IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesStatisticsCommand>>();
-
-
 
             //Item
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsIdReturn>, GetItemsHandler<GetItemsIdReturn>>();
@@ -83,13 +77,6 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesIdReturn>, GetTablesHandler<GetTablesIdReturn>>();
             serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesDTOReturn>, GetTablesHandler<GetTablesDTOReturn>>();
             serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesRawReturn>, GetTablesHandler<GetTablesRawReturn>>();
-
-
-
-
-
-
-
         }
     }
 }

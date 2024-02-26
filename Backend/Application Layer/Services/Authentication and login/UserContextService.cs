@@ -8,7 +8,7 @@ namespace WebApplication1.Services
         void SetUser(User user);
     }
 
-    public class ContextService : IUserContextService
+    public class UserContextService : IUserContextService
     {
         private User? User = null;
 

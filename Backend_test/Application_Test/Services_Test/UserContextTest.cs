@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Application_Layer.Services;
+using WebApplication1.Application_Layer.Services.Authentication_and_login;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Middelware;
 using WebApplication1.Services;
@@ -15,18 +16,17 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
         private UserContextMiddleware _userContextMiddleware;
         private IUserContextService _userContextService;
         private IUnitOfWork unitOfWork;
-        private IAuthenticationService _authService;
+        private IJWTService _jwtservice;
 
         //Arrange
         private Establishment establishment;
-        private Establishment establishment2;
 
         private User userWithUserRole;
         private User userNoUserRole;
 
         public UserContextTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            _authService = scope.ServiceProvider.GetRequiredService<IAuthenticationService>();
+            _jwtservice = scope.ServiceProvider.GetRequiredService<IJWTService>();
             _userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
             _userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -56,7 +56,7 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
         public void valid_user_with_userRole()
         {
             //Arrange
-            var jwtToken = _authService.GenerateJwtToken(userWithUserRole.Id);
+            var jwtToken = _jwtservice.GenerateJwtTokenForUser(userWithUserRole);
             DefaultHttpContext httpMock = new DefaultHttpContext();
             httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
 
@@ -75,7 +75,7 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
         public void valid_user_with_no_userRole()
         {
             //ARRANGE
-            var jwtToken = _authService.GenerateJwtToken(userNoUserRole.Id);
+            var jwtToken = _jwtservice.GenerateJwtTokenForUser(userNoUserRole);
             DefaultHttpContext httpMock = new DefaultHttpContext();
             httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
 
@@ -93,7 +93,8 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
         public void invalid_user_with_no_userRole()
         {
             //ARRANGE
-            var jwtToken = _authService.GenerateJwtToken(Guid.Empty);
+            userWithUserRole.Id = Guid.Empty;
+            var jwtToken = _jwtservice.GenerateJwtTokenForUser(userWithUserRole);
             DefaultHttpContext httpMock = new DefaultHttpContext();
             httpMock.Request.Headers["Cookie"] = "jwt=" + jwtToken;
 
