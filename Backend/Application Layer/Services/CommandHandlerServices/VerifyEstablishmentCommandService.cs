@@ -1,15 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using WebApplication1.Application_Layer.Services.CommandHandlerServices;
 using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Services;
 
 namespace WebApplication1.Application_Layer.Services
 {
-    public interface IVerifyEstablishmentCommandService
-    {
-        void VerifyEstablishment(ICommand command);
-    }
-
-    public class VerifyEstablishmentCommandService : IVerifyEstablishmentCommandService
+    public class VerifyEstablishmentCommandService : IVerifyCommand
     {
         private IUserContextService userContextService;
 
@@ -18,7 +14,7 @@ namespace WebApplication1.Application_Layer.Services
             this.userContextService = userContextService;
         }
 
-        public void VerifyEstablishment(ICommand command)
+        public void Verify(ICommand command)
         {
             List<Guid> accesibleEstablishmentsIds = this.userContextService.GetUser().UserRoles.Select(x => x.Establishment.Id).ToList();
             if (command is ICmdField_EstablishmentId)

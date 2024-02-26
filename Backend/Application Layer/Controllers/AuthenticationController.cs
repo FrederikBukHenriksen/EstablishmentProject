@@ -33,9 +33,9 @@ namespace WebApplication1.Controllers
 
         [AllowAnonymous]
         [HttpGet("is-logged-in")]
-        public ActionResult<bool> IsLoggedIn([FromServices] IAuthService authenticationService)
+        public ActionResult<bool> IsLoggedIn([FromServices] IAuthenticationService authenticationService)
         {
-            return this.Ok(authenticationService.GetUserFromHttp(this.HttpContext) != null);
+            return this.Ok(authenticationService.ExtractUserFromJwt(this.HttpContext) != null);
         }
 
         [Authorize]

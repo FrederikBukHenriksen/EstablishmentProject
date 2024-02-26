@@ -11,7 +11,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
     public class CrossCorrelationHandlerTest : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
-        private IWeatherApi yourClassUnderTest;
+        private IWeather yourClassUnderTest;
         private ITestDataBuilder testDataCreatorService;
 
 
@@ -20,7 +20,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
             //Inject services
             testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataBuilder>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            yourClassUnderTest = scope.ServiceProvider.GetRequiredService<IWeatherApi>();
+            yourClassUnderTest = scope.ServiceProvider.GetRequiredService<IWeather>();
             Coordinates coordinates = new Coordinates(55.676098, 12.568337);
             var ok = yourClassUnderTest.GetMeanTemperature(coordinates, new DateTime(2021, 1, 1), new DateTime(2021, 1, 1), TimeResolution.Hour);
 

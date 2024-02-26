@@ -14,12 +14,12 @@ namespace WebApplication1.CommandsHandlersReturns
 
     public class HandlerService : ICommandValidatorService
     {
-        private IVerifyEstablishmentCommandService verifyEstablishmentCommandService;
-        private IVerifySalesCommandService verifySalesCommandService;
-        private IVerifyItemsCommandService verifyItemsCommandService;
-        private IVerifyTablesCommandService verifyTablesCommandService;
+        private VerifyEstablishmentCommandService verifyEstablishmentCommandService;
+        private VerifySalesCommandService verifySalesCommandService;
+        private VerifyItemsCommandService verifyItemsCommandService;
+        private VerifyTablesCommandService verifyTablesCommandService;
 
-        public HandlerService([FromServices] IVerifyEstablishmentCommandService verifyEstablishmentCommandService, [FromServices] IVerifySalesCommandService verifySalesCommandService, [FromServices] IVerifyItemsCommandService verifyItemsCommandService, [FromServices] IVerifyTablesCommandService verifyTablesCommandService)
+        public HandlerService([FromServices] VerifyEstablishmentCommandService verifyEstablishmentCommandService, [FromServices] VerifySalesCommandService verifySalesCommandService, [FromServices] VerifyItemsCommandService verifyItemsCommandService, [FromServices] VerifyTablesCommandService verifyTablesCommandService)
         {
             this.verifyEstablishmentCommandService = verifyEstablishmentCommandService;
             this.verifySalesCommandService = verifySalesCommandService;
@@ -34,10 +34,10 @@ namespace WebApplication1.CommandsHandlersReturns
         {
             try
             {
-                this.verifyEstablishmentCommandService.VerifyEstablishment(command);
-                this.verifySalesCommandService.VerifySales(command);
-                this.verifyItemsCommandService.VerifyItems(command);
-                this.verifyTablesCommandService.VerifyTables(command);
+                this.verifyEstablishmentCommandService.Verify(command);
+                this.verifySalesCommandService.Verify(command);
+                this.verifyItemsCommandService.Verify(command);
+                this.verifyTablesCommandService.Verify(command);
                 var res = await handler.Handle(command);
                 return new OkObjectResult(res);
             }

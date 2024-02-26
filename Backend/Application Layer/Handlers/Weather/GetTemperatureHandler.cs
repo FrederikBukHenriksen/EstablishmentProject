@@ -24,9 +24,9 @@ namespace WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weath
     public class GetTemperatureHandler : HandlerBase<GetTemperatureCommand, GetTemperatureReturn>
     {
         private IUserContextService contextService;
-        private IWeatherApi weatherApi;
+        private IWeather weatherApi;
 
-        public GetTemperatureHandler(IUserContextService contextService, IWeatherApi weatherApi)
+        public GetTemperatureHandler(IUserContextService contextService, IWeather weatherApi)
         {
             this.contextService = contextService;
             this.weatherApi = weatherApi;

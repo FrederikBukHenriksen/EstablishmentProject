@@ -15,7 +15,7 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
         private UserContextMiddleware _userContextMiddleware;
         private IUserContextService _userContextService;
         private IUnitOfWork unitOfWork;
-        private IAuthService _authService;
+        private IAuthenticationService _authService;
 
         //Arrange
         private Establishment establishment;
@@ -26,7 +26,7 @@ namespace EstablishmentProject.test.Application_Test.Services_Test
 
         public UserContextTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
-            _authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            _authService = scope.ServiceProvider.GetRequiredService<IAuthenticationService>();
             _userContextMiddleware = scope.ServiceProvider.GetRequiredService<UserContextMiddleware>();
             _userContextService = scope.ServiceProvider.GetRequiredService<IUserContextService>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();

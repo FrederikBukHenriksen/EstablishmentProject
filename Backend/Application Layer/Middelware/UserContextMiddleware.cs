@@ -5,10 +5,10 @@ namespace WebApplication1.Middelware
 {
     public class UserContextMiddleware : IMiddleware
     {
-        private IAuthService authService;
+        private IAuthenticationService authService;
         private IUserContextService userContextService;
 
-        public UserContextMiddleware(IAuthService authService, IUserContextService userContextService)
+        public UserContextMiddleware(IAuthenticationService authService, IUserContextService userContextService)
         {
             this.authService = authService;
             this.userContextService = userContextService;
@@ -16,7 +16,7 @@ namespace WebApplication1.Middelware
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            User? user = this.authService.GetUserFromHttp(context);
+            User? user = this.authService.ExtractUserFromJwt(context);
             if (user != null)
             {
                 this.userContextService.SetUser(user);

@@ -28,11 +28,23 @@ import { ClusterService } from '../services/API-implementations/cluster.service'
 import { ItemService } from '../services/API-implementations/item.service';
 import { TableService } from '../services/API-implementations/table.service';
 import { TableEntry, TableModel, TableString } from '../table/table.component';
+import { SaleStatisticsService } from '../services/API-implementations/salesStatistics.service';
 
 export type ClusterBandwidths = {
   title: string;
   value: number;
 };
+
+@Injectable({
+  providedIn: 'root',
+})
+export class Cluster_TimeOfDay_SeatTime implements IClusteringImplementaion {
+  title = 'Time of day vs Seat time';
+  dialogs!: IDialogImplementation[];
+  clustersTable!: Subject<TableModel>;
+  eachClustersTables!: Subject<TableModel[]>;
+  graphModels!: Subject<{ title: string; graphModel: GraphModel }[]>;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -55,11 +67,9 @@ export class Cluster_TimeOfDay_Spending
   salesDTOClusters: SaleDTO[][] = [];
 
   constructor(
-    private readonly sessionStorageService: SessionStorageService,
     private readonly itemService: ItemService,
-    private readonly tableService: TableService,
-    private readonly dialog: MatDialog,
     private readonly salesService: SaleService,
+    private readonly salesStatisticsService: SaleStatisticsService,
     private readonly clusterService: ClusterService,
     private readonly dialogFilterSalesComponent: DialogFilterSalesComponent,
     private readonly dialogFilterSalesBySalesitemsComponent: DialogFilterSalesBySalesitemsComponent,
@@ -135,6 +145,7 @@ export class Cluster_TimeOfDay_Spending
   ];
 
   private async generateUI(): Promise<void> {
+    this.graphModels.next(await this.buildClusterGraph());
     this.salesDTOClusters =
       await this.clusterService.SaleIdCluster_to_SaleDTOCluster(
         this.clusteringReturn!
@@ -142,7 +153,6 @@ export class Cluster_TimeOfDay_Spending
 
     this.clustersTable.next(await this.buildClusterTable());
     this.eachClustersTables.next(await this.buildClustersTables());
-    this.graphModels.next(await this.buildClusterGraph());
   }
 
   public async buildClusterTable(): Promise<TableModel> {
@@ -172,6 +182,7 @@ export class Cluster_TimeOfDay_Spending
 
       const averageNumberOfItemsOfCluster =
         itemsDTOmapped.length / element.length;
+
       const averageSpendOfCluster =
         itemsDTOmapped.reduce((prev, current) => prev + current.price, 0) /
         element.length;
@@ -186,6 +197,59 @@ export class Cluster_TimeOfDay_Spending
         ],
       });
     });
+
+    this.salesDTOClusters.forEach(async (cluster, index) => {
+      var clusterElementsId = cluster.map((x) => x.id);
+
+      tableEntries.push({
+        id: index,
+        elements: [
+          new TableString(columns[0], index.toString()),
+          new TableString(
+            columns[1],
+            (
+              await this.salesStatisticsService.GetSalesAverageNumberOfItems(
+                clusterElementsId
+              )
+            ).toFixed(1)
+          ),
+          new TableString(
+            columns[2],
+            (
+              await this.salesStatisticsService.GetSalesAverageSpend(
+                clusterElementsId
+              )
+            ).toFixed(1)
+          ),
+          new TableString(columns[3], cluster.length.toString()),
+        ],
+      });
+    });
+
+    // this.salesDTOClusters.forEach((element, index) => {
+    //   const itemsDTOmapped: ItemDTO[] = element.flatMap((sale) =>
+    //     sale.salesItems.map(
+    //       (itemId) => itemDTOs.find((item) => item.id === itemId.item1)!
+    //     )
+    //   );
+
+    //   const averageNumberOfItemsOfCluster =
+    //     itemsDTOmapped.length / element.length;
+
+    //   const averageSpendOfCluster =
+    //     itemsDTOmapped.reduce((prev, current) => prev + current.price, 0) /
+    //     element.length;
+
+    //   tableEntries.push({
+    //     id: index,
+    //     elements: [
+    //       new TableString(columns[0], index.toString()),
+    //       new TableString(columns[1], averageNumberOfItemsOfCluster.toFixed(1)),
+    //       new TableString(columns[2], averageSpendOfCluster.toFixed(1)),
+    //       new TableString(columns[3], element.length.toString()),
+    //     ],
+    //   });
+    // });
 
     return { columns: columns, elements: tableEntries };
   }
@@ -228,7 +292,6 @@ export class Cluster_TimeOfDay_Spending
     const scatterChartData: ChartDataset[] = points.map((cluster, index) => ({
       data: cluster,
       label: `Cluster ${index}`,
-      backgroundColor: this.getRandomColor(),
       showLine: false,
       pointRadius: 5,
     }));
@@ -249,14 +312,5 @@ export class Cluster_TimeOfDay_Spending
       },
     ];
     return graphs;
-  }
-
-  private getRandomColor(): string {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
   }
 }

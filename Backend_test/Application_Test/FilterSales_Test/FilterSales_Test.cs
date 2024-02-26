@@ -68,7 +68,7 @@ namespace EstablishmentProject.test.Application_Test.FilterSales_Test
         [InlineData(SaleAttributes.Items, 1)]
         [InlineData(SaleAttributes.TimestampPayment, 4)]
 
-        public void Attributes(SaleAttributes saleAttributes, int numberOfExptectedElements)
+        public void FilterSalesOnAttribites_WithDifferentAtributes_ShouldReturnTheCorrespondingSales(SaleAttributes saleAttributes, int numberOfExptectedElements)
         {
             //ARRANGE
             Item item = establishment.CreateItem("Test item", 0.0);

@@ -25,19 +25,19 @@ namespace DMIOpenData
         }
     }
 
-    public interface IWeatherApi
+    public interface IWeather
     {
         Task<List<(DateTime, double)>> GetMeanTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution);
     }
 
-    public class DmiWeatherApi : IWeatherApi
+    public class DmiWeather : IWeather
     {
         private const string BaseUrlData = "https://dmigw.govcloud.dk/v2/metObs/collections/observation/items";
         private const string BaseUrlStation = "https://dmigw.govcloud.dk/v2/metObs/collections/station/items";
         private readonly string apiKey = "ff666551-985c-4533-970f-96f3ef50036e";
         private readonly HttpClient httpClient;
 
-        public DmiWeatherApi(HttpClient httpClient = null)
+        public DmiWeather(HttpClient httpClient = null)
         {
             this.httpClient = httpClient ?? new HttpClient();
         }

@@ -64,9 +64,9 @@ namespace EstablishmentProject.test.TestingCode
         }
     }
 
-    public class WeatherMock : IWeatherApi, ITestService
+    public class WeatherMock : IWeather, ITestService
     {
-        private readonly Mock<IWeatherApi> mockWeatherApi = new Mock<IWeatherApi>();
+        private readonly Mock<IWeather> mockWeatherApi = new Mock<IWeather>();
 
         public List<(DateTime, double)> returnValue = new List<(DateTime, double)> { };
 
@@ -84,12 +84,12 @@ namespace EstablishmentProject.test.TestingCode
         {
             webHostBuilder.ConfigureTestServices(services =>
             {
-                var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IWeatherApi));
+                var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IWeather));
                 if (descriptor is not null)
                 {
                     services.Remove(descriptor);
                 }
-                services.AddScoped<IWeatherApi, WeatherMock>();
+                services.AddScoped<IWeather, WeatherMock>();
 
             });
         }

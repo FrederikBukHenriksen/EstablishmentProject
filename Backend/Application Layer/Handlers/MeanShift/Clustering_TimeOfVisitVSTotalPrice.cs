@@ -85,14 +85,10 @@ namespace WebApplication1.CommandHandlers
                 .ToList();
 
             List<(Guid Id, List<double> values)> calculationValues = saleData.Select(x => (x.sale.Id, x.values)).ToList();
-
-            var bandwith = new List<double> { command.bandwidthTimeOfVisit, command.bandwidthTotalPrice };
-
+            List<double> bandwith = [command.bandwidthTimeOfVisit, command.bandwidthTotalPrice];
 
             //Act
-            List<List<Sale>> clusteredSales = new MeanShiftClusteringStepByStep().Cluster(saleData, bandwith);
-            //List<List<Sale>> clusteredSales = new MeanShiftClusteringDirectly().Cluster(saleData, bandwith);
-
+            List<List<Sale>> clusteredSales = MeanShiftClusteringConvergenceGroup.Cluster(saleData, bandwith);
 
             //Return
             var ok = saleData.Select(x => (x.sale.Id, x.values)).ToList();
@@ -100,7 +96,6 @@ namespace WebApplication1.CommandHandlers
                 clusters: clusteredSales.Select(innerList => innerList.Select(sale => sale.Id).ToList()).ToList(),
                 calculationValues: calculationValues
                 );
-
         }
     }
 

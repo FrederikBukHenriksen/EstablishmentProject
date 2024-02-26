@@ -3,11 +3,7 @@ using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
 {
-    public interface IVerifyTablesCommandService
-    {
-        void VerifyTables(ICommand command);
-    }
-    public class VerifyTablesCommandService : IVerifyTablesCommandService
+    public class VerifyTablesCommandService : IVerifyCommand
     {
         private IUnitOfWork unitOfWork;
 
@@ -16,7 +12,7 @@ namespace WebApplication1.Application_Layer.Services.CommandHandlerServices
             this.unitOfWork = unitOfWork;
         }
 
-        public void VerifyTables(ICommand command)
+        public void Verify(ICommand command)
         {
             if (command is ICmdField_TablesIds)
             {

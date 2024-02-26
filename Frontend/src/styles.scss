@@ -70,3 +70,9 @@ body {
     background-color: red;
   }
 }
+
+.accordion-arrangement {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}

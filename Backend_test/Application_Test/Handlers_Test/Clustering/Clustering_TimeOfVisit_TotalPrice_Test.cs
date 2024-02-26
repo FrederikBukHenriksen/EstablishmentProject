@@ -63,6 +63,47 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
     }
 
 
+
+    //public void data()
+    //{
+    //    // Arrange
+    //    var openingHoursInMinutes = 8 * 60;
+    //    var number = 100;
+    //    //Func<double, double> normFunc = TestDataBuilder.GetNormalFunction(0, 2);
+    //    //Random random = new Random(1);
+    //    var normalRandomSeed = new SystemRandomSource(1);
+    //    Normal normalDistribution = new Normal((8 * 60) / 2, 10, normalRandomSeed);
+
+    //    var data = new List<(string, List<double>)>();
+    //    for (int i = 0; i < number; i++)
+    //    {
+    //        //Random double between -10 and 10.
+    //        var x = normalDistribution.RandomSource.Next(0, 8);
+    //        var y = normalDistribution.RandomSource.Next(80, 121);
+    //        var point = new List<double> { x, y, };
+    //        if (i < number / 2)
+    //        {
+    //            //point = point.Zip(new List<double> { 5, 5 }, (m, s) => m + s).ToList();
+    //            establishment.
+
+    //        }
+    //        else
+    //        {
+    //            point = point.Zip(new List<double> { -5, -5 }, (m, s) => m + s).ToList();
+    //        }
+    //        data.Add(("point", point));
+    //    };
+
+    //    var bandwidth = new List<double> { 1, 1 };
+
+    //    // Act
+    //    var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
+
+    //    // Assert
+    //    Assert.Equal(2, result.Count);
+    //}
+
+
     private void CreateTestData()
     {
         Func<double, double> morningSalesDistribution = (x) => TestDataBuilder.GetNormalFunction(10, 2)(x) * 20;

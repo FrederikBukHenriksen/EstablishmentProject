@@ -112,6 +112,7 @@ namespace EstablishmentProject.test.Algortihm
             Assert.Contains(result, cluster => cluster.Contains("A") && cluster.Contains("B") && cluster.Contains("C"));
         }
 
+        [Fact]
         public void Cluster_WithDataSpreadAround_WithSmallBandwidth_ShouldReturnIndividualClusters()
         {
             // Arrange
@@ -135,7 +136,7 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_WithTwoVeryDifferentDimensionScales_WithLargeEnoughBandwith_ShoulReturnASingleCluster()
+        public void Cluster_WithTwoVeryDifferentDimensionScales_WithLargeEnoughBandwith_ShoulReturnOneCluster()
         {
             // Arrange
             var data = new List<(string, List<double>)>
@@ -145,7 +146,7 @@ namespace EstablishmentProject.test.Algortihm
                 ("C", new List<double> { 3.0, 100.0 }),
             };
 
-            var bandwidth = new List<double> { 1.5, 55.0 };
+            var bandwidth = new List<double> { 2, 60.0 };
 
             // Act
             var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);

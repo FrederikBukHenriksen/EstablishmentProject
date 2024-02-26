@@ -16,7 +16,7 @@ import { SessionStorageService } from '../session-storage/session-storage.servic
 import { lastValueFrom } from 'rxjs';
 
 export interface ISaleStatisticsService {
-  getSalesAverageSpend(
+  GetSalesAverageSpend(
     salesIds: string[],
     establishmentId?: string
   ): Promise<number>;
@@ -45,13 +45,13 @@ export interface ISaleStatisticsService {
 @Injectable({
   providedIn: 'root',
 })
-export class SaleService implements ISaleStatisticsService {
+export class SaleStatisticsService implements ISaleStatisticsService {
   private readonly saleClient = inject(SaleClient);
   private readonly sessionStorageService = inject(SessionStorageService);
   private readonly activeEstablishment =
     this.sessionStorageService.getActiveEstablishment();
 
-  public async getSalesAverageSpend(
+  public async GetSalesAverageSpend(
     salesIds: string[],
     establishmentId?: string
   ): Promise<number> {

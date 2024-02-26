@@ -10,7 +10,10 @@ import {
   GraphModel,
   IDialogImplementation as IDialogImplementation,
 } from '../cross-correlation/cross-correlation.component';
-import { Cluster_TimeOfDay_Spending } from './cluster.implementations';
+import {
+  Cluster_TimeOfDay_SeatTime,
+  Cluster_TimeOfDay_Spending,
+} from './cluster.implementations';
 
 export interface IClusteringImplementaion {
   title: string;
@@ -31,9 +34,13 @@ export interface IBuildClusterTable {
   templateUrl: './cluster.component.html',
 })
 export class ClusterComponent {
-  constructor(public cluster_TimeOfDay_Spending: Cluster_TimeOfDay_Spending) {}
+  constructor(
+    public cluster_TimeOfDay_SeatTime: Cluster_TimeOfDay_SeatTime,
+    public cluster_TimeOfDay_Spending: Cluster_TimeOfDay_Spending
+  ) {}
 
   protected FetchDictionary: IClusteringImplementaion[] = [
+    this.cluster_TimeOfDay_SeatTime,
     this.cluster_TimeOfDay_Spending,
   ] as IClusteringImplementaion[];
 }

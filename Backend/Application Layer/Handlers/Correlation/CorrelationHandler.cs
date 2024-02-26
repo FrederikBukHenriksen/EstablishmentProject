@@ -38,12 +38,12 @@ namespace WebApplication1.CommandHandlers
     public class CorrelationHandler : HandlerBase<CorrelationCommand, CorrelationReturn>
     {
         private IUnitOfWork unitOfWork;
-        private IWeatherApi weatherApi;
+        private IWeather weatherApi;
 
         public CorrelationHandler(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
-            this.weatherApi = new DmiWeatherApi();
+            this.weatherApi = new DmiWeather();
         }
 
         public override async Task<CorrelationReturn> Handle(CorrelationCommand command)

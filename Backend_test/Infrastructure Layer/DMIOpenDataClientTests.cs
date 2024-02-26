@@ -16,7 +16,7 @@ namespace EstablishmentProject.test
         }
 
         [Fact]
-        public async void GetMeanTemperaturePerHour_ReturnsTemperatureList()
+        public async void GetMeanTemperaturePerHour_WithValidStartAndEnd_ReturnsTemperatureList()
         {
             // Arrange
             var startTime = new DateTime(2022, 1, 1, 0, 0, 0); ;
@@ -24,7 +24,7 @@ namespace EstablishmentProject.test
 
             HttpClient mockHttpClient = createHttpClientForWeatherApi();
 
-            var client = new DmiWeatherApi(mockHttpClient);
+            var client = new DmiWeather(mockHttpClient);
 
             // Act
             var result = await client.GetMeanTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
@@ -33,8 +33,9 @@ namespace EstablishmentProject.test
             Assert.All(result, date => Assert.InRange(date.Item1, startTime, endTime));
             Assert.Equal(expectedResult, result);
         }
+
         [Fact]
-        public async void StartTimeLaterThanEndTime_Fail()
+        public async void GetMeanTemperaturePerHour_WithInvalidStartAndEnd_ShouldThorException()
         {
             // Arrange
             var startTime = new DateTime(2022, 1, 1, 23, 59, 59, 999);
@@ -42,7 +43,7 @@ namespace EstablishmentProject.test
 
             HttpClient mockHttpClient = createHttpClientForWeatherApi();
 
-            var client = new DmiWeatherApi(mockHttpClient);
+            var client = new DmiWeather(mockHttpClient);
 
             // Act
 

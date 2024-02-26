@@ -3,30 +3,29 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Services
 {
 
-    public interface IAuthService
+    public interface IAuthenticationService
     {
         public User Login(string username, string password);
-        public User? GetUserFromHttp(HttpContext httpContext);
+        public User? ExtractUserFromJwt(HttpContext httpContext);
         internal string GenerateJwtToken(Guid id);
     }
 
-    public class AuthService : IAuthService
+    public class AuthenticationService : IAuthenticationService
     {
-        public AuthService([FromServices] IUserRepository userRepository)
+        public AuthenticationService([FromServices] IUnitOfWork unitOfWork)
         {
-            this.userRepository = userRepository;
+            this.unitOfWork = unitOfWork;
         }
 
-        private static readonly string _tokenName = "jwt";
         private static readonly string _securityKey = "this is my custom Secret key for authentication";
 
-        private readonly IUserRepository userRepository;
+        private readonly IUnitOfWork unitOfWork;
 
         public string GenerateJwtToken(Guid id)
         {
@@ -48,11 +47,11 @@ namespace WebApplication1.Services
 
         public User Login(string username, string password)
         {
-            User? user = this.userRepository.Find(x => ((x.Email.ToLower()) == (username.ToLower())) && x.Password == password);
+            User? user = this.unitOfWork.userRepository.Find(x => ((x.Email.ToLower()) == (username.ToLower())) && x.Password == password);
             if (user == null) throw new Exception("User could not be logged in based on the given credentials");
             return user;
         }
-        public User? GetUserFromHttp(HttpContext httpContext)
+        public User? ExtractUserFromJwt(HttpContext httpContext)
         {
             string? token = httpContext.Request.Cookies["jwt"];
             if (token.IsNullOrEmpty())
@@ -60,7 +59,7 @@ namespace WebApplication1.Services
                 return null;
             }
             string usernameClaim = GetClaimValue(token, "username");
-            User? user = this.userRepository.IncludeUserRoles().GetById(Guid.Parse(usernameClaim));
+            User? user = this.unitOfWork.userRepository.IncludeUserRoles().GetById(Guid.Parse(usernameClaim));
             if (usernameClaim == null || user == null)
             {
                 return null;

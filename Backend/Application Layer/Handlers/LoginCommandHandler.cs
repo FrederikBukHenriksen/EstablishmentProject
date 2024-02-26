@@ -19,10 +19,10 @@ namespace WebApplication1.CommandHandlers
 
     public class LoginCommandHandler : HandlerBase<LoginCommand, LoginReturn>
     {
-        private readonly IAuthService authService;
+        private readonly IAuthenticationService authService;
 
         public LoginCommandHandler(
-            [FromServices] IAuthService authService)
+            [FromServices] IAuthenticationService authService)
         {
             this.authService = authService;
         }
