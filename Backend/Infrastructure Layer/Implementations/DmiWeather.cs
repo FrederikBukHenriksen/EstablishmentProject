@@ -47,7 +47,6 @@ namespace DMIOpenData
             var parameters = new Dictionary<string, dynamic>
             {
                 { "limit", 100000 },
-                { "parameterId", GetDescription(weatherParameter) },
             };
 
             var url = $"{BaseUrlStation}?api-key={this.apiKey}&{string.Join("&", parameters.Select(p => $"{p.Key}={p.Value}"))}";

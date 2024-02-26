@@ -15,22 +15,26 @@
           </button>
         </div>
       </div>
+
       <app-graph
-        *ngIf="collection.graphModel"
-        [chartType]="collection.graphModel.chartType"
-        [chartData]="collection.graphModel.chartData"
-        [chartOptions]="collection.graphModel.chartOptions"
-      ></app-graph>
+        *ngIf="collection.graphModel | async as graphModel"
+        [chartType]="graphModel.chartType"
+        [chartData]="graphModel.chartData"
+        [chartOptions]="graphModel.chartOptions"
+      >
+      </app-graph>
 
       <hr />
-      <mat-expansion-panel [disabled]="!collection.tableModel">
+      <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title><h2>Correlations and shifts</h2></mat-panel-title>
         </mat-expansion-panel-header>
+
         <app-table
-          *ngIf="collection.tableModel"
-          [tableModel]="collection.tableModel"
-        ></app-table>
+          *ngIf="collection.tableModel | async as tableModel"
+          [tableModel]="tableModel"
+        >
+        </app-table>
       </mat-expansion-panel>
     </mat-expansion-panel>
   </mat-accordion>

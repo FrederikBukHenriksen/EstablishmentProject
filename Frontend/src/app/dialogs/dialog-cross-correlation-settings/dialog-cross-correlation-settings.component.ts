@@ -11,20 +11,20 @@ import {
   TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TimeResolution } from 'api';
-import { removeTimezone } from '../../utils/TimeHelper';
+import { accountForTimezone, removeTimezone } from '../../utils/TimeHelper';
 
 export class DialogCrossCorrelationSettings {
   lowerLag: number;
   upperLag: number;
   startDate: Date;
-  endDate: Date | undefined;
+  endDate: Date;
   timeResolution: TimeResolution;
 
   constructor(
     lowerLag: number,
     upperLag: number,
     startDate: Date,
-    endDate: Date | undefined,
+    endDate: Date,
     timeResolution: TimeResolution
   ) {
     this.lowerLag = lowerLag;
@@ -51,7 +51,7 @@ export class DialogCrossCorrelationSettingsComponent {
         settings.lowerLag.toString()
       ),
       new TextInputField(
-        'lowerLag',
+        'upperLag',
         'Upper allowed lag',
         settings.upperLag.toString()
       ),
@@ -77,13 +77,16 @@ export class DialogCrossCorrelationSettingsComponent {
         })
         .afterClosed()
     );
-    var startDate = (data['timeframetart'] as Date) ?? undefined;
-    var endDate = (data['timeframeend'] as Date) ?? undefined;
+    var startDate = removeTimezone(
+      (data['timeframetart'] as Date) ?? undefined
+    );
+    var endDate = removeTimezone((data['timeframeend'] as Date) ?? undefined);
+
     return {
       lowerLag: (data['lowerLag'] as number) ?? undefined,
       upperLag: (data['upperLag'] as number) ?? undefined,
-      startDate: removeTimezone(startDate) ?? undefined,
-      endDate: removeTimezone(endDate) ?? undefined,
+      startDate: startDate ?? undefined,
+      endDate: endDate ?? undefined,
       timeResolution: (data['timeresolution'] as TimeResolution) ?? undefined,
     } as DialogCrossCorrelationSettings;
   }

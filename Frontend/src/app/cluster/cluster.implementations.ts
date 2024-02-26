@@ -60,14 +60,13 @@ export class Cluster_TimeOfDay_Spending
   filterSalesBySalesItems = new FilterSalesBySalesItems();
   filterSalesBySalesTables = new FilterSalesBySalesTables();
   bandwidths: ClusterBandwidths[] = [
-    { title: 'Time of visit', value: 120 },
-    { title: 'Total price', value: 50 },
+    { title: 'Time of visit', value: 250 },
+    { title: 'Total price', value: 100 },
   ];
   clusteringReturn?: ClusteringReturn;
   salesDTOClusters: SaleDTO[][] = [];
 
   constructor(
-    private readonly itemService: ItemService,
     private readonly salesService: SaleService,
     private readonly salesStatisticsService: SaleStatisticsService,
     private readonly clusterService: ClusterService,
@@ -156,75 +155,44 @@ export class Cluster_TimeOfDay_Spending
   }
 
   public async buildClusterTable(): Promise<TableModel> {
-    const itemIds = [
-      ...new Set(
-        this.salesDTOClusters.flatMap((sale) =>
-          sale.flatMap((item) => item.salesItems.map((x) => x.item1))
-        )
-      ),
-    ];
-    const itemDTOs: ItemDTO[] = await this.itemService.GetItemsDTO(itemIds);
-
     const columns = [
       'Cluster number',
-      'Avg. no. item',
-      'Avg. spend',
-      'No. of sales',
+      'Avg. time of visit',
+      'Avg. total spend',
+      'Number of sales in cluster',
     ];
     const tableEntries: TableEntry[] = [];
 
-    this.salesDTOClusters.forEach((element, index) => {
-      const itemsDTOmapped: ItemDTO[] = element.flatMap((sale) =>
-        sale.salesItems.map(
-          (itemId) => itemDTOs.find((item) => item.id === itemId.item1)!
-        )
-      );
+    await Promise.all(
+      this.salesDTOClusters.map(async (cluster, index) => {
+        var clusterElementsId = cluster.map((x) => x.id);
 
-      const averageNumberOfItemsOfCluster =
-        itemsDTOmapped.length / element.length;
+        var averageTimeOfPayment =
+          await this.salesStatisticsService.GetSalesAverageTimeOfPayment(
+            clusterElementsId
+          );
 
-      const averageSpendOfCluster =
-        itemsDTOmapped.reduce((prev, current) => prev + current.price, 0) /
-        element.length;
+        var averageTotalSpend =
+          await this.salesStatisticsService.GetSalesAverageSpend(
+            clusterElementsId
+          );
 
-      tableEntries.push({
-        id: index,
-        elements: [
-          new TableString(columns[0], index.toString()),
-          new TableString(columns[1], averageNumberOfItemsOfCluster.toFixed(1)),
-          new TableString(columns[2], averageSpendOfCluster.toFixed(1)),
-          new TableString(columns[3], element.length.toString()),
-        ],
-      });
-    });
-
-    this.salesDTOClusters.forEach(async (cluster, index) => {
-      var clusterElementsId = cluster.map((x) => x.id);
-
-      tableEntries.push({
-        id: index,
-        elements: [
-          new TableString(columns[0], index.toString()),
-          new TableString(
-            columns[1],
-            (
-              await this.salesStatisticsService.GetSalesAverageNumberOfItems(
-                clusterElementsId
-              )
-            ).toFixed(1)
-          ),
-          new TableString(
-            columns[2],
-            (
-              await this.salesStatisticsService.GetSalesAverageSpend(
-                clusterElementsId
-              )
-            ).toFixed(1)
-          ),
-          new TableString(columns[3], cluster.length.toString()),
-        ],
-      });
-    });
+        tableEntries.push({
+          id: index,
+          elements: [
+            new TableString(columns[0], index.toString()),
+            new TableString(
+              columns[1],
+              (averageTimeOfPayment / 60).toFixed(0) +
+                ':' +
+                (averageTimeOfPayment % 60).toFixed(0)
+            ),
+            new TableString(columns[2], averageTotalSpend.toFixed(1)),
+            new TableString(columns[3], cluster.length.toString()),
+          ],
+        });
+      })
+    );
 
     return { columns: columns, elements: tableEntries };
   }
@@ -232,18 +200,21 @@ export class Cluster_TimeOfDay_Spending
   public async buildClustersTables(): Promise<TableModel[]> {
     const tableModels: TableModel[] = [];
 
+    const columns = ['Time of day', 'Total spend'];
+
     this.salesDTOClusters.forEach((cluster) => {
       tableModels.push({
-        columns: ['Time', 'Table', 'No. items'],
-        elements: cluster.map((sale) => ({
-          id: sale.id,
+        columns: columns,
+        elements: cluster.map((saleDTO) => ({
+          id: saleDTO.id,
           elements: [
-            new TableString('Time', sale.timestampPayment.toString()),
             new TableString(
-              'Tables',
-              sale.salesTables ? sale.salesTables.toString() : ''
+              columns[0],
+              saleDTO.timestampPayment.getHours() +
+                ':' +
+                saleDTO.timestampPayment.getMinutes()
             ),
-            new TableString('No. items', sale.salesItems.length.toString()),
+            new TableString(columns[1], saleDTO.totalSpend.toFixed(1)),
           ],
         })),
       });

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ChartDataset } from 'chart.js';
-import { lastValueFrom } from 'rxjs';
+import { Subject, lastValueFrom } from 'rxjs';
 import {
   AnalysisClient,
   CorrelationCommand,
@@ -47,12 +47,12 @@ import { CorrelationService } from '../services/API-implementations/correlation.
 export class CrossCorrelation_Sales_Temperature
   implements ICorrelationImplementaion
 {
-  title: string = 'Sales vs Temperature';
-  correlationCommand!: CorrelationCommand;
+  title: string = 'Number of sales vs Temperature';
+  correlationCommand: CorrelationCommand = new CorrelationCommand();
 
   correlationReturn: CorrelationReturn | undefined;
-  tableModel: TableModel | undefined;
-  graphModel: GraphModel | undefined;
+  tableModel = new Subject<TableModel>();
+  graphModel = new Subject<GraphModel>();
 
   filterSales = new FilterSales();
   filterSalesBySalesItems = new FilterSalesBySalesItems();
@@ -72,7 +72,14 @@ export class CrossCorrelation_Sales_Temperature
     private readonly dialogFilterSalesBySalesitemsComponent: DialogFilterSalesBySalesitemsComponent,
     private readonly dialogFilterSalesBySalestablesComponent: DialogFilterSalesBySalestablesComponent,
     private readonly dialogCrossCorrelationSettingsComponent: DialogCrossCorrelationSettingsComponent
-  ) {}
+  ) {
+    this.dialogCrossCorrelationSettings.timeResolution = TimeResolution.Hour;
+    this.dialogCrossCorrelationSettings.startDate = new Date();
+    this.dialogCrossCorrelationSettings.startDate.setHours(8, 0, 0, 0);
+
+    this.dialogCrossCorrelationSettings.endDate = new Date();
+    this.dialogCrossCorrelationSettings.endDate.setHours(16, 0, 0, 0);
+  }
 
   dialogs: IDialogImplementation[] = [
     {
@@ -130,23 +137,23 @@ export class CrossCorrelation_Sales_Temperature
       await this.correlationService.Correlation_NumberOfSales_Vs_Temperature(
         salesIds,
         this.dialogCrossCorrelationSettings.startDate!,
-        this.dialogCrossCorrelationSettings.endDate!,
+        this.dialogCrossCorrelationSettings.endDate,
         this.dialogCrossCorrelationSettings.timeResolution!,
         this.dialogCrossCorrelationSettings.upperLag!,
         this.dialogCrossCorrelationSettings.lowerLag!
       );
 
-    this.graphModel = await this.buildGraph();
-    this.tableModel = await this.buildTable();
+    this.tableModel.next(await this.buildTable());
+    this.graphModel.next(await this.buildGraph());
   }
 
   async buildTable(): Promise<TableModel> {
-    const timeRes = this.correlationCommand.timeResolution;
+    const timeRes = this.dialogCrossCorrelationSettings.timeResolution;
 
-    const columns = ['[' + getLagUnit(timeRes) + ']', 'Correlation'];
+    const columns = ['Lag [' + getLagUnit(timeRes) + ']', 'Correlation'];
 
-    this.tableModel = {
-      columns: [getLagUnit(timeRes), 'Correlation'],
+    var tableModel = {
+      columns: columns,
       elements:
         this.correlationReturn?.lagAndCorrelation.map(
           (element, index) =>
@@ -162,7 +169,7 @@ export class CrossCorrelation_Sales_Temperature
             } as TableEntry)
         ) || [],
     } as TableModel;
-    return this.tableModel;
+    return tableModel;
   }
 
   async buildGraph(): Promise<GraphModel> {
@@ -183,7 +190,7 @@ export class CrossCorrelation_Sales_Temperature
 
     const bestLag = GetLargestCorrelation(lagAndCorrelation);
 
-    const timeres = this.correlationCommand.timeResolution;
+    const timeres = this.dialogCrossCorrelationSettings.timeResolution;
     const chartDatasets: ChartDataset[] = [
       {
         data: values.map((x) => x.value1),
@@ -205,9 +212,9 @@ export class CrossCorrelation_Sales_Temperature
       } as ChartDataset,
     ];
 
-    const startDate = this.correlationCommand.timePeriod.start;
-    const endDate = this.correlationCommand.timePeriod.end;
-    this.graphModel = {
+    const startDate = this.dialogCrossCorrelationSettings.startDate;
+    const endDate = this.dialogCrossCorrelationSettings.endDate;
+    var graphModel = {
       chartType: 'line',
       chartData: {
         datasets: chartDatasets,
@@ -217,7 +224,7 @@ export class CrossCorrelation_Sales_Temperature
       },
       chartOptions: {},
     } as GraphModel;
-    return this.graphModel;
+    return graphModel;
   }
 }
 
@@ -229,7 +236,6 @@ export function shiftArrayAttribute<T>(
   const newArray = [...arr];
 
   if (shiftAmount > 0) {
-    // Shift to the right
     for (let i = 0; i < shiftAmount; i++) {
       const lastValue = newArray[newArray.length - 1][attributeName];
       for (let j = newArray.length - 1; j > 0; j--) {
@@ -238,7 +244,6 @@ export function shiftArrayAttribute<T>(
       newArray[0][attributeName] = lastValue;
     }
   } else if (shiftAmount < 0) {
-    // Shift to the left
     for (let i = 0; i < -shiftAmount; i++) {
       const firstValue = newArray[0][attributeName];
       for (let j = 0; j < newArray.length - 1; j++) {
@@ -273,6 +278,7 @@ export function getGraphLabel(
 ): string {
   dateStart = accountForTimezone(dateStart);
   dateEnd = accountForTimezone(dateEnd);
+  dateEnd = AddToDateTimeResolution(dateEnd, -1, timeResolution);
 
   if (inputDate >= dateStart && inputDate <= dateEnd) {
     return DateForGraph(inputDate);

@@ -100,6 +100,9 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
         {
             Establishment establishment = this.unitOfWork.establishmentRepository.IncludeSales().IncludeSalesItems().GetById(command.EstablishmentId)!;
             List<Sale> sales = establishment.GetSales();
+            var test = sales.Average(x => x.GetTotalPrice());
+            var salfdsf = sales.Select(x => x.GetSalesItems()).ToList();
+            var ok = sales[0].GetTotalPrice();
             var metric = command.Calculate(sales);
             return new GetSalesStatisticsReturn { metric = metric };
         }

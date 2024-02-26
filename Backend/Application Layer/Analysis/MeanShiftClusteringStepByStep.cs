@@ -23,8 +23,9 @@ namespace WebApplication1.Services.Analysis
 
     public class MeanShiftClusteringStepByStep : IMeanShiftClustering
     {
-        private double toleranceForCovergence = 0.01;
+        private double toleranceForCovergence = 0.001;
         private double toleranceForGrouping = 0.1;
+        private int maxIterations = 1000;
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
@@ -33,23 +34,21 @@ namespace WebApplication1.Services.Analysis
             ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
-            while (!dataWithConvergence.All(x => x.HasConverged))
+            var iterations = 0;
+
+            while (!dataWithConvergence.All(x => x.HasConverged) && iterations < this.maxIterations)
             {
                 var res = this.SelectNextDataPointAndReevaluteAllDataPointsConvergence(dataWithConvergence, bandwidth, this.toleranceForCovergence);
                 var dataPoint = res.Object;
                 var shift = res.Shift;
 
                 //Check for convergence
+                dataPoint.Location = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
                 if (ClusterHelper.HasPointConverged(shift, this.toleranceForCovergence))
                 {
                     dataPoint.HasConverged = true;
                 }
-                else
-                {
-                    //Update location
-                    dataPoint.Location = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
-                    //dataPoint.NoOfIterations++;
-                }
+                iterations++;
             }
             //Send the all datapoints to grouping after convergenve
             return ClusterHelper.GroupPoints(dataWithConvergence, this.toleranceForGrouping);
@@ -78,7 +77,7 @@ namespace WebApplication1.Services.Analysis
 
     public class MeanShiftClusteringDirectly : IMeanShiftClustering
     {
-        private double toleranceForCovergence = 0.01;
+        private double toleranceForCovergence = 0.001;
         private double toleranceForGrouping = 0.1;
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
@@ -87,6 +86,7 @@ namespace WebApplication1.Services.Analysis
             ClusterHelper.BandwidthMustBePositive(bandwidth);
             ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
+            List<MeanShiftDataPoint<T>> dataWithConvergenceRefernece = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
 
             foreach (var dataPoint in dataWithConvergence)
@@ -94,7 +94,7 @@ namespace WebApplication1.Services.Analysis
                 while (!dataPoint.HasConverged)
                 {
                     //Identify neighbouring data points
-                    var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
+                    var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergenceRefernece, bandwidth);
 
                     //Calculate and perform shift
                     List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
@@ -102,11 +102,11 @@ namespace WebApplication1.Services.Analysis
                     //Check for convergence
                     if (ClusterHelper.HasPointConverged(shift, this.toleranceForCovergence))
                     {
+                        var test = neighbouringPoints.Average(x => x.Location[0]);
                         dataPoint.HasConverged = true;
                     }
                     else
                     {
-                        //Update location
                         dataPoint.Location = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
                     }
                 }
@@ -216,6 +216,11 @@ namespace WebApplication1.Services.Analysis
 
             foreach (var dataPoint in AllPointsConverged)
             {
+                if (dataPoint.IsClustered)
+                {
+                    continue;
+                }
+
                 foreach (var cluster in Clusters)
                 {
                     if (cluster.Any(dataPointInCluster => CalculateDistance(dataPoint.Location, dataPointInCluster.Location) <= tolerance))
@@ -228,6 +233,7 @@ namespace WebApplication1.Services.Analysis
                 if (!dataPoint.IsClustered)
                 {
                     Clusters.Add(new List<MeanShiftDataPoint<T>> { dataPoint });
+                    dataPoint.IsClustered = true;
                 }
             }
 

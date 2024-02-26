@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TableModel } from '../table/table.component';
 import { CrossCorrelation_Sales_Temperature } from './cross-correlation.implementations';
 import { ItemService } from '../services/API-implementations/item.service';
+import { Subject } from 'rxjs';
 
 export type GraphModel = {
   chartType: ChartType;
@@ -21,8 +22,8 @@ export type IDialogImplementation = {
 export interface ICorrelationImplementaion {
   title: string;
   dialogs: IDialogImplementation[];
-  tableModel: TableModel | undefined;
-  graphModel: GraphModel | undefined;
+  tableModel: Subject<TableModel>;
+  graphModel: Subject<GraphModel>;
 }
 
 @Component({

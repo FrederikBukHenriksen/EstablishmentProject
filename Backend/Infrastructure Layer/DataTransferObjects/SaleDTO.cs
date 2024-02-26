@@ -9,6 +9,7 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
         public DateTime TimestampPayment { get; set; }
         public List<(Guid, int)> SalesItems { get; set; } = new List<(Guid, int)>();
         public List<Guid> SalesTables { get; set; } = new List<Guid>();
+        public double totalSpend { get; set; }
 
 
         public SaleDTO(Sale sale)
@@ -18,6 +19,7 @@ namespace WebApplication1.Infrastructure_Layer.DataTransferObjects
             this.TimestampPayment = sale.TimestampPayment;
             this.SalesItems = sale.SalesItems.Select(x => (x.Item.Id, x.quantity)).ToList();
             this.SalesTables = sale.SalesTables.Select(x => x.Table.Id).ToList();
+            this.totalSpend = sale.GetTotalPrice();
         }
     }
 }

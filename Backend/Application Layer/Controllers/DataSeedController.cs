@@ -1,10 +1,11 @@
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Random;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
-using WebApplication1.Domain_Layer.Services.Repositories;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
@@ -21,19 +22,81 @@ namespace WebApplication1.Controllers
         {
         }
 
-        [HttpGet]
-        public void SeedDatabase(ITestDataBuilder testDataCreatorService, IEstablishmentRepository establishmentRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
+        [HttpGet("above-each-other")]
+        public void aboveeachother(IUnitOfWork unitOfWork)
         {
+            var testDataBuilder = new TestDataBuilder();
+
+            //ARRANGE
+            var establishment = new Establishment("Cafe 1");
+            var testItem = establishment.CreateItem("test", 1);
+            establishment.AddItem(testItem);
+
+            Func<double, double> linearFirstDistribution = TestDataBuilder.GetLinearFuncition(2, -8 * 2);
+            Func<double, double> linearSecondDistribution = TestDataBuilder.GetLinearFuncition(-2, 32);
+
+            var firstSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
+            var firstSales = testDataBuilder.FINALFilterOnOpeningHours(8, 12, firstSalesDistribution);
+            var secondSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearSecondDistribution, TimeResolution.Hour);
+            var secondSales = testDataBuilder.FINALFilterOnOpeningHours(12, 16, secondSalesDistribution);
+
+            var aggregate = testDataBuilder.FINALAggregateDistributions([firstSales, secondSales]);
+
+            var normalRandomSeed = new SystemRandomSource(1);
+
+            Normal normal = new Normal(0, 5, normalRandomSeed);
+            foreach (var distribution in aggregate.ToList())
+            {
+                for (int i = 0; i < distribution.Value; i++)
+                {
+                    var randomNormalDistributionNumber = normal.RandomSource.Next(0, 100);
+                    var sale = establishment.CreateSale(distribution.Key);
+                    establishment.AddSale(sale);
+                    var salesItems = establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber);
+                    establishment.AddSalesItems(sale, salesItems);
+                }
+            }
+
+            foreach (var distribution in aggregate.ToList())
+            {
+                for (int i = 0; i < distribution.Value; i++)
+                {
+                    var randomNormalDistributionNumber = normal.RandomSource.Next(200, 300);
+                    var sale = establishment.CreateSale(distribution.Key);
+                    establishment.AddSale(sale);
+                    var salesItems = establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber);
+                    establishment.AddSalesItems(sale, salesItems);
+                }
+            }
+
+            var user = new User("Frederik@mail.com", "12345678");
+            var userRole = user.CreateUserRole(establishment, user, Role.Admin);
+            user.AddUserRole(userRole);
+
+            using (var uow = unitOfWork)
+            {
+                uow.establishmentRepository.Add(establishment);
+                uow.userRepository.Add(user);
+
+            }
+        }
+
+        [HttpGet]
+        public void SeedDatabase(IUnitOfWork unitOfWork)
+        {
+
+            var testDataCreator = new TestDataBuilder();
+
             var totalDataTimePeriod = new DateTimePeriod(DateTime.Today.AddMonths(-1), DateTime.Today);
             var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod.Start, totalDataTimePeriod.End, TimeResolution.Hour);
-            var openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
-            var timelineDaysWithinOpeningHours = testDataCreatorService.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timelineAllDays, openingHours);
+            var openingHours = testDataCreator.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
+            var timelineDaysWithinOpeningHours = testDataCreator.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timelineAllDays, openingHours);
 
-            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Hour, TestDataBuilder.GetLinearFuncition(0.25, 1));
-            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Day, TestDataBuilder.GetLinearFuncition(0.0, 0));
-            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Month, TestDataBuilder.GetLinearFuncition(0, 0));
+            Dictionary<DateTime, int> distributionHourly = testDataCreator.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Hour, TestDataBuilder.GetLinearFuncition(0.25, 1));
+            Dictionary<DateTime, int> distributionDaily = testDataCreator.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Day, TestDataBuilder.GetLinearFuncition(0.0, 0));
+            Dictionary<DateTime, int> distributionMonthly = testDataCreator.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Month, TestDataBuilder.GetLinearFuncition(0, 0));
 
-            Dictionary<DateTime, int> aggregatedDistribution = testDataCreatorService.FINALAggregateDistributions(new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly });
+            Dictionary<DateTime, int> aggregatedDistribution = testDataCreator.FINALAggregateDistributions(new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly });
 
             var establishment = new Establishment("Cafe Frederik");
             var water = establishment.CreateItem("Water", 10);

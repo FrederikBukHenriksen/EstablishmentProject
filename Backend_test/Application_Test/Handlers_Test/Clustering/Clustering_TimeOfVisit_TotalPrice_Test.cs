@@ -26,7 +26,6 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
         establishment = new Establishment("Cafe 1");
         testItem = establishment.CreateItem("test", 1);
         establishment.AddItem(testItem);
-
         CreateTestData();
         using (var uow = unitOfWork)
         {
@@ -42,103 +41,52 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
             new Clustering_TimeOfVisit_TotalPrice_Command(
             establishmentId: establishment.Id,
             salesIds: establishment.GetSales().Select(x => x.Id).ToList(),
-            bandwidthTimeOfVisit: 80,
+            bandwidthTimeOfVisit: 250,
             bandwidthTotalPrice: 100);
 
         //ACT
         ClusteringReturn result = await Clustering_TimeOfVisitVSTotalPrice.Handle(command);
 
         //ASSERT
-        List<List<Sale>> salesInClusters = result.clusters.Select(x => x.Select(y => establishment.GetSales().Find(z => z.Id == y)).ToList()).ToList();
-        List<List<Item>> items = salesInClusters.Select(x => x.Select(y => y.SalesItems[0].Item).ToList()).ToList();
-
-        //Correct clusters
-        foreach (var itemList in items)
-        {
-            foreach (var item in itemList)
-            {
-                Assert.Equal(itemList[0], item);
-            }
-        }
+        Assert.Equal(2, result.clusters.Count);
     }
-
-
-
-    //public void data()
-    //{
-    //    // Arrange
-    //    var openingHoursInMinutes = 8 * 60;
-    //    var number = 100;
-    //    //Func<double, double> normFunc = TestDataBuilder.GetNormalFunction(0, 2);
-    //    //Random random = new Random(1);
-    //    var normalRandomSeed = new SystemRandomSource(1);
-    //    Normal normalDistribution = new Normal((8 * 60) / 2, 10, normalRandomSeed);
-
-    //    var data = new List<(string, List<double>)>();
-    //    for (int i = 0; i < number; i++)
-    //    {
-    //        //Random double between -10 and 10.
-    //        var x = normalDistribution.RandomSource.Next(0, 8);
-    //        var y = normalDistribution.RandomSource.Next(80, 121);
-    //        var point = new List<double> { x, y, };
-    //        if (i < number / 2)
-    //        {
-    //            //point = point.Zip(new List<double> { 5, 5 }, (m, s) => m + s).ToList();
-    //            establishment.
-
-    //        }
-    //        else
-    //        {
-    //            point = point.Zip(new List<double> { -5, -5 }, (m, s) => m + s).ToList();
-    //        }
-    //        data.Add(("point", point));
-    //    };
-
-    //    var bandwidth = new List<double> { 1, 1 };
-
-    //    // Act
-    //    var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
-
-    //    // Assert
-    //    Assert.Equal(2, result.Count);
-    //}
-
 
     private void CreateTestData()
     {
-        Func<double, double> morningSalesDistribution = (x) => TestDataBuilder.GetNormalFunction(10, 2)(x) * 20;
-        Func<double, double> afternoonSalesDistribution = (x) => TestDataBuilder.GetNormalFunction(14, 2)(x) * 15;
-        Func<double, double> wholeDaySalesDistribution = (x) => TestDataBuilder.GetNormalFunction(14, 2)(x) * 10;
+        Func<double, double> linearFirstDistribution = TestDataBuilder.GetLinearFuncition(2, -8 * 2);
+        Func<double, double> linearSecondDistribution = TestDataBuilder.GetLinearFuncition(-2, 32);
 
-        var morningBreakfast = testDataBuilder.FINALFilterOnOpeningHours(8, 12, testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-7), DateTime.Today, morningSalesDistribution, TimeResolution.Hour));
-        var afternoonLunch = testDataBuilder.FINALFilterOnOpeningHours(12, 16, testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-7), DateTime.Today, afternoonSalesDistribution, TimeResolution.Hour));
-        var wholeDayCoffee = testDataBuilder.FINALFilterOnOpeningHours(8, 16, testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-7), DateTime.Today, wholeDaySalesDistribution, TimeResolution.Hour));
+        var firstSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
+        var firstSales = testDataBuilder.FINALFilterOnOpeningHours(8, 12, firstSalesDistribution);
+        var secondSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearSecondDistribution, TimeResolution.Hour);
+        var secondSales = testDataBuilder.FINALFilterOnOpeningHours(12, 16, secondSalesDistribution);
+
+        var aggregate = testDataBuilder.FINALAggregateDistributions([firstSales, secondSales]);
 
         var normalRandomSeed = new SystemRandomSource(1);
 
-
-        Normal morningDistribution = new Normal(60, 10, normalRandomSeed);
-        foreach (var distribution in morningBreakfast.ToList())
+        Normal normal = new Normal(0, 5, normalRandomSeed);
+        foreach (var distribution in aggregate.ToList())
         {
             for (int i = 0; i < distribution.Value; i++)
             {
-                var randomNormalDistributionNumber = morningDistribution.RandomSource.Next(80, 121);
+                var randomNormalDistributionNumber = normal.RandomSource.Next(0, 100);
                 var sale = establishment.CreateSale(distribution.Key);
                 establishment.AddSale(sale);
-                establishment.AddSalesItems(sale, establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber));
+                var salesItems = establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber);
+                establishment.AddSalesItems(sale, salesItems);
             }
         }
 
-        Normal afternoonDistribution = new Normal(60, 10, normalRandomSeed);
-
-        foreach (var distribution in afternoonLunch.ToList())
+        foreach (var distribution in firstSales.ToList())
         {
             for (int i = 0; i < distribution.Value; i++)
             {
-                var randomNormalDistributionNumber = afternoonDistribution.RandomSource.Next(80, 121);
+                var randomNormalDistributionNumber = normal.RandomSource.Next(200, 300);
                 var sale = establishment.CreateSale(distribution.Key);
                 establishment.AddSale(sale);
-                establishment.AddSalesItems(sale, establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber));
+                var salesItems = establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber);
+                establishment.AddSalesItems(sale, salesItems);
             }
         }
     }

@@ -112,10 +112,8 @@ export class TableComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngAfterViewInit() {
-    // Initialize MatTableDataSource with elements array
     this.dataSource = new MatTableDataSource(this.tableModel.elements);
 
-    // If you want to add pagination
     if (this.addPaginator) {
       this.dataSource.paginator = this.paginator;
     }
@@ -159,10 +157,6 @@ export class TableComponent implements AfterViewInit {
   public CastToTableButton(tableElement: TableElement): TableButton {
     return tableElement as TableButton;
   }
-
-  // protected getTypeOfTableElement(element: TableElement): string {
-  //   return element.constructor.name;
-  // }
 
   protected getTypeOfTableElement(element: TableElement): string {
     return element
