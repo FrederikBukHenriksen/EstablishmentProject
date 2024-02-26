@@ -86,7 +86,7 @@ namespace WebApplication1.Program
                 .AddCookie(options =>
                 {
                     options.Cookie.Name = "jwt";
-                    options.LoginPath = "/Login";
+                    //options.LoginPath = "/Login";
                 })
                 .AddJwtBearer(options =>
                 {

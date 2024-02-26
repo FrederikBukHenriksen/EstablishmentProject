@@ -11,9 +11,9 @@ namespace WebApplication1.Services.Analysis
     {
         public T Object { get; }
         public List<double> Location { get; set; }
-        public List<double> SimulatedLocation = new List<double>();
         public bool HasConverged { get; set; } = false;
         public bool IsClustered { get; set; } = false;
+        public int NoOfIterations = 0;
         public MeanShiftDataPoint(T obj, List<double> loc)
         {
             this.Object = obj;
@@ -35,34 +35,35 @@ namespace WebApplication1.Services.Analysis
 
             while (!dataWithConvergence.All(x => x.HasConverged))
             {
-                var dataPoint = this.SelectNextDataPointAndReevaluteAllDataPointsConvergence(dataWithConvergence, bandwidth, this.toleranceForCovergence);
-
-                //Identify neighbouring data points
-                var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
-
-                //Calculate and perform shift
-                List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
-                dataPoint.Location = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
+                var res = this.SelectNextDataPointAndReevaluteAllDataPointsConvergence(dataWithConvergence, bandwidth, this.toleranceForCovergence);
+                var dataPoint = res.Object;
+                var shift = res.Shift;
 
                 //Check for convergence
                 if (ClusterHelper.HasPointConverged(shift, this.toleranceForCovergence))
                 {
                     dataPoint.HasConverged = true;
-                };
+                }
+                else
+                {
+                    //Update location
+                    dataPoint.Location = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
+                    //dataPoint.NoOfIterations++;
+                }
             }
             //Send the all datapoints to grouping after convergenve
             return ClusterHelper.GroupPoints(dataWithConvergence, this.toleranceForGrouping);
         }
 
-        private MeanShiftDataPoint<T> SelectNextDataPointAndReevaluteAllDataPointsConvergence<T>(List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth, double convergenceTolerance)
+        private (MeanShiftDataPoint<T> Object, List<double> Shift) SelectNextDataPointAndReevaluteAllDataPointsConvergence<T>(List<MeanShiftDataPoint<T>> dataWithConvergence, List<double> bandwidth, double convergenceTolerance)
         {
-            List<(MeanShiftDataPoint<T> Object, double ShiftMagnitude, int Neighbours)> shiftingMagnitudeAndNeighbours = new List<(MeanShiftDataPoint<T>, double, int)>();
+            List<(MeanShiftDataPoint<T> Object, List<double> Shift, int Neighbours)> shiftingMagnitudeAndNeighbours = new List<(MeanShiftDataPoint<T>, List<double>, int)>();
             foreach (var dataPoint in dataWithConvergence)
             {
                 //Calculate number of neighbours and shift
                 var neighbouringPoints = ClusterHelper.FindNeighbours(dataPoint, dataWithConvergence, bandwidth);
                 List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
-                shiftingMagnitudeAndNeighbours.Add((dataPoint, ClusterHelper.VectorLength(shift), neighbouringPoints.Count));
+                shiftingMagnitudeAndNeighbours.Add((dataPoint, shift, neighbouringPoints.Count));
 
                 //Reevaluate convergence
                 if (!ClusterHelper.HasPointConverged(shift, convergenceTolerance))
@@ -70,8 +71,8 @@ namespace WebApplication1.Services.Analysis
                     dataPoint.HasConverged = false;
                 }
             }
-            var ordered = shiftingMagnitudeAndNeighbours.Where(x => x.Object.HasConverged == false).OrderBy(x => x.Neighbours).ThenBy(x => x.ShiftMagnitude).ToList();
-            return ordered.First().Object;
+            var ordered = shiftingMagnitudeAndNeighbours.Where(x => x.Object.HasConverged == false).OrderBy(x => x.Neighbours).ThenBy(x => ClusterHelper.VectorLength(x.Shift)).ToList();
+            return (ordered.First().Object, ordered.First().Shift);
         }
     }
 
@@ -87,6 +88,7 @@ namespace WebApplication1.Services.Analysis
             ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
+
             foreach (var dataPoint in dataWithConvergence)
             {
                 while (!dataPoint.HasConverged)
@@ -96,17 +98,17 @@ namespace WebApplication1.Services.Analysis
 
                     //Calculate and perform shift
                     List<double> shift = ClusterHelper.CalculateShift(dataPoint.Location, neighbouringPoints.Select(x => x.Location).ToList(), bandwidth);
-                    List<double> newLocation = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
 
                     //Check for convergence
-                    var hasPointConverged = ClusterHelper.HasPointConverged(dataPoint.Location, newLocation, this.toleranceForCovergence);
-                    if (hasPointConverged)
+                    if (ClusterHelper.HasPointConverged(shift, this.toleranceForCovergence))
                     {
                         dataPoint.HasConverged = true;
                     }
-
-                    //Update location
-                    dataPoint.Location = new List<double>(newLocation);
+                    else
+                    {
+                        //Update location
+                        dataPoint.Location = dataPoint.Location.Zip(shift, (m, s) => m + s).ToList();
+                    }
                 }
             }
             //Send the all datapoints to grouping after convergenve

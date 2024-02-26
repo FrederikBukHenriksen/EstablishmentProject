@@ -88,7 +88,9 @@ namespace WebApplication1.CommandHandlers
             List<double> bandwith = [command.bandwidthTimeOfVisit, command.bandwidthTotalPrice];
 
             //Act
-            List<List<Sale>> clusteredSales = MeanShiftClusteringConvergenceGroup.Cluster(saleData, bandwith);
+            //List<List<Sale>> clusteredSales = MeanShiftClusteringConvergenceGroup.Cluster(saleData, bandwith);
+            List<List<Sale>> clusteredSales = new MeanShiftClusteringStepByStep().Cluster(saleData, bandwith);
+
 
             //Return
             var ok = saleData.Select(x => (x.sale.Id, x.values)).ToList();

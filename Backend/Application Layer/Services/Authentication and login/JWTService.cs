@@ -22,7 +22,6 @@ namespace WebApplication1.Application_Layer.Services.Authentication_and_login
 
         private static readonly string _securityKey = "this is my custom Secret key for authentication";
         private const string _usernameClaimType = "username";
-        private const string _jwtPlacementName = "jwt";
 
         public JWTService([FromServices] IUnitOfWork unitOfWork)
         {
@@ -49,7 +48,7 @@ namespace WebApplication1.Application_Layer.Services.Authentication_and_login
 
         public User? ExtractUserFromRequest(HttpContext httpContext)
         {
-            string? JWT = httpContext.Request.Cookies[_jwtPlacementName];
+            string? JWT = httpContext.Request.Cookies["jwt"];
             if (JWT.IsNullOrEmpty())
             {
                 return null;
@@ -77,7 +76,7 @@ namespace WebApplication1.Application_Layer.Services.Authentication_and_login
 
         public string? ExtractJwtFromRequest(HttpContext httpContext)
         {
-            string? JWT = httpContext.Request.Cookies[_jwtPlacementName];
+            string? JWT = httpContext.Request.Cookies["jwt"];
             if (JWT.IsNullOrEmpty())
             {
                 return null;

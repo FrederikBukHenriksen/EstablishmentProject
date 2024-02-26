@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.Handlers.Login_and_Authentication;
 using WebApplication1.Application_Layer.Services.Authentication_and_login;
 using WebApplication1.CommandHandlers;
-using WebApplication1.CommandsHandlersReturns;
 
 namespace WebApplication1.Controllers
 {
@@ -13,14 +12,6 @@ namespace WebApplication1.Controllers
     [Route("api/authentication")]
     public class AuthenticationController : ControllerBase
     {
-        private ICommandValidatorService handlerService;
-
-        public AuthenticationController(ICommandValidatorService handlerService
-)
-        {
-            this.handlerService = handlerService;
-        }
-
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult> LogIn(
@@ -28,7 +19,7 @@ namespace WebApplication1.Controllers
             [FromServices] IHandler<LoginCommand, LoginReturn> handler
             )
         {
-            LoginReturn loginReturn = (await this.handlerService.Service(handler, command)).Value;
+            LoginReturn loginReturn = await handler.Handle(command);
             this.HttpContext.Response.Cookies.Append("jwt", loginReturn.JWT, new CookieOptions { HttpOnly = true, Secure = true, IsEssential = true, SameSite = SameSiteMode.None });
             return this.Ok();
         }
@@ -40,7 +31,7 @@ namespace WebApplication1.Controllers
         {
             string JWT = JWTService.ExtractJwtFromRequest(this.HttpContext);
             IsLoggedInCommand command = new IsLoggedInCommand { JWT = JWT };
-            return await this.handlerService.Service(handler, command);
+            return await handler.Handle(command);
         }
 
         [Authorize]

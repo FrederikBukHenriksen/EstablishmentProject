@@ -226,31 +226,6 @@ export class Cluster_TimeOfDay_Spending
       });
     });
 
-    // this.salesDTOClusters.forEach((element, index) => {
-    //   const itemsDTOmapped: ItemDTO[] = element.flatMap((sale) =>
-    //     sale.salesItems.map(
-    //       (itemId) => itemDTOs.find((item) => item.id === itemId.item1)!
-    //     )
-    //   );
-
-    //   const averageNumberOfItemsOfCluster =
-    //     itemsDTOmapped.length / element.length;
-
-    //   const averageSpendOfCluster =
-    //     itemsDTOmapped.reduce((prev, current) => prev + current.price, 0) /
-    //     element.length;
-
-    //   tableEntries.push({
-    //     id: index,
-    //     elements: [
-    //       new TableString(columns[0], index.toString()),
-    //       new TableString(columns[1], averageNumberOfItemsOfCluster.toFixed(1)),
-    //       new TableString(columns[2], averageSpendOfCluster.toFixed(1)),
-    //       new TableString(columns[3], element.length.toString()),
-    //     ],
-    //   });
-    // });
-
     return { columns: columns, elements: tableEntries };
   }
 
