@@ -1,6 +1,7 @@
 ﻿using DMIOpenData;
 using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
+using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weather;
 using WebApplication1.Application_Layer.Handlers.ItemHandler;
 using WebApplication1.Application_Layer.Handlers.Login_and_Authentication;
 using WebApplication1.Application_Layer.Handlers.MeanShift;
@@ -68,6 +69,8 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesStatisticsCommand>>();
+            serviceCollection.AddTransient<IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageTimeOfPayment>>();
+
 
             //Item
             serviceCollection.AddTransient<IHandler<GetItemsCommand, GetItemsIdReturn>, GetItemsHandler<GetItemsIdReturn>>();
@@ -78,6 +81,9 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesIdReturn>, GetTablesHandler<GetTablesIdReturn>>();
             serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesDTOReturn>, GetTablesHandler<GetTablesDTOReturn>>();
             serviceCollection.AddTransient<IHandler<GetTablesCommand, GetTablesRawReturn>, GetTablesHandler<GetTablesRawReturn>>();
+
+            //Weather
+            serviceCollection.AddTransient<IHandler<GetTemperatureCommand, GetWeatherReturn>, GetWeatherHandler>();
         }
     }
 }

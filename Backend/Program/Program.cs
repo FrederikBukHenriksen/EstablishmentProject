@@ -75,7 +75,7 @@ namespace WebApplication1.Program
         {
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+                //options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
             });
         }
 
@@ -86,7 +86,6 @@ namespace WebApplication1.Program
                 .AddCookie(options =>
                 {
                     options.Cookie.Name = "jwt";
-                    //options.LoginPath = "/Login";
                 })
                 .AddJwtBearer(options =>
                 {
@@ -117,10 +116,20 @@ namespace WebApplication1.Program
 
         private static void AutoMigrate(WebApplication app)
         {
-            var scope = app.Services.CreateScope(); //Creates scoped lifetime for the service.
+            var scope = app.Services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            dbContext.Database.Migrate();
-            scope.Dispose();
+            try
+            {
+                dbContext.Database.OpenConnection();
+                dbContext.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+            }
+            finally
+            {
+                scope.Dispose();
+            }
         }
     }
 

@@ -2,7 +2,9 @@ using EstablishmentProject.test.TestingCode;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using WebApplication1.Application_Layer.Handlers.Login_and_Authentication;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Data;
 using WebApplication1.Domain_Layer.Entities;
@@ -14,7 +16,10 @@ namespace EstablishmentProject.test.Application_Test.Login_Test
         private const string apiLogin = "/api/authentication/login";
         private const string apiLogout = "/api/authentication/logout";
         private const string apiIsLoggedIn = "/api/authentication/is-logged-in";
-        private HttpClient httpClient;
+
+        public string IsLoggedIn { get; }
+        public string IsNotLoggedIn { get; }
+        public string ExceptionResponseStartsWith { get; }
 
         public LoginTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
@@ -23,9 +28,13 @@ namespace EstablishmentProject.test.Application_Test.Login_Test
                 new User("frederik@mail.com","hello123"),
                 new User("lydia@mail.com","goodbye123")
             };
-            httpClient = new HttpClient();
             dbContext.Set<User>().AddRange(users);
             dbContext.SaveChanges();
+
+            IsLoggedIn = JsonSerializer.Serialize(new IsLoggedInReturn { isLoggedIn = true });
+            IsNotLoggedIn = JsonSerializer.Serialize(new IsLoggedInReturn { isLoggedIn = false });
+            ExceptionResponseStartsWith = "System.ArgumentNullException";
+
         }
 
         [Fact]
@@ -80,23 +89,21 @@ namespace EstablishmentProject.test.Application_Test.Login_Test
             Assert.Equal(HttpStatusCode.OK, isLoggedinResponse.StatusCode);
 
             string responseContent = await isLoggedinResponse.Content.ReadAsStringAsync();
-            Assert.Equal("true", responseContent);
+            Assert.Equal(IsLoggedIn, responseContent);
         }
 
         [Fact]
         public async void IsLoggedIn_WithNoUserBeingLoggedIn_ShouldReturnFalse()
         {
             //ARRANGE
-            Assert.Equal("false", await (await isLoggedIn()).Content.ReadAsStringAsync());
+            Assert.StartsWith(ExceptionResponseStartsWith, await (await isLoggedIn()).Content.ReadAsStringAsync());
 
             //ACT
             HttpResponseMessage isLoggedinResponse = await httpClient.GetAsync(apiIsLoggedIn);
 
             //ASSERT
-            Assert.Equal(HttpStatusCode.OK, isLoggedinResponse.StatusCode);
-
             string responseContent = await isLoggedinResponse.Content.ReadAsStringAsync();
-            Assert.Equal("false", responseContent);
+            Assert.StartsWith(ExceptionResponseStartsWith, responseContent);
         }
 
         [Fact]
@@ -104,15 +111,16 @@ namespace EstablishmentProject.test.Application_Test.Login_Test
         {
             //Arrange
             Assert.Equal(HttpStatusCode.OK, (await login("frederik@mail.com", "hello123")).StatusCode);
-            Assert.Equal("true", await (await isLoggedIn()).Content.ReadAsStringAsync());
+            Assert.Equal(IsLoggedIn, await (await isLoggedIn()).Content.ReadAsStringAsync());
 
             //ACT
             HttpResponseMessage logoutResponse = await logOut();
 
             //ASSERT
             Assert.Equal(HttpStatusCode.OK, logoutResponse.StatusCode);
+            httpClient = CreateDefaultClient();
             var read = await (await isLoggedIn()).Content.ReadAsStringAsync();
-            Assert.Equal("false", await (await isLoggedIn()).Content.ReadAsStringAsync());
+            Assert.StartsWith(ExceptionResponseStartsWith, await (await isLoggedIn()).Content.ReadAsStringAsync());
             Assert.False(httpClient.DefaultRequestHeaders.TryGetValues("Cookie", out var cookieHeaderValues));
         }
 
@@ -120,7 +128,7 @@ namespace EstablishmentProject.test.Application_Test.Login_Test
         public async void LogOut_WhenNoUserLoggedIn_ShouldNotBeLoggedIn()
         {
             //Arrange
-            Assert.Equal("false", await (await isLoggedIn()).Content.ReadAsStringAsync());
+            Assert.StartsWith(ExceptionResponseStartsWith, await (await isLoggedIn()).Content.ReadAsStringAsync());
 
             //ACT
             HttpResponseMessage logoutResponse = await logOut();

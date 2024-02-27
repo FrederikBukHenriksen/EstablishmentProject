@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.Services.DataFetching;
 using WebApplication1.Domain_Layer.Entities;
 
 namespace WebApplication1.Application_Layer.Services
 {
-
 
     public enum DataRetrivalSystem
     {
@@ -15,7 +15,7 @@ namespace WebApplication1.Application_Layer.Services
     {
         Task RetrieveAllData(Establishment establishment, string credentials, DataRetrivalSystem system);
     }
-
+    [ExcludeFromCodeCoverage]
     public class DataFetcingAndStoringService : IDataFetcingAndStoringService
     {
         private IUnitOfWork unitOfWork;

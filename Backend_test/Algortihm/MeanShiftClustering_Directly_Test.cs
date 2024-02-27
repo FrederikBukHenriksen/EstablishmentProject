@@ -13,7 +13,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 0.2, 0.2 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(emptyData, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(emptyData, bandwidth);
 
             // Assert
             Assert.Empty(result);
@@ -35,7 +35,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 1.0, 1.0, 1.0 };
 
             // Act
-            Action act = () => new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            Action act = () => new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Throws<ArgumentException>(act);
@@ -59,7 +59,7 @@ namespace EstablishmentProject.test.Algortihm
 
             // Act
 
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Equal(3, result.Count);
@@ -84,7 +84,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 0.5, 0.5 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Single(result);
@@ -105,7 +105,7 @@ namespace EstablishmentProject.test.Algortihm
             var largeBandwidth = new List<double> { 15.0, 15.0 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, largeBandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, largeBandwidth);
 
             // Assert
             Assert.Single(result);
@@ -126,7 +126,7 @@ namespace EstablishmentProject.test.Algortihm
             var smallBandwidth = new List<double> { 1.0, 1.0 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, smallBandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, smallBandwidth);
 
             // Assert
             Assert.Equal(3, result.Count);
@@ -149,7 +149,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 2, 70.0 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Single(result);
@@ -170,7 +170,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 1.0, 50.0 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Equal(3, result.Count);
@@ -198,7 +198,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 5, 5, 5 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Single(result);
@@ -226,7 +226,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 5, 5, 5 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Single(result);
@@ -262,7 +262,7 @@ namespace EstablishmentProject.test.Algortihm
             var bandwidth = new List<double> { 1, 1 };
 
             // Act
-            var result = new MeanShiftClusteringDirectly().Cluster(data, bandwidth);
+            var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
             Assert.Equal(2, result.Count);

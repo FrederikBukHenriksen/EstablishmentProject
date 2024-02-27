@@ -8,7 +8,6 @@ using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Testcontainers.PostgreSql;
 using WebApplication1.Data;
-using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Program;
 using WebApplication1.Utils;
 
@@ -28,12 +27,15 @@ namespace EstablishmentProject.test.TestingCode
     {
         public IServiceScope scope;
 
+        public HttpClient httpClient;
+
         public List<ITestService> testServices = new List<ITestService>();
 
         public IntegrationTest(List<ITestService>? testServices = null)
         {
             this.testServices = testServices != null ? testServices : this.testServices;
             scope = Services.CreateScope();
+            httpClient = CreateDefaultClient();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -45,11 +47,10 @@ namespace EstablishmentProject.test.TestingCode
                     service.Config(builder);
                 }
             }
-            //if (!testServices.Any(x => x is DatabaseTestContainer))
-            //{
-            //    //Ensure the integration test does not access system database
-            //    removeDatabaseConnection(builder);
-            //}
+            if (!testServices.Any(x => x is DatabaseTestContainer))
+            {
+                removeDatabaseConnection(builder);
+            }
         }
         private void removeDatabaseConnection(IWebHostBuilder webHostBuilder)
         {
@@ -59,8 +60,16 @@ namespace EstablishmentProject.test.TestingCode
                 if (descriptor is not null)
                 {
                     services.Remove(descriptor);
+
+                    string connectionString = "Host=localhost; Database=NoDatabase; Username=postgres; password=postgres";
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                    {
+                        options.UseLazyLoadingProxies(true);
+                        options.UseNpgsql(connectionString);
+                    });
                 }
-            });
+            }
+            );
         }
     }
 
@@ -68,12 +77,25 @@ namespace EstablishmentProject.test.TestingCode
     {
         private readonly Mock<IWeather> mockWeatherApi = new Mock<IWeather>();
 
-        public List<(DateTime, double)> returnValue = new List<(DateTime, double)> { };
+        public List<(DateTime, double)> temperature = new List<(DateTime, double)> { };
 
-        public WeatherMock()
+
+        private WeatherMock()
+        {
+            setTemperatureReturn();
+        }
+
+        public WeatherMock(List<(DateTime, double)> temperature)
+        {
+            this.temperature = temperature;
+            setTemperatureReturn();
+        }
+
+
+        public void setTemperatureReturn()
         {
             mockWeatherApi.Setup(api => api.GetMeanTemperature(It.IsAny<Coordinates>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<TimeResolution>()))
-                .ReturnsAsync(returnValue);
+            .ReturnsAsync(temperature);
         }
 
         public Task<List<(DateTime, double)>> GetMeanTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution)
@@ -88,8 +110,9 @@ namespace EstablishmentProject.test.TestingCode
                 if (descriptor is not null)
                 {
                     services.Remove(descriptor);
+                    var thisInstance = this;
+                    services.AddSingleton<IWeather>(thisInstance);
                 }
-                services.AddScoped<IWeather, WeatherMock>();
 
             });
         }
@@ -144,44 +167,4 @@ namespace EstablishmentProject.test.TestingCode
             return new DatabaseTestContainer(dbContainer);
         }
     }
-
-    //public class UserContextServiceMock : IUserContextService, ITestService
-    //{
-    //    private User? User = null;
-
-    //    public UserContextServiceMock()
-    //    {
-
-    //    }
-
-
-    //    public void Config(IWebHostBuilder webHostBuilder)
-    //    {
-    //        webHostBuilder.ConfigureTestServices(services =>
-    //        {
-    //            var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(IUserContextService));
-    //            if (descriptor is not null)
-    //            {
-    //                services.Remove(descriptor);
-    //            }
-    //            services.AddScoped<IUserContextService, UserContextServiceMock>();
-
-    //        });
-    //    }
-
-    //    public User GetUser()
-    //    {
-    //        if (User == null)
-    //        {
-    //            throw new InvalidOperationException("User profile was not found");
-    //        }
-    //        return User;
-    //    }
-
-    //    public void SetUser(User user)
-    //    {
-    //        User = user;
-    //    }
-    //}
-
 }

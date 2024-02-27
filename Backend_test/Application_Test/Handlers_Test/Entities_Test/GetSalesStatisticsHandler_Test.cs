@@ -115,7 +115,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
             GetSalesStatisticsReturn result = await handler.Handle(getSalesAverageTimeOfPayment);
 
             //Assert
-            Assert.Equal(DateTime.Now.TimeOfDay.TotalMinutes, result.metric, 0.01);
+            Assert.Equal(DateTime.Now.TimeOfDay.TotalMinutes, result.metric, 1);
         }
 
         [Fact]

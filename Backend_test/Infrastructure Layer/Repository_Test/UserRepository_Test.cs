@@ -24,31 +24,31 @@ namespace EstablishmentProject.test.Infrastructure_Layer.DTO
             user = new User("Frederik@mail.com", "12345678");
             userRole = user.CreateUserRole(establishment, user, Role.Admin);
             user.AddUserRole(userRole);
+            establishmentRepository.Add(establishment);
+            userRepository.Add(user);
+            applicationDbContext.SaveChanges();
+
         }
 
         [Fact]
         public async Task UsingLazyLoading_WithUserRoles_ShouldBeAbleToAccessRelatedData()
         {
-            // Arrange
-
             // Act
             User userWithRoles = userRepository.GetById(user.Id);
 
             // Assert
             UserRole userRole = userWithRoles.GetUserRoles()[0];
+
             Assert.Equal(userRole.Id, userRole.Id);
-            Assert.Equal(establishment, userRole.Establishment);
+            Assert.Equal(establishment.Id, userRole.Establishment.Id);
         }
 
 
         [Fact]
         public async Task IncludeUserRoles_WithUser_ShouldIncludeUserRoles()
         {
-            // Arrange
-
             // Act
-            userRepository.IncludeUserRoles();
-            User userWithRoles = userRepository.GetById(user.Id);
+            User userWithRoles = userRepository.IncludeUserRoles().GetById(user.Id);
 
             // Assert
             UserRole userRole = userWithRoles.GetUserRoles()[0];

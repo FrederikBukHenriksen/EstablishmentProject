@@ -1,31 +1,10 @@
-﻿using NJsonSchema.NewtonsoftJson.Converters;
-using System.Runtime.Serialization;
+﻿using WebApplication1.Application_Layer.Handlers.MeanShift;
 using WebApplication1.Application_Layer.Handlers.SalesHandlers;
-using WebApplication1.CommandsHandlersReturns;
 using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services.Analysis;
 
 namespace WebApplication1.CommandHandlers
 {
-    [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
-    [KnownType(typeof(Clustering_TimeOfVisit_TotalPrice_Command))]
-    [KnownType(typeof(Clustering_TimeOfVisit_LengthOfVisit_Command))]
-    public abstract class ClusteringCommand : CommandBase, ICmdField_SalesIds
-    {
-        public ClusteringCommand(
-            Guid establishmentId,
-            List<Guid> salesIds
-            )
-        {
-            this.EstablishmentId = establishmentId;
-            this.SalesIds = salesIds;
-
-        }
-        public Guid EstablishmentId { get; set; }
-        public List<Guid> SalesIds { get; set; }
-
-    }
-
     public class Clustering_TimeOfVisit_TotalPrice_Command : ClusteringCommand
     {
         public double bandwidthTimeOfVisit;
@@ -36,28 +15,6 @@ namespace WebApplication1.CommandHandlers
             this.bandwidthTimeOfVisit = bandwidthTimeOfVisit;
             this.bandwidthTotalPrice = bandwidthTotalPrice;
         }
-    }
-
-    public class Clustering_TimeOfVisit_LengthOfVisit_Command : ClusteringCommand
-    {
-        public Clustering_TimeOfVisit_LengthOfVisit_Command(Guid establishmentId, List<Guid> salesIds) : base(establishmentId, salesIds)
-        {
-        }
-
-    }
-
-    public class ClusteringReturn : ReturnBase
-    {
-
-        public ClusteringReturn(
-            List<List<Guid>> clusters,
-            List<(Guid id, List<double> values)> calculationValues)
-        {
-            this.clusters = clusters;
-            this.calculationValues = calculationValues;
-        }
-        public List<List<Guid>> clusters { get; }
-        public List<(Guid id, List<double> values)> calculationValues { get; }
     }
 
     public class Clustering_TimeOfVisitVSTotalPrice : HandlerBase<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>
@@ -72,8 +29,8 @@ namespace WebApplication1.CommandHandlers
         public override async Task<ClusteringReturn> Handle(Clustering_TimeOfVisit_TotalPrice_Command command)
         {
             //Fetch
-            var localCommand = new GetSalesCommand { EstablishmentId = command.EstablishmentId, SalesIds = command.SalesIds };
-            List<Sale> sales = (await this.getSalesHandler.Handle(localCommand)).Sales;
+            var getSalesCommand = new GetSalesCommand { EstablishmentId = command.EstablishmentId, SalesIds = command.SalesIds };
+            List<Sale> sales = (await this.getSalesHandler.Handle(getSalesCommand)).Sales;
 
             //Arrange
             List<(Sale sale, List<double> values)> saleData = sales
@@ -87,8 +44,7 @@ namespace WebApplication1.CommandHandlers
             List<double> bandwith = [command.bandwidthTimeOfVisit, command.bandwidthTotalPrice];
 
             //Act
-            //List<List<Sale>> clusteredSales = MeanShiftClusteringConvergenceGroup.Cluster(saleData, bandwith);
-            List<List<Sale>> clusteredSales = new MeanShiftClusteringDirectly().Cluster(saleData, bandwith);
+            List<List<Sale>> clusteredSales = new MeanShiftClusteringStationary().Cluster(saleData, bandwith);
 
 
             //Return

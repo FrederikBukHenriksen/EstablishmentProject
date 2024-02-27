@@ -1,6 +1,8 @@
 ﻿using EstablishmentProject.test.TestingCode;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Random;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
+using WebApplication1.Application_Layer.Handlers.MeanShift;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
@@ -10,61 +12,79 @@ using WebApplication1.Utils;
 public class Clustering_TimeOfVisitVSLengthOfVisit_Test : IntegrationTest
 {
     private IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn> handler;
-
-    private Establishment establsihment = new Establishment();
-    private List<Sale> sales = new List<Sale>();
+    private IUnitOfWork unitOfWork;
+    private Establishment establishment = new Establishment();
     public Clustering_TimeOfVisitVSLengthOfVisit_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
     {
         handler = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_LengthOfVisit_Command, ClusteringReturn>>();
+        unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        var testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataBuilder>();
-
-        List<OpeningHours> openingHours = testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0));
-        List<DateTime> calendar = testDataCreatorService.OpenHoursCalendar(DateTime.Today.AddDays(-7), DateTime.Today, timeResolution: WebApplication1.Utils.TimeResolution.Hour, openingHours);
-        Dictionary<DateTime, int> distribution = testDataCreatorService.DistributionByTimeresolution(calendar, TestDataBuilder.GetCosineFunction(period: 8 * Math.PI, verticalShift: 5, horizontalShift: 12), TimeResolution.Hour);
-
-        establsihment = new Establishment("Cafe 1");
-
-        Random random = new Random(1);
-        foreach (KeyValuePair<DateTime, int> kvp in distribution)
+        //ARRANGE
+        establishment = new Establishment("Cafe 1");
+        CreateTestData();
+        using (var uow = unitOfWork)
         {
-
+            uow.establishmentRepository.Add(establishment);
         }
-        //Save to DB
-        IUnitOfWork unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        using (unitOfWork)
-        {
-            unitOfWork.establishmentRepository.Add(establsihment);
-        }
-
     }
 
-    //[Fact]
-    //public async void Cluster_WithLargeTimeBandwith_ShouldCreateClustersForEachItemCollection()
-    //{
-    //    //ARRANGE
-    //    var bandwidthTimeOfVisit = 500;
-    //    var bandwidthTotalPrice = 20;
-    //    Clustering_TimeOfVisit_LengthOfVisit_Command command =
-    //        new Clustering_TimeOfVisit_LengthOfVisit_Command(
-    //        establishmentId: establsihment.Id,
-    //        salesIds: sales.Select(x => x.Id).ToList());
+    [Fact]
+    public async void Cluster_WithLargeTimeBandwith_ShouldCreateClustersWithOnlyOneTypeOfItem()
+    {
+        //ARRANGE
+        Clustering_TimeOfVisit_LengthOfVisit_Command command =
+            new Clustering_TimeOfVisit_LengthOfVisit_Command(
+            establishmentId: establishment.Id,
+            salesIds: establishment.GetSales().Select(x => x.Id).ToList(),
+            bandwidthTimeOfVisit: 250,
+            bandwidthLengthOfVisit: 40);
 
-    //    //ACT
-    //    ClusteringReturn result = await handler.Handle(command);
+        //ACT
+        ClusteringReturn result = await handler.Handle(command);
 
-    //    //ASSERT
-    //    List<List<Sale>> salesInClusters = result.clusters.Select(x => x.Select(y => establsihment.GetSales().Find(z => z.Id == y)).ToList()).ToList();
-    //    List<List<Item>> items = salesInClusters.Select(x => x.Select(y => y.SalesItems[0].Item).ToList()).ToList();
+        //ASSERT
+        Assert.Equal(2, result.clusters.Count);
+    }
 
-    //    //Correct clusters
-    //    Assert.Equal(3, result.clusters.Count);
-    //    foreach (var itemList in items)
-    //    {
-    //        foreach (var item in itemList)
-    //        {
-    //            Assert.Equal(itemList[0], item);
-    //        }
-    //    }
-    //}
+
+    private void CreateTestData()
+    {
+        Func<double, double> linearFirstDistribution = TestDataBuilder.GetLinearFuncition(2, -8 * 2);
+        Func<double, double> linearSecondDistribution = TestDataBuilder.GetLinearFuncition(-2, 32);
+
+        var testDataBuilder = new TestDataBuilder();
+
+        var firstSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
+        var firstSales = testDataBuilder.FINALFilterOnOpeningHours(8, 12, firstSalesDistribution);
+        var secondSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearSecondDistribution, TimeResolution.Hour);
+        var secondSales = testDataBuilder.FINALFilterOnOpeningHours(12, 16, secondSalesDistribution);
+
+        var aggregate = testDataBuilder.FINALAggregateDistributions([firstSales, secondSales]);
+
+        var normalRandomSeed = new SystemRandomSource(1);
+
+        Normal normal = new Normal(0, 5, normalRandomSeed);
+        foreach (var distribution in aggregate.ToList())
+        {
+            for (int i = 0; i < distribution.Value; i++)
+            {
+                var randomNormalDistributionNumber = normal.RandomSource.Next(0, 30);
+                var sale = establishment.CreateSale(distribution.Key);
+                sale.setTimeOfArrival(distribution.Key.AddMinutes(randomNormalDistributionNumber * (-1)));
+                establishment.AddSale(sale);
+            }
+        }
+
+        foreach (var distribution in aggregate.ToList())
+        {
+            for (int i = 0; i < distribution.Value; i++)
+            {
+                var randomNormalDistributionNumber = normal.RandomSource.Next(30, 60);
+                var sale = establishment.CreateSale(distribution.Key);
+                sale.setTimeOfArrival(distribution.Key.AddMinutes(randomNormalDistributionNumber * (-1)));
+                establishment.AddSale(sale);
+
+            }
+        }
+    }
 }

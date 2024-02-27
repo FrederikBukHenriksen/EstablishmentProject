@@ -16,30 +16,6 @@ namespace WebApplication1.Utils
         T End { get; set; }
     }
 
-    public class localDatePeriod : ITimePeriod<LocalDate>
-    {
-        public LocalDate Start { get; set; }
-        public LocalDate End { get; set; }
-
-        public localDatePeriod(LocalDate start, LocalDate end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
-    public class LocalTimePeriod : ITimePeriod<LocalTime>
-    {
-        public LocalTime Start { get; set; }
-        public LocalTime End { get; set; }
-
-        public LocalTimePeriod(LocalTime start, LocalTime end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
     public class LocalDateTime : ITimePeriod<LocalDateTime>
     {
         public LocalDateTime Start { get; set; }
@@ -184,7 +160,7 @@ namespace WebApplication1.Utils
             // Map objects to the timeline
             foreach (var obj in objects)
             {
-                var objTime = TimeHelper.TimeResolutionUniqueRounder(extractor(obj), timeResolution);
+                var objTime = extractor(obj);
 
                 if (timelineAsDictionary.ContainsKey(objTime))
                 {
@@ -192,6 +168,83 @@ namespace WebApplication1.Utils
                 }
             }
             return timelineAsDictionary;
+        }
+
+
+
+        //v2
+        public static List<DateTime> CreateTimelineAsListV2(DateTime start, DateTime end, TimeResolution resolution)
+        {
+            List<DateTime> timeline = new List<DateTime>();
+
+            DateTime current = start;
+
+            while (current < end)
+            {
+                timeline.Add(current);
+
+                switch (resolution)
+                {
+                    case TimeResolution.Hour:
+                        current = current.AddHours(1);
+                        break;
+                    case TimeResolution.Date:
+                        current = current.AddDays(1);
+                        break;
+                    case TimeResolution.Month:
+                        current = current.AddMonths(1);
+                        break;
+                    case TimeResolution.Year:
+                        current = current.AddYears(1);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid time resolution.");
+                }
+            }
+
+            return timeline;
+        }
+
+        public static Dictionary<DateTime, List<T>> MapObjectsToTimelineV2<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        {
+            Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
+
+            foreach (var obj in objects)
+            {
+                DateTime objDateTime = extractor(obj);
+                DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
+
+                if (!mappedTimeline.ContainsKey(mappedDateTime))
+                    mappedTimeline[mappedDateTime] = new List<T>();
+
+                mappedTimeline[mappedDateTime].Add(obj);
+            }
+
+            // Fill in missing timeline points with empty lists
+            foreach (var timelinePoint in timeline)
+            {
+                if (!mappedTimeline.ContainsKey(timelinePoint))
+                    mappedTimeline[timelinePoint] = new List<T>();
+            }
+
+            return mappedTimeline;
+        }
+
+        private static DateTime MapDateTime(DateTime dateTime, TimeResolution timeResolution)
+        {
+            switch (timeResolution)
+            {
+                case TimeResolution.Hour:
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0);
+                case TimeResolution.Date:
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
+                case TimeResolution.Month:
+                    return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0);
+                case TimeResolution.Year:
+                    return new DateTime(dateTime.Year, 1, 1, 0, 0, 0);
+                default:
+                    throw new ArgumentException("Invalid time resolution specified.");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Application_Layer.Services.CommandHandlerServices;
 using WebApplication1.CommandHandlers;
@@ -12,6 +13,7 @@ namespace WebApplication1.CommandsHandlersReturns
             where Return : IReturn;
     }
 
+    [ExcludeFromCodeCoverage]
     public class HandlerService : ICommandValidatorService
     {
         private VerifyEstablishmentCommandService verifyEstablishmentCommandService;

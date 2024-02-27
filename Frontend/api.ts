@@ -1216,6 +1216,7 @@ export class CorrelationCommand extends CommandBase implements ICorrelationComma
     establishmentId!: string;
     salesIds!: string[];
     timePeriod!: DateTimePeriod;
+    coordinates!: Coordinates;
     timeResolution!: TimeResolution;
     upperLag!: number;
     lowerLag!: number;
@@ -1234,6 +1235,7 @@ export class CorrelationCommand extends CommandBase implements ICorrelationComma
                     this.salesIds!.push(item);
             }
             this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
+            this.coordinates = _data["coordinates"] ? Coordinates.fromJS(_data["coordinates"]) : <any>undefined;
             this.timeResolution = _data["timeResolution"];
             this.upperLag = _data["upperLag"];
             this.lowerLag = _data["lowerLag"];
@@ -1256,6 +1258,7 @@ export class CorrelationCommand extends CommandBase implements ICorrelationComma
                 data["salesIds"].push(item);
         }
         data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
+        data["coordinates"] = this.coordinates ? this.coordinates.toJSON() : <any>undefined;
         data["timeResolution"] = this.timeResolution;
         data["upperLag"] = this.upperLag;
         data["lowerLag"] = this.lowerLag;
@@ -1268,6 +1271,7 @@ export interface ICorrelationCommand extends ICommandBase {
     establishmentId: string;
     salesIds: string[];
     timePeriod: DateTimePeriod;
+    coordinates: Coordinates;
     timeResolution: TimeResolution;
     upperLag: number;
     lowerLag: number;
@@ -1311,6 +1315,46 @@ export class DateTimePeriod implements IDateTimePeriod {
 export interface IDateTimePeriod {
     start: Date;
     end: Date;
+}
+
+export class Coordinates implements ICoordinates {
+    latitude!: number;
+    longitude!: number;
+
+    constructor(data?: ICoordinates) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
+        }
+    }
+
+    static fromJS(data: any): Coordinates {
+        data = typeof data === 'object' ? data : {};
+        let result = new Coordinates();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
+        return data;
+    }
+}
+
+export interface ICoordinates {
+    latitude: number;
+    longitude: number;
 }
 
 export enum TimeResolution {
@@ -1425,11 +1469,8 @@ export abstract class ClusteringCommand extends CommandBase implements IClusteri
     establishmentId!: string;
     salesIds!: string[];
 
-    protected _discriminator: string;
-
     constructor(data?: IClusteringCommand) {
         super(data);
-        this._discriminator = "ClusteringCommand";
     }
 
     override init(_data?: any) {
@@ -1446,22 +1487,11 @@ export abstract class ClusteringCommand extends CommandBase implements IClusteri
 
     static override fromJS(data: any): ClusteringCommand {
         data = typeof data === 'object' ? data : {};
-        if (data["$type"] === "Clustering_TimeOfVisit_TotalPrice_Command") {
-            let result = new Clustering_TimeOfVisit_TotalPrice_Command();
-            result.init(data);
-            return result;
-        }
-        if (data["$type"] === "Clustering_TimeOfVisit_LengthOfVisit_Command") {
-            let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
-            result.init(data);
-            return result;
-        }
         throw new Error("The abstract class 'ClusteringCommand' cannot be instantiated.");
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["$type"] = this._discriminator;
         data["establishmentId"] = this.establishmentId;
         if (Array.isArray(this.salesIds)) {
             data["salesIds"] = [];
@@ -1476,72 +1506,6 @@ export abstract class ClusteringCommand extends CommandBase implements IClusteri
 export interface IClusteringCommand extends ICommandBase {
     establishmentId: string;
     salesIds: string[];
-}
-
-export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand implements IClustering_TimeOfVisit_TotalPrice_Command {
-    bandwidthTimeOfVisit!: number;
-    bandwidthTotalPrice!: number;
-
-    constructor(data?: IClustering_TimeOfVisit_TotalPrice_Command) {
-        super(data);
-        this._discriminator = "Clustering_TimeOfVisit_TotalPrice_Command";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.bandwidthTimeOfVisit = _data["bandwidthTimeOfVisit"];
-            this.bandwidthTotalPrice = _data["bandwidthTotalPrice"];
-        }
-    }
-
-    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
-        data = typeof data === 'object' ? data : {};
-        let result = new Clustering_TimeOfVisit_TotalPrice_Command();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["bandwidthTimeOfVisit"] = this.bandwidthTimeOfVisit;
-        data["bandwidthTotalPrice"] = this.bandwidthTotalPrice;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IClustering_TimeOfVisit_TotalPrice_Command extends IClusteringCommand {
-    bandwidthTimeOfVisit: number;
-    bandwidthTotalPrice: number;
-}
-
-export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand implements IClustering_TimeOfVisit_LengthOfVisit_Command {
-
-    constructor(data?: IClustering_TimeOfVisit_LengthOfVisit_Command) {
-        super(data);
-        this._discriminator = "Clustering_TimeOfVisit_LengthOfVisit_Command";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
-        data = typeof data === 'object' ? data : {};
-        let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IClustering_TimeOfVisit_LengthOfVisit_Command extends IClusteringCommand {
 }
 
 export class LoginCommand implements ILoginCommand {

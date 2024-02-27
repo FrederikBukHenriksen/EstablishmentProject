@@ -30,6 +30,10 @@ namespace WebApplication1.Controllers
         public async Task<ActionResult<IsLoggedInReturn>> IsLoggedIn([FromServices] IJWTService JWTService, IHandler<IsLoggedInCommand, IsLoggedInReturn> handler)
         {
             string JWT = JWTService.ExtractJwtFromRequest(this.HttpContext);
+            if (JWT == null)
+            {
+                this.Unauthorized();
+            }
             IsLoggedInCommand command = new IsLoggedInCommand { JWT = JWT };
             return await handler.Handle(command);
         }

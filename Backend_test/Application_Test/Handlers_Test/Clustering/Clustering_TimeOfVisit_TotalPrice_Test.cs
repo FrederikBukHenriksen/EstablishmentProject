@@ -2,6 +2,7 @@
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Random;
 using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Application_Layer.Handlers.MeanShift;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
@@ -10,16 +11,14 @@ using WebApplication1.Utils;
 
 public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
 {
-    private IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> Clustering_TimeOfVisitVSTotalPrice;
+    private IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn> handler;
     private IUnitOfWork unitOfWork;
-    private ITestDataBuilder testDataBuilder;
     private Establishment establishment = new Establishment();
     private Item testItem;
 
     public Clustering_TimeOfVisit_TotalPrice_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
     {
-        Clustering_TimeOfVisitVSTotalPrice = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>>();
-        testDataBuilder = new TestDataBuilder();
+        handler = scope.ServiceProvider.GetRequiredService<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>>();
         unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         //ARRANGE
@@ -42,10 +41,10 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
             establishmentId: establishment.Id,
             salesIds: establishment.GetSales().Select(x => x.Id).ToList(),
             bandwidthTimeOfVisit: 250,
-            bandwidthTotalPrice: 100);
+            bandwidthTotalPrice: 65);
 
         //ACT
-        ClusteringReturn result = await Clustering_TimeOfVisitVSTotalPrice.Handle(command);
+        ClusteringReturn result = await handler.Handle(command);
 
         //ASSERT
         Assert.Equal(2, result.clusters.Count);
@@ -55,6 +54,8 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
     {
         Func<double, double> linearFirstDistribution = TestDataBuilder.GetLinearFuncition(2, -8 * 2);
         Func<double, double> linearSecondDistribution = TestDataBuilder.GetLinearFuncition(-2, 32);
+
+        var testDataBuilder = new TestDataBuilder();
 
         var firstSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
         var firstSales = testDataBuilder.FINALFilterOnOpeningHours(8, 12, firstSalesDistribution);
@@ -78,11 +79,11 @@ public class Clustering_TimeOfVisit_TotalPrice_Test : IntegrationTest
             }
         }
 
-        foreach (var distribution in firstSales.ToList())
+        foreach (var distribution in aggregate.ToList())
         {
             for (int i = 0; i < distribution.Value; i++)
             {
-                var randomNormalDistributionNumber = normal.RandomSource.Next(200, 300);
+                var randomNormalDistributionNumber = normal.RandomSource.Next(100, 200);
                 var sale = establishment.CreateSale(distribution.Key);
                 establishment.AddSale(sale);
                 var salesItems = establishment.CreateSalesItem(sale, testItem, randomNormalDistributionNumber);

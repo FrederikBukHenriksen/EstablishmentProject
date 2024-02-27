@@ -75,7 +75,7 @@ namespace WebApplication1.Services.Analysis
         }
     }
 
-    public class MeanShiftClusteringDirectly : IMeanShiftClustering
+    public class MeanShiftClusteringStationary : IMeanShiftClustering
     {
         private double toleranceForCovergence = 0.001;
         private double toleranceForGrouping = 0.1;

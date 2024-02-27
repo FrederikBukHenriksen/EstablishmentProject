@@ -17,7 +17,6 @@ namespace WebApplication1.Application_Layer.Handlers.SalesHandlers
         public abstract double Calculate(List<Sale> sales);
     }
 
-
     [Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
     [KnownType(typeof(GetSalesAverageSpend))]
     [KnownType(typeof(GetSalesAverageNumberOfItems))]

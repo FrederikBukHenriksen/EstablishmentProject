@@ -63,10 +63,7 @@ namespace DMIOpenData
         public async Task<List<(DateTime, double)>> GetMeanTemperature(Coordinates coordinates, DateTime startTime, DateTime endTime, TimeResolution timeresolution)
         {
             var weatherParameter = WeatherParameter.Temperature;
-            if (startTime > endTime)
-            {
-                throw new ArgumentException("the end time must be later than the start time");
-            }
+            endTime = endTime.AddToDateTime(-1, timeresolution); //exclude last dateitme
 
             string stationId = await this.GetIdOfClosestStation(coordinates, weatherParameter);
 
@@ -97,8 +94,8 @@ namespace DMIOpenData
         private static List<(DateTime, double)> AverageForTimeResolution(DateTime startTime, DateTime endTime, TimeResolution timeresolution, List<(DateTime datetime, double values)> data)
         {
             List<(DateTime datetime, double values)> dataOrdered = data.OrderBy(x => x.Item1).ToList();
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(startTime, endTime, timeresolution);
-            Dictionary<DateTime, List<(DateTime datetime, double values)>> averageTemperaturePerDateTime = TimeHelper.MapObjectsToTimeline(dataOrdered, x => x.datetime, timeline, timeresolution);
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsListV2(startTime, endTime, timeresolution);
+            Dictionary<DateTime, List<(DateTime datetime, double values)>> averageTemperaturePerDateTime = TimeHelper.MapObjectsToTimelineV2(dataOrdered, x => x.datetime, timeline, timeresolution);
             Dictionary<DateTime, double> averagePerTimeResolution = averageTemperaturePerDateTime.ToDictionary(
                 kvp => kvp.Key,
                 kvp => kvp.Value.Select(v => v.values).Average()

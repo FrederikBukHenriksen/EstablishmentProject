@@ -1,8 +1,11 @@
 ﻿using DMIOpenData;
 using EstablishmentProject.test.TestingCode;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.Random;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
 using WebApplication1.Application_Layer.Services;
+using WebApplication1.CommandHandlers;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Infrastructure.Data;
 using WebApplication1.Utils;
 
@@ -11,43 +14,161 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
     public class CrossCorrelationHandlerTest : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
-        private IWeather yourClassUnderTest;
-        private ITestDataBuilder testDataCreatorService;
+        private IHandler<CorrelationCommand, CorrelationReturn> handler;
+        private Establishment establishment;
+        private Item testItem;
 
 
-        public CrossCorrelationHandlerTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock() })
+        public CrossCorrelationHandlerTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             //Inject services
-            testDataCreatorService = scope.ServiceProvider.GetRequiredService<ITestDataBuilder>();
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            yourClassUnderTest = scope.ServiceProvider.GetRequiredService<IWeather>();
-            Coordinates coordinates = new Coordinates(55.676098, 12.568337);
-            var ok = yourClassUnderTest.GetMeanTemperature(coordinates, new DateTime(2021, 1, 1), new DateTime(2021, 1, 1), TimeResolution.Hour);
+            handler = scope.ServiceProvider.GetRequiredService<IHandler<CorrelationCommand, CorrelationReturn>>();
 
+            establishment = new Establishment("Cafe 1");
+            testItem = establishment.CreateItem("test", 1);
+            establishment.AddItem(testItem);
+            establishment = CorrelationTestHelper.CreateTestData(establishment, testItem);
 
-
+            using (var uow = unitOfWork)
+            {
+                uow.establishmentRepository.Add(establishment);
+            }
         }
 
-        public void createTestData()
+        [Fact]
+        public async Task CrossCorrelation_WithActualWeatherDataForToday_ShouldReturnCorrelation()
         {
-            var calendar = testDataCreatorService.OpenHoursCalendar(
-                new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0),
-                new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0).AddDays(1).AddTicks(-1),
-                TimeResolution.Hour,
-                testDataCreatorService.CreateSimpleOpeningHoursForWeek(open: new LocalTime(8, 0), close: new LocalTime(16, 0)));
+            //Arrange
+            var command = new CorrelationCommand
+            {
+                EstablishmentId = establishment.Id,
+                SalesIds = establishment.GetSales().Select(x => x.Id).ToList(),
+                TimePeriod = new DateTimePeriod(DateTime.Today.AddDays(-1).AddHours(8), DateTime.Today.AddDays(-1).AddHours(16)),
+                TimeResolution = TimeResolution.Hour,
+                Coordinates = new Coordinates(55.6761, 12.5683),
+                UpperLag = 3,
+                LowerLag = 3
+            };
 
-            Dictionary<DateTime, int> distributionHourly = testDataCreatorService.DistributionByTimeresolution(calendar, TestDataBuilder.GetLinearFuncition(1, -7), TimeResolution.Hour);
-            Dictionary<DateTime, int> distributionDaily = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Day, TestDataBuilder.GetLinearFuncition(0.5, 0));
-            Dictionary<DateTime, int> distributionMonthly = testDataCreatorService.GenerateDistributionFromTimeline(calendar, x => x.Month, TestDataBuilder.GetLinearFuncition(0, 0));
+            //Act
+            CorrelationReturn result = await handler.Handle(command);
 
-            List<Dictionary<DateTime, int>> allDistributions = new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly };
+            //Assert
+            Assert.Equal(7, result.LagAndCorrelation.Count);
+            Assert.True(result.LagAndCorrelation.Any(x => x.Item2 > 0.5));
+            Assert.Equal(8 + 6, result.calculationValues.Count);
+        }
+    }
 
-            var aggregatedDistribution = testDataCreatorService.FINALAggregateDistributions(allDistributions);
+    public class CrossCorrelationHandlerTestWithMockWeather : IntegrationTest
+    {
+        private IUnitOfWork unitOfWork;
+        private IHandler<CorrelationCommand, CorrelationReturn> handler;
+        private Establishment establishment;
+        private Item testItem;
+
+
+        public CrossCorrelationHandlerTestWithMockWeather() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock(CorrelationTestHelper.testWeatherDataThatMatchSalesNumbers()) })
+        {
+            //Inject services
+            unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            handler = scope.ServiceProvider.GetRequiredService<IHandler<CorrelationCommand, CorrelationReturn>>();
+
+            establishment = new Establishment("Cafe 1");
+            testItem = establishment.CreateItem("test", 1);
+            establishment.AddItem(testItem);
+            establishment = CorrelationTestHelper.CreateTestData(establishment, testItem);
+
+            using (var uow = unitOfWork)
+            {
+                uow.establishmentRepository.Add(establishment);
+            }
         }
 
 
+        [Fact]
+        public async Task CrossCorrelation_WithTestWeatherData_ShouldReturnCorrelation()
+        {
+            //Arrange
+            var command = new CorrelationCommand
+            {
+                EstablishmentId = establishment.Id,
+                SalesIds = establishment.GetSales().Select(x => x.Id).ToList(),
+                TimePeriod = new DateTimePeriod(DateTime.Today.AddDays(-1).AddHours(8), DateTime.Today.AddDays(-1).AddHours(16)),
+                TimeResolution = TimeResolution.Hour,
+                Coordinates = new Coordinates(55.6761, 12.5683),
+                UpperLag = 2,
+                LowerLag = 2
+            };
+
+            var weatherMock = (WeatherMock)testServices[1];
+
+            //Act
+            CorrelationReturn result = await handler.Handle(command);
+
+            //Assert
+            Assert.Equal(5, result.LagAndCorrelation.Count);
+            Assert.Equal(12, result.calculationValues.Count);
+            Assert.Equal(1, result.LagAndCorrelation[2].Item2);
+
+        }
+    }
 
 
+
+    public static class CorrelationTestHelper
+    {
+        public static Establishment CreateTestData(Establishment establishment, Item item)
+        {
+            var testDataBuilder = new TestDataBuilder();
+
+            Func<double, double> linearFirstDistribution = TestDataBuilder.GetLinearFuncition(2, -8 * 2);
+            Func<double, double> linearSecondDistribution = TestDataBuilder.GetLinearFuncition(-2, 32);
+
+            var firstSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
+            var firstSales = testDataBuilder.FINALFilterOnOpeningHours(8, 12, firstSalesDistribution);
+            var secondSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearSecondDistribution, TimeResolution.Hour);
+            var secondSales = testDataBuilder.FINALFilterOnOpeningHours(12, 16, secondSalesDistribution);
+
+            var aggregate = testDataBuilder.FINALAggregateDistributions([firstSales, secondSales]);
+
+            var normalRandomSeed = new SystemRandomSource(1);
+
+            Normal normal = new Normal(0, 5, normalRandomSeed);
+            foreach (var distribution in aggregate.ToList())
+            {
+                for (int i = 0; i < distribution.Value; i++)
+                {
+                    var randomNormalDistributionNumber = normal.RandomSource.Next(0, 100);
+                    var sale = establishment.CreateSale(distribution.Key);
+                    establishment.AddSale(sale);
+                    var salesItems = establishment.CreateSalesItem(sale, item, randomNormalDistributionNumber);
+                    establishment.AddSalesItems(sale, salesItems);
+                }
+            }
+            return establishment;
+
+
+        }
+
+        public static List<(DateTime, double)> testWeatherDataThatMatchSalesNumbers()
+        {
+            List<(DateTime, double)> values = new List<(DateTime, double)>();
+
+            for (int i = 6; i <= 12; i++)
+            {
+                values.Add((DateTime.Today.AddDays(-1).AddHours(i), i * 2));
+
+            }
+            for (int i = 13; i < 18; i++)
+            {
+                values.Add((DateTime.Today.AddDays(-1).AddHours(i), i * (-2) + (26) + 22));
+            }
+
+
+            return values.OrderBy(x => x.Item1).ToList();
+        }
 
 
 
