@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.EstablishmentHandlers;
 using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weather;
+using WebApplication1.Application_Layer.Handlers.Correlation;
 using WebApplication1.Application_Layer.Handlers.ItemHandler;
 using WebApplication1.Application_Layer.Handlers.Login_and_Authentication;
 using WebApplication1.Application_Layer.Handlers.MeanShift;
@@ -53,7 +54,8 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<IsLoggedInCommand, IsLoggedInReturn>, IsLoggedInCommandHandler>();
 
             //Correlation
-            serviceCollection.AddTransient<IHandler<CorrelationCommand, CorrelationReturn>, CorrelationHandler>();
+            serviceCollection.AddTransient<IHandler<Correlation_NumberOfSales_Vs_Temperature_Command, CorrelationReturn>, Correlation_NumberOfSales_Vs_Temperature_Handler>();
+            serviceCollection.AddTransient<IHandler<Correlation_SeatTime_Vs_Temperature_Command, CorrelationReturn>, Correlation_SeatTime_Vs_Temperature_Handler>();
 
             //Clustering
             serviceCollection.AddTransient<IHandler<Clustering_TimeOfVisit_TotalPrice_Command, ClusteringReturn>, Clustering_TimeOfVisitVSTotalPrice>();

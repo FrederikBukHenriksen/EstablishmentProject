@@ -1,6 +1,4 @@
-﻿using NodaTime;
-
-namespace WebApplication1.Utils
+﻿namespace WebApplication1.Utils
 {
     public enum TimeResolution
     {
@@ -10,25 +8,9 @@ namespace WebApplication1.Utils
         Year,
     }
 
-    public interface ITimePeriod<T>
-    {
-        T Start { get; set; }
-        T End { get; set; }
-    }
 
-    public class LocalDateTime : ITimePeriod<LocalDateTime>
-    {
-        public LocalDateTime Start { get; set; }
-        public LocalDateTime End { get; set; }
 
-        public LocalDateTime(LocalDateTime start, LocalDateTime end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
-    public class DateTimePeriod : ITimePeriod<DateTime>
+    public class DateTimePeriod
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
@@ -46,27 +28,6 @@ namespace WebApplication1.Utils
         {
             return (int)timespan.TotalHours;
         }
-
-        public static LocalTime DateTimeToLocalTime(DateTime dateTime)
-        {
-            return new LocalTime(dateTime.Hour, dateTime.Minute, dateTime.Second);
-        }
-
-        public static DateTime LocalDateAndLocalTimeToDateTime(LocalDate localDate, LocalTime localTime)
-        {
-            return new DateTime(localDate.Year, localDate.Month, localDate.Day, localTime.Hour, localTime.Minute, localTime.Second);
-        }
-
-        public static bool IsWithinPeriod_StartAndEndIndluded<T>(T timestamp, T start, T end) where T : IComparable<T>
-        {
-            return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) <= 0;
-        }
-
-        public static bool IsTimeWithinPeriod_EndNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
-        {
-            return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) < 0;
-        }
-
         public static Func<DateTime, int> DateTimeExtractorFunction(TimeResolution timeResolution)
         {
             switch (timeResolution)
@@ -152,25 +113,6 @@ namespace WebApplication1.Utils
             }
         }
 
-        public static Dictionary<DateTime, List<T>> MapObjectsToTimeline<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
-        {
-            // Create a dictionary with the provided timeline as keys and empty lists as values
-            Dictionary<DateTime, List<T>> timelineAsDictionary = timeline.ToDictionary(x => x, x => new List<T>());
-
-            // Map objects to the timeline
-            foreach (var obj in objects)
-            {
-                var objTime = extractor(obj);
-
-                if (timelineAsDictionary.ContainsKey(objTime))
-                {
-                    timelineAsDictionary[objTime].Add(obj);
-                }
-            }
-            return timelineAsDictionary;
-        }
-
-
 
         //v2
         public static List<DateTime> CreateTimelineAsListV2(DateTime start, DateTime end, TimeResolution resolution)
@@ -245,6 +187,68 @@ namespace WebApplication1.Utils
                 default:
                     throw new ArgumentException("Invalid time resolution specified.");
             }
+        }
+
+        public static List<(DateTime, List<T>)> MapObjectsToTimelineV3<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        {
+            Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
+
+            foreach (var obj in objects)
+            {
+                DateTime objDateTime = extractor(obj);
+                DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
+
+                if (!mappedTimeline.ContainsKey(mappedDateTime))
+                    mappedTimeline[mappedDateTime] = new List<T>();
+
+                mappedTimeline[mappedDateTime].Add(obj);
+            }
+
+            // Fill in missing timeline points with empty lists
+            foreach (var timelinePoint in timeline)
+            {
+                if (!mappedTimeline.ContainsKey(timelinePoint))
+                    mappedTimeline[timelinePoint] = new List<T>();
+            }
+
+            return mappedTimeline.Select(kv => (kv.Key, kv.Value)).ToList();
+        }
+
+        public static List<(DateTime, List<T>)> MapObjectsToTimelineV4<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, DateTime start, DateTime end, TimeResolution timeResolution)
+        {
+            // Create the timeline based on the specified start, end, and time resolution
+            List<DateTime> timeline = CreateTimeline(start, end, timeResolution);
+
+            List<(DateTime, List<T>)> mappedTimeline = new List<(DateTime, List<T>)>();
+            foreach (var time in timeline)
+            {
+                var iterationEntry = (time, new List<T>());
+                foreach (var obj in objects)
+                {
+                    DateTime objDateTime = extractor(obj);
+                    DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
+                    if (mappedDateTime == time)
+                    {
+                        iterationEntry.Item2.Add(obj);
+                    }
+                }
+                mappedTimeline.Add(iterationEntry);
+            }
+            return mappedTimeline;
+        }
+
+        private static List<DateTime> CreateTimeline(DateTime start, DateTime end, TimeResolution timeResolution)
+        {
+            List<DateTime> timeline = new List<DateTime>();
+
+            DateTime current = start;
+            while (current < end)
+            {
+                timeline.Add(current);
+                current = current.AddToDateTime(1, timeResolution);
+            }
+
+            return timeline;
         }
     }
 }

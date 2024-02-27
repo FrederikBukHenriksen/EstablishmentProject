@@ -98,8 +98,8 @@ export class AnalysisClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    correlationCoefficientAndLag(command: CorrelationCommand): Observable<CorrelationReturn> {
-        let url_ = this.baseUrl + "/api/analysis/cross-correlation-with-weather";
+    numberOfSalesVsTemperature(command: Correlation_NumberOfSales_Vs_Temperature_Command): Observable<CorrelationReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Correlation_NumberOfSales_Vs_Temperature";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -116,11 +116,11 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCorrelationCoefficientAndLag(response_);
+            return this.processNumberOfSalesVsTemperature(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCorrelationCoefficientAndLag(response_ as any);
+                    return this.processNumberOfSalesVsTemperature(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<CorrelationReturn>;
                 }
@@ -129,7 +129,60 @@ export class AnalysisClient {
         }));
     }
 
-    protected processCorrelationCoefficientAndLag(response: HttpResponseBase): Observable<CorrelationReturn> {
+    protected processNumberOfSalesVsTemperature(response: HttpResponseBase): Observable<CorrelationReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CorrelationReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    seatTimeVsTemperature(command: Correlation_SeatTime_Vs_Temperature_Command): Observable<CorrelationReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Correlation_SeatTime_Vs_Temperature";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSeatTimeVsTemperature(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSeatTimeVsTemperature(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CorrelationReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CorrelationReturn>;
+        }));
+    }
+
+    protected processSeatTimeVsTemperature(response: HttpResponseBase): Observable<CorrelationReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1237,35 +1290,7 @@ export interface IValueTupleOfDateTimeAndListOfNullableDouble {
     item2: (number | undefined)[] | undefined;
 }
 
-export abstract class CommandBase implements ICommandBase {
-
-    constructor(data?: ICommandBase) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): CommandBase {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface ICommandBase {
-}
-
-export class CorrelationCommand extends CommandBase implements ICorrelationCommand {
+export abstract class CorrelationCommand implements ICorrelationCommand {
     establishmentId!: string;
     salesIds!: string[];
     timePeriod!: DateTimePeriod;
@@ -1275,11 +1300,15 @@ export class CorrelationCommand extends CommandBase implements ICorrelationComma
     lowerLag!: number;
 
     constructor(data?: ICorrelationCommand) {
-        super(data);
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
 
-    override init(_data?: any) {
-        super.init(_data);
+    init(_data?: any) {
         if (_data) {
             this.establishmentId = _data["establishmentId"];
             if (Array.isArray(_data["salesIds"])) {
@@ -1295,14 +1324,12 @@ export class CorrelationCommand extends CommandBase implements ICorrelationComma
         }
     }
 
-    static override fromJS(data: any): CorrelationCommand {
+    static fromJS(data: any): CorrelationCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CorrelationCommand();
-        result.init(data);
-        return result;
+        throw new Error("The abstract class 'CorrelationCommand' cannot be instantiated.");
     }
 
-    override toJSON(data?: any) {
+    toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["establishmentId"] = this.establishmentId;
         if (Array.isArray(this.salesIds)) {
@@ -1315,12 +1342,11 @@ export class CorrelationCommand extends CommandBase implements ICorrelationComma
         data["timeResolution"] = this.timeResolution;
         data["upperLag"] = this.upperLag;
         data["lowerLag"] = this.lowerLag;
-        super.toJSON(data);
         return data;
     }
 }
 
-export interface ICorrelationCommand extends ICommandBase {
+export interface ICorrelationCommand {
     establishmentId: string;
     salesIds: string[];
     timePeriod: DateTimePeriod;
@@ -1328,6 +1354,33 @@ export interface ICorrelationCommand extends ICommandBase {
     timeResolution: TimeResolution;
     upperLag: number;
     lowerLag: number;
+}
+
+export class Correlation_NumberOfSales_Vs_Temperature_Command extends CorrelationCommand implements ICorrelation_NumberOfSales_Vs_Temperature_Command {
+
+    constructor(data?: ICorrelation_NumberOfSales_Vs_Temperature_Command) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): Correlation_NumberOfSales_Vs_Temperature_Command {
+        data = typeof data === 'object' ? data : {};
+        let result = new Correlation_NumberOfSales_Vs_Temperature_Command();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICorrelation_NumberOfSales_Vs_Temperature_Command extends ICorrelationCommand {
 }
 
 export class DateTimePeriod implements IDateTimePeriod {
@@ -1415,6 +1468,33 @@ export enum TimeResolution {
     Date = 1,
     Month = 2,
     Year = 3,
+}
+
+export class Correlation_SeatTime_Vs_Temperature_Command extends CorrelationCommand implements ICorrelation_SeatTime_Vs_Temperature_Command {
+
+    constructor(data?: ICorrelation_SeatTime_Vs_Temperature_Command) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): Correlation_SeatTime_Vs_Temperature_Command {
+        data = typeof data === 'object' ? data : {};
+        let result = new Correlation_SeatTime_Vs_Temperature_Command();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICorrelation_SeatTime_Vs_Temperature_Command extends ICorrelationCommand {
 }
 
 export class ClusteringReturn extends ReturnBase implements IClusteringReturn {
@@ -1516,6 +1596,34 @@ export class ValueTupleOfGuidAndListOfDouble implements IValueTupleOfGuidAndList
 export interface IValueTupleOfGuidAndListOfDouble {
     item1: string;
     item2: number[] | undefined;
+}
+
+export abstract class CommandBase implements ICommandBase {
+
+    constructor(data?: ICommandBase) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): CommandBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface ICommandBase {
 }
 
 export abstract class ClusteringCommand extends CommandBase implements IClusteringCommand {

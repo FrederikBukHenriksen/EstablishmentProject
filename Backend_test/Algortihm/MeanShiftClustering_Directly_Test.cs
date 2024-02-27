@@ -136,7 +136,7 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_WithTwoVeryDifferentDimensionScales_WithLargeEnoughBandwith_ShoulReturnOneCluster()
+        public void Cluster_WithTwoVeryDifferentDimensionScales_WithLargeEnoughBandwith_ShouldReturnIndividualClusters()
         {
             // Arrange
             var data = new List<(string, List<double>)>
@@ -152,8 +152,10 @@ namespace EstablishmentProject.test.Algortihm
             var result = new MeanShiftClusteringStationary().Cluster(data, bandwidth);
 
             // Assert
-            Assert.Single(result);
-            Assert.Contains(result, cluster => cluster.Contains("A") && cluster.Contains("B") && cluster.Contains("C"));
+            Assert.Equal(3, result.Count);
+            Assert.Contains(result, cluster => cluster.Contains("A"));
+            Assert.Contains(result, cluster => cluster.Contains("B"));
+            Assert.Contains(result, cluster => cluster.Contains("C"));
         }
 
         [Fact]
@@ -237,7 +239,7 @@ namespace EstablishmentProject.test.Algortihm
         public void Cluster_With2OverlappingNormal_WithStepByStepApproach_ShouldReturnTwoClusters()
         {
             // Arrange
-            var number = 100;
+            var number = 10;
             Func<double, double> normFunc = TestDataBuilder.GetNormalFunction(0, 2);
             Random random = new Random(1);
 

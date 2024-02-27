@@ -3,6 +3,7 @@ using EstablishmentProject.test.TestingCode;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Random;
 using Microsoft.Extensions.DependencyInjection;
+using WebApplication1.Application_Layer.Handlers.Correlation;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Domain_Layer.Entities;
@@ -11,24 +12,24 @@ using WebApplication1.Utils;
 
 namespace EstablishmentProject.test.Application.Handlers.Correlation
 {
-    public class CrossCorrelationHandlerTest : IntegrationTest
+    public class Correlation_NumberOfSales_Vs_Temperature : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
-        private IHandler<CorrelationCommand, CorrelationReturn> handler;
+        private IHandler<Correlation_NumberOfSales_Vs_Temperature_Command, CorrelationReturn> handler;
         private Establishment establishment;
         private Item testItem;
 
 
-        public CrossCorrelationHandlerTest() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
+        public Correlation_NumberOfSales_Vs_Temperature() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             //Inject services
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            handler = scope.ServiceProvider.GetRequiredService<IHandler<CorrelationCommand, CorrelationReturn>>();
+            handler = scope.ServiceProvider.GetRequiredService<IHandler<Correlation_NumberOfSales_Vs_Temperature_Command, CorrelationReturn>>();
 
             establishment = new Establishment("Cafe 1");
             testItem = establishment.CreateItem("test", 1);
             establishment.AddItem(testItem);
-            establishment = CorrelationTestHelper.CreateTestData(establishment, testItem);
+            establishment = Correlation_NumberOfSales_Vs_Temperature_Helper.CreateTestData(establishment, testItem);
 
             using (var uow = unitOfWork)
             {
@@ -40,7 +41,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
         public async Task CrossCorrelation_WithActualWeatherDataForToday_ShouldReturnCorrelation()
         {
             //Arrange
-            var command = new CorrelationCommand
+            var command = new Correlation_NumberOfSales_Vs_Temperature_Command
             {
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.GetSales().Select(x => x.Id).ToList(),
@@ -61,24 +62,24 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
         }
     }
 
-    public class CrossCorrelationHandlerTestWithMockWeather : IntegrationTest
+    public class Correlation_NumberOfSales_Vs_Temperature_Test_WithMockWeather : IntegrationTest
     {
         private IUnitOfWork unitOfWork;
-        private IHandler<CorrelationCommand, CorrelationReturn> handler;
+        private IHandler<Correlation_NumberOfSales_Vs_Temperature_Command, CorrelationReturn> handler;
         private Establishment establishment;
         private Item testItem;
 
 
-        public CrossCorrelationHandlerTestWithMockWeather() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock(CorrelationTestHelper.testWeatherDataThatMatchSalesNumbers()) })
+        public Correlation_NumberOfSales_Vs_Temperature_Test_WithMockWeather() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result, new WeatherMock(Correlation_NumberOfSales_Vs_Temperature_Helper.testWeatherDataThatMatchSalesNumbers()) })
         {
             //Inject services
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            handler = scope.ServiceProvider.GetRequiredService<IHandler<CorrelationCommand, CorrelationReturn>>();
+            handler = scope.ServiceProvider.GetRequiredService<IHandler<Correlation_NumberOfSales_Vs_Temperature_Command, CorrelationReturn>>();
 
             establishment = new Establishment("Cafe 1");
             testItem = establishment.CreateItem("test", 1);
             establishment.AddItem(testItem);
-            establishment = CorrelationTestHelper.CreateTestData(establishment, testItem);
+            establishment = Correlation_NumberOfSales_Vs_Temperature_Helper.CreateTestData(establishment, testItem);
 
             using (var uow = unitOfWork)
             {
@@ -91,7 +92,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
         public async Task CrossCorrelation_WithTestWeatherData_ShouldReturnCorrelation()
         {
             //Arrange
-            var command = new CorrelationCommand
+            var command = new Correlation_NumberOfSales_Vs_Temperature_Command
             {
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.GetSales().Select(x => x.Id).ToList(),
@@ -117,7 +118,7 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
 
 
 
-    public static class CorrelationTestHelper
+    public static class Correlation_NumberOfSales_Vs_Temperature_Helper
     {
         public static Establishment CreateTestData(Establishment establishment, Item item)
         {

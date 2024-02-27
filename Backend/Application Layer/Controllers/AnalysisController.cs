@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
+using WebApplication1.Application_Layer.Handlers.Correlation;
 using WebApplication1.Application_Layer.Handlers.MeanShift;
 using WebApplication1.CommandHandlers;
 using WebApplication1.CommandsHandlersReturns;
@@ -18,20 +19,21 @@ namespace WebApplication1.Controllers
             this.handlerService = handlerService;
         }
 
-        [HttpPost("cross-correlation-with-weather")]
-        public async Task<CorrelationReturn> CorrelationCoefficientAndLag([FromBody] CorrelationCommand command, [FromServices] IHandler<CorrelationCommand, CorrelationReturn> handler)
+
+
+        [HttpPost("Correlation_NumberOfSales_Vs_Temperature")]
+        public async Task<ActionResult<CorrelationReturn>> NumberOfSalesVsTemperature([FromBody] Correlation_NumberOfSales_Vs_Temperature_Command command, [FromServices] IHandler<Correlation_NumberOfSales_Vs_Temperature_Command, CorrelationReturn> handler)
         {
-            //var command = new CorrelationCommand { TimePeriod = new DateTimePeriod(start: new DateTime(2021, 1, 1, 0, 0, 0), end: new DateTime(2022, 1, 1).AddTicks(-1)), TimeResolution = TimeResolution.Date };
-            var value = handler.Handle(command);
-            return await value;
+            return await handler.Handle(command);
         }
 
-        //[HttpGet("mean-shift-clustering")]
-        //public MeanShiftClusteringReturn MeanShiftClustering([FromBody] MeanShiftClusteringCommand command, [FromServices] IHandler<MeanShiftClusteringCommand, MeanShiftClusteringReturn> handler)
-        //{
-        //    return handler.Handle(command);
 
-        //}
+        [HttpPost("Correlation_SeatTime_Vs_Temperature")]
+        public async Task<ActionResult<CorrelationReturn>> SeatTimeVsTemperature([FromBody] Correlation_SeatTime_Vs_Temperature_Command command, [FromServices] IHandler<Correlation_SeatTime_Vs_Temperature_Command, CorrelationReturn> handler)
+        {
+            return await handler.Handle(command);
+        }
+
 
         [HttpPost("Clustering_TimeOfVisit_Vs_TotalPrice")]
         public async Task<ActionResult<ClusteringReturn>> TimeOfVisitVsTotalPrice(

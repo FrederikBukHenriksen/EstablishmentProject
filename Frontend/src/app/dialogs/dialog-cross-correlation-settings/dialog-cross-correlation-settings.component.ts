@@ -11,7 +11,11 @@ import {
   TextInputField,
 } from '../dialog-checkbox/dialog-checkbox.component';
 import { TimeResolution } from 'api';
-import { accountForTimezone, removeTimezone } from '../../utils/TimeHelper';
+import {
+  AddToDateTimeResolution,
+  accountForTimezone,
+  removeTimezone,
+} from '../../utils/TimeHelper';
 
 export class DialogCrossCorrelationSettings {
   lowerLag: number;
@@ -81,6 +85,7 @@ export class DialogCrossCorrelationSettingsComponent {
       (data['timeframetart'] as Date) ?? undefined
     );
     var endDate = removeTimezone((data['timeframeend'] as Date) ?? undefined);
+    AddToDateTimeResolution(endDate, 1, TimeResolution.Date);
 
     return {
       lowerLag: (data['lowerLag'] as number) ?? undefined,

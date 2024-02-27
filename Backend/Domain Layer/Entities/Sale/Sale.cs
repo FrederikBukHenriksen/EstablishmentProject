@@ -61,7 +61,7 @@ namespace WebApplication1.Domain_Layer.Entities
             }
         }
 
-        protected internal void setTimeOfArrival(DateTime datetime)
+        public void setTimeOfArrival(DateTime datetime)
         {
             this.TimeOfArrivalMustBeBeforeTimeOfPayment(datetime);
             this.TimestampArrival = datetime;

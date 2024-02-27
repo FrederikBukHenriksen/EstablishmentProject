@@ -6,6 +6,7 @@ import {
   FilterSales,
   FilterSalesBySalesItems,
   FilterSalesBySalesTables,
+  SaleAttributes,
   SaleDTO,
 } from 'api';
 import { DialogClusterSettingsComponent } from '../dialogs/dialog-cluster-settings/dialog-cluster-settings.component';
@@ -58,7 +59,11 @@ export class Cluster_TimeOfDay_Spending
     private readonly dialogFilterSalesBySalesitemsComponent: DialogFilterSalesBySalesitemsComponent,
     private readonly dialogFilterSalesBySalestablesComponent: DialogFilterSalesBySalestablesComponent,
     private readonly dialogClusterSettingsComponent: DialogClusterSettingsComponent
-  ) {}
+  ) {
+    this.filterSales.mustContainAllAttributes = [
+      SaleAttributes.TimestampPayment,
+    ];
+  }
 
   dialogs: IDialogImplementation[] = [
     {
@@ -273,7 +278,12 @@ export class Cluster_TimeOfDay_SeatTime
     private readonly dialogFilterSalesBySalesitemsComponent: DialogFilterSalesBySalesitemsComponent,
     private readonly dialogFilterSalesBySalestablesComponent: DialogFilterSalesBySalestablesComponent,
     private readonly dialogClusterSettingsComponent: DialogClusterSettingsComponent
-  ) {}
+  ) {
+    this.filterSales.mustContainAllAttributes = [
+      SaleAttributes.TimestampPayment,
+      SaleAttributes.TimestampArrival,
+    ];
+  }
 
   dialogs: IDialogImplementation[] = [
     {

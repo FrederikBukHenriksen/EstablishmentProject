@@ -48,8 +48,6 @@ export class CrossCorrelation_Sales_Temperature
   implements ICorrelationImplementaion
 {
   title: string = 'Number of sales vs Temperature';
-  correlationCommand: CorrelationCommand = new CorrelationCommand();
-
   correlationReturn: CorrelationReturn | undefined;
   tableModel = new Subject<TableModel>();
   graphModel = new Subject<GraphModel>();
@@ -75,10 +73,16 @@ export class CrossCorrelation_Sales_Temperature
   ) {
     this.dialogCrossCorrelationSettings.timeResolution = TimeResolution.Hour;
     this.dialogCrossCorrelationSettings.startDate = new Date();
-    this.dialogCrossCorrelationSettings.startDate.setHours(8, 0, 0, 0);
+    this.dialogCrossCorrelationSettings.startDate.setDate(
+      this.dialogCrossCorrelationSettings.startDate.getDate() - 1
+    );
+    this.dialogCrossCorrelationSettings.startDate.setHours(0, 0, 0, 0);
 
     this.dialogCrossCorrelationSettings.endDate = new Date();
-    this.dialogCrossCorrelationSettings.endDate.setHours(16, 0, 0, 0);
+    this.dialogCrossCorrelationSettings.endDate.setDate(
+      this.dialogCrossCorrelationSettings.endDate.getDate() - 1
+    );
+    this.dialogCrossCorrelationSettings.endDate.setHours(24, 0, 0, 0);
   }
 
   dialogs: IDialogImplementation[] = [
@@ -141,6 +145,11 @@ export class CrossCorrelation_Sales_Temperature
         this.dialogCrossCorrelationSettings.timeResolution!,
         this.dialogCrossCorrelationSettings.upperLag!,
         this.dialogCrossCorrelationSettings.lowerLag!
+      );
+
+    this.correlationReturn.calculationValues =
+      this.correlationReturn.calculationValues.sort(
+        (a, b) => a.item1.getTime() - b.item1.getTime()
       );
 
     this.tableModel.next(await this.buildTable());

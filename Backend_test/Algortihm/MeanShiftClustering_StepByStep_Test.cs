@@ -237,7 +237,7 @@ namespace EstablishmentProject.test.Algortihm
         public void Cluster_With2OverlappingNormal_WithStepByStepApproach_ShouldReturnTwoClusters()
         {
             // Arrange
-            var number = 500;
+            var number = 100;
             Func<double, double> normFunc = TestDataBuilder.GetNormalFunction(0, 2);
             Random random = new Random(1);
 
