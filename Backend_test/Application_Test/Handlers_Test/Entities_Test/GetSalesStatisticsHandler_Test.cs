@@ -11,12 +11,14 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
     {
         private IUnitOfWork unitOfWork;
         private Establishment establishment;
+        private IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn> handler;
 
         public GetSalesStatisticsHandler_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             //Inject services
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             CommonArrange();
+            handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn>>();
         }
 
         private void CommonArrange()
@@ -55,7 +57,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.Sales.Select(x => x.Id).ToList()
             };
-            IHandler<GetSalesAverageSpend, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageSpend, GetSalesStatisticsReturn>>();
+            //IHandler<GetSalesAverageSpend, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageSpend, GetSalesStatisticsReturn>>();
 
             //Act
             GetSalesStatisticsReturn result = await handler.Handle(getSalesAverageSpend);
@@ -73,7 +75,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.Sales.Select(x => x.Id).ToList()
             };
-            IHandler<GetSalesAverageNumberOfItems, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageNumberOfItems, GetSalesStatisticsReturn>>();
+            //IHandler<GetSalesAverageNumberOfItems, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageNumberOfItems, GetSalesStatisticsReturn>>();
 
             //Act
             GetSalesStatisticsReturn result = await handler.Handle(getSalesAverageNumberOfItems);
@@ -91,7 +93,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.Sales.Select(x => x.Id).ToList()
             };
-            IHandler<GetSalesAverageTimeOfArrival, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageTimeOfArrival, GetSalesStatisticsReturn>>();
+            //IHandler<GetSalesAverageTimeOfArrival, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageTimeOfArrival, GetSalesStatisticsReturn>>();
 
             //Act
             GetSalesStatisticsReturn result = await handler.Handle(getSalesAverageTimeOfArrival);
@@ -109,7 +111,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.Sales.Select(x => x.Id).ToList()
             };
-            IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn>>();
+            //IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn>>();
 
             //Act
             GetSalesStatisticsReturn result = await handler.Handle(getSalesAverageTimeOfPayment);
@@ -127,7 +129,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
                 EstablishmentId = establishment.Id,
                 SalesIds = establishment.Sales.Select(x => x.Id).ToList()
             };
-            IHandler<GetSalesAverageSeatTime, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageSeatTime, GetSalesStatisticsReturn>>();
+            //IHandler<GetSalesAverageSeatTime, GetSalesStatisticsReturn> handler = scope.ServiceProvider.GetRequiredService<IHandler<GetSalesAverageSeatTime, GetSalesStatisticsReturn>>();
 
             //Act
             GetSalesStatisticsReturn result = await handler.Handle(getSalesAverageSeatTime);

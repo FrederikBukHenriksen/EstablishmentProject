@@ -1,12 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import {
   AnalysisClient,
-  ClusteringCommand,
   ClusteringReturn,
+  Clustering_TimeOfVisit_LengthOfVisit_Command,
   Clustering_TimeOfVisit_TotalPrice_Command,
-  EstablishmentClient,
-  EstablishmentDTO,
-  SaleClient,
   SaleDTO,
 } from 'api';
 import { lastValueFrom } from 'rxjs';
@@ -47,7 +44,23 @@ export class ClusterService {
     command.bandwidthTotalPrice = bandwidthTotalPrice;
 
     return await lastValueFrom(
-      this.analysisClient.timeOfVisitTotalPrice(command)
+      this.analysisClient.timeOfVisitVsTotalPrice(command)
+    );
+  }
+
+  public async TimeOfDay_Vs_SeatTime(
+    salesIds: string[],
+    bandwidthTimeOfVisit: number,
+    bandwidthLengthOfVisit: number,
+    establishmentId?: string
+  ) {
+    var command = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+    command.salesIds = salesIds;
+    command.establishmentId = establishmentId ?? this.activeEstablishment ?? '';
+    command.bandwidthTimeOfVisit = bandwidthTimeOfVisit;
+    command.bandwidthLengthOfVisit = bandwidthLengthOfVisit;
+    return await lastValueFrom(
+      this.analysisClient.timeOfVisitVsSeatTime(command)
     );
   }
 

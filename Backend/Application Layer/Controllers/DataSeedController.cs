@@ -2,7 +2,6 @@ using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Random;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 using System.Diagnostics.CodeAnalysis;
 using WebApplication1.Application_Layer.Services;
 using WebApplication1.Domain_Layer.Entities;
@@ -86,16 +85,9 @@ namespace WebApplication1.Controllers
         {
 
             var testDataCreator = new TestDataBuilder();
-
-            var totalDataTimePeriod = new DateTimePeriod(DateTime.Today.AddMonths(-1), DateTime.Today);
-            var timelineAllDays = TimeHelper.CreateTimelineAsList(totalDataTimePeriod.Start, totalDataTimePeriod.End, TimeResolution.Hour);
-            var openingHours = testDataCreator.CreateSimpleOpeningHoursForWeek(new LocalTime(8, 0), new LocalTime(16, 0));
-            var timelineDaysWithinOpeningHours = testDataCreator.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timelineAllDays, openingHours);
-
-            Dictionary<DateTime, int> distributionHourly = testDataCreator.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Hour, TestDataBuilder.GetLinearFuncition(0.25, 1));
-            Dictionary<DateTime, int> distributionDaily = testDataCreator.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Day, TestDataBuilder.GetLinearFuncition(0.0, 0));
-            Dictionary<DateTime, int> distributionMonthly = testDataCreator.GenerateDistributionFromTimeline(timelineDaysWithinOpeningHours, x => x.Month, TestDataBuilder.GetLinearFuncition(0, 0));
-
+            Dictionary<DateTime, int> distributionHourly = testDataCreator.FINALgenerateDistrubution(DateTime.Today.AddDays(-30), DateTime.Today, TestDataBuilder.GetLinearFuncition(0.25, 1), TimeResolution.Hour);
+            Dictionary<DateTime, int> distributionDaily = testDataCreator.FINALgenerateDistrubution(DateTime.Today.AddDays(-30), DateTime.Today, TestDataBuilder.GetLinearFuncition(0.0, 0), TimeResolution.Date);
+            Dictionary<DateTime, int> distributionMonthly = testDataCreator.FINALgenerateDistrubution(DateTime.Today.AddDays(-30), DateTime.Today, TestDataBuilder.GetLinearFuncition(0, 0), TimeResolution.Month);
             Dictionary<DateTime, int> aggregatedDistribution = testDataCreator.FINALAggregateDistributions(new List<Dictionary<DateTime, int>> { distributionHourly, distributionDaily, distributionMonthly });
 
             var establishment = new Establishment("Cafe Frederik");

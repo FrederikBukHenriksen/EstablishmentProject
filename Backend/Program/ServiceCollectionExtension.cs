@@ -69,7 +69,6 @@ namespace WebApplication1.Program
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesRawReturn>, GetSalesHandler<GetSalesRawReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesCommand, GetSalesDTOReturn>, GetSalesHandler<GetSalesDTOReturn>>();
             serviceCollection.AddTransient<IHandler<GetSalesStatisticsCommand, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesStatisticsCommand>>();
-            serviceCollection.AddTransient<IHandler<GetSalesAverageTimeOfPayment, GetSalesStatisticsReturn>, GetSalesStatistics<GetSalesAverageTimeOfPayment>>();
 
 
             //Item

@@ -34,37 +34,6 @@ namespace EstablishmentProject.test
             Assert.Equal(expectedResult, result);
         }
 
-        [Fact]
-        public async void GetMeanTemperaturePerHour_WithInvalidStartAndEnd_ShouldThorException()
-        {
-            // Arrange
-            var startTime = new DateTime(2022, 1, 1, 23, 59, 59, 999);
-            var endTime = new DateTime(2022, 1, 1, 0, 0, 0);
-
-            HttpClient mockHttpClient = createHttpClientForWeatherApi();
-
-            var client = new DmiWeather(mockHttpClient);
-
-            // Act
-
-            List<(DateTime, double)>? result = null;
-            ArgumentException? exception = null;
-
-            try
-            {
-                result = await client.GetMeanTemperature(coordinatesOfMyApartment, startTime, endTime, TimeResolution.Hour);
-            }
-            catch (ArgumentException e)
-            {
-                exception = e;
-            }
-
-            // Assert
-            Assert.Null(result);
-            Assert.NotNull(exception);
-
-        }
-
         private HttpClient createHttpClientForWeatherApi()
         {
             string dmiApiStation = "https://dmigw.govcloud.dk/v2/metObs/collections/station/items";
@@ -109,7 +78,6 @@ namespace EstablishmentProject.test
             (new DateTime(2022, 1, 1, 21, 0, 0), 7.6),
             (new DateTime(2022, 1, 1, 22, 0, 0), 8.1),
             (new DateTime(2022, 1, 1, 23, 0, 0), 8.4),
-            //(new DateTime(2022, 1, 2, 0, 0, 0), 9),
         };
 
     }

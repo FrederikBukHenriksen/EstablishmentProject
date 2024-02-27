@@ -13,7 +13,6 @@ namespace WebApplication1.Services.Analysis
         public List<double> Location { get; set; }
         public bool HasConverged { get; set; } = false;
         public bool IsClustered { get; set; } = false;
-        public int NoOfIterations = 0;
         public MeanShiftDataPoint(T obj, List<double> loc)
         {
             this.Object = obj;
@@ -23,9 +22,8 @@ namespace WebApplication1.Services.Analysis
 
     public class MeanShiftClusteringStepByStep : IMeanShiftClustering
     {
-        private double toleranceForCovergence = 0.001;
+        private double toleranceForCovergence = 0.01;
         private double toleranceForGrouping = 0.1;
-        private int maxIterations = 1000;
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
         {
@@ -34,9 +32,8 @@ namespace WebApplication1.Services.Analysis
             ClusterHelper.DataAndBandwidthDimensionMustMatch(data.Select(x => x.Item2).ToList(), bandwidth);
             List<MeanShiftDataPoint<T>> dataWithConvergence = data.Select(x => new MeanShiftDataPoint<T>(x.Item1, x.Item2)).ToList();
 
-            var iterations = 0;
 
-            while (!dataWithConvergence.All(x => x.HasConverged) && iterations < this.maxIterations)
+            while (!dataWithConvergence.All(x => x.HasConverged))
             {
                 var res = this.SelectNextDataPointAndReevaluteAllDataPointsConvergence(dataWithConvergence, bandwidth, this.toleranceForCovergence);
                 var dataPoint = res.Object;
@@ -48,7 +45,6 @@ namespace WebApplication1.Services.Analysis
                 {
                     dataPoint.HasConverged = true;
                 }
-                iterations++;
             }
             //Send the all datapoints to grouping after convergenve
             return ClusterHelper.GroupPoints(dataWithConvergence, this.toleranceForGrouping);
@@ -77,7 +73,7 @@ namespace WebApplication1.Services.Analysis
 
     public class MeanShiftClusteringStationary : IMeanShiftClustering
     {
-        private double toleranceForCovergence = 0.001;
+        private double toleranceForCovergence = 0.01;
         private double toleranceForGrouping = 0.1;
 
         public List<List<T>> Cluster<T>(List<(T, List<double>)> data, List<double> bandwidth)
@@ -238,13 +234,6 @@ namespace WebApplication1.Services.Analysis
             }
 
             return Clusters.Select(cluster => cluster.Select(dataPoint => dataPoint.Object).ToList()).ToList();
-        }
-
-        public static bool HasPointConverged(List<double> list1, List<double> list2, double threshold)
-        {
-            var vetor = VectorFromTo(list1, list2);
-            var absVectorValues = vetor.Select(x => Math.Abs(x)).ToList();
-            return absVectorValues.All(x => x <= threshold);
         }
 
         public static bool HasPointConverged(List<double> shift, double threshold)

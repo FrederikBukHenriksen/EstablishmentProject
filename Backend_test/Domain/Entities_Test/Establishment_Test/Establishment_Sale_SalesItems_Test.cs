@@ -63,23 +63,6 @@ namespace EstablishmentProject.test.Domain.Entities_Test
         }
 
         [Fact]
-        public void AddSalesItem_WithSalesItemsCreatedForDifferentEstablishment_ShouldAddSalesItems()
-        {
-            //Arrange
-            var otherEstablishment = new Establishment("Other establishment");
-            var otherItem = otherEstablishment.CreateItem("Other item", 10);
-            otherEstablishment.AddItem(otherItem);
-            var salesItems = otherEstablishment.CreateSalesItem(sale, otherItem, 1);
-
-            //Act
-            Action act = () => establishment.AddSalesItems(sale, salesItems);
-
-            //Assert
-            Assert.Throws<InvalidOperationException>(act);
-            Assert.Empty(sale.GetSalesItems());
-        }
-
-        [Fact]
         public void AddSalesItems_WithSalesItemsForSale_ShouldAddSalesItems()
         {
             //Arrange

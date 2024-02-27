@@ -237,29 +237,28 @@ namespace EstablishmentProject.test.Algortihm
         public void Cluster_With2OverlappingNormal_WithStepByStepApproach_ShouldReturnTwoClusters()
         {
             // Arrange
-            var number = 100;
+            var number = 500;
             Func<double, double> normFunc = TestDataBuilder.GetNormalFunction(0, 2);
             Random random = new Random(1);
 
             var data = new List<(string, List<double>)>();
             for (int i = 0; i < number; i++)
             {
-                //Random double between -10 and 10.
                 var x = normFunc(random.NextDouble() * 20.0 - 10.0);
                 var y = normFunc(random.NextDouble() * 20.0 - 10.0);
                 var point = new List<double> { x, y, };
                 if (i < number / 2)
                 {
-                    point = point.Zip(new List<double> { 5, 5 }, (m, s) => m + s).ToList();
+                    point = point.Zip(new List<double> { 2, 2 }, (m, s) => m + s).ToList();
                 }
                 else
                 {
-                    point = point.Zip(new List<double> { -5, -5 }, (m, s) => m + s).ToList();
+                    point = point.Zip(new List<double> { -2, -2 }, (m, s) => m + s).ToList();
                 }
                 data.Add(("point", point));
             };
 
-            var bandwidth = new List<double> { 1, 1 };
+            var bandwidth = new List<double> { 2, 2 };
 
             // Act
             var result = new MeanShiftClusteringStepByStep().Cluster(data, bandwidth);
@@ -267,7 +266,5 @@ namespace EstablishmentProject.test.Algortihm
             // Assert
             Assert.Equal(2, result.Count);
         }
-
-
     }
 }

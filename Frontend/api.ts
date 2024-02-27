@@ -151,8 +151,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    timeOfVisitTotalPrice(command: ClusteringCommand): Observable<ClusteringReturn> {
-        let url_ = this.baseUrl + "/api/analysis/Clustering";
+    timeOfVisitVsTotalPrice(command: Clustering_TimeOfVisit_TotalPrice_Command): Observable<ClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Clustering_TimeOfVisit_Vs_TotalPrice";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -169,11 +169,11 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processTimeOfVisitTotalPrice(response_);
+            return this.processTimeOfVisitVsTotalPrice(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processTimeOfVisitTotalPrice(response_ as any);
+                    return this.processTimeOfVisitVsTotalPrice(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<ClusteringReturn>;
                 }
@@ -182,7 +182,60 @@ export class AnalysisClient {
         }));
     }
 
-    protected processTimeOfVisitTotalPrice(response: HttpResponseBase): Observable<ClusteringReturn> {
+    protected processTimeOfVisitVsTotalPrice(response: HttpResponseBase): Observable<ClusteringReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ClusteringReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    timeOfVisitVsSeatTime(command: Clustering_TimeOfVisit_LengthOfVisit_Command): Observable<ClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Clustering_TimeOfVisit_Vs_SeatTime";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processTimeOfVisitVsSeatTime(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processTimeOfVisitVsSeatTime(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ClusteringReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ClusteringReturn>;
+        }));
+    }
+
+    protected processTimeOfVisitVsSeatTime(response: HttpResponseBase): Observable<ClusteringReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1506,6 +1559,80 @@ export abstract class ClusteringCommand extends CommandBase implements IClusteri
 export interface IClusteringCommand extends ICommandBase {
     establishmentId: string;
     salesIds: string[];
+}
+
+export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand implements IClustering_TimeOfVisit_TotalPrice_Command {
+    bandwidthTimeOfVisit!: number;
+    bandwidthTotalPrice!: number;
+
+    constructor(data?: IClustering_TimeOfVisit_TotalPrice_Command) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.bandwidthTimeOfVisit = _data["bandwidthTimeOfVisit"];
+            this.bandwidthTotalPrice = _data["bandwidthTotalPrice"];
+        }
+    }
+
+    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
+        data = typeof data === 'object' ? data : {};
+        let result = new Clustering_TimeOfVisit_TotalPrice_Command();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bandwidthTimeOfVisit"] = this.bandwidthTimeOfVisit;
+        data["bandwidthTotalPrice"] = this.bandwidthTotalPrice;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IClustering_TimeOfVisit_TotalPrice_Command extends IClusteringCommand {
+    bandwidthTimeOfVisit: number;
+    bandwidthTotalPrice: number;
+}
+
+export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand implements IClustering_TimeOfVisit_LengthOfVisit_Command {
+    bandwidthTimeOfVisit!: number;
+    bandwidthLengthOfVisit!: number;
+
+    constructor(data?: IClustering_TimeOfVisit_LengthOfVisit_Command) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.bandwidthTimeOfVisit = _data["bandwidthTimeOfVisit"];
+            this.bandwidthLengthOfVisit = _data["bandwidthLengthOfVisit"];
+        }
+    }
+
+    static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
+        data = typeof data === 'object' ? data : {};
+        let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bandwidthTimeOfVisit"] = this.bandwidthTimeOfVisit;
+        data["bandwidthLengthOfVisit"] = this.bandwidthLengthOfVisit;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IClustering_TimeOfVisit_LengthOfVisit_Command extends IClusteringCommand {
+    bandwidthTimeOfVisit: number;
+    bandwidthLengthOfVisit: number;
 }
 
 export class LoginCommand implements ILoginCommand {

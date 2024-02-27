@@ -2,6 +2,9 @@
 
 namespace WebApplication1.Application_Layer.Handlers.MeanShift
 {
+    //[Newtonsoft.Json.JsonConverter(typeof(JsonInheritanceConverter), "$type")]
+    //[KnownType(typeof(Clustering_TimeOfVisit_LengthOfVisit_Command))]
+    //[KnownType(typeof(Clustering_TimeOfVisit_TotalPrice_Command))]
     public abstract class ClusteringCommand : CommandBase, ICmdField_SalesIds
     {
         public ClusteringCommand(

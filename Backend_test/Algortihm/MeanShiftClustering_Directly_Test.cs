@@ -250,11 +250,11 @@ namespace EstablishmentProject.test.Algortihm
                 var point = new List<double> { x, y, };
                 if (i < number / 2)
                 {
-                    point = point.Zip(new List<double> { 5, 5 }, (m, s) => m + s).ToList();
+                    point = point.Zip(new List<double> { 2, 2 }, (m, s) => m + s).ToList();
                 }
                 else
                 {
-                    point = point.Zip(new List<double> { -5, -5 }, (m, s) => m + s).ToList();
+                    point = point.Zip(new List<double> { -2, -2 }, (m, s) => m + s).ToList();
                 }
                 data.Add(("point", point));
             };

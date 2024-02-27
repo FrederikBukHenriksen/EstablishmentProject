@@ -1,34 +1,33 @@
-﻿using NodaTime;
-using WebApplication1.Utils;
+﻿using WebApplication1.Utils;
 
 namespace WebApplication1.Infrastructure.Data
 {
 
     public interface ITestDataBuilder
     {
-        List<OpeningHours> CreateSimpleOpeningHoursForWeek(LocalTime open, LocalTime close);
-        List<DateTime> SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours);
-        List<DateTime> OpenHoursCalendar(DateTime datetimeStart, DateTime datetimeEnd, TimeResolution timeResolution, List<OpeningHours> openingHours);
-        Dictionary<DateTime, int> GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> dateExtractor, Func<double, double> distributionFunction);
-        Dictionary<DateTime, int> DistributionByTimeresolution(List<DateTime> dateTimePoints, Func<double, double> distributionFunction, TimeResolution timeResolution);
+        //List<OpeningHours> CreateSimpleOpeningHoursForWeek(LocalTime open, LocalTime close);
+        //List<DateTime> SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours);
+        //List<DateTime> OpenHoursCalendar(DateTime datetimeStart, DateTime datetimeEnd, TimeResolution timeResolution, List<OpeningHours> openingHours);
+        //Dictionary<DateTime, int> GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> dateExtractor, Func<double, double> distributionFunction);
+        //Dictionary<DateTime, int> DistributionByTimeresolution(List<DateTime> dateTimePoints, Func<double, double> distributionFunction, TimeResolution timeResolution);
         Dictionary<DateTime, int> FINALAggregateDistributions(List<Dictionary<DateTime, int>> listOfDistributions);
         Dictionary<DateTime, int> FINALgenerateDistrubution(DateTime start, DateTime end, Func<double, double> distributionFunction, TimeResolution timeResolution);
         Dictionary<DateTime, int> FINALFilterOnOpeningHours(int openHour, int closeHour, Dictionary<DateTime, int> distribution);
     }
 
-    public class OpeningHours
-    {
-        public DayOfWeek dayOfWeek { get; set; }
-        public LocalTime open { get; set; }
-        public LocalTime close { get; set; }
+    //public class OpeningHours
+    //{
+    //    public DayOfWeek dayOfWeek { get; set; }
+    //    public LocalTime open { get; set; }
+    //    public LocalTime close { get; set; }
 
-        public OpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
-        {
-            this.dayOfWeek = dayOfWeek;
-            this.open = open;
-            this.close = close;
-        }
-    }
+    //    public OpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
+    //    {
+    //        this.dayOfWeek = dayOfWeek;
+    //        this.open = open;
+    //        this.close = close;
+    //    }
+    //}
 
     public class TestDataBuilder : ITestDataBuilder
     {
@@ -74,25 +73,6 @@ namespace WebApplication1.Infrastructure.Data
             return dictionary;
         }
 
-        public List<OpeningHours> CreateSimpleOpeningHoursForWeek(LocalTime open, LocalTime close)
-        {
-            var openingHoursList = new List<OpeningHours>();
-            for (int i = 0; i < 7; i++)
-            {
-                openingHoursList.Add(new OpeningHours((DayOfWeek)i, open, close));
-            }
-            return openingHoursList;
-        }
-
-        public List<DateTime> SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours)
-        {
-            foreach (OpeningHours openingHour in openingHours)
-            {
-                timeline.RemoveAll((x => x.DayOfWeek != openingHour.dayOfWeek && !(new LocalTime(x.Hour, x.Minute, x.Second) >= openingHour.open && new LocalTime(x.Hour, x.Minute, x.Second) < openingHour.close)));
-            }
-            return timeline;
-        }
-
         public Dictionary<DateTime, int> FINALAggregateDistributions(List<Dictionary<DateTime, int>> listOfDistributions)
         {
             Dictionary<DateTime, int> dictionary = new Dictionary<DateTime, int>();
@@ -115,12 +95,6 @@ namespace WebApplication1.Infrastructure.Data
                 }
             }
             return dictionary;
-        }
-
-        public List<DateTime> OpenHoursCalendar(DateTime start, DateTime end, TimeResolution timeResolution, List<OpeningHours> openingHours)
-        {
-            var timeline = TimeHelper.CreateTimelineAsList(start, end, TimeResolution.Hour);
-            return this.SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(timeline, openingHours);
         }
 
         public Dictionary<DateTime, int> DistributionByTimeresolution(List<DateTime> dateTimePoints, Func<double, double> distributionFunction, TimeResolution timeResolution)
