@@ -22,11 +22,19 @@ import {
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements OnInit, OnChanges {
-  @Input() chartData!: ChartData;
-  @Input() chartOptions!: ChartOptions;
+  @Input() chartType: ChartType = 'scatter';
+  @Input() chartData: ChartData = {
+    labels: [],
+    datasets: [],
+  } as ChartData;
+  @Input() chartOptions: ChartOptions = {
+    legend: {
+      display: false,
+    },
+  } as ChartOptions;
 
   chart: Chart = new Chart('canvas', {
-    type: 'line',
+    type: this.chartType,
     data: {
       labels: [],
       datasets: [],
@@ -37,6 +45,7 @@ export class GraphComponent implements OnInit, OnChanges {
       },
     } as ChartOptions,
   });
+  type!: ChartType;
   data!: ChartData;
   options!: ChartOptions;
 
@@ -53,6 +62,10 @@ export class GraphComponent implements OnInit, OnChanges {
     }
     if (changes['chartOptions']) {
       this.options = changes['chartOptions'].currentValue;
+    }
+
+    if (changes['ChartType']) {
+      this.type = changes['ChartType'].currentValue;
     }
     this.UpdateChart();
     console.log('data', this.data);

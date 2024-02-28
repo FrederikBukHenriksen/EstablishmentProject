@@ -1,23 +1,76 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace WebApplication1.Domain.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
     public class Item : EntityBase
     {
+        public Guid EstablishmentId { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
-    }
 
-    public class ItemConfiguration : IEntityTypeConfiguration<Item>
-    {
-        public void Configure(EntityTypeBuilder<Item> builder)
+        public Item() { }
+
+        public Item(Establishment establishment, string name, double price)
         {
-            builder.Property(e => e.Name).IsRequired();
+            this.EstablishmentId = establishment.Id;
+            this.SetName(name);
+            this.SetPrice(price);
+        }
 
-            builder.HasIndex(e => e.Name).IsUnique();
+        public string GetName()
+        {
+            return this.Name;
+        }
 
-            builder.Property(e => e.Price).IsRequired();
+        public string SetName(string name)
+        {
+            this.ItemNameMustBeValid(name);
+            this.Name = name;
+            return this.GetName();
+        }
+
+        public double GetPrice()
+        {
+            return this.Price;
+        }
+
+        public void SetPrice(double price)
+        {
+            this.PriceMustBeValid(price);
+            this.Price = price;
+        }
+
+        //Checkers and validators
+
+        protected void ItemNameMustBeValid(string name)
+        {
+            if (!this.IsItemNameValid(name))
+            {
+                throw new ArgumentException("Item name is not valid");
+            }
+        }
+
+        public bool IsItemNameValid(string name)
+        {
+            if (name == "")
+            {
+                return false;
+            }
+            return true;
+        }
+
+        protected void PriceMustBeValid(double price)
+        {
+            if (!this.IsPricePostive(price))
+            {
+                throw new ArgumentException("Price is not valid");
+            }
+        }
+        public bool IsPricePostive(double price)
+        {
+            if (price >= 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

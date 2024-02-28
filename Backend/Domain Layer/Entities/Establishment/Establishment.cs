@@ -1,17 +1,58 @@
-﻿using WebApplication1.Domain_Layer.Entities;
-
-namespace WebApplication1.Domain.Entities
+﻿namespace WebApplication1.Domain_Layer.Entities
 {
-    public class Establishment : EntityBase
+    public interface IEstablishment : IEstablishment_Sale, IEstablishment_Table, IEstablishment_Item
     {
-        public string? Name { get; set; }
-        public Information? Information { get; set; }
-        public ICollection<Item> Items { get; set; } = new List<Item>();
-        public ICollection<Table> Tables { get; set; } = new List<Table>();
-        public ICollection<Sale> Sales { get; set; } = new List<Sale>();
-
-
+        string GetName();
+        void SetName(string name);
     }
 
+    public partial class Establishment : EntityBase
+    {
+        public string Name { get; set; }
+        public virtual ICollection<Item> Items { get; set; } = new List<Item>();
+        public virtual ICollection<Table> Tables { get; set; } = new List<Table>();
+        public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
 
+        public Establishment()
+        {
+
+        }
+
+
+        public Establishment(
+            string name)
+        {
+            this.SetName(name);
+        }
+
+        public void SetName(string name)
+        {
+            this.EstablishmentNameMustBeValid(name);
+            this.Name = name;
+        }
+
+        public string GetName()
+        {
+            return this.Name;
+        }
+
+        //Checkers and validators
+
+        protected void EstablishmentNameMustBeValid(string name)
+        {
+            if (!this.IsNameValid(name))
+            {
+                throw new ArgumentException("Establishment name is not valid");
+            }
+        }
+        public bool IsNameValid(string name)
+        {
+            if (name == "")
+            {
+                return false;
+            }
+            return true;
+        }
+
+    }
 }

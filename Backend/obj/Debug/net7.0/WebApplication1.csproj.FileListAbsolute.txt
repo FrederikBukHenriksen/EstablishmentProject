@@ -148,3 +148,5 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Fl
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\NJsonSchema.CodeGeneration.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Parlot.dll
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\TimeZoneConverter.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Castle.Core.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Proxies.dll

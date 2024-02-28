@@ -1,30 +1,26 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.DependencyInjection;
-using WebApplication1.Domain.Entities;
+﻿using WebApplication1.Application_Layer.Services.Authentication_and_login;
+using WebApplication1.Domain_Layer.Entities;
 using WebApplication1.Services;
 
 namespace WebApplication1.Middelware
 {
     public class UserContextMiddleware : IMiddleware
     {
-        private IAuthService _authService;
-        private IUserContextService _userContextService;
+        private IJWTService JWTService;
+        private IUserContextService userContextService;
 
-        public UserContextMiddleware(IAuthService authService, IUserContextService userContextService)
+        public UserContextMiddleware(IUserContextService userContextService, IJWTService JWTService)
         {
-            _authService = authService;
-            _userContextService = userContextService;
+            this.userContextService = userContextService;
+            this.JWTService = JWTService;
         }
-            
+
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            User? user = _authService.GetUserFromHttp(context);
-
+            User? user = this.JWTService.ExtractUserFromRequest(context);
             if (user != null)
             {
-                _userContextService.SetUser(user);
-                _userContextService.FecthAccesibleEstablishments();
-                _userContextService.FetchActiveEstablishmentFromHttpHeader(context);
+                this.userContextService.SetUser(user);
             };
             return next(context);
         }

@@ -9,16 +9,17 @@ export function todayDateUtc(): Date {
     )
   );
 }
-
 export function CreateDate(
   year: number,
   month: number,
   day: number,
-  hour: number,
-  minute: number,
-  second: number
+  hours: number,
+  minutes: number,
+  seconds: number
 ): Date {
-  return new Date(Date.UTC(year, month, day, hour, minute, second));
+  var date = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+  date = removeTimezone(date);
+  return date;
 }
 
 export function DateToString(dateTime: Date): string {
@@ -26,6 +27,60 @@ export function DateToString(dateTime: Date): string {
     hour: 'numeric',
     minute: 'numeric',
   });
+}
+
+export function removeTimezone(date: Date) {
+  const dateWithoutTimezone = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
+  );
+
+  return dateWithoutTimezone;
+}
+
+export function accountForTimezone(
+  dateWithoutTimezone: Date,
+  offsetMinutes: number = -60
+) {
+  const adjustedTime =
+    dateWithoutTimezone.getTime() + offsetMinutes * 60 * 1000;
+
+  const dateWithTimezone = new Date(adjustedTime);
+
+  return dateWithTimezone;
+}
+
+export function DateForGraph(date: Date): string {
+  return (
+    date.getFullYear() +
+    '-' +
+    (date.getMonth() + 1) +
+    '-' +
+    date.getDate() +
+    '-' +
+    date.getHours()
+  );
+}
+
+export function RemoveTimezoneFromDate(date: Date): Date {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  );
+}
+
+export function UTCDATE(date1: Date) {
+  return new Date(
+    date1.getUTCFullYear(),
+    date1.getUTCMonth(),
+    date1.getUTCDate(),
+    date1.getUTCHours(),
+    date1.getUTCMinutes(),
+    date1.getUTCSeconds()
+  );
 }
 
 export function AddToDateTimeResolution(
@@ -43,6 +98,32 @@ export function AddToDateTimeResolution(
     case TimeResolution.Year:
       return new Date(date.setFullYear(date.getFullYear() + value));
   }
+}
+
+export function getDifferenceInHours(
+  inputDate: Date,
+  referenceDate: Date
+): number {
+  const timeDifferenceInMilliseconds =
+    inputDate.getTime() - referenceDate.getTime();
+  const hoursDifference = timeDifferenceInMilliseconds / (1000 * 60 * 60);
+  return hoursDifference;
+}
+
+export function GetTimeLineWithTimeResolution(
+  start: Date,
+  end: Date,
+  timeResolution: TimeResolution
+): Date[] {
+  const timeline: Date[] = [];
+  let currentDate = new Date(start);
+
+  while (currentDate <= end) {
+    timeline.push(new Date(currentDate));
+    currentDate = AddToDateTimeResolution(currentDate, 1, timeResolution);
+  }
+
+  return timeline;
 }
 
 export function GetIdentifierOfDate(
@@ -91,20 +172,16 @@ export function ExtractDateByTimeResolution(
   }
 }
 
-export function GetAllDatesBetween(
-  timePeriod: DateTimePeriod,
-  timeResolution: TimeResolution
-): Date[] {
-  var dates: Date[] = [];
+export function GetAllDatesInPeriod(startDate: Date, endDate: Date): Date[] {
+  const timeline: Date[] = [];
+  let currentDate = new Date(startDate);
 
-  var startDate = ExtractDateByTimeResolution(timePeriod.start, timeResolution);
-  var endDate = ExtractDateByTimeResolution(timePeriod.end, timeResolution);
-
-  while (startDate <= endDate) {
-    dates.push(startDate);
-    startDate = AddToDateTimeResolution(startDate, 1, timeResolution);
+  while (currentDate <= endDate) {
+    timeline.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
   }
-  return dates;
+
+  return timeline;
 }
 
 export function CreateTimelineOfObjects<T>(
@@ -126,11 +203,18 @@ export function CreateTimelineOfObjects<T>(
 
   while (startDate <= endDateInput) {
     if (!timeline.has(startDate)) {
-      timeline.set(startDate, []);
+      timeline.set(new Date(startDate), []);
     }
-
-    if (groupedObjects.has(startDate)) {
-      timeline.set(startDate, groupedObjects.get(startDate)!);
+    var test = ExtractDateByTimeResolution(groupedObjects[1].date, resolution);
+    var test1 = ExtractDateByTimeResolution(startDate, resolution);
+    var test3 = test == test1;
+    var matchFromGroupedObjects = groupedObjects.find(
+      (x) =>
+        ExtractDateByTimeResolution(x.date, resolution) ==
+        ExtractDateByTimeResolution(startDate, resolution)
+    );
+    if (matchFromGroupedObjects) {
+      timeline.set(new Date(startDate), matchFromGroupedObjects.objects);
     }
 
     startDate = AddToDateTimeResolution(startDate, 1, resolution);
@@ -143,18 +227,62 @@ export function groupObjectsByTimeResolution<T>(
   list: T[],
   DateSelector: (x: T) => Date,
   resolution: TimeResolution
-): Map<Date, T[]> {
-  const groupedObjects = new Map<Date, T[]>();
+): Array<{ date: Date; objects: T[] }> {
+  const groupedObjects: Array<{ date: Date; objects: T[] }> = [];
 
   list.forEach((obj) => {
-    const key = ExtractDateByTimeResolution(DateSelector(obj), resolution);
+    const key = new Date(
+      ExtractDateByTimeResolution(DateSelector(obj), resolution)
+    );
 
-    if (!groupedObjects.has(key)) {
-      groupedObjects.set(key, []);
+    const existingEntry = groupedObjects.find(
+      (entry) => entry.date.getTime() === key.getTime()
+    );
+
+    if (existingEntry) {
+      existingEntry.objects.push(obj);
+    } else {
+      groupedObjects.push({ date: key, objects: [obj] });
     }
-
-    groupedObjects.get(key)?.push(obj);
   });
 
   return groupedObjects;
+}
+
+export function groupByTimeResolution<T>(
+  items: T[],
+  getDate: (item: T) => Date,
+  timeResolution: TimeResolution
+): Map<string, T[]> {
+  const groupedMap = new Map<string, T[]>();
+
+  items.forEach((item) => {
+    const date = getDate(item);
+    let key: string;
+
+    switch (timeResolution) {
+      case TimeResolution.Hour:
+        key = date.toISOString().slice(0, 13); // Group by hour
+        break;
+      case TimeResolution.Date:
+        key = date.toISOString().slice(0, 10); // Group by date
+        break;
+      case TimeResolution.Month:
+        key = date.toISOString().slice(0, 7); // Group by month
+        break;
+      case TimeResolution.Year:
+        key = date.toISOString().slice(0, 4); // Group by year
+        break;
+      default:
+        throw new Error('Invalid TimeResolution');
+    }
+
+    if (!groupedMap.has(key)) {
+      groupedMap.set(key, []);
+    }
+
+    groupedMap.get(key)!.push(item);
+  });
+
+  return groupedMap;
 }

@@ -1,22 +1,76 @@
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef>Establishment name</th>
-    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-  </ng-container>
+<table mat-table [dataSource]="dataSource">
+  <ng-container *ngFor="let column of GetColumns()" [matColumnDef]="column">
+    {{ column }}
+    <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
 
-  <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef>Action</th>
     <td mat-cell *matCellDef="let element">
-      <button
-        mat-button
-        color="primary"
-        (click)="onSelectEstablishment(element.id)"
+      <ng-container
+        [ngSwitch]="getTypeOfTableElement(GetRowElement(element, column))"
       >
-        Select
-      </button>
+        <ng-container *ngSwitchCase="'TableButton'">
+          <button
+            mat-button
+            (click)="
+              CastToTableButton(GetRowElement(element, column)).onClick()
+            "
+          >
+            {{ CastToTableButton(GetRowElement(element, column)).text }}
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableString'">
+          {{ CastToTableString(GetRowElement(element, column)).text }}
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableInput'">
+          <input type="text" />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableCheckBox'">
+          <input
+            type="checkbox"
+            [(ngModel)]="
+              CastToTableCheckbox(GetRowElement(element, column)).value
+            "
+            (change)="
+              CastToTableCheckbox(GetRowElement(element, column)).action(
+                CastToTableCheckbox(GetRowElement(element, column)).value
+              )
+            "
+          />
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'TableMenu'">
+          <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              *ngFor="
+                let menuItem of GetTableMenuElements(
+                  CastToTableMenu(GetRowElement(element, column))
+                )
+              "
+              (click)="menuItem.action()"
+            >
+              {{ menuItem.text }}
+            </button>
+          </mat-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchDefault> default </ng-container>
+      </ng-container>
+
+      <!-- Add more ng-container blocks as needed for additional types -->
     </td>
   </ng-container>
-
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  <tr mat-header-row *matHeaderRowDef="GetColumns()"></tr>
+  <tr mat-row *matRowDef="let row; columns: GetColumns()"></tr>
 </table>
+
+<div *ngIf="addPaginator">
+  <mat-paginator
+    [pageSize]="10"
+    showFirstLastButtons
+    aria-label="Select page of items"
+  ></mat-paginator>
+</div>

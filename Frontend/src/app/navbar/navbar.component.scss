@@ -1,0 +1,14 @@
+.toolbar-content {
+  width: 1320px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+
+.spacer {
+  flex-grow: 1; /* Expand to take up available space */
+}
+
+.toolbar {
+  background-color: #3f5061;
+}

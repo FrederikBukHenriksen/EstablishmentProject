@@ -1,17 +1,25 @@
-﻿using WebApplication1.Domain.Entities;
+﻿using WebApplication1.Domain_Layer.Entities;
 
-namespace WebApplication1.Domain.Services.Repositories
+namespace WebApplication1.Domain_Layer.Services.Repositories
 {
 
     public interface IUserRepository : IRepository<User>
     {
+        IUserRepository IncludeUserRoles();
     }
 
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : RepositoryBase<User>, IUserRepository
     {
         public UserRepository(ApplicationDbContext context) : base(context)
         {
         }
+
+        public IUserRepository IncludeUserRoles()
+        {
+            this.query = this.query.Include(x => x.UserRoles).ThenInclude(x => x.Establishment);
+            return this;
+        }
+
     }
 }
 

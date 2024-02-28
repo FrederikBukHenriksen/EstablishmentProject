@@ -1,3 +1,86 @@
-<p>
-  cluster works!
-</p>
+<h1 style="font-weight: 500">Clustering</h1>
+
+<div class="accordion-arrangement">
+  <div *ngFor="let collection of FetchDictionary">
+    <mat-accordion class="accordion" multi>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title
+            ><h2>{{ collection.title }}</h2></mat-panel-title
+          >
+        </mat-expansion-panel-header>
+
+        <div class="botton_box">
+          <div *ngFor="let dialog of collection.dialogs">
+            <button mat-stroked-button (click)="dialog.action()">
+              {{ dialog.name }}
+            </button>
+          </div>
+        </div>
+
+        <hr />
+        <mat-accordion class="accordion" multi>
+          <mat-expansion-panel [disabled]="!collection.clustersTable">
+            <mat-expansion-panel-header>
+              <mat-panel-title>Clusters</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <app-table
+              *ngIf="collection.clustersTable | async as clustersTableModel"
+              [tableModel]="clustersTableModel"
+              [addPaginator]="true"
+            ></app-table>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel [disabled]="!collection.eachClustersTables">
+            <mat-expansion-panel-header>
+              <mat-panel-title>Clustered sales data</mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-accordion class="accordion" multi>
+              <div
+                *ngFor="
+                  let tableModel of collection.eachClustersTables | async;
+                  let i = index
+                "
+              >
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>Cluster {{ i }}</mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <app-table
+                    [tableModel]="tableModel"
+                    [addPaginator]="true"
+                  ></app-table>
+                </mat-expansion-panel>
+              </div>
+            </mat-accordion>
+          </mat-expansion-panel>
+          <mat-expansion-panel [disabled]="!collection.graphModels">
+            <mat-expansion-panel-header>
+              <mat-panel-title>Clustered Sales data plotted</mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-accordion class="accordion" multi>
+              <div
+                *ngFor="
+                  let graph of collection.graphModels | async;
+                  let i = index
+                "
+              >
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>{{ graph.title }}</mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <app-graph
+                    [chartType]="graph.graphModel.chartType"
+                    [chartData]="graph.graphModel.chartData"
+                    [chartOptions]="graph.graphModel.chartOptions"
+                  ></app-graph>
+                </mat-expansion-panel>
+              </div>
+            </mat-accordion>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

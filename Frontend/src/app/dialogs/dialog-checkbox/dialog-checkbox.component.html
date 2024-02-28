@@ -1,0 +1,86 @@
+<form [formGroup]="myFormGroup" (ngSubmit)="onSubmit()">
+  <div *ngFor="let input of data">
+    {{ input.title }}
+    <div *ngIf="getType(input) == 'CheckBox'">
+      <input
+        [formControlName]="input.id"
+        type="checkbox"
+        name="itemCheckbox"
+        [value]="input.id"
+      />
+    </div>
+
+    <div *ngIf="getType(input) == 'TextInputField'">
+      <input
+        [formControlName]="input.id"
+        type="text"
+        name="itemCheckbox"
+        [value]="input.id"
+      />
+    </div>
+
+    <div *ngIf="getType(input) == 'DropDown'">
+      <mat-form-field>
+        <mat-label></mat-label>
+        <mat-select [formControlName]="input.id">
+          <mat-option
+            *ngFor="let item of GetDropdownOptions(input)"
+            [value]="item.value"
+            >{{ item.name }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="getType(input) == 'DropDownMultipleSelects'">
+      <mat-form-field>
+        <mat-label></mat-label>
+        <mat-select [formControlName]="input.id" multiple [value]="input.value">
+          <mat-option
+            *ngFor="let item of GetDropdownOptions(input)"
+            [value]="item.value"
+            >{{ item.name }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="getType(input) == 'DatePicker'">
+      <mat-form-field>
+        <input
+          matInput
+          [formControl]="input.FormControl"
+          [matDatepicker]="picker"
+          placeholder="{{ input.placeholder }}"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="getType(input) == 'DialogSlider'">
+      <mat-slider
+        showTickMarks
+        discrete
+        [formControl]="input.FormControl"
+        [min]="input.slider.min"
+        [max]="input.slider.max"
+        [step]="input.slider.step"
+      >
+        <input matSliderThumb [formControlName]="input.id" />
+      </mat-slider>
+    </div>
+
+    <!-- </mat-tab-group> -->
+  </div>
+
+  <button mat-button (click)="onSubmit()">OK</button>
+  <!-- <input
+    type="checkbox"
+    name="itemCheckbox"
+    [value]="item.id"
+    [(ngModel)]="item.selected"
+  />
+  />
+  {{ item.name }} -->
+</form>

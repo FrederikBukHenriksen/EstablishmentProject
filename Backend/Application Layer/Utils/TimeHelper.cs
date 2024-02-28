@@ -1,11 +1,4 @@
-﻿using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using WebApplication1.CommandHandlers;
-using System;
-using WebApplication1.Application_Layer.Objects;
-using NodaTime;
-using WebApplication1.Domain.Entities;
-
-namespace WebApplication1.Utils
+﻿namespace WebApplication1.Utils
 {
     public enum TimeResolution
     {
@@ -15,135 +8,69 @@ namespace WebApplication1.Utils
         Year,
     }
 
-    public interface ITimePeriod<T>
-    {
-        T Start { get; set; }
-        T End { get; set; }
-    }
 
-    public class localDatePeriod : ITimePeriod<LocalDate>
-    {
-        public LocalDate Start { get; set; }
-        public LocalDate End { get; set; }
 
-        public localDatePeriod(LocalDate start, LocalDate end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
-    public class LocalTimePeriod : ITimePeriod<LocalTime>
-    {
-        public LocalTime Start { get; set; }
-        public LocalTime End { get; set; }
-
-        public LocalTimePeriod(LocalTime start, LocalTime end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
-    public class LocalDateTime : ITimePeriod<LocalDateTime>
-    {
-        public LocalDateTime Start { get; set; }
-        public LocalDateTime End { get; set; }
-
-        public LocalDateTime(LocalDateTime start, LocalDateTime end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
-    public class DateTimePeriod : ITimePeriod<DateTime>
+    public class DateTimePeriod
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
 
         public DateTimePeriod(DateTime start, DateTime end)
         {
-           this.Start = start;
+            this.Start = start;
             this.End = end;
         }
     }
 
-
-
     public static class TimeHelper
     {
-        public static LocalTime DateTimeToLocalTime(DateTime dateTime)
+        public static int FromTimeSpanToHours(TimeSpan timespan)
         {
-            return new LocalTime(dateTime.Hour, dateTime.Minute, dateTime.Second);
+            return (int)timespan.TotalHours;
         }
-
-        public static DateTime LocalDateAndLocalTimeToDateTime(LocalDate localDate, LocalTime localTime)
+        public static Func<DateTime, int> DateTimeExtractorFunction(TimeResolution timeResolution)
         {
-            return new DateTime(localDate.Year, localDate.Month, localDate.Day, localTime.Hour, localTime.Minute, localTime.Second);
-        }   
-
-        public static bool IsWithinPeriod_StartAndEndIndluded<T>(T timestamp, T start, T end) where T : IComparable<T>
-        {
-            return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) <= 0;
-        }
-
-        public static bool IsTimeWithinPeriod_StartNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
-        {
-            return timestamp.CompareTo(start) > 0 && timestamp.CompareTo(end) <= 0;
-        }
-
-        public static bool IsTimeWithinPeriod_EndNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
-        {
-            return timestamp.CompareTo(start) >= 0 && timestamp.CompareTo(end) < 0;
-        }
-
-        public static bool IsTimeWithinPeriod_StartAndEndNotIncluded<T>(T timestamp, T start, T end) where T : IComparable<T>
-        {
-            return timestamp.CompareTo(start) > 0 && timestamp.CompareTo(end) < 0;
-        }
-
-        public static bool IsEntityWithinTimeframe<Entity>(
-            this Entity entity,
-            DateTimePeriod timePeriod,
-            Func<Entity, DateTime> timestampSelector)
-            where Entity : class
-        {
-            DateTime entityTimestamp = timestampSelector(entity);
-            return entityTimestamp >= timePeriod.Start && entityTimestamp <= timePeriod.End;
-        }
-
-        public static List<Entity> SortEntitiesWithinDateTimePeriod<Entity>(
-            this List<Entity> entityList,
-            DateTimePeriod timePeriod,
-            Func<Entity, DateTime> timestampSelector)
-            where Entity : class
-        {
-            List<Entity> entitiesWithinTimeframe = entityList
-                .Where(entity => entity.IsEntityWithinTimeframe(timePeriod, timestampSelector))
-                .ToList();
-
-            return entitiesWithinTimeframe;
-        }
-
-        public static List<Entity> SortEntitiesWithinTimePeriods<Entity>(
-            this List<Entity> entityList,
-            List<DateTimePeriod> timePeriods,
-            Func<Entity, DateTime> timestampSelector)
-            where Entity : class
-        {
-            List<Entity> entitiesWithinTimeframe = new List<Entity>();
-            foreach (var period in timePeriods)
+            switch (timeResolution)
             {
-                List<Entity> entitiesFromPeriod = entityList.SortEntitiesWithinDateTimePeriod(period, timestampSelector).ToList();
-                entitiesWithinTimeframe.AddRange(entitiesFromPeriod);
+                case TimeResolution.Hour:
+                    return x => x.Hour;
+                case TimeResolution.Date:
+                    return x => x.Day;
+                case TimeResolution.Month:
+                    return x => x.Month;
+                case TimeResolution.Year:
+                    return x => x.Year;
+                default:
+                    throw new ArgumentException();
             }
-            return entitiesWithinTimeframe;
         }
 
-        public static List<DateTime> CreateTimelineAsList(DateTimePeriod timePeriod, TimeResolution resolution)
+        public static DateTime AddToDateTime(this DateTime datetime, int amount, TimeResolution timeResolution)
         {
-            Func<DateTime, DateTime> res = x => {
+            switch (timeResolution)
+            {
+                case TimeResolution.Hour:
+                    return datetime.AddHours(amount);
+                case TimeResolution.Date:
+                    return datetime.AddDays(amount);
+                case TimeResolution.Month:
+                    return datetime.AddMonths(amount);
+                case TimeResolution.Year:
+                    return datetime.AddYears(amount);
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        public static List<DateTime> CreateTimelineAsList(DateTime start, DateTime end, TimeResolution resolution)
+        {
+            if (end < start)
+            {
+                throw new ArgumentException("End must be equal or later than start");
+            }
+
+            Func<DateTime, DateTime> res = x =>
+            {
                 switch (resolution)
                 {
                     case TimeResolution.Hour:
@@ -161,58 +88,12 @@ namespace WebApplication1.Utils
 
             List<DateTime> timeline = new List<DateTime>();
 
-            for (DateTime date = TimeResolutionUniqueRounder(timePeriod.Start, resolution); date <= timePeriod.End; date = res(date))
+            for (DateTime date = TimeResolutionUniqueRounder(start, resolution); date < end; date = res(date))
             {
                 timeline.Add(date);
             }
 
             return timeline;
-        }
-
-        public static LocalDate GetLocalDateFromDateTime(DateTime datetime)
-        {
-            return new LocalDate(datetime.Year, datetime.Month, datetime.Day);
-        }
-
-        public static LocalTime GetLocalTimeFromDateTime(DateTime dateTime)
-        {
-            return new LocalTime(dateTime.Hour, dateTime.Minute, dateTime.Second);
-        }
-
-
-        public static int PlainIdentifierBasedOnTimeResolution(this DateTime dateTime, TimeResolution timeResolution)
-        {
-            switch (timeResolution)
-            {
-                case TimeResolution.Hour:
-                    return dateTime.Hour;
-                case TimeResolution.Date:
-                    return dateTime.Day;
-                case TimeResolution.Month:
-                    return dateTime.Month;
-                case TimeResolution.Year:
-                    return dateTime.Year;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-
-        public static DateTime GroupForAverage(this DateTime dateTime, TimeResolution timeResolution)
-        {
-            switch (timeResolution)
-            {
-                case TimeResolution.Hour:
-                    return new DateTime(1,1,dateTime.Day,0,0,0).AddHours(dateTime.Hour);
-                case TimeResolution.Date:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day,0,0,0);
-                case TimeResolution.Month:
-                    return new DateTime(dateTime.Year, dateTime.Month, 1,0,0,0);
-                case TimeResolution.Year:
-                    throw new ArgumentException("Year is not supported for this method");
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         public static DateTime TimeResolutionUniqueRounder(this DateTime dateTime, TimeResolution timeResolution)
@@ -222,7 +103,7 @@ namespace WebApplication1.Utils
                 case TimeResolution.Hour:
                     return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day).AddHours(dateTime.Hour);
                 case TimeResolution.Date:
-                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);   
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day);
                 case TimeResolution.Month:
                     return new DateTime(dateTime.Year, dateTime.Month, 1);
                 case TimeResolution.Year:
@@ -232,89 +113,142 @@ namespace WebApplication1.Utils
             }
         }
 
-        //public static IEnumerable<(DateTime, IEnumerable<T?>)> mapToATimeline<T>(
-        //    IEnumerable<T> values,
-        //    Func<T, DateTime> datetimeSelector,
-        //    TimePeriod timePeriod,
-        //    TimeResolution timeResolution)
-        //{
-        //    IEnumerable<DateTime> timeline = TimeHelper.CreateTimelineAsList(timePeriod, timeResolution);
-        //    IDictionary<DateTime, IEnumerable<T?>> timelineDictionary = timeline.ToDictionary(x => x, x => (IEnumerable<T?>)new List<T?>());
 
-        //    foreach (var value in values)
-        //    {
-        //        DateTime dateTime = datetimeSelector(value).TimeResolutionUniqueRounder(timeResolution);
-
-        //        // Check if the key exists in the dictionary
-        //        if (timelineDictionary.TryGetValue(dateTime, out IEnumerable<T?> output))
-        //        {
-        //            // Key exists, add the value to the existing list
-        //            var updatedList = output.Concat(new List<T?> { value });
-        //            timelineDictionary[dateTime] = updatedList;
-        //        }
-        //    }
-
-        //    IEnumerable<(DateTime, IEnumerable<T?>)> res = timelineDictionary.Select(dic => (dic.Key, dic.Value)).ToList();
-        //    return res;
-        //}
-
-
-        public static IEnumerable<int> GetTimelineForTimeResolution(TimeResolution timeResolution)
+        //v2
+        public static List<DateTime> CreateTimelineAsListV2(DateTime start, DateTime end, TimeResolution resolution)
         {
-            switch (timeResolution) {
-                case TimeResolution.Hour:
-                    return Enumerable.Range(0, 24);
-                case TimeResolution.Date:
-                    return Enumerable.Range(1, 31);
-                case TimeResolution.Month:
-                    return Enumerable.Range(1, 12);
-                case TimeResolution.Year:
-                    throw new ArgumentException("Year is not supported for this method");
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+            List<DateTime> timeline = new List<DateTime>();
 
-        public static List<(int Key, double? Value)> MapValuesWithDateToTimeResolutionTimeline(List<(int timeResolutionIdentifer, double value)> averageData, TimeResolution timeResolution)
-        {
-            IEnumerable<int> timeResolutionTimeline = GetTimelineForTimeResolution(timeResolution);
-            IEnumerable<(int timeResolutionIdentifier, double? value)> timelineWithSpaceForData = timeResolutionTimeline.Select(x => (x, (double?)null));
-            Dictionary<int, double?> timelineAsDictionary = timelineWithSpaceForData.ToDictionary(x => x.timeResolutionIdentifier, x => x.value);
+            DateTime current = start;
 
-            foreach (var average in averageData)
+            while (current < end)
             {
-                var averageTimeIdentifier = average.timeResolutionIdentifer;
-                if (timelineAsDictionary.ContainsKey(averageTimeIdentifier))
+                timeline.Add(current);
+
+                switch (resolution)
                 {
-                    timelineAsDictionary[averageTimeIdentifier] = average.value;
+                    case TimeResolution.Hour:
+                        current = current.AddHours(1);
+                        break;
+                    case TimeResolution.Date:
+                        current = current.AddDays(1);
+                        break;
+                    case TimeResolution.Month:
+                        current = current.AddMonths(1);
+                        break;
+                    case TimeResolution.Year:
+                        current = current.AddYears(1);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid time resolution.");
                 }
             }
 
-            List<(int Key, double? Value)> dictionaryToList = timelineAsDictionary.Select(x => (x.Key, x.Value)).ToList();
-            return dictionaryToList;
+            return timeline;
         }
 
-        public static Dictionary<DateTime, List<T>> MapObjectsToTimeline<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        public static Dictionary<DateTime, List<T>> MapObjectsToTimelineV2<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
         {
-            // Create a dictionary with the provided timeline as keys and empty lists as values
-            Dictionary<DateTime, List<T>> timelineAsDictionary = timeline.ToDictionary(x => x, x => new List<T>());
+            Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
 
-            // Map objects to the timeline
             foreach (var obj in objects)
             {
-                var objTime = TimeHelper.TimeResolutionUniqueRounder(extractor(obj), timeResolution);
+                DateTime objDateTime = extractor(obj);
+                DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
 
-                if (timelineAsDictionary.ContainsKey(objTime))
-                {
-                    timelineAsDictionary[objTime].Add(obj);
-                }
+                if (!mappedTimeline.ContainsKey(mappedDateTime))
+                    mappedTimeline[mappedDateTime] = new List<T>();
+
+                mappedTimeline[mappedDateTime].Add(obj);
             }
-            return timelineAsDictionary;
+
+            // Fill in missing timeline points with empty lists
+            foreach (var timelinePoint in timeline)
+            {
+                if (!mappedTimeline.ContainsKey(timelinePoint))
+                    mappedTimeline[timelinePoint] = new List<T>();
+            }
+
+            return mappedTimeline;
         }
 
+        private static DateTime MapDateTime(DateTime dateTime, TimeResolution timeResolution)
+        {
+            switch (timeResolution)
+            {
+                case TimeResolution.Hour:
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0);
+                case TimeResolution.Date:
+                    return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
+                case TimeResolution.Month:
+                    return new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0);
+                case TimeResolution.Year:
+                    return new DateTime(dateTime.Year, 1, 1, 0, 0, 0);
+                default:
+                    throw new ArgumentException("Invalid time resolution specified.");
+            }
+        }
 
+        public static List<(DateTime, List<T>)> MapObjectsToTimelineV3<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        {
+            Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
 
+            foreach (var obj in objects)
+            {
+                DateTime objDateTime = extractor(obj);
+                DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
 
+                if (!mappedTimeline.ContainsKey(mappedDateTime))
+                    mappedTimeline[mappedDateTime] = new List<T>();
 
+                mappedTimeline[mappedDateTime].Add(obj);
+            }
+
+            // Fill in missing timeline points with empty lists
+            foreach (var timelinePoint in timeline)
+            {
+                if (!mappedTimeline.ContainsKey(timelinePoint))
+                    mappedTimeline[timelinePoint] = new List<T>();
+            }
+
+            return mappedTimeline.Select(kv => (kv.Key, kv.Value)).ToList();
+        }
+
+        public static List<(DateTime, List<T>)> MapObjectsToTimelineV4<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, DateTime start, DateTime end, TimeResolution timeResolution)
+        {
+            // Create the timeline based on the specified start, end, and time resolution
+            List<DateTime> timeline = CreateTimeline(start, end, timeResolution);
+
+            List<(DateTime, List<T>)> mappedTimeline = new List<(DateTime, List<T>)>();
+            foreach (var time in timeline)
+            {
+                var iterationEntry = (time, new List<T>());
+                foreach (var obj in objects)
+                {
+                    DateTime objDateTime = extractor(obj);
+                    DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
+                    if (mappedDateTime == time)
+                    {
+                        iterationEntry.Item2.Add(obj);
+                    }
+                }
+                mappedTimeline.Add(iterationEntry);
+            }
+            return mappedTimeline;
+        }
+
+        private static List<DateTime> CreateTimeline(DateTime start, DateTime end, TimeResolution timeResolution)
+        {
+            List<DateTime> timeline = new List<DateTime>();
+
+            DateTime current = start;
+            while (current < end)
+            {
+                timeline.Add(current);
+                current = current.AddToDateTime(1, timeResolution);
+            }
+
+            return timeline;
+        }
     }
 }

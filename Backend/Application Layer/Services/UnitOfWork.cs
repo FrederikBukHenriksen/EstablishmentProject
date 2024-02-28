@@ -1,37 +1,64 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Domain_Layer.Services.Repositories;
 
 namespace WebApplication1.Application_Layer.Services
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
-        public void SaveChanges();
+        IEstablishmentRepository establishmentRepository { get; }
+        IUserRepository userRepository { get; }
     }
 
     public class UnitOfWork : IUnitOfWork
     {
         private ApplicationDbContext dbContext;
 
+        public IEstablishmentRepository establishmentRepository
+        {
+            get
+            {
+                return new EstablishmentRepository(this.dbContext);
+            }
+        }
+
+        public IUserRepository userRepository
+        {
+            get
+            {
+                return new UserRepository(this.dbContext);
+            }
+        }
+
         public UnitOfWork([FromServices] ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        public void SaveChanges()
+        public void Dispose()
+        {
+            if (this.validation(this.dbContext)) this.SaveChanges();
+        }
+
+        private void SaveChanges()
         {
             using (var transaction = this.dbContext.Database.BeginTransaction())
             {
                 try
                 {
                     this.dbContext.SaveChanges();
-
                     transaction.Commit();
                 }
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    throw; //rethrow the error after catching it.
+                    throw; //rethrow exceptions thrown in the process of saving
                 }
             }
+        }
+
+        private bool validation(DbContext dbContext)
+        {
+            return true;
         }
 
     }

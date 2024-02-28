@@ -932,3 +932,4 @@ C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\EstablishmentProject.test.pdb
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\EstablishmentProject.test.genruntimeconfig.cache
 C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\obj\Debug\net7.0\ref\EstablishmentProject.test.dll
+C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend_test\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Proxies.dll

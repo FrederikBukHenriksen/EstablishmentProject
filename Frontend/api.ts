@@ -28,8 +28,8 @@ export class UserContextClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getAccessibleEstablishments(): Observable<Establishment[]> {
-        let url_ = this.baseUrl + "/api/user-context/get-accessible-establishment";
+    getAccessibleEstablishments(): Observable<string[]> {
+        let url_ = this.baseUrl + "/api/user-context/get-accessible-establishments";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -48,14 +48,14 @@ export class UserContextClient {
                 try {
                     return this.processGetAccessibleEstablishments(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[]>;
+                    return _observableThrow(e) as any as Observable<string[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment[]>;
+                return _observableThrow(response_) as any as Observable<string[]>;
         }));
     }
 
-    protected processGetAccessibleEstablishments(response: HttpResponseBase): Observable<Establishment[]> {
+    protected processGetAccessibleEstablishments(response: HttpResponseBase): Observable<string[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -69,126 +69,7 @@ export class UserContextClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(Establishment.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    getActiveEstablishment(): Observable<Establishment> {
-        let url_ = this.baseUrl + "/api/user-context/get-active-establishment";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetActiveEstablishment(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetActiveEstablishment(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Establishment>;
-        }));
-    }
-
-    protected processGetActiveEstablishment(response: HttpResponseBase): Observable<Establishment> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Establishment.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class WeatherClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    getWeatherTemperature(): Observable<Establishment[]> {
-        let url_ = this.baseUrl + "/api/user-context/get-temperature";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetWeatherTemperature(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetWeatherTemperature(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Establishment[]>;
-        }));
-    }
-
-    protected processGetWeatherTemperature(response: HttpResponseBase): Observable<Establishment[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(Establishment.fromJS(item));
+                    result200!.push(item);
             }
             else {
                 result200 = <any>null;
@@ -217,8 +98,8 @@ export class AnalysisClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    sales(command: SalesQuery): Observable<SalesQueryReturn> {
-        let url_ = this.baseUrl + "/api/analysis/sales";
+    numberOfSalesVsTemperature(command: Correlation_NumberOfSales_Vs_Temperature_Command): Observable<CorrelationReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Correlation_NumberOfSales_Vs_Temperature";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -235,166 +116,11 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSales(response_);
+            return this.processNumberOfSalesVsTemperature(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processSales(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SalesQueryReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SalesQueryReturn>;
-        }));
-    }
-
-    protected processSales(response: HttpResponseBase): Observable<SalesQueryReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SalesQueryReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    meanSales(command: SalesMeanOverTime): Observable<SalesMeanQueryReturn> {
-        let url_ = this.baseUrl + "/api/analysis/average-visits";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanSales(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processMeanSales(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SalesMeanQueryReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SalesMeanQueryReturn>;
-        }));
-    }
-
-    protected processMeanSales(response: HttpResponseBase): Observable<SalesMeanQueryReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SalesMeanQueryReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    meanSalesAverageSpend(command: SalesMeanOverTime): Observable<SalesMeanQueryReturn> {
-        let url_ = this.baseUrl + "/api/analysis/average-spend";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanSalesAverageSpend(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processMeanSalesAverageSpend(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SalesMeanQueryReturn>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SalesMeanQueryReturn>;
-        }));
-    }
-
-    protected processMeanSalesAverageSpend(response: HttpResponseBase): Observable<SalesMeanQueryReturn> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SalesMeanQueryReturn.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    correlationCoefficientAndLag(): Observable<CorrelationReturn> {
-        let url_ = this.baseUrl + "/api/analysis/cross-correlation-with-weather";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCorrelationCoefficientAndLag(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCorrelationCoefficientAndLag(response_ as any);
+                    return this.processNumberOfSalesVsTemperature(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<CorrelationReturn>;
                 }
@@ -403,7 +129,7 @@ export class AnalysisClient {
         }));
     }
 
-    protected processCorrelationCoefficientAndLag(response: HttpResponseBase): Observable<CorrelationReturn> {
+    protected processNumberOfSalesVsTemperature(response: HttpResponseBase): Observable<CorrelationReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -425,8 +151,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    meanShiftClustering(command: MeanShiftClusteringCommand): Observable<MeanShiftClusteringReturn> {
-        let url_ = this.baseUrl + "/api/analysis/clustering";
+    seatTimeVsTemperature(command: Correlation_SeatTime_Vs_Temperature_Command): Observable<CorrelationReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Correlation_SeatTime_Vs_Temperature";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -443,20 +169,20 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanShiftClustering(response_);
+            return this.processSeatTimeVsTemperature(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processMeanShiftClustering(response_ as any);
+                    return this.processSeatTimeVsTemperature(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
+                    return _observableThrow(e) as any as Observable<CorrelationReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<MeanShiftClusteringReturn>;
+                return _observableThrow(response_) as any as Observable<CorrelationReturn>;
         }));
     }
 
-    protected processMeanShiftClustering(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
+    protected processSeatTimeVsTemperature(response: HttpResponseBase): Observable<CorrelationReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -467,7 +193,7 @@ export class AnalysisClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = MeanShiftClusteringReturn.fromJS(resultData200);
+            result200 = CorrelationReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -478,8 +204,8 @@ export class AnalysisClient {
         return _observableOf(null as any);
     }
 
-    meanShiftClustering2(command: MeanShiftClusteringCommand): Observable<MeanShiftClusteringReturn> {
-        let url_ = this.baseUrl + "/api/analysis/mean-shift-clustering";
+    timeOfVisitVsTotalPrice(command: Clustering_TimeOfVisit_TotalPrice_Command): Observable<ClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Clustering_TimeOfVisit_Vs_TotalPrice";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -496,20 +222,20 @@ export class AnalysisClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processMeanShiftClustering2(response_);
+            return this.processTimeOfVisitVsTotalPrice(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processMeanShiftClustering2(response_ as any);
+                    return this.processTimeOfVisitVsTotalPrice(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<MeanShiftClusteringReturn>;
+                    return _observableThrow(e) as any as Observable<ClusteringReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<MeanShiftClusteringReturn>;
+                return _observableThrow(response_) as any as Observable<ClusteringReturn>;
         }));
     }
 
-    protected processMeanShiftClustering2(response: HttpResponseBase): Observable<MeanShiftClusteringReturn> {
+    protected processTimeOfVisitVsTotalPrice(response: HttpResponseBase): Observable<ClusteringReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -520,7 +246,60 @@ export class AnalysisClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = MeanShiftClusteringReturn.fromJS(resultData200);
+            result200 = ClusteringReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    timeOfVisitVsSeatTime(command: Clustering_TimeOfVisit_LengthOfVisit_Command): Observable<ClusteringReturn> {
+        let url_ = this.baseUrl + "/api/analysis/Clustering_TimeOfVisit_Vs_SeatTime";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processTimeOfVisitVsSeatTime(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processTimeOfVisitVsSeatTime(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ClusteringReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ClusteringReturn>;
+        }));
+    }
+
+    protected processTimeOfVisitVsSeatTime(response: HttpResponseBase): Observable<ClusteringReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ClusteringReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -545,11 +324,11 @@ export class AuthenticationClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    logIn(loginCommand: LoginCommand): Observable<FileResponse> {
+    logIn(command: LoginCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/authentication/login";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(loginCommand);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -602,52 +381,7 @@ export class AuthenticationClient {
         return _observableOf(null as any);
     }
 
-    logOut(): Observable<void> {
-        let url_ = this.baseUrl + "/api/authentication/logout";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processLogOut(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processLogOut(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processLogOut(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    isLoggedIn(): Observable<boolean> {
+    isLoggedIn(): Observable<IsLoggedInReturn> {
         let url_ = this.baseUrl + "/api/authentication/is-logged-in";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -667,14 +401,14 @@ export class AuthenticationClient {
                 try {
                     return this.processIsLoggedIn(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<boolean>;
+                    return _observableThrow(e) as any as Observable<IsLoggedInReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<boolean>;
+                return _observableThrow(response_) as any as Observable<IsLoggedInReturn>;
         }));
     }
 
-    protected processIsLoggedIn(response: HttpResponseBase): Observable<boolean> {
+    protected processIsLoggedIn(response: HttpResponseBase): Observable<IsLoggedInReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -685,8 +419,7 @@ export class AuthenticationClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = IsLoggedInReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -697,8 +430,8 @@ export class AuthenticationClient {
         return _observableOf(null as any);
     }
 
-    getLoggedInUser(): Observable<User> {
-        let url_ = this.baseUrl + "/api/authentication/get-logged-in-user";
+    logOut(): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/authentication/logout";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -706,38 +439,42 @@ export class AuthenticationClient {
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLoggedInUser(response_);
+            return this.processLogOut(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetLoggedInUser(response_ as any);
+                    return this.processLogOut(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<User>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<User>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processGetLoggedInUser(response: HttpResponseBase): Observable<User> {
+    protected processLogOut(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = User.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -760,55 +497,43 @@ export class DataSeedClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    lol(factory: FactoryServiceBuilder): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/test/lol";
+    aboveeachother(): Observable<void> {
+        let url_ = this.baseUrl + "/api/test/above-each-other";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(factory);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
             })
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processLol(response_);
+            return this.processAboveeachother(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processLol(response_ as any);
+                    return this.processAboveeachother(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
+                    return _observableThrow(e) as any as Observable<void>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
+                return _observableThrow(response_) as any as Observable<void>;
         }));
     }
 
-    protected processLol(response: HttpResponseBase): Observable<FileResponse> {
+    protected processAboveeachother(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -876,38 +601,38 @@ export class EstablishmentClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    get(establishmentId: string | undefined): Observable<Establishment> {
-        let url_ = this.baseUrl + "/api/establishment/get?";
-        if (establishmentId === null)
-            throw new Error("The parameter 'establishmentId' cannot be null.");
-        else if (establishmentId !== undefined)
-            url_ += "establishmentId=" + encodeURIComponent("" + establishmentId) + "&";
+    getEstablishmentdID(command: GetEstablishmentsCommand): Observable<GetEstablishmentsIdReturn> {
+        let url_ = this.baseUrl + "/api/establishment/get-id";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEstablishmentdID(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(response_ as any);
+                    return this.processGetEstablishmentdID(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment>;
+                    return _observableThrow(e) as any as Observable<GetEstablishmentsIdReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment>;
+                return _observableThrow(response_) as any as Observable<GetEstablishmentsIdReturn>;
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<Establishment> {
+    protected processGetEstablishmentdID(response: HttpResponseBase): Observable<GetEstablishmentsIdReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -918,7 +643,7 @@ export class EstablishmentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Establishment.fromJS(resultData200);
+            result200 = GetEstablishmentsIdReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -929,34 +654,38 @@ export class EstablishmentClient {
         return _observableOf(null as any);
     }
 
-    getAll(): Observable<Establishment[] | null> {
-        let url_ = this.baseUrl + "/api/establishment/get-all";
+    getEstablishmentsDTO(command: GetEstablishmentsCommand): Observable<GetEstablishmentsDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/get-DTO";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEstablishmentsDTO(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAll(response_ as any);
+                    return this.processGetEstablishmentsDTO(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Establishment[] | null>;
+                    return _observableThrow(e) as any as Observable<GetEstablishmentsDTOReturn>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Establishment[] | null>;
+                return _observableThrow(response_) as any as Observable<GetEstablishmentsDTOReturn>;
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<Establishment[] | null> {
+    protected processGetEstablishmentsDTO(response: HttpResponseBase): Observable<GetEstablishmentsDTOReturn> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -967,70 +696,7 @@ export class EstablishmentClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(Establishment.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    itemGetAll(): Observable<Item[]> {
-        let url_ = this.baseUrl + "/api/establishment/items/get-all";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processItemGetAll(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processItemGetAll(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Item[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Item[]>;
-        }));
-    }
-
-    protected processItemGetAll(response: HttpResponseBase): Observable<Item[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(Item.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = GetEstablishmentsDTOReturn.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1042,346 +708,429 @@ export class EstablishmentClient {
     }
 }
 
-export abstract class EntityBase {
-    id!: string;
+@Injectable({
+    providedIn: 'root'
+})
+export class ItemClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getItems(command: GetItemsCommand): Observable<GetItemsIdReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetItems(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetItems(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetItemsIdReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetItemsIdReturn>;
+        }));
+    }
+
+    protected processGetItems(response: HttpResponseBase): Observable<GetItemsIdReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetItemsIdReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
         }
+        return _observableOf(null as any);
     }
 
-    static fromJS(data: any): EntityBase {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'EntityBase' cannot be instantiated.");
+    getItemsDTO(command: GetItemsCommand): Observable<GetItemsDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/item/get-DTO";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetItemsDTO(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetItemsDTO(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetItemsDTOReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetItemsDTOReturn>;
+        }));
     }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        return data;
+    protected processGetItemsDTO(response: HttpResponseBase): Observable<GetItemsDTOReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetItemsDTOReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
     }
 }
 
-export class Establishment extends EntityBase {
-    name!: string | undefined;
-    information!: Information | undefined;
-    items!: Item[];
-    tables!: Table[];
-    sales!: Sale[];
+@Injectable({
+    providedIn: 'root'
+})
+export class SaleClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.information = _data["information"] ? Information.fromJS(_data["information"]) : <any>undefined;
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(Item.fromJS(item));
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getSales(command: GetSalesCommand): Observable<GetSalesReturn> {
+        let url_ = this.baseUrl + "/api/establishment/sales/get";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSales(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSales(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetSalesReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetSalesReturn>;
+        }));
+    }
+
+    protected processGetSales(response: HttpResponseBase): Observable<GetSalesReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetSalesReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getSalesDTO(command: GetSalesCommand): Observable<GetSalesDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/sales/get-DTO";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSalesDTO(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSalesDTO(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetSalesDTOReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetSalesDTOReturn>;
+        }));
+    }
+
+    protected processGetSalesDTO(response: HttpResponseBase): Observable<GetSalesDTOReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetSalesDTOReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    saleStaticstics(command: GetSalesStatisticsCommand): Observable<GetSalesStatisticsReturn> {
+        let url_ = this.baseUrl + "/api/establishment/sales/statistics";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaleStaticstics(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaleStaticstics(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetSalesStatisticsReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetSalesStatisticsReturn>;
+        }));
+    }
+
+    protected processSaleStaticstics(response: HttpResponseBase): Observable<GetSalesStatisticsReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetSalesStatisticsReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class TableClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getTables(command: GetTablesCommand): Observable<GetTablesIdReturn> {
+        let url_ = this.baseUrl + "/api/establishment/tables/get";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTables(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTables(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetTablesIdReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetTablesIdReturn>;
+        }));
+    }
+
+    protected processGetTables(response: HttpResponseBase): Observable<GetTablesIdReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTablesIdReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getTablesDTO(command: GetTablesCommand): Observable<GetTablesDTOReturn> {
+        let url_ = this.baseUrl + "/api/establishment/tables/get-DTO";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTablesDTO(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTablesDTO(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetTablesDTOReturn>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetTablesDTOReturn>;
+        }));
+    }
+
+    protected processGetTablesDTO(response: HttpResponseBase): Observable<GetTablesDTOReturn> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTablesDTOReturn.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export abstract class ReturnBase implements IReturnBase {
+
+    constructor(data?: IReturnBase) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
             }
-            if (Array.isArray(_data["tables"])) {
-                this.tables = [] as any;
-                for (let item of _data["tables"])
-                    this.tables!.push(Table.fromJS(item));
-            }
-            if (Array.isArray(_data["sales"])) {
-                this.sales = [] as any;
-                for (let item of _data["sales"])
-                    this.sales!.push(Sale.fromJS(item));
-            }
         }
     }
-
-    static override fromJS(data: any): Establishment {
-        data = typeof data === 'object' ? data : {};
-        let result = new Establishment();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["information"] = this.information ? this.information.toJSON() : <any>undefined;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        if (Array.isArray(this.tables)) {
-            data["tables"] = [];
-            for (let item of this.tables)
-                data["tables"].push(item.toJSON());
-        }
-        if (Array.isArray(this.sales)) {
-            data["sales"] = [];
-            for (let item of this.sales)
-                data["sales"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Information extends EntityBase {
-    location!: Location | undefined;
-    openingHours!: OpeningHours[];
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.location = _data["location"] ? Location.fromJS(_data["location"]) : <any>undefined;
-            if (Array.isArray(_data["openingHours"])) {
-                this.openingHours = [] as any;
-                for (let item of _data["openingHours"])
-                    this.openingHours!.push(OpeningHours.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): Information {
-        data = typeof data === 'object' ? data : {};
-        let result = new Information();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        if (Array.isArray(this.openingHours)) {
-            data["openingHours"] = [];
-            for (let item of this.openingHours)
-                data["openingHours"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Location extends EntityBase {
-    coordinates!: Coordinates;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.coordinates = _data["coordinates"] ? Coordinates.fromJS(_data["coordinates"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): Location {
-        data = typeof data === 'object' ? data : {};
-        let result = new Location();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["coordinates"] = this.coordinates ? this.coordinates.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Coordinates {
-    latitude!: number;
-    longitude!: number;
-
-    init(_data?: any) {
-        if (_data) {
-            this.latitude = _data["latitude"];
-            this.longitude = _data["longitude"];
-        }
-    }
-
-    static fromJS(data: any): Coordinates {
-        data = typeof data === 'object' ? data : {};
-        let result = new Coordinates();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["latitude"] = this.latitude;
-        data["longitude"] = this.longitude;
-        return data;
-    }
-}
-
-export class OpeningHours extends EntityBase {
-    dayOfWeek!: DayOfWeek;
-    open!: string;
-    close!: string;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.dayOfWeek = _data["dayOfWeek"];
-            this.open = _data["open"];
-            this.close = _data["close"];
-        }
-    }
-
-    static override fromJS(data: any): OpeningHours {
-        data = typeof data === 'object' ? data : {};
-        let result = new OpeningHours();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["dayOfWeek"] = this.dayOfWeek;
-        data["open"] = this.open;
-        data["close"] = this.close;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export enum DayOfWeek {
-    Sunday = 0,
-    Monday = 1,
-    Tuesday = 2,
-    Wednesday = 3,
-    Thursday = 4,
-    Friday = 5,
-    Saturday = 6,
-}
-
-export class Item extends EntityBase {
-    name!: string;
-    price!: number;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.price = _data["price"];
-        }
-    }
-
-    static override fromJS(data: any): Item {
-        data = typeof data === 'object' ? data : {};
-        let result = new Item();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["price"] = this.price;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Table extends EntityBase {
-    name!: string;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-        }
-    }
-
-    static override fromJS(data: any): Table {
-        data = typeof data === 'object' ? data : {};
-        let result = new Table();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class Sale extends EntityBase {
-    establishment!: Establishment;
-    timestampArrival!: Date | undefined;
-    timestampPayment!: Date;
-    salesItems!: SalesItems[];
-    table!: Table | undefined;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
-            this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
-            this.timestampPayment = _data["timestampPayment"] ? new Date(_data["timestampPayment"].toString()) : <any>undefined;
-            if (Array.isArray(_data["salesItems"])) {
-                this.salesItems = [] as any;
-                for (let item of _data["salesItems"])
-                    this.salesItems!.push(SalesItems.fromJS(item));
-            }
-            this.table = _data["table"] ? Table.fromJS(_data["table"]) : <any>undefined;
-        }
-    }
-
-    static override fromJS(data: any): Sale {
-        data = typeof data === 'object' ? data : {};
-        let result = new Sale();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
-        data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
-        data["timestampPayment"] = this.timestampPayment ? this.timestampPayment.toISOString() : <any>undefined;
-        if (Array.isArray(this.salesItems)) {
-            data["salesItems"] = [];
-            for (let item of this.salesItems)
-                data["salesItems"].push(item.toJSON());
-        }
-        data["table"] = this.table ? this.table.toJSON() : <any>undefined;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class SalesItems extends EntityBase {
-    sale!: Sale;
-    item!: Item;
-    quantity!: number;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.sale = _data["sale"] ? Sale.fromJS(_data["sale"]) : <any>undefined;
-            this.item = _data["item"] ? Item.fromJS(_data["item"]) : <any>undefined;
-            this.quantity = _data["quantity"];
-        }
-    }
-
-    static override fromJS(data: any): SalesItems {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesItems();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["sale"] = this.sale ? this.sale.toJSON() : <any>undefined;
-        data["item"] = this.item ? this.item.toJSON() : <any>undefined;
-        data["quantity"] = this.quantity;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export abstract class ReturnBase {
 
     init(_data?: any) {
     }
@@ -1397,132 +1146,255 @@ export abstract class ReturnBase {
     }
 }
 
-export class SalesQueryReturn extends ReturnBase {
-    data!: { [key: string]: number; };
+export interface IReturnBase {
+}
+
+export class CorrelationReturn extends ReturnBase implements ICorrelationReturn {
+    lagAndCorrelation!: ValueTupleOfIntegerAndDouble[];
+    calculationValues!: ValueTupleOfDateTimeAndListOfNullableDouble[];
+
+    constructor(data?: ICorrelationReturn) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            if (_data["data"]) {
-                this.data = {} as any;
-                for (let key in _data["data"]) {
-                    if (_data["data"].hasOwnProperty(key))
-                        (<any>this.data)![key] = _data["data"][key];
-                }
+            if (Array.isArray(_data["lagAndCorrelation"])) {
+                this.lagAndCorrelation = [] as any;
+                for (let item of _data["lagAndCorrelation"])
+                    this.lagAndCorrelation!.push(ValueTupleOfIntegerAndDouble.fromJS(item));
+            }
+            if (Array.isArray(_data["calculationValues"])) {
+                this.calculationValues = [] as any;
+                for (let item of _data["calculationValues"])
+                    this.calculationValues!.push(ValueTupleOfDateTimeAndListOfNullableDouble.fromJS(item));
             }
         }
     }
 
-    static override fromJS(data: any): SalesQueryReturn {
+    static override fromJS(data: any): CorrelationReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesQueryReturn();
+        let result = new CorrelationReturn();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (this.data) {
-            data["data"] = {};
-            for (let key in this.data) {
-                if (this.data.hasOwnProperty(key))
-                    (<any>data["data"])[key] = (<any>this.data)[key];
-            }
+        if (Array.isArray(this.lagAndCorrelation)) {
+            data["lagAndCorrelation"] = [];
+            for (let item of this.lagAndCorrelation)
+                data["lagAndCorrelation"].push(item.toJSON());
+        }
+        if (Array.isArray(this.calculationValues)) {
+            data["calculationValues"] = [];
+            for (let item of this.calculationValues)
+                data["calculationValues"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export abstract class CommandBase {
+export interface ICorrelationReturn extends IReturnBase {
+    lagAndCorrelation: ValueTupleOfIntegerAndDouble[];
+    calculationValues: ValueTupleOfDateTimeAndListOfNullableDouble[];
+}
 
-    init(_data?: any) {
+export class ValueTupleOfIntegerAndDouble implements IValueTupleOfIntegerAndDouble {
+    item1!: number;
+    item2!: number;
+
+    constructor(data?: IValueTupleOfIntegerAndDouble) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
 
-    static fromJS(data: any): CommandBase {
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"];
+            this.item2 = _data["item2"];
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfIntegerAndDouble {
         data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
+        let result = new ValueTupleOfIntegerAndDouble();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1;
+        data["item2"] = this.item2;
         return data;
     }
 }
 
-export class SalesQuery extends CommandBase {
-    salesSortingParameters!: SalesSortingParameters | undefined;
+export interface IValueTupleOfIntegerAndDouble {
+    item1: number;
+    item2: number;
+}
+
+export class ValueTupleOfDateTimeAndListOfNullableDouble implements IValueTupleOfDateTimeAndListOfNullableDouble {
+    item1!: Date;
+    item2!: (number | undefined)[] | undefined;
+
+    constructor(data?: IValueTupleOfDateTimeAndListOfNullableDouble) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"] ? new Date(_data["item1"].toString()) : <any>undefined;
+            if (Array.isArray(_data["item2"])) {
+                this.item2 = [] as any;
+                for (let item of _data["item2"])
+                    this.item2!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfDateTimeAndListOfNullableDouble {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfDateTimeAndListOfNullableDouble();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1 ? this.item1.toISOString() : <any>undefined;
+        if (Array.isArray(this.item2)) {
+            data["item2"] = [];
+            for (let item of this.item2)
+                data["item2"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IValueTupleOfDateTimeAndListOfNullableDouble {
+    item1: Date;
+    item2: (number | undefined)[] | undefined;
+}
+
+export abstract class CorrelationCommand implements ICorrelationCommand {
+    establishmentId!: string;
+    salesIds!: string[];
+    timePeriod!: DateTimePeriod;
+    coordinates!: Coordinates;
     timeResolution!: TimeResolution;
+    upperLag!: number;
+    lowerLag!: number;
 
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-            this.timeResolution = _data["timeResolution"];
+    constructor(data?: ICorrelationCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
     }
 
-    static override fromJS(data: any): SalesQuery {
+    init(_data?: any) {
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+            this.timePeriod = _data["timePeriod"] ? DateTimePeriod.fromJS(_data["timePeriod"]) : <any>undefined;
+            this.coordinates = _data["coordinates"] ? Coordinates.fromJS(_data["coordinates"]) : <any>undefined;
+            this.timeResolution = _data["timeResolution"];
+            this.upperLag = _data["upperLag"];
+            this.lowerLag = _data["lowerLag"];
+        }
+    }
+
+    static fromJS(data: any): CorrelationCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesQuery();
+        throw new Error("The abstract class 'CorrelationCommand' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
+        data["timePeriod"] = this.timePeriod ? this.timePeriod.toJSON() : <any>undefined;
+        data["coordinates"] = this.coordinates ? this.coordinates.toJSON() : <any>undefined;
+        data["timeResolution"] = this.timeResolution;
+        data["upperLag"] = this.upperLag;
+        data["lowerLag"] = this.lowerLag;
+        return data;
+    }
+}
+
+export interface ICorrelationCommand {
+    establishmentId: string;
+    salesIds: string[];
+    timePeriod: DateTimePeriod;
+    coordinates: Coordinates;
+    timeResolution: TimeResolution;
+    upperLag: number;
+    lowerLag: number;
+}
+
+export class Correlation_NumberOfSales_Vs_Temperature_Command extends CorrelationCommand implements ICorrelation_NumberOfSales_Vs_Temperature_Command {
+
+    constructor(data?: ICorrelation_NumberOfSales_Vs_Temperature_Command) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): Correlation_NumberOfSales_Vs_Temperature_Command {
+        data = typeof data === 'object' ? data : {};
+        let result = new Correlation_NumberOfSales_Vs_Temperature_Command();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        data["timeResolution"] = this.timeResolution;
         super.toJSON(data);
         return data;
     }
 }
 
-export class SalesSortingParameters {
-    mustContaiedItems!: string[] | undefined;
-    useDataFromTimeframePeriods!: DateTimePeriod[] | undefined;
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["mustContaiedItems"])) {
-                this.mustContaiedItems = [] as any;
-                for (let item of _data["mustContaiedItems"])
-                    this.mustContaiedItems!.push(item);
-            }
-            if (Array.isArray(_data["useDataFromTimeframePeriods"])) {
-                this.useDataFromTimeframePeriods = [] as any;
-                for (let item of _data["useDataFromTimeframePeriods"])
-                    this.useDataFromTimeframePeriods!.push(DateTimePeriod.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SalesSortingParameters {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesSortingParameters();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.mustContaiedItems)) {
-            data["mustContaiedItems"] = [];
-            for (let item of this.mustContaiedItems)
-                data["mustContaiedItems"].push(item);
-        }
-        if (Array.isArray(this.useDataFromTimeframePeriods)) {
-            data["useDataFromTimeframePeriods"] = [];
-            for (let item of this.useDataFromTimeframePeriods)
-                data["useDataFromTimeframePeriods"].push(item.toJSON());
-        }
-        return data;
-    }
+export interface ICorrelation_NumberOfSales_Vs_Temperature_Command extends ICorrelationCommand {
 }
 
-export class DateTimePeriod {
+export class DateTimePeriod implements IDateTimePeriod {
     start!: Date;
     end!: Date;
+
+    constructor(data?: IDateTimePeriod) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -1546,6 +1418,51 @@ export class DateTimePeriod {
     }
 }
 
+export interface IDateTimePeriod {
+    start: Date;
+    end: Date;
+}
+
+export class Coordinates implements ICoordinates {
+    latitude!: number;
+    longitude!: number;
+
+    constructor(data?: ICoordinates) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.latitude = _data["latitude"];
+            this.longitude = _data["longitude"];
+        }
+    }
+
+    static fromJS(data: any): Coordinates {
+        data = typeof data === 'object' ? data : {};
+        let result = new Coordinates();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["latitude"] = this.latitude;
+        data["longitude"] = this.longitude;
+        return data;
+    }
+}
+
+export interface ICoordinates {
+    latitude: number;
+    longitude: number;
+}
+
 export enum TimeResolution {
     Hour = 0,
     Date = 1,
@@ -1553,96 +1470,19 @@ export enum TimeResolution {
     Year = 3,
 }
 
-export class SalesMeanQueryReturn extends ReturnBase {
-    data!: { [key: string]: number; };
+export class Correlation_SeatTime_Vs_Temperature_Command extends CorrelationCommand implements ICorrelation_SeatTime_Vs_Temperature_Command {
 
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (_data["data"]) {
-                this.data = {} as any;
-                for (let key in _data["data"]) {
-                    if (_data["data"].hasOwnProperty(key))
-                        (<any>this.data)![key] = _data["data"][key];
-                }
-            }
-        }
-    }
-
-    static override fromJS(data: any): SalesMeanQueryReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new SalesMeanQueryReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.data) {
-            data["data"] = {};
-            for (let key in this.data) {
-                if (this.data.hasOwnProperty(key))
-                    (<any>data["data"])[key] = (<any>this.data)[key];
-            }
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export abstract class SalesMeanOverTime extends CommandBase {
-    salesSortingParameters!: SalesSortingParameters | undefined;
-    timeResolution!: TimeResolution;
-
-    protected _discriminator: string;
-
-    constructor() {
-        super();
-        this._discriminator = "SalesMeanOverTime";
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
-            this.timeResolution = _data["timeResolution"];
-        }
-    }
-
-    static override fromJS(data: any): SalesMeanOverTime {
-        data = typeof data === 'object' ? data : {};
-        if (data["$type"] === "SalesMeanOverTimeAverageSpend") {
-            let result = new SalesMeanOverTimeAverageSpend();
-            result.init(data);
-            return result;
-        }
-        throw new Error("The abstract class 'SalesMeanOverTime' cannot be instantiated.");
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["$type"] = this._discriminator;
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
-        data["timeResolution"] = this.timeResolution;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class SalesMeanOverTimeAverageSpend extends SalesMeanOverTime {
-
-    constructor() {
-        super();
-        this._discriminator = "SalesMeanOverTimeAverageSpend";
+    constructor(data?: ICorrelation_SeatTime_Vs_Temperature_Command) {
+        super(data);
     }
 
     override init(_data?: any) {
         super.init(_data);
     }
 
-    static override fromJS(data: any): SalesMeanOverTimeAverageSpend {
+    static override fromJS(data: any): Correlation_SeatTime_Vs_Temperature_Command {
         data = typeof data === 'object' ? data : {};
-        let result = new SalesMeanOverTimeAverageSpend();
+        let result = new Correlation_SeatTime_Vs_Temperature_Command();
         result.init(data);
         return result;
     }
@@ -1654,46 +1494,16 @@ export class SalesMeanOverTimeAverageSpend extends SalesMeanOverTime {
     }
 }
 
-export class CorrelationReturn extends ReturnBase {
-    lagAndCorrelation!: { [key: string]: number; };
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (_data["lagAndCorrelation"]) {
-                this.lagAndCorrelation = {} as any;
-                for (let key in _data["lagAndCorrelation"]) {
-                    if (_data["lagAndCorrelation"].hasOwnProperty(key))
-                        (<any>this.lagAndCorrelation)![key] = _data["lagAndCorrelation"][key];
-                }
-            }
-        }
-    }
-
-    static override fromJS(data: any): CorrelationReturn {
-        data = typeof data === 'object' ? data : {};
-        let result = new CorrelationReturn();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (this.lagAndCorrelation) {
-            data["lagAndCorrelation"] = {};
-            for (let key in this.lagAndCorrelation) {
-                if (this.lagAndCorrelation.hasOwnProperty(key))
-                    (<any>data["lagAndCorrelation"])[key] = (<any>this.lagAndCorrelation)[key];
-            }
-        }
-        super.toJSON(data);
-        return data;
-    }
+export interface ICorrelation_SeatTime_Vs_Temperature_Command extends ICorrelationCommand {
 }
 
-export class MeanShiftClusteringReturn extends ReturnBase {
-    clusters!: Sale[][];
-    calculations!: { [key: string]: number[]; };
+export class ClusteringReturn extends ReturnBase implements IClusteringReturn {
+    clusters!: string[][];
+    calculationValues!: ValueTupleOfGuidAndListOfDouble[];
+
+    constructor(data?: IClusteringReturn) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -1703,19 +1513,17 @@ export class MeanShiftClusteringReturn extends ReturnBase {
                 for (let item of _data["clusters"])
                     this.clusters!.push(item);
             }
-            if (_data["calculations"]) {
-                this.calculations = {} as any;
-                for (let key in _data["calculations"]) {
-                    if (_data["calculations"].hasOwnProperty(key))
-                        (<any>this.calculations)![key] = _data["calculations"][key] !== undefined ? _data["calculations"][key] : [];
-                }
+            if (Array.isArray(_data["calculationValues"])) {
+                this.calculationValues = [] as any;
+                for (let item of _data["calculationValues"])
+                    this.calculationValues!.push(ValueTupleOfGuidAndListOfDouble.fromJS(item));
             }
         }
     }
 
-    static override fromJS(data: any): MeanShiftClusteringReturn {
+    static override fromJS(data: any): ClusteringReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new MeanShiftClusteringReturn();
+        let result = new ClusteringReturn();
         result.init(data);
         return result;
     }
@@ -1727,84 +1535,226 @@ export class MeanShiftClusteringReturn extends ReturnBase {
             for (let item of this.clusters)
                 data["clusters"].push(item);
         }
-        if (this.calculations) {
-            data["calculations"] = {};
-            for (let key in this.calculations) {
-                if (this.calculations.hasOwnProperty(key))
-                    (<any>data["calculations"])[key] = (<any>this.calculations)[key];
-            }
+        if (Array.isArray(this.calculationValues)) {
+            data["calculationValues"] = [];
+            for (let item of this.calculationValues)
+                data["calculationValues"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export abstract class MeanShiftClusteringCommand extends CommandBase {
-    salesSortingParameters!: SalesSortingParameters | undefined;
+export interface IClusteringReturn extends IReturnBase {
+    clusters: string[][];
+    calculationValues: ValueTupleOfGuidAndListOfDouble[];
+}
+
+export class ValueTupleOfGuidAndListOfDouble implements IValueTupleOfGuidAndListOfDouble {
+    item1!: string;
+    item2!: number[] | undefined;
+
+    constructor(data?: IValueTupleOfGuidAndListOfDouble) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"];
+            if (Array.isArray(_data["item2"])) {
+                this.item2 = [] as any;
+                for (let item of _data["item2"])
+                    this.item2!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfGuidAndListOfDouble {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfGuidAndListOfDouble();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1;
+        if (Array.isArray(this.item2)) {
+            data["item2"] = [];
+            for (let item of this.item2)
+                data["item2"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IValueTupleOfGuidAndListOfDouble {
+    item1: string;
+    item2: number[] | undefined;
+}
+
+export abstract class CommandBase implements ICommandBase {
+
+    constructor(data?: ICommandBase) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): CommandBase {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'CommandBase' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface ICommandBase {
+}
+
+export abstract class ClusteringCommand extends CommandBase implements IClusteringCommand {
+    establishmentId!: string;
+    salesIds!: string[];
+
+    constructor(data?: IClusteringCommand) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.salesSortingParameters = _data["salesSortingParameters"] ? SalesSortingParameters.fromJS(_data["salesSortingParameters"]) : <any>undefined;
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
         }
     }
 
-    static override fromJS(data: any): MeanShiftClusteringCommand {
+    static override fromJS(data: any): ClusteringCommand {
         data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'MeanShiftClusteringCommand' cannot be instantiated.");
+        throw new Error("The abstract class 'ClusteringCommand' cannot be instantiated.");
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["salesSortingParameters"] = this.salesSortingParameters ? this.salesSortingParameters.toJSON() : <any>undefined;
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
         super.toJSON(data);
         return data;
     }
 }
 
-export class MSC_Sales_TimeOfVisit_LengthOfVisit extends MeanShiftClusteringCommand {
+export interface IClusteringCommand extends ICommandBase {
+    establishmentId: string;
+    salesIds: string[];
+}
+
+export class Clustering_TimeOfVisit_TotalPrice_Command extends ClusteringCommand implements IClustering_TimeOfVisit_TotalPrice_Command {
+    bandwidthTimeOfVisit!: number;
+    bandwidthTotalPrice!: number;
+
+    constructor(data?: IClustering_TimeOfVisit_TotalPrice_Command) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
+        if (_data) {
+            this.bandwidthTimeOfVisit = _data["bandwidthTimeOfVisit"];
+            this.bandwidthTotalPrice = _data["bandwidthTotalPrice"];
+        }
     }
 
-    static override fromJS(data: any): MSC_Sales_TimeOfVisit_LengthOfVisit {
+    static override fromJS(data: any): Clustering_TimeOfVisit_TotalPrice_Command {
         data = typeof data === 'object' ? data : {};
-        let result = new MSC_Sales_TimeOfVisit_LengthOfVisit();
+        let result = new Clustering_TimeOfVisit_TotalPrice_Command();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["bandwidthTimeOfVisit"] = this.bandwidthTimeOfVisit;
+        data["bandwidthTotalPrice"] = this.bandwidthTotalPrice;
         super.toJSON(data);
         return data;
     }
 }
 
-export class MSC_Sales_TimeOfVisit_TotalPrice extends MeanShiftClusteringCommand {
+export interface IClustering_TimeOfVisit_TotalPrice_Command extends IClusteringCommand {
+    bandwidthTimeOfVisit: number;
+    bandwidthTotalPrice: number;
+}
+
+export class Clustering_TimeOfVisit_LengthOfVisit_Command extends ClusteringCommand implements IClustering_TimeOfVisit_LengthOfVisit_Command {
+    bandwidthTimeOfVisit!: number;
+    bandwidthLengthOfVisit!: number;
+
+    constructor(data?: IClustering_TimeOfVisit_LengthOfVisit_Command) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
+        if (_data) {
+            this.bandwidthTimeOfVisit = _data["bandwidthTimeOfVisit"];
+            this.bandwidthLengthOfVisit = _data["bandwidthLengthOfVisit"];
+        }
     }
 
-    static override fromJS(data: any): MSC_Sales_TimeOfVisit_TotalPrice {
+    static override fromJS(data: any): Clustering_TimeOfVisit_LengthOfVisit_Command {
         data = typeof data === 'object' ? data : {};
-        let result = new MSC_Sales_TimeOfVisit_TotalPrice();
+        let result = new Clustering_TimeOfVisit_LengthOfVisit_Command();
         result.init(data);
         return result;
     }
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["bandwidthTimeOfVisit"] = this.bandwidthTimeOfVisit;
+        data["bandwidthLengthOfVisit"] = this.bandwidthLengthOfVisit;
         super.toJSON(data);
         return data;
     }
 }
 
-export class LoginCommand {
+export interface IClustering_TimeOfVisit_LengthOfVisit_Command extends IClusteringCommand {
+    bandwidthTimeOfVisit: number;
+    bandwidthLengthOfVisit: number;
+}
+
+export class LoginCommand implements ILoginCommand {
     username!: string;
     password!: string;
+
+    constructor(data?: ILoginCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -1828,97 +1778,1332 @@ export class LoginCommand {
     }
 }
 
-export class User extends EntityBase {
-    email!: string;
-    password!: string;
-    userRoles!: UserRole[];
+export interface ILoginCommand {
+    username: string;
+    password: string;
+}
 
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.email = _data["email"];
-            this.password = _data["password"];
-            if (Array.isArray(_data["userRoles"])) {
-                this.userRoles = [] as any;
-                for (let item of _data["userRoles"])
-                    this.userRoles!.push(UserRole.fromJS(item));
+export class IsLoggedInReturn implements IIsLoggedInReturn {
+    isLoggedIn!: boolean;
+
+    constructor(data?: IIsLoggedInReturn) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
             }
         }
     }
 
-    static override fromJS(data: any): User {
-        data = typeof data === 'object' ? data : {};
-        let result = new User();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["email"] = this.email;
-        data["password"] = this.password;
-        if (Array.isArray(this.userRoles)) {
-            data["userRoles"] = [];
-            for (let item of this.userRoles)
-                data["userRoles"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export class UserRole extends EntityBase {
-    user!: User;
-    establishment!: Establishment;
-    role!: Role;
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
-            this.establishment = _data["establishment"] ? Establishment.fromJS(_data["establishment"]) : <any>undefined;
-            this.role = _data["role"];
-        }
-    }
-
-    static override fromJS(data: any): UserRole {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserRole();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        data["establishment"] = this.establishment ? this.establishment.toJSON() : <any>undefined;
-        data["role"] = this.role;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export enum Role {
-    Admin = 0,
-    User = 1,
-}
-
-export class FactoryServiceBuilder {
-
     init(_data?: any) {
+        if (_data) {
+            this.isLoggedIn = _data["isLoggedIn"];
+        }
     }
 
-    static fromJS(data: any): FactoryServiceBuilder {
+    static fromJS(data: any): IsLoggedInReturn {
         data = typeof data === 'object' ? data : {};
-        let result = new FactoryServiceBuilder();
+        let result = new IsLoggedInReturn();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["isLoggedIn"] = this.isLoggedIn;
         return data;
     }
+}
+
+export interface IIsLoggedInReturn {
+    isLoggedIn: boolean;
+}
+
+export class GetEstablishmentsIdReturn extends ReturnBase implements IGetEstablishmentsIdReturn {
+    ids!: string[];
+
+    constructor(data?: IGetEstablishmentsIdReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["ids"])) {
+                this.ids = [] as any;
+                for (let item of _data["ids"])
+                    this.ids!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentsIdReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentsIdReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.ids)) {
+            data["ids"] = [];
+            for (let item of this.ids)
+                data["ids"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetEstablishmentsIdReturn extends IReturnBase {
+    ids: string[];
+}
+
+export class GetEstablishmentsCommand extends CommandBase implements IGetEstablishmentsCommand {
+    establishmentIds!: string[];
+
+    constructor(data?: IGetEstablishmentsCommand) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["establishmentIds"])) {
+                this.establishmentIds = [] as any;
+                for (let item of _data["establishmentIds"])
+                    this.establishmentIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentsCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.establishmentIds)) {
+            data["establishmentIds"] = [];
+            for (let item of this.establishmentIds)
+                data["establishmentIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetEstablishmentsCommand extends ICommandBase {
+    establishmentIds: string[];
+}
+
+export class GetEstablishmentsDTOReturn extends ReturnBase implements IGetEstablishmentsDTOReturn {
+    dtos!: EstablishmentDTO[];
+
+    constructor(data?: IGetEstablishmentsDTOReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["dtos"])) {
+                this.dtos = [] as any;
+                for (let item of _data["dtos"])
+                    this.dtos!.push(EstablishmentDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetEstablishmentsDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetEstablishmentsDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.dtos)) {
+            data["dtos"] = [];
+            for (let item of this.dtos)
+                data["dtos"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetEstablishmentsDTOReturn extends IReturnBase {
+    dtos: EstablishmentDTO[];
+}
+
+export class EstablishmentDTO implements IEstablishmentDTO {
+    id!: string;
+    name!: string;
+    items!: string[];
+    tables!: string[];
+    sales!: string[];
+
+    constructor(data?: IEstablishmentDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(item);
+            }
+            if (Array.isArray(_data["tables"])) {
+                this.tables = [] as any;
+                for (let item of _data["tables"])
+                    this.tables!.push(item);
+            }
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): EstablishmentDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new EstablishmentDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item);
+        }
+        if (Array.isArray(this.tables)) {
+            data["tables"] = [];
+            for (let item of this.tables)
+                data["tables"].push(item);
+        }
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IEstablishmentDTO {
+    id: string;
+    name: string;
+    items: string[];
+    tables: string[];
+    sales: string[];
+}
+
+export class GetItemsIdReturn extends ReturnBase implements IGetItemsIdReturn {
+    id!: string[];
+
+    constructor(data?: IGetItemsIdReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["id"])) {
+                this.id = [] as any;
+                for (let item of _data["id"])
+                    this.id!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemsIdReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemsIdReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.id)) {
+            data["id"] = [];
+            for (let item of this.id)
+                data["id"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetItemsIdReturn extends IReturnBase {
+    id: string[];
+}
+
+export class GetItemsCommand extends CommandBase implements IGetItemsCommand {
+    establishmentId!: string;
+    itemIds!: string[];
+
+    constructor(data?: IGetItemsCommand) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["itemIds"])) {
+                this.itemIds = [] as any;
+                for (let item of _data["itemIds"])
+                    this.itemIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemsCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.itemIds)) {
+            data["itemIds"] = [];
+            for (let item of this.itemIds)
+                data["itemIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetItemsCommand extends ICommandBase {
+    establishmentId: string;
+    itemIds: string[];
+}
+
+export class GetItemsDTOReturn extends ReturnBase implements IGetItemsDTOReturn {
+    dto!: ItemDTO[];
+
+    constructor(data?: IGetItemsDTOReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["dto"])) {
+                this.dto = [] as any;
+                for (let item of _data["dto"])
+                    this.dto!.push(ItemDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetItemsDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetItemsDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.dto)) {
+            data["dto"] = [];
+            for (let item of this.dto)
+                data["dto"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetItemsDTOReturn extends IReturnBase {
+    dto: ItemDTO[];
+}
+
+export class ItemDTO implements IItemDTO {
+    id!: string;
+    name!: string;
+    price!: number;
+
+    constructor(data?: IItemDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.price = _data["price"];
+        }
+    }
+
+    static fromJS(data: any): ItemDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ItemDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["price"] = this.price;
+        return data;
+    }
+}
+
+export interface IItemDTO {
+    id: string;
+    name: string;
+    price: number;
+}
+
+export class GetSalesReturn extends ReturnBase implements IGetSalesReturn {
+    sales!: string[];
+
+    constructor(data?: IGetSalesReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetSalesReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesReturn extends IReturnBase {
+    sales: string[];
+}
+
+export class GetSalesCommand extends CommandBase implements IGetSalesCommand {
+    establishmentId!: string;
+    salesIds!: string[] | undefined;
+    filterSales!: FilterSales | undefined;
+    filterSalesBySalesItems!: FilterSalesBySalesItems | undefined;
+    filterSalesBySalesTables!: FilterSalesBySalesTables | undefined;
+
+    constructor(data?: IGetSalesCommand) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+            this.filterSales = _data["filterSales"] ? FilterSales.fromJS(_data["filterSales"]) : <any>undefined;
+            this.filterSalesBySalesItems = _data["filterSalesBySalesItems"] ? FilterSalesBySalesItems.fromJS(_data["filterSalesBySalesItems"]) : <any>undefined;
+            this.filterSalesBySalesTables = _data["filterSalesBySalesTables"] ? FilterSalesBySalesTables.fromJS(_data["filterSalesBySalesTables"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): GetSalesCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
+        data["filterSales"] = this.filterSales ? this.filterSales.toJSON() : <any>undefined;
+        data["filterSalesBySalesItems"] = this.filterSalesBySalesItems ? this.filterSalesBySalesItems.toJSON() : <any>undefined;
+        data["filterSalesBySalesTables"] = this.filterSalesBySalesTables ? this.filterSalesBySalesTables.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesCommand extends ICommandBase {
+    establishmentId: string;
+    salesIds: string[] | undefined;
+    filterSales: FilterSales | undefined;
+    filterSalesBySalesItems: FilterSalesBySalesItems | undefined;
+    filterSalesBySalesTables: FilterSalesBySalesTables | undefined;
+}
+
+export class FilterSales implements IFilterSales {
+    arrivalTimeframe!: ValueTupleOfDateTimeAndDateTime[] | undefined;
+    paymentTimeframe!: ValueTupleOfDateTimeAndDateTime[] | undefined;
+    mustContainAllAttributes!: SaleAttributes[] | undefined;
+
+    constructor(data?: IFilterSales) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["arrivalTimeframe"])) {
+                this.arrivalTimeframe = [] as any;
+                for (let item of _data["arrivalTimeframe"])
+                    this.arrivalTimeframe!.push(ValueTupleOfDateTimeAndDateTime.fromJS(item));
+            }
+            if (Array.isArray(_data["paymentTimeframe"])) {
+                this.paymentTimeframe = [] as any;
+                for (let item of _data["paymentTimeframe"])
+                    this.paymentTimeframe!.push(ValueTupleOfDateTimeAndDateTime.fromJS(item));
+            }
+            if (Array.isArray(_data["mustContainAllAttributes"])) {
+                this.mustContainAllAttributes = [] as any;
+                for (let item of _data["mustContainAllAttributes"])
+                    this.mustContainAllAttributes!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): FilterSales {
+        data = typeof data === 'object' ? data : {};
+        let result = new FilterSales();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.arrivalTimeframe)) {
+            data["arrivalTimeframe"] = [];
+            for (let item of this.arrivalTimeframe)
+                data["arrivalTimeframe"].push(item.toJSON());
+        }
+        if (Array.isArray(this.paymentTimeframe)) {
+            data["paymentTimeframe"] = [];
+            for (let item of this.paymentTimeframe)
+                data["paymentTimeframe"].push(item.toJSON());
+        }
+        if (Array.isArray(this.mustContainAllAttributes)) {
+            data["mustContainAllAttributes"] = [];
+            for (let item of this.mustContainAllAttributes)
+                data["mustContainAllAttributes"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IFilterSales {
+    arrivalTimeframe: ValueTupleOfDateTimeAndDateTime[] | undefined;
+    paymentTimeframe: ValueTupleOfDateTimeAndDateTime[] | undefined;
+    mustContainAllAttributes: SaleAttributes[] | undefined;
+}
+
+export class ValueTupleOfDateTimeAndDateTime implements IValueTupleOfDateTimeAndDateTime {
+    item1!: Date;
+    item2!: Date;
+
+    constructor(data?: IValueTupleOfDateTimeAndDateTime) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"] ? new Date(_data["item1"].toString()) : <any>undefined;
+            this.item2 = _data["item2"] ? new Date(_data["item2"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfDateTimeAndDateTime {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfDateTimeAndDateTime();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1 ? this.item1.toISOString() : <any>undefined;
+        data["item2"] = this.item2 ? this.item2.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IValueTupleOfDateTimeAndDateTime {
+    item1: Date;
+    item2: Date;
+}
+
+export enum SaleAttributes {
+    Tables = 0,
+    Items = 1,
+    TimestampArrival = 2,
+    TimestampPayment = 3,
+}
+
+export class FilterSalesBySalesItems implements IFilterSalesBySalesItems {
+    any!: string[] | undefined;
+    excatly!: string[] | undefined;
+    all!: string[] | undefined;
+
+    constructor(data?: IFilterSalesBySalesItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["any"])) {
+                this.any = [] as any;
+                for (let item of _data["any"])
+                    this.any!.push(item);
+            }
+            if (Array.isArray(_data["excatly"])) {
+                this.excatly = [] as any;
+                for (let item of _data["excatly"])
+                    this.excatly!.push(item);
+            }
+            if (Array.isArray(_data["all"])) {
+                this.all = [] as any;
+                for (let item of _data["all"])
+                    this.all!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): FilterSalesBySalesItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new FilterSalesBySalesItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.any)) {
+            data["any"] = [];
+            for (let item of this.any)
+                data["any"].push(item);
+        }
+        if (Array.isArray(this.excatly)) {
+            data["excatly"] = [];
+            for (let item of this.excatly)
+                data["excatly"].push(item);
+        }
+        if (Array.isArray(this.all)) {
+            data["all"] = [];
+            for (let item of this.all)
+                data["all"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IFilterSalesBySalesItems {
+    any: string[] | undefined;
+    excatly: string[] | undefined;
+    all: string[] | undefined;
+}
+
+export class FilterSalesBySalesTables implements IFilterSalesBySalesTables {
+    any!: string[] | undefined;
+    excatly!: string[] | undefined;
+    all!: string[] | undefined;
+
+    constructor(data?: IFilterSalesBySalesTables) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["any"])) {
+                this.any = [] as any;
+                for (let item of _data["any"])
+                    this.any!.push(item);
+            }
+            if (Array.isArray(_data["excatly"])) {
+                this.excatly = [] as any;
+                for (let item of _data["excatly"])
+                    this.excatly!.push(item);
+            }
+            if (Array.isArray(_data["all"])) {
+                this.all = [] as any;
+                for (let item of _data["all"])
+                    this.all!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): FilterSalesBySalesTables {
+        data = typeof data === 'object' ? data : {};
+        let result = new FilterSalesBySalesTables();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.any)) {
+            data["any"] = [];
+            for (let item of this.any)
+                data["any"].push(item);
+        }
+        if (Array.isArray(this.excatly)) {
+            data["excatly"] = [];
+            for (let item of this.excatly)
+                data["excatly"].push(item);
+        }
+        if (Array.isArray(this.all)) {
+            data["all"] = [];
+            for (let item of this.all)
+                data["all"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IFilterSalesBySalesTables {
+    any: string[] | undefined;
+    excatly: string[] | undefined;
+    all: string[] | undefined;
+}
+
+export class GetSalesDTOReturn extends ReturnBase implements IGetSalesDTOReturn {
+    sales!: SaleDTO[];
+
+    constructor(data?: IGetSalesDTOReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["sales"])) {
+                this.sales = [] as any;
+                for (let item of _data["sales"])
+                    this.sales!.push(SaleDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetSalesDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.sales)) {
+            data["sales"] = [];
+            for (let item of this.sales)
+                data["sales"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesDTOReturn extends IReturnBase {
+    sales: SaleDTO[];
+}
+
+export class SaleDTO implements ISaleDTO {
+    id!: string;
+    timestampArrival!: Date | undefined;
+    timestampPayment!: Date;
+    salesItems!: ValueTupleOfGuidAndInteger[];
+    salesTables!: string[];
+    totalSpend!: number;
+
+    constructor(data?: ISaleDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.timestampArrival = _data["timestampArrival"] ? new Date(_data["timestampArrival"].toString()) : <any>undefined;
+            this.timestampPayment = _data["timestampPayment"] ? new Date(_data["timestampPayment"].toString()) : <any>undefined;
+            if (Array.isArray(_data["salesItems"])) {
+                this.salesItems = [] as any;
+                for (let item of _data["salesItems"])
+                    this.salesItems!.push(ValueTupleOfGuidAndInteger.fromJS(item));
+            }
+            if (Array.isArray(_data["salesTables"])) {
+                this.salesTables = [] as any;
+                for (let item of _data["salesTables"])
+                    this.salesTables!.push(item);
+            }
+            this.totalSpend = _data["totalSpend"];
+        }
+    }
+
+    static fromJS(data: any): SaleDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new SaleDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["timestampArrival"] = this.timestampArrival ? this.timestampArrival.toISOString() : <any>undefined;
+        data["timestampPayment"] = this.timestampPayment ? this.timestampPayment.toISOString() : <any>undefined;
+        if (Array.isArray(this.salesItems)) {
+            data["salesItems"] = [];
+            for (let item of this.salesItems)
+                data["salesItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.salesTables)) {
+            data["salesTables"] = [];
+            for (let item of this.salesTables)
+                data["salesTables"].push(item);
+        }
+        data["totalSpend"] = this.totalSpend;
+        return data;
+    }
+}
+
+export interface ISaleDTO {
+    id: string;
+    timestampArrival: Date | undefined;
+    timestampPayment: Date;
+    salesItems: ValueTupleOfGuidAndInteger[];
+    salesTables: string[];
+    totalSpend: number;
+}
+
+export class ValueTupleOfGuidAndInteger implements IValueTupleOfGuidAndInteger {
+    item1!: string;
+    item2!: number;
+
+    constructor(data?: IValueTupleOfGuidAndInteger) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"];
+            this.item2 = _data["item2"];
+        }
+    }
+
+    static fromJS(data: any): ValueTupleOfGuidAndInteger {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValueTupleOfGuidAndInteger();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1;
+        data["item2"] = this.item2;
+        return data;
+    }
+}
+
+export interface IValueTupleOfGuidAndInteger {
+    item1: string;
+    item2: number;
+}
+
+export class GetSalesStatisticsReturn extends ReturnBase implements IGetSalesStatisticsReturn {
+    metric!: number;
+
+    constructor(data?: IGetSalesStatisticsReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.metric = _data["metric"];
+        }
+    }
+
+    static override fromJS(data: any): GetSalesStatisticsReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesStatisticsReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["metric"] = this.metric;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesStatisticsReturn extends IReturnBase {
+    metric: number;
+}
+
+export abstract class GetSalesStatisticsCommand implements IGetSalesStatisticsCommand {
+    establishmentId!: string;
+    salesIds!: string[];
+
+    protected _discriminator: string;
+
+    constructor(data?: IGetSalesStatisticsCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        this._discriminator = "GetSalesStatisticsCommand";
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["salesIds"])) {
+                this.salesIds = [] as any;
+                for (let item of _data["salesIds"])
+                    this.salesIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): GetSalesStatisticsCommand {
+        data = typeof data === 'object' ? data : {};
+        if (data["$type"] === "GetSalesAverageSpend") {
+            let result = new GetSalesAverageSpend();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "GetSalesAverageNumberOfItems") {
+            let result = new GetSalesAverageNumberOfItems();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "GetSalesAverageTimeOfPayment") {
+            let result = new GetSalesAverageTimeOfPayment();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "GetSalesAverageTimeOfArrival") {
+            let result = new GetSalesAverageTimeOfArrival();
+            result.init(data);
+            return result;
+        }
+        if (data["$type"] === "GetSalesAverageSeatTime") {
+            let result = new GetSalesAverageSeatTime();
+            result.init(data);
+            return result;
+        }
+        throw new Error("The abstract class 'GetSalesStatisticsCommand' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["$type"] = this._discriminator;
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.salesIds)) {
+            data["salesIds"] = [];
+            for (let item of this.salesIds)
+                data["salesIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IGetSalesStatisticsCommand {
+    establishmentId: string;
+    salesIds: string[];
+}
+
+export class GetSalesAverageSpend extends GetSalesStatisticsCommand implements IGetSalesAverageSpend {
+
+    constructor(data?: IGetSalesAverageSpend) {
+        super(data);
+        this._discriminator = "GetSalesAverageSpend";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetSalesAverageSpend {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesAverageSpend();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesAverageSpend extends IGetSalesStatisticsCommand {
+}
+
+export class GetSalesAverageNumberOfItems extends GetSalesStatisticsCommand implements IGetSalesAverageNumberOfItems {
+
+    constructor(data?: IGetSalesAverageNumberOfItems) {
+        super(data);
+        this._discriminator = "GetSalesAverageNumberOfItems";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetSalesAverageNumberOfItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesAverageNumberOfItems();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesAverageNumberOfItems extends IGetSalesStatisticsCommand {
+}
+
+export class GetSalesAverageTimeOfPayment extends GetSalesStatisticsCommand implements IGetSalesAverageTimeOfPayment {
+
+    constructor(data?: IGetSalesAverageTimeOfPayment) {
+        super(data);
+        this._discriminator = "GetSalesAverageTimeOfPayment";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetSalesAverageTimeOfPayment {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesAverageTimeOfPayment();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesAverageTimeOfPayment extends IGetSalesStatisticsCommand {
+}
+
+export class GetSalesAverageTimeOfArrival extends GetSalesStatisticsCommand implements IGetSalesAverageTimeOfArrival {
+
+    constructor(data?: IGetSalesAverageTimeOfArrival) {
+        super(data);
+        this._discriminator = "GetSalesAverageTimeOfArrival";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetSalesAverageTimeOfArrival {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesAverageTimeOfArrival();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesAverageTimeOfArrival extends IGetSalesStatisticsCommand {
+}
+
+export class GetSalesAverageSeatTime extends GetSalesStatisticsCommand implements IGetSalesAverageSeatTime {
+
+    constructor(data?: IGetSalesAverageSeatTime) {
+        super(data);
+        this._discriminator = "GetSalesAverageSeatTime";
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetSalesAverageSeatTime {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSalesAverageSeatTime();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetSalesAverageSeatTime extends IGetSalesStatisticsCommand {
+}
+
+export class GetTablesIdReturn extends ReturnBase implements IGetTablesIdReturn {
+    tables!: string[];
+
+    constructor(data?: IGetTablesIdReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["tables"])) {
+                this.tables = [] as any;
+                for (let item of _data["tables"])
+                    this.tables!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetTablesIdReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTablesIdReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.tables)) {
+            data["tables"] = [];
+            for (let item of this.tables)
+                data["tables"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetTablesIdReturn extends IReturnBase {
+    tables: string[];
+}
+
+export class GetTablesCommand extends CommandBase implements IGetTablesCommand {
+    establishmentId!: string;
+    tablesIds!: string[] | undefined;
+
+    constructor(data?: IGetTablesCommand) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.establishmentId = _data["establishmentId"];
+            if (Array.isArray(_data["tablesIds"])) {
+                this.tablesIds = [] as any;
+                for (let item of _data["tablesIds"])
+                    this.tablesIds!.push(item);
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetTablesCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTablesCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["establishmentId"] = this.establishmentId;
+        if (Array.isArray(this.tablesIds)) {
+            data["tablesIds"] = [];
+            for (let item of this.tablesIds)
+                data["tablesIds"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetTablesCommand extends ICommandBase {
+    establishmentId: string;
+    tablesIds: string[] | undefined;
+}
+
+export class GetTablesDTOReturn extends ReturnBase implements IGetTablesDTOReturn {
+    tables!: TableDTO[];
+
+    constructor(data?: IGetTablesDTOReturn) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["tables"])) {
+                this.tables = [] as any;
+                for (let item of _data["tables"])
+                    this.tables!.push(TableDTO.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): GetTablesDTOReturn {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTablesDTOReturn();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.tables)) {
+            data["tables"] = [];
+            for (let item of this.tables)
+                data["tables"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetTablesDTOReturn extends IReturnBase {
+    tables: TableDTO[];
+}
+
+export class TableDTO implements ITableDTO {
+    id!: string;
+    name!: string;
+
+    constructor(data?: ITableDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): TableDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new TableDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ITableDTO {
+    id: string;
+    name: string;
 }
 
 export interface FileResponse {

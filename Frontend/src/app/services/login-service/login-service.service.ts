@@ -1,12 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import { AuthenticationClient, LoginCommand, User } from 'api';
+import { AuthenticationClient, LoginCommand } from 'api';
+import { SessionStorageService } from '../session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
-  constructor(private authenticationClient: AuthenticationClient) {}
+  constructor(
+    private authenticationClient: AuthenticationClient,
+    private sessionStorageService: SessionStorageService
+  ) {}
 
   @Output() loginSuccessful = new EventEmitter<void>();
   @Output() LogoutSuccessful = new EventEmitter<void>();
@@ -29,38 +33,16 @@ export class LoginService {
   }
 
   public LogOut() {
+    this.sessionStorageService.clearActiveEstablishment();
     this.authenticationClient.logOut().subscribe({
       error: (error: HttpErrorResponse) => {
         this.loginSuccessful.error(Error(error.message));
       },
       complete: () => {
+        document.cookie =
+          'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; //Delete JWT.
         this.LogoutSuccessful.emit();
       },
     });
-  }
-
-  public async IsLoggedIn(): Promise<boolean> {
-    let isLoggedIn = false;
-    await this.authenticationClient.isLoggedIn().subscribe({
-      next: (x) => {
-        isLoggedIn = true;
-      },
-    });
-    return isLoggedIn;
-  }
-
-  public async GetLoggedInUser(): Promise<User> {
-    let user: User;
-
-    await this.authenticationClient.getLoggedInUser().subscribe({
-      next: (x) => {
-        user = x;
-      },
-      error: (error: HttpErrorResponse) => {
-        Error(error.message);
-      },
-    });
-
-    return user!;
   }
 }
