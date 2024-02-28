@@ -69,7 +69,6 @@ namespace EstablishmentProject.test.Algortihm
         }
 
 
-
         [Fact]
         public void Cluster_SingleClusterScenario_ReturnsSingleCluster()
         {
@@ -113,7 +112,7 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_WithDataSpreadAround_WithSmallBandwidth_ShouldReturnIndividualClusters()
+        public void Cluster_WithThreeDatapointsSpreadAround_WithSmallBandwidth_ShouldReturnIndividualClusters()
         {
             // Arrange
             var data = new List<(string, List<double>)>
@@ -136,7 +135,7 @@ namespace EstablishmentProject.test.Algortihm
         }
 
         [Fact]
-        public void Cluster_WithTwoVeryDifferentDimensionScales_WithLargeEnoughBandwith_ShouldReturnIndividualClusters()
+        public void Cluster_WithTwoVeryDifferentDimensionScales_WithLargeEnoughBandwith_ButDirectImplementatiotCantSolve_ShouldReturnIndividualClusters()
         {
             // Arrange
             var data = new List<(string, List<double>)>

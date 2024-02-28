@@ -127,12 +127,12 @@ namespace EstablishmentProject.test.Application.Handlers.Correlation
             Func<double, double> linearFirstDistribution = TestDataBuilder.GetLinearFuncition(2, -8 * 2);
             Func<double, double> linearSecondDistribution = TestDataBuilder.GetLinearFuncition(-2, 32);
 
-            var firstSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
+            var firstSalesDistribution = testDataBuilder.generateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearFirstDistribution, TimeResolution.Hour);
             var firstSales = testDataBuilder.FINALFilterOnOpeningHours(8, 12, firstSalesDistribution);
-            var secondSalesDistribution = testDataBuilder.FINALgenerateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearSecondDistribution, TimeResolution.Hour);
+            var secondSalesDistribution = testDataBuilder.generateDistrubution(DateTime.Today.AddDays(-1), DateTime.Today, linearSecondDistribution, TimeResolution.Hour);
             var secondSales = testDataBuilder.FINALFilterOnOpeningHours(12, 16, secondSalesDistribution);
 
-            var aggregate = testDataBuilder.FINALAggregateDistributions([firstSales, secondSales]);
+            var aggregate = testDataBuilder.AggregateDistributions([firstSales, secondSales]);
 
             var normalRandomSeed = new SystemRandomSource(1);
 

@@ -5,11 +5,11 @@ namespace EstablishmentProject.test
 {
     public class TestDataCreatorServiceTest
     {
-        private ITestDataBuilder testDataCreatorService;
+        private ITestDataBuilder testDataCreator;
 
         public TestDataCreatorServiceTest()
         {
-            testDataCreatorService = new TestDataBuilder();
+            testDataCreator = new TestDataBuilder();
         }
 
         [Fact]
@@ -22,7 +22,7 @@ namespace EstablishmentProject.test
 
             //Act
             //var distribution = testDataCreatorService.GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
-            var distribution = testDataCreatorService.FINALgenerateDistrubution(start, end, DistributionFunction, TimeResolution.Hour);
+            var distribution = testDataCreator.generateDistrubution(start, end, DistributionFunction, TimeResolution.Hour);
 
 
             //Assert
@@ -65,7 +65,7 @@ namespace EstablishmentProject.test
             };
 
             //Act
-            var filteredDistribution = testDataCreatorService.FINALFilterOnOpeningHours(8, 16, distribution);
+            var filteredDistribution = testDataCreator.FINALFilterOnOpeningHours(8, 16, distribution);
 
             //Assert
             Assert.Equal(8, filteredDistribution.Count()); //Correct number of entries
@@ -123,7 +123,7 @@ namespace EstablishmentProject.test
             };
 
             //Act
-            Dictionary<DateTime, int> aggregatedDistribution = testDataCreatorService.FINALAggregateDistributions(new List<Dictionary<DateTime, int>> { distribution1, distribution2, distribution3 });
+            Dictionary<DateTime, int> aggregatedDistribution = testDataCreator.FINALAggregateDistributions(new List<Dictionary<DateTime, int>> { distribution1, distribution2, distribution3 });
 
             //Assert
             var expectedValues = new Dictionary<DateTime, int>

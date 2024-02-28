@@ -1,41 +1,43 @@
 <h1 style="font-weight: 500">Correlation</h1>
 
-<div *ngFor="let collection of collectionOfImplementaions">
-  <mat-accordion class="accordion" multi>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title
-          ><h2>{{ collection.title }}</h2></mat-panel-title
-        >
-      </mat-expansion-panel-header>
-      <div class="botton_box">
-        <div *ngFor="let dialog of collection.dialogs">
-          <button mat-stroked-button (click)="dialog.action()">
-            {{ dialog.name }}
-          </button>
-        </div>
-      </div>
-
-      <app-graph
-        *ngIf="collection.graphModel | async as graphModel"
-        [chartType]="graphModel.chartType"
-        [chartData]="graphModel.chartData"
-        [chartOptions]="graphModel.chartOptions"
-      >
-      </app-graph>
-
-      <hr />
+<div class="accordion-arrangement">
+  <div *ngFor="let collection of collectionOfImplementaions">
+    <mat-accordion class="accordion" multi>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title><h2>Correlations and shifts</h2></mat-panel-title>
+          <mat-panel-title
+            ><h2>{{ collection.title }}</h2></mat-panel-title
+          >
         </mat-expansion-panel-header>
+        <div class="botton_box">
+          <div *ngFor="let dialog of collection.dialogs">
+            <button mat-stroked-button (click)="dialog.action()">
+              {{ dialog.name }}
+            </button>
+          </div>
+        </div>
 
-        <app-table
-          *ngIf="collection.tableModel | async as tableModel"
-          [tableModel]="tableModel"
+        <app-graph
+          *ngIf="collection.graphModel | async as graphModel"
+          [chartType]="graphModel.chartType"
+          [chartData]="graphModel.chartData"
+          [chartOptions]="graphModel.chartOptions"
         >
-        </app-table>
+        </app-graph>
+
+        <hr />
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title><h2>Correlations and shifts</h2></mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <app-table
+            *ngIf="collection.tableModel | async as tableModel"
+            [tableModel]="tableModel"
+          >
+          </app-table>
+        </mat-expansion-panel>
       </mat-expansion-panel>
-    </mat-expansion-panel>
-  </mat-accordion>
+    </mat-accordion>
+  </div>
 </div>

@@ -33,22 +33,11 @@ namespace WebApplication1.Application_Layer.Handlers.Correlation
             this.calculationValues = this.MergeLists(referenceList, shiftingList).OrderBy(x => x.Item1).ToList();
         }
 
-        //public CorrelationReturn(
-        //    Dictionary<int, double> lagAndCorrelation,
-        //    Dictionary<DateTime, (double?, double?)> calculationValues
-        //)
-        //{
-        //    this.LagAndCorrelation = lagAndCorrelation.Select(x => (x.Key, x.Value)).OrderBy(x => x.Key).ToList();
-        //    this.calculationValues = calculationValues.Select(kv => (dateTime: kv.Key, values: new List<double?> { kv.Value.Item1, kv.Value.Item2 }))
-        //    .OrderBy(x => x.dateTime).ToList();
-        //}
-
         private List<(DateTime, List<double?>)> MergeLists(List<(DateTime, double)> reference, List<(DateTime, double)> shifting)
         {
             var mergedList = new List<(DateTime, List<double?>)>();
 
-            // Get unique dates from both lists
-            var allDates = reference.Select(x => x.Item1).Union(shifting.Select(x => x.Item1)).Distinct().ToList();
+            var allDates = reference.Select(x => x.Item1).Union(shifting.Select(x => x.Item1)).Distinct().OrderBy(x => x).ToList();
 
             foreach (var date in allDates)
             {

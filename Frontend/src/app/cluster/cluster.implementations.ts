@@ -14,7 +14,7 @@ import { DialogFilterSalesComponent } from '../dialogs/dialog-filter-sales/dialo
 import { DialogFilterSalesBySalesitemsComponent } from '../dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.component';
 import { DialogFilterSalesBySalestablesComponent } from '../dialogs/dialog-filter-sales-by-salestables/dialog-filter-sales-by-salestables.component';
 import {
-  IBuildClusterTable,
+  IBuildClusterTable as IBuildCluster,
   IClusteringImplementaion,
 } from './cluster.component';
 import {
@@ -35,7 +35,7 @@ export type ClusterBandwidths = {
   providedIn: 'root',
 })
 export class Cluster_TimeOfDay_Spending
-  implements IClusteringImplementaion, IBuildClusterTable
+  implements IClusteringImplementaion, IBuildCluster
 {
   title = 'Time of day vs Total spending';
   clustersTable = new Subject<TableModel>();
@@ -254,7 +254,7 @@ export class Cluster_TimeOfDay_Spending
   providedIn: 'root',
 })
 export class Cluster_TimeOfDay_SeatTime
-  implements IClusteringImplementaion, IBuildClusterTable
+  implements IClusteringImplementaion, IBuildCluster
 {
   title = 'Time of day vs Seat time';
   clustersTable = new Subject<TableModel>();

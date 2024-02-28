@@ -3,13 +3,13 @@ using WebApplication1.Services.Analysis;
 
 namespace EstablishmentProject.test.Algortihm
 {
-    public class CrossCorrelationTest
+    public class CrossCorrelation_Test
     {
 
         private List<(DateTime, double)> normalDistributionTestData = new List<(DateTime, double)>();
         private Func<double, double> normalDistribution;
 
-        public CrossCorrelationTest()
+        public CrossCorrelation_Test()
         {
             CommonArrange();
         }

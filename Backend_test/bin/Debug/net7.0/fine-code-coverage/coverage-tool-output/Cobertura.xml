@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.909995027349577" branch-rate="0.814220183486238" lines-covered="1830" lines-valid="2011" branches-covered="355" branches-valid="436" complexity="723" version="0" timestamp="1709075905">
+<coverage line-rate="0.909180651530109" branch-rate="0.813636363636364" lines-covered="1842" lines-valid="2026" branches-covered="358" branches-valid="440" complexity="727" version="0" timestamp="1709112479">
   <sources>
     <source>C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\</source>
   </sources>
   <packages>
-    <package name="WebApplication1" line-rate="0.909995027349577" branch-rate="0.814220183486238" complexity="723">
+    <package name="WebApplication1" line-rate="0.909180651530109" branch-rate="0.813636363636364" complexity="727">
       <classes>
         <class name="DMIOpenData.Coordinates" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Infrastructure Layer\Implementations\DmiWeather.cs" line-rate="1" branch-rate="1" complexity="3">
           <methods>
@@ -497,7 +497,7 @@
             <line number="15" hits="8" branch="false" />
           </lines>
         </class>
-        <class name="WebApplication1.Application_Layer.Handlers.Correlation.CorrelationReturn" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Handlers\Correlation\CorrelationCommand.cs" line-rate="1" branch-rate="1" complexity="5">
+        <class name="WebApplication1.Application_Layer.Handlers.Correlation.CorrelationReturn" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Handlers\Correlation\CorrelationCommand.cs" line-rate="0.921052631578947" branch-rate="0.833333333333333" complexity="9">
           <methods>
             <method name="get_LagAndCorrelation" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
@@ -509,19 +509,34 @@
                 <line number="21" hits="8" branch="false" />
               </lines>
             </method>
-            <method name="MergeLists" signature="(...)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="MergeLists" signature="(...)" line-rate="0.884615384615385" branch-rate="0.833333333333333" complexity="6">
               <lines>
-                <line number="47" hits="4" branch="false" />
-                <line number="48" hits="4" branch="false" />
-                <line number="50" hits="88" branch="false" />
-                <line number="52" hits="116" branch="true" condition-coverage="100% (2/2)" />
-                <line number="53" hits="52" branch="false" />
-                <line number="54" hits="500" branch="false" />
-                <line number="55" hits="784" branch="false" />
-                <line number="57" hits="52" branch="false" />
+                <line number="37" hits="4" branch="false" />
+                <line number="38" hits="4" branch="false" />
+                <line number="40" hits="140" branch="false" />
+                <line number="42" hits="116" branch="true" condition-coverage="100% (2/2)" />
+                <line number="43" hits="52" branch="false" />
+                <line number="44" hits="52" branch="false" />
+                <line number="46" hits="356" branch="false" />
+                <line number="47" hits="52" branch="true" condition-coverage="100% (2/2)" />
+                <line number="48" hits="32" branch="false" />
+                <line number="49" hits="32" branch="false" />
+                <line number="50" hits="32" branch="false" />
+                <line number="52" hits="20" branch="false" />
+                <line number="53" hits="20" branch="false" />
+                <line number="54" hits="20" branch="false" />
+                <line number="56" hits="418" branch="false" />
+                <line number="57" hits="52" branch="true" condition-coverage="50% (1/2)" />
                 <line number="58" hits="52" branch="false" />
-                <line number="59" hits="4" branch="false" />
-                <line number="60" hits="4" branch="false" />
+                <line number="59" hits="52" branch="false" />
+                <line number="60" hits="52" branch="false" />
+                <line number="62" hits="0" branch="false" />
+                <line number="63" hits="0" branch="false" />
+                <line number="64" hits="0" branch="false" />
+                <line number="66" hits="52" branch="false" />
+                <line number="67" hits="52" branch="false" />
+                <line number="68" hits="4" branch="false" />
+                <line number="69" hits="4" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(...)" line-rate="1" branch-rate="1" complexity="1">
@@ -552,17 +567,32 @@
             <line number="32" hits="28" branch="false" />
             <line number="33" hits="56" branch="false" />
             <line number="34" hits="4" branch="false" />
-            <line number="47" hits="4" branch="false" />
-            <line number="48" hits="4" branch="false" />
-            <line number="50" hits="88" branch="false" />
-            <line number="52" hits="116" branch="true" condition-coverage="100% (2/2)" />
-            <line number="53" hits="52" branch="false" />
-            <line number="54" hits="500" branch="false" />
-            <line number="55" hits="784" branch="false" />
-            <line number="57" hits="52" branch="false" />
+            <line number="37" hits="4" branch="false" />
+            <line number="38" hits="4" branch="false" />
+            <line number="40" hits="140" branch="false" />
+            <line number="42" hits="116" branch="true" condition-coverage="100% (2/2)" />
+            <line number="43" hits="52" branch="false" />
+            <line number="44" hits="52" branch="false" />
+            <line number="46" hits="356" branch="false" />
+            <line number="47" hits="52" branch="true" condition-coverage="100% (2/2)" />
+            <line number="48" hits="32" branch="false" />
+            <line number="49" hits="32" branch="false" />
+            <line number="50" hits="32" branch="false" />
+            <line number="52" hits="20" branch="false" />
+            <line number="53" hits="20" branch="false" />
+            <line number="54" hits="20" branch="false" />
+            <line number="56" hits="418" branch="false" />
+            <line number="57" hits="52" branch="true" condition-coverage="50% (1/2)" />
             <line number="58" hits="52" branch="false" />
-            <line number="59" hits="4" branch="false" />
-            <line number="60" hits="4" branch="false" />
+            <line number="59" hits="52" branch="false" />
+            <line number="60" hits="52" branch="false" />
+            <line number="62" hits="0" branch="false" />
+            <line number="63" hits="0" branch="false" />
+            <line number="64" hits="0" branch="false" />
+            <line number="66" hits="52" branch="false" />
+            <line number="67" hits="52" branch="false" />
+            <line number="68" hits="4" branch="false" />
+            <line number="69" hits="4" branch="false" />
           </lines>
         </class>
         <class name="WebApplication1.Application_Layer.Handlers.ItemHandler.GetItemsCommand" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Handlers\ItemHandler\GetItemsHandler.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -1715,24 +1745,24 @@
               <lines>
                 <line number="38" hits="59" branch="false" />
                 <line number="39" hits="118" branch="true" condition-coverage="100% (2/2)" />
-                <line number="40" hits="56" branch="false" />
+                <line number="40" hits="55" branch="false" />
               </lines>
             </method>
             <method name="SaveChanges" signature="()" line-rate="0.692307692307692" branch-rate="1" complexity="1">
               <lines>
                 <line number="43" hits="59" branch="false" />
                 <line number="44" hits="59" branch="false" />
-                <line number="45" hits="56" branch="false" />
-                <line number="47" hits="56" branch="false" />
-                <line number="48" hits="56" branch="false" />
-                <line number="49" hits="56" branch="false" />
-                <line number="50" hits="56" branch="false" />
+                <line number="45" hits="55" branch="false" />
+                <line number="47" hits="55" branch="false" />
+                <line number="48" hits="55" branch="false" />
+                <line number="49" hits="55" branch="false" />
+                <line number="50" hits="55" branch="false" />
                 <line number="51" hits="0" branch="false" />
                 <line number="52" hits="0" branch="false" />
                 <line number="53" hits="0" branch="false" />
                 <line number="54" hits="0" branch="false" />
-                <line number="56" hits="56" branch="false" />
-                <line number="57" hits="56" branch="false" />
+                <line number="56" hits="55" branch="false" />
+                <line number="57" hits="55" branch="false" />
               </lines>
             </method>
             <method name="validation" signature="(...)" line-rate="1" branch-rate="1" complexity="1">
@@ -1764,20 +1794,20 @@
             <line number="35" hits="95" branch="false" />
             <line number="38" hits="59" branch="false" />
             <line number="39" hits="118" branch="true" condition-coverage="100% (2/2)" />
-            <line number="40" hits="56" branch="false" />
+            <line number="40" hits="55" branch="false" />
             <line number="43" hits="59" branch="false" />
             <line number="44" hits="59" branch="false" />
-            <line number="45" hits="56" branch="false" />
-            <line number="47" hits="56" branch="false" />
-            <line number="48" hits="56" branch="false" />
-            <line number="49" hits="56" branch="false" />
-            <line number="50" hits="56" branch="false" />
+            <line number="45" hits="55" branch="false" />
+            <line number="47" hits="55" branch="false" />
+            <line number="48" hits="55" branch="false" />
+            <line number="49" hits="55" branch="false" />
+            <line number="50" hits="55" branch="false" />
             <line number="51" hits="0" branch="false" />
             <line number="52" hits="0" branch="false" />
             <line number="53" hits="0" branch="false" />
             <line number="54" hits="0" branch="false" />
-            <line number="56" hits="56" branch="false" />
-            <line number="57" hits="56" branch="false" />
+            <line number="56" hits="55" branch="false" />
+            <line number="57" hits="55" branch="false" />
             <line number="60" hits="59" branch="false" />
             <line number="61" hits="59" branch="false" />
             <line number="62" hits="59" branch="false" />
@@ -4961,7 +4991,7 @@
             <line number="26" hits="15" branch="false" />
           </lines>
         </class>
-        <class name="WebApplication1.Services.Analysis.ClusterHelper" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClusteringStepByStep.cs" line-rate="0.929203539823009" branch-rate="0.9" complexity="42">
+        <class name="WebApplication1.Services.Analysis.ClusterHelper" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClustering.cs" line-rate="0.929203539823009" branch-rate="0.9" complexity="42">
           <methods>
             <method name="DataAndBandwidthDimensionMustMatch" signature="(...)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
@@ -5042,7 +5072,7 @@
                 <line number="192" hits="95415" branch="false" />
               </lines>
             </method>
-            <method name="CalculateAverage" signature="(...)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="CalculateAverageOfMultipleVectors" signature="(...)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
                 <line number="195" hits="95415" branch="false" />
                 <line number="196" hits="95415" branch="false" />
@@ -5065,14 +5095,14 @@
                 <line number="215" hits="680" branch="true" condition-coverage="50% (1/2)" />
                 <line number="216" hits="0" branch="false" />
                 <line number="217" hits="0" branch="false" />
-                <line number="220" hits="3004" branch="true" condition-coverage="100% (2/2)" />
-                <line number="221" hits="803" branch="false" />
-                <line number="222" hits="5094" branch="true" condition-coverage="100% (4/4)" />
+                <line number="220" hits="2960" branch="true" condition-coverage="100% (2/2)" />
+                <line number="221" hits="781" branch="false" />
+                <line number="222" hits="5039" branch="true" condition-coverage="100% (4/4)" />
                 <line number="223" hits="642" branch="false" />
                 <line number="224" hits="642" branch="false" />
                 <line number="225" hits="642" branch="false" />
                 <line number="226" hits="642" branch="false" />
-                <line number="228" hits="161" branch="false" />
+                <line number="228" hits="139" branch="false" />
                 <line number="229" hits="680" branch="true" condition-coverage="100% (2/2)" />
                 <line number="230" hits="38" branch="false" />
                 <line number="231" hits="38" branch="false" />
@@ -5101,15 +5131,15 @@
             </method>
             <method name="CalculateDistance" signature="(...)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="252" hits="4291" branch="false" />
-                <line number="253" hits="4291" branch="false" />
-                <line number="254" hits="26538" branch="true" condition-coverage="100% (2/2)" />
-                <line number="255" hits="8978" branch="false" />
-                <line number="256" hits="8978" branch="false" />
-                <line number="257" hits="8978" branch="false" />
-                <line number="258" hits="8978" branch="false" />
-                <line number="260" hits="4291" branch="false" />
-                <line number="261" hits="4291" branch="false" />
+                <line number="252" hits="4258" branch="false" />
+                <line number="253" hits="4258" branch="false" />
+                <line number="254" hits="26340" branch="true" condition-coverage="100% (2/2)" />
+                <line number="255" hits="8912" branch="false" />
+                <line number="256" hits="8912" branch="false" />
+                <line number="257" hits="8912" branch="false" />
+                <line number="258" hits="8912" branch="false" />
+                <line number="260" hits="4258" branch="false" />
+                <line number="261" hits="4258" branch="false" />
               </lines>
             </method>
             <method name="VectorLength" signature="(...)" line-rate="1" branch-rate="1" complexity="2">
@@ -5198,14 +5228,14 @@
             <line number="215" hits="680" branch="true" condition-coverage="50% (1/2)" />
             <line number="216" hits="0" branch="false" />
             <line number="217" hits="0" branch="false" />
-            <line number="220" hits="3004" branch="true" condition-coverage="100% (2/2)" />
-            <line number="221" hits="803" branch="false" />
-            <line number="222" hits="5094" branch="true" condition-coverage="100% (4/4)" />
+            <line number="220" hits="2960" branch="true" condition-coverage="100% (2/2)" />
+            <line number="221" hits="781" branch="false" />
+            <line number="222" hits="5039" branch="true" condition-coverage="100% (4/4)" />
             <line number="223" hits="642" branch="false" />
             <line number="224" hits="642" branch="false" />
             <line number="225" hits="642" branch="false" />
             <line number="226" hits="642" branch="false" />
-            <line number="228" hits="161" branch="false" />
+            <line number="228" hits="139" branch="false" />
             <line number="229" hits="680" branch="true" condition-coverage="100% (2/2)" />
             <line number="230" hits="38" branch="false" />
             <line number="231" hits="38" branch="false" />
@@ -5222,15 +5252,15 @@
             <line number="247" hits="19210046" branch="false" />
             <line number="248" hits="5729682" branch="false" />
             <line number="249" hits="5729682" branch="false" />
-            <line number="252" hits="4291" branch="false" />
-            <line number="253" hits="4291" branch="false" />
-            <line number="254" hits="26538" branch="true" condition-coverage="100% (2/2)" />
-            <line number="255" hits="8978" branch="false" />
-            <line number="256" hits="8978" branch="false" />
-            <line number="257" hits="8978" branch="false" />
-            <line number="258" hits="8978" branch="false" />
-            <line number="260" hits="4291" branch="false" />
-            <line number="261" hits="4291" branch="false" />
+            <line number="252" hits="4258" branch="false" />
+            <line number="253" hits="4258" branch="false" />
+            <line number="254" hits="26340" branch="true" condition-coverage="100% (2/2)" />
+            <line number="255" hits="8912" branch="false" />
+            <line number="256" hits="8912" branch="false" />
+            <line number="257" hits="8912" branch="false" />
+            <line number="258" hits="8912" branch="false" />
+            <line number="260" hits="4258" branch="false" />
+            <line number="261" hits="4258" branch="false" />
             <line number="264" hits="38334" branch="false" />
             <line number="265" hits="38334" branch="false" />
             <line number="267" hits="288538" branch="true" condition-coverage="100% (2/2)" />
@@ -5335,73 +5365,7 @@
             <line number="61" hits="26" branch="false" />
           </lines>
         </class>
-        <class name="WebApplication1.Services.Analysis.MeanShiftClusteringStationary" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClusteringStepByStep.cs" line-rate="1" branch-rate="1" complexity="21">
-          <methods>
-            <method name="Cluster" signature="(...)" line-rate="1" branch-rate="1" complexity="20">
-              <lines>
-                <line number="80" hits="13" branch="false" />
-                <line number="81" hits="378" branch="true" condition-coverage="100% (2/2)" />
-                <line number="82" hits="13" branch="false" />
-                <line number="83" hits="378" branch="true" condition-coverage="100% (2/2)" />
-                <line number="84" hits="371" branch="true" condition-coverage="100% (2/2)" />
-                <line number="85" hits="371" branch="true" condition-coverage="100% (2/2)" />
-                <line number="88" hits="754" branch="true" condition-coverage="100% (2/2)" />
-                <line number="89" hits="359" branch="false" />
-                <line number="90" hits="3194" branch="true" condition-coverage="100% (2/2)" />
-                <line number="91" hits="2835" branch="false" />
-                <line number="93" hits="2835" branch="false" />
-                <line number="96" hits="140315" branch="true" condition-coverage="100% (2/2)" />
-                <line number="99" hits="2835" branch="true" condition-coverage="100% (2/2)" />
-                <line number="100" hits="359" branch="false" />
-                <line number="101" hits="27073" branch="true" condition-coverage="100% (2/2)" />
-                <line number="102" hits="359" branch="false" />
-                <line number="103" hits="359" branch="false" />
-                <line number="105" hits="2476" branch="false" />
-                <line number="106" hits="7438" branch="true" condition-coverage="100% (2/2)" />
-                <line number="107" hits="2476" branch="false" />
-                <line number="108" hits="2835" branch="false" />
-                <line number="109" hits="359" branch="false" />
-                <line number="111" hits="12" branch="false" />
-                <line number="112" hits="12" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="76" hits="13" branch="false" />
-                <line number="77" hits="13" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="76" hits="13" branch="false" />
-            <line number="77" hits="13" branch="false" />
-            <line number="80" hits="13" branch="false" />
-            <line number="81" hits="378" branch="true" condition-coverage="100% (2/2)" />
-            <line number="82" hits="13" branch="false" />
-            <line number="83" hits="378" branch="true" condition-coverage="100% (2/2)" />
-            <line number="84" hits="371" branch="true" condition-coverage="100% (2/2)" />
-            <line number="85" hits="371" branch="true" condition-coverage="100% (2/2)" />
-            <line number="88" hits="754" branch="true" condition-coverage="100% (2/2)" />
-            <line number="89" hits="359" branch="false" />
-            <line number="90" hits="3194" branch="true" condition-coverage="100% (2/2)" />
-            <line number="91" hits="2835" branch="false" />
-            <line number="93" hits="2835" branch="false" />
-            <line number="96" hits="140315" branch="true" condition-coverage="100% (2/2)" />
-            <line number="99" hits="2835" branch="true" condition-coverage="100% (2/2)" />
-            <line number="100" hits="359" branch="false" />
-            <line number="101" hits="27073" branch="true" condition-coverage="100% (2/2)" />
-            <line number="102" hits="359" branch="false" />
-            <line number="103" hits="359" branch="false" />
-            <line number="105" hits="2476" branch="false" />
-            <line number="106" hits="7438" branch="true" condition-coverage="100% (2/2)" />
-            <line number="107" hits="2476" branch="false" />
-            <line number="108" hits="2835" branch="false" />
-            <line number="109" hits="359" branch="false" />
-            <line number="111" hits="12" branch="false" />
-            <line number="112" hits="12" branch="false" />
-          </lines>
-        </class>
-        <class name="WebApplication1.Services.Analysis.MeanShiftClusteringStepByStep" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClusteringStepByStep.cs" line-rate="1" branch-rate="1" complexity="27">
+        <class name="WebApplication1.Services.Analysis.MeanShiftClustering" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClustering.cs" line-rate="1" branch-rate="1" complexity="27">
           <methods>
             <method name="Cluster" signature="(...)" line-rate="1" branch-rate="1" complexity="14">
               <lines>
@@ -5489,7 +5453,73 @@
             <line number="71" hits="1163" branch="false" />
           </lines>
         </class>
-        <class name="WebApplication1.Services.Analysis.MeanShiftDataPoint`1" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClusteringStepByStep.cs" line-rate="1" branch-rate="1" complexity="5">
+        <class name="WebApplication1.Services.Analysis.MeanShiftClusteringStationary" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClustering.cs" line-rate="1" branch-rate="1" complexity="21">
+          <methods>
+            <method name="Cluster" signature="(...)" line-rate="1" branch-rate="1" complexity="20">
+              <lines>
+                <line number="80" hits="13" branch="false" />
+                <line number="81" hits="378" branch="true" condition-coverage="100% (2/2)" />
+                <line number="82" hits="13" branch="false" />
+                <line number="83" hits="378" branch="true" condition-coverage="100% (2/2)" />
+                <line number="84" hits="371" branch="true" condition-coverage="100% (2/2)" />
+                <line number="85" hits="371" branch="true" condition-coverage="100% (2/2)" />
+                <line number="88" hits="754" branch="true" condition-coverage="100% (2/2)" />
+                <line number="89" hits="359" branch="false" />
+                <line number="90" hits="3194" branch="true" condition-coverage="100% (2/2)" />
+                <line number="91" hits="2835" branch="false" />
+                <line number="93" hits="2835" branch="false" />
+                <line number="96" hits="140315" branch="true" condition-coverage="100% (2/2)" />
+                <line number="99" hits="2835" branch="true" condition-coverage="100% (2/2)" />
+                <line number="100" hits="359" branch="false" />
+                <line number="101" hits="27073" branch="true" condition-coverage="100% (2/2)" />
+                <line number="102" hits="359" branch="false" />
+                <line number="103" hits="359" branch="false" />
+                <line number="105" hits="2476" branch="false" />
+                <line number="106" hits="7438" branch="true" condition-coverage="100% (2/2)" />
+                <line number="107" hits="2476" branch="false" />
+                <line number="108" hits="2835" branch="false" />
+                <line number="109" hits="359" branch="false" />
+                <line number="111" hits="12" branch="false" />
+                <line number="112" hits="12" branch="false" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="76" hits="13" branch="false" />
+                <line number="77" hits="13" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="76" hits="13" branch="false" />
+            <line number="77" hits="13" branch="false" />
+            <line number="80" hits="13" branch="false" />
+            <line number="81" hits="378" branch="true" condition-coverage="100% (2/2)" />
+            <line number="82" hits="13" branch="false" />
+            <line number="83" hits="378" branch="true" condition-coverage="100% (2/2)" />
+            <line number="84" hits="371" branch="true" condition-coverage="100% (2/2)" />
+            <line number="85" hits="371" branch="true" condition-coverage="100% (2/2)" />
+            <line number="88" hits="754" branch="true" condition-coverage="100% (2/2)" />
+            <line number="89" hits="359" branch="false" />
+            <line number="90" hits="3194" branch="true" condition-coverage="100% (2/2)" />
+            <line number="91" hits="2835" branch="false" />
+            <line number="93" hits="2835" branch="false" />
+            <line number="96" hits="140315" branch="true" condition-coverage="100% (2/2)" />
+            <line number="99" hits="2835" branch="true" condition-coverage="100% (2/2)" />
+            <line number="100" hits="359" branch="false" />
+            <line number="101" hits="27073" branch="true" condition-coverage="100% (2/2)" />
+            <line number="102" hits="359" branch="false" />
+            <line number="103" hits="359" branch="false" />
+            <line number="105" hits="2476" branch="false" />
+            <line number="106" hits="7438" branch="true" condition-coverage="100% (2/2)" />
+            <line number="107" hits="2476" branch="false" />
+            <line number="108" hits="2835" branch="false" />
+            <line number="109" hits="359" branch="false" />
+            <line number="111" hits="12" branch="false" />
+            <line number="112" hits="12" branch="false" />
+          </lines>
+        </class>
+        <class name="WebApplication1.Services.Analysis.MeanShiftDataPoint`1" filename="C:\Users\Ekste\Documents\GitHub\EstablishmentProject\Backend\Application Layer\Analysis\MeanShiftClustering.cs" line-rate="1" branch-rate="1" complexity="5">
           <methods>
             <method name="get_Object" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
@@ -5498,7 +5528,7 @@
             </method>
             <method name="get_Location" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="13" hits="24600110" branch="false" />
+                <line number="13" hits="24600044" branch="false" />
               </lines>
             </method>
             <method name="get_HasConverged" signature="()" line-rate="1" branch-rate="1" complexity="1">
@@ -5523,7 +5553,7 @@
           </methods>
           <lines>
             <line number="12" hits="680" branch="false" />
-            <line number="13" hits="24600110" branch="false" />
+            <line number="13" hits="24600044" branch="false" />
             <line number="14" hits="128879" branch="false" />
             <line number="15" hits="3079" branch="false" />
             <line number="16" hits="1039" branch="false" />

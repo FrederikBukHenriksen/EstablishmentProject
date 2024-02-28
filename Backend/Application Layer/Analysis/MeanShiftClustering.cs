@@ -20,7 +20,7 @@ namespace WebApplication1.Services.Analysis
         }
     }
 
-    public class MeanShiftClusteringStepByStep : IMeanShiftClustering
+    public class MeanShiftClustering : IMeanShiftClustering
     {
         private double toleranceForCovergence = 0.01;
         private double toleranceForGrouping = 0.1;
@@ -186,12 +186,12 @@ namespace WebApplication1.Services.Analysis
             {
                 return Enumerable.Repeat(0.0, dataPoint.Count).ToList();
             }
-            List<double> shift = CalculateAverage(shifts);
+            List<double> shift = CalculateAverageOfMultipleVectors(shifts);
 
             return shift;
         }
 
-        public static List<double> CalculateAverage(List<List<double>> shifts)
+        public static List<double> CalculateAverageOfMultipleVectors(List<List<double>> shifts)
         {
             int count = shifts.Count;
             int length = shifts.First().Count;

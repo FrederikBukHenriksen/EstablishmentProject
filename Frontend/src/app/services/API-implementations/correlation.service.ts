@@ -22,6 +22,16 @@ interface ICorrelationService {
     lowerLag: number,
     establishmentId?: string
   ): Promise<CorrelationReturn>;
+
+  Correlation_SeatTime_Vs_Temperature(
+    salesIds: string[],
+    timeStart: Date,
+    timeEnd: Date,
+    timeResolution: TimeResolution,
+    upperLag: number,
+    lowerLag: number,
+    establishmentId?: string
+  ): Promise<CorrelationReturn>;
 }
 
 @Injectable({
@@ -65,7 +75,7 @@ export class CorrelationService implements ICorrelationService {
     );
   }
 
-  public async Correlation_SetTime_Vs_Temperature(
+  public async Correlation_SeatTime_Vs_Temperature(
     salesIds: string[],
     timeStart: Date,
     timeEnd: Date,

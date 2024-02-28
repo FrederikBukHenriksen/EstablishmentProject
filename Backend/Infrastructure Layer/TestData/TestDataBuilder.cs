@@ -5,29 +5,10 @@ namespace WebApplication1.Infrastructure.Data
 
     public interface ITestDataBuilder
     {
-        //List<OpeningHours> CreateSimpleOpeningHoursForWeek(LocalTime open, LocalTime close);
-        //List<DateTime> SLETTES_DistrubutionBasedOnTimlineAndOpeningHours(List<DateTime> timeline, List<OpeningHours> openingHours);
-        //List<DateTime> OpenHoursCalendar(DateTime datetimeStart, DateTime datetimeEnd, TimeResolution timeResolution, List<OpeningHours> openingHours);
-        //Dictionary<DateTime, int> GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> dateExtractor, Func<double, double> distributionFunction);
-        //Dictionary<DateTime, int> DistributionByTimeresolution(List<DateTime> dateTimePoints, Func<double, double> distributionFunction, TimeResolution timeResolution);
         Dictionary<DateTime, int> FINALAggregateDistributions(List<Dictionary<DateTime, int>> listOfDistributions);
         Dictionary<DateTime, int> FINALgenerateDistrubution(DateTime start, DateTime end, Func<double, double> distributionFunction, TimeResolution timeResolution);
         Dictionary<DateTime, int> FINALFilterOnOpeningHours(int openHour, int closeHour, Dictionary<DateTime, int> distribution);
     }
-
-    //public class OpeningHours
-    //{
-    //    public DayOfWeek dayOfWeek { get; set; }
-    //    public LocalTime open { get; set; }
-    //    public LocalTime close { get; set; }
-
-    //    public OpeningHours(DayOfWeek dayOfWeek, LocalTime open, LocalTime close)
-    //    {
-    //        this.dayOfWeek = dayOfWeek;
-    //        this.open = open;
-    //        this.close = close;
-    //    }
-    //}
 
     public class TestDataBuilder : ITestDataBuilder
     {
@@ -59,20 +40,6 @@ namespace WebApplication1.Infrastructure.Data
             return x => a * x + b;
         }
 
-        public Dictionary<DateTime, int> GenerateDistributionFromTimeline(List<DateTime> dateTimePoints, Func<DateTime, int> valueExtractor, Func<double, double> distributionFunction)
-        {
-            Dictionary<DateTime, int> dictionary = new Dictionary<DateTime, int>();
-
-            foreach (DateTime date in dateTimePoints)
-            {
-                int time = valueExtractor(date);
-                double value = distributionFunction(time);
-                dictionary.Add(date, (int)value);
-            }
-
-            return dictionary;
-        }
-
         public Dictionary<DateTime, int> FINALAggregateDistributions(List<Dictionary<DateTime, int>> listOfDistributions)
         {
             Dictionary<DateTime, int> dictionary = new Dictionary<DateTime, int>();
@@ -97,17 +64,23 @@ namespace WebApplication1.Infrastructure.Data
             return dictionary;
         }
 
-        public Dictionary<DateTime, int> DistributionByTimeresolution(List<DateTime> dateTimePoints, Func<double, double> distributionFunction, TimeResolution timeResolution)
-        {
-            return this.GenerateDistributionFromTimeline(dateTimePoints, TimeHelper.DateTimeExtractorFunction(timeResolution), distributionFunction);
-
-        }
-
         public Dictionary<DateTime, int> FINALgenerateDistrubution(DateTime start, DateTime end, Func<double, double> distributionFunction, TimeResolution timeResolution)
         {
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(start: start, end: end, resolution: TimeResolution.Hour);
-            return this.DistributionByTimeresolution(timeline, distributionFunction, timeResolution);
+            Dictionary<DateTime, int> dictionary = new Dictionary<DateTime, int>();
 
+            Func<DateTime, int> valueExtractor = TimeHelper.DateTimeExtractorFunction(timeResolution);
+
+            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(start: start, end: end, resolution: TimeResolution.Hour);
+
+            // Generate distribution
+            foreach (DateTime date in timeline)
+            {
+                int time = valueExtractor(date);
+                double value = distributionFunction(time);
+                dictionary.Add(date, (int)value);
+            }
+
+            return dictionary;
         }
 
         public Dictionary<DateTime, int> FINALFilterOnOpeningHours(int openHour, int closeHour, Dictionary<DateTime, int> distribution)
