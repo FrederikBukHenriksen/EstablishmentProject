@@ -22,7 +22,7 @@ namespace EstablishmentProject.test
 
             //Act
             //var distribution = testDataCreatorService.GenerateDistributionFromTimeline(timeline, x => x.Hour, DistributionFunction);
-            var distribution = testDataCreator.generateDistrubution(start, end, DistributionFunction, TimeResolution.Hour);
+            var distribution = testDataCreator.FINALgenerateDistrubution(start, end, DistributionFunction, TimeResolution.Hour);
 
 
             //Assert

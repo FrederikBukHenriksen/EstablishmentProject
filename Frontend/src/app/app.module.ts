@@ -13,7 +13,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
-import { DialogBaseModule } from './dialogs/dialog-checkbox/dialog.checkbox.component.module';
+import { DialogBaseModule } from './dialogs/dialog-base/dialog-base.component.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -21,8 +21,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClusterModule } from './cluster/cluster.module';
 import { CrossCorrelationModule } from './cross-correlation/cross-correlation.module';
-import { DialogFilterSalesBySalestablesModule } from './dialogs/dialog-filter-sales-by-salesitems/dialog-filter-sales-by-salesitems.module';
-import { DialogGraphSettingsModule } from './dialogs/dialog-graph-settings/dialog-graph-settings.module';
 import { registerLocaleData } from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 
@@ -49,8 +47,6 @@ registerLocaleData(localeEn);
     MatInputModule,
     ClusterModule,
     CrossCorrelationModule,
-    DialogFilterSalesBySalestablesModule,
-    DialogGraphSettingsModule,
   ],
   providers: [{ provide: API_BASE_URL, useValue: '' }],
 

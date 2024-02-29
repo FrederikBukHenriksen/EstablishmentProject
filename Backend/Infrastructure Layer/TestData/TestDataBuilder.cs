@@ -70,7 +70,7 @@ namespace WebApplication1.Infrastructure.Data
 
             Func<DateTime, int> valueExtractor = TimeHelper.DateTimeExtractorFunction(timeResolution);
 
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsList(start: start, end: end, resolution: TimeResolution.Hour);
+            List<DateTime> timeline = TimeHelper.CreateTimeline(start: start, end: end, TimeResolution.Hour);
 
             // Generate distribution
             foreach (DateTime date in timeline)

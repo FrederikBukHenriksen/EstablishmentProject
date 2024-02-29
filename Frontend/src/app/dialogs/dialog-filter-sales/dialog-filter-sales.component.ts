@@ -5,7 +5,7 @@ import {
   DatePicker,
   DialogBase,
   DialogConfig,
-} from '../dialog-checkbox/dialog-checkbox.component';
+} from '../dialog-base/dialog-base.component';
 import { FilterSales, ValueTupleOfDateTimeAndDateTime } from 'api';
 
 @Injectable({

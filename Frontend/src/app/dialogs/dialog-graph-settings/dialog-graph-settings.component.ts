@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import {
   DatePicker,
   DialogBase,
@@ -7,7 +7,7 @@ import {
   DropDownMultipleSelects,
   DropDownOption,
   TextInputField,
-} from '../dialog-checkbox/dialog-checkbox.component';
+} from '../dialog-base/dialog-base.component';
 import { MatDialog } from '@angular/material/dialog';
 import { lastValueFrom } from 'rxjs';
 import { DateTimePeriod, TimeResolution } from 'api';
@@ -23,10 +23,8 @@ export class GraphSettings {
   }
 }
 
-@Component({
-  selector: 'app-dialog-graph-settings',
-  templateUrl: './dialog-graph-settings.component.html',
-  styleUrls: ['./dialog-graph-settings.component.scss'],
+@Injectable({
+  providedIn: 'root',
 })
 export class DialogGraphSettingsComponent {
   constructor(public dialog: MatDialog) {}
@@ -56,13 +54,10 @@ export class DialogGraphSettingsComponent {
   }
 
   private buildReturn(data: { [key: string]: any }): GraphSettings {
-    console.log('build settings graph', data);
     var startTime = data['timeframestart'] as Date;
     var endTime = new Date(
       (data['timeframeend'] as Date).setHours(23, 59, 59, 999)
     );
-    console.log('start', startTime);
-    console.log('end', endTime);
     var timeFrame: DateTimePeriod = {
       start: data['timeframestart'] as Date,
       end: data['timeframeend'] as Date,

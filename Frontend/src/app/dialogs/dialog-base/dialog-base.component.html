@@ -70,17 +70,10 @@
         <input matSliderThumb [formControlName]="input.id" />
       </mat-slider>
     </div>
-
-    <!-- </mat-tab-group> -->
   </div>
-
-  <button mat-button (click)="onSubmit()">OK</button>
-  <!-- <input
-    type="checkbox"
-    name="itemCheckbox"
-    [value]="item.id"
-    [(ngModel)]="item.selected"
-  />
-  />
-  {{ item.name }} -->
+  <div class="button-container">
+    <button mat-stroked-button class="botton_box" (click)="onSubmit()">
+      Save
+    </button>
+  </div>
 </form>

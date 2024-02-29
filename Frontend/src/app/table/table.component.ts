@@ -117,13 +117,10 @@ export class TableComponent implements AfterViewInit {
     if (this.addPaginator) {
       this.dataSource.paginator = this.paginator;
     }
-    console.log('table, ngAfterViewInit', this.dataSource);
-    console.log('table, ngAfterViewInit', this.dataSource.data);
     this.dataSource.data = this.tableModel.elements;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes['tableModel']) {
       this.tableModel = changes['tableModel'].currentValue;
       this.tableModel.columns = [...this.tableModel.columns];

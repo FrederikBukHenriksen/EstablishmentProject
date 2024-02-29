@@ -94,8 +94,7 @@ namespace DMIOpenData
         private static List<(DateTime, double)> AverageForTimeResolution(DateTime startTime, DateTime endTime, TimeResolution timeresolution, List<(DateTime datetime, double values)> data)
         {
             List<(DateTime datetime, double values)> dataOrdered = data.OrderBy(x => x.Item1).ToList();
-            List<DateTime> timeline = TimeHelper.CreateTimelineAsListV2(startTime, endTime, timeresolution);
-            Dictionary<DateTime, List<(DateTime datetime, double values)>> averageTemperaturePerDateTime = TimeHelper.MapObjectsToTimelineV2(dataOrdered, x => x.datetime, timeline, timeresolution);
+            Dictionary<DateTime, List<(DateTime datetime, double values)>> averageTemperaturePerDateTime = TimeHelper.MapObjectsToTimelineV4(dataOrdered, x => x.datetime, startTime, endTime, timeresolution).ToDictionary(x => x.Item1, x => x.Item2);
             Dictionary<DateTime, double> averagePerTimeResolution = averageTemperaturePerDateTime.ToDictionary(
                 kvp => kvp.Key,
                 kvp => kvp.Value.Select(v => v.values).Average()

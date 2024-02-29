@@ -143,8 +143,9 @@ export class DialogSlider extends SettingsDataBase {
 }
 
 @Component({
-  selector: 'app-dialog-checkbox',
-  templateUrl: './dialog-checkbox.component.html',
+  selector: 'app-dialog-base',
+  templateUrl: './dialog-base.component.html',
+  styleUrls: ['./dialog-base.component.css'],
 })
 export class DialogBase implements OnInit {
   myFormGroup: FormGroup;
@@ -166,19 +167,15 @@ export class DialogBase implements OnInit {
       control.FormControl = formcontrol;
     });
     this.myFormGroup = this.fb.group(formControls);
-    console.log('base data', this.data);
   }
 
   onSubmit(): void {
-    console.log(this.myFormGroup);
     if (this.myFormGroup.valid) {
       const valuesAsDictionary: { [key: string]: any } = {
         ...this.myFormGroup.value,
       };
 
       this.dialogRef.close(valuesAsDictionary);
-    } else {
-      console.log('Form is invalid. Please check the inputs.');
     }
   }
 

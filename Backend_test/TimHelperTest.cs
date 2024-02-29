@@ -6,23 +6,7 @@ namespace EstablishmentProject.test
     {
 
         [Fact]
-        public void CreateTimelineAsList_ShouldThrowArgumentExceptionWhenEndIsEarlierThanStart()
-        {
-            // Arrange
-            DateTime start = new DateTime(2022, 1, 5, 0, 0, 0);
-            DateTime end = new DateTime(2022, 1, 1, 0, 0, 0);
-            TimeResolution resolution = TimeResolution.Hour;
-
-            // Act
-            Action act = () => TimeHelper.CreateTimelineAsList(start, end, resolution);
-
-            //Assert
-            Assert.Throws<ArgumentException>(act);
-
-        }
-
-        [Fact]
-        public void CreateTimeLineAsList_WithHour()
+        public void CreateTimeLineAsList_WithHour_ShouldReturnTimeline()
         {
             // Arrange
             DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
@@ -30,13 +14,13 @@ namespace EstablishmentProject.test
             TimeResolution resolution = TimeResolution.Hour;
 
             // Act
-            List<DateTime> result = TimeHelper.CreateTimelineAsList(start, end, resolution);
+            List<DateTime> result = TimeHelper.CreateTimeline(start, end, resolution);
 
             // Assert
             Assert.Equal(4 * 24, result.Count);
         }
 
-        public void CreateTimeLineAsList_WithDate()
+        public void CreateTimeLineAsList_WithDate_ShouldReturnTimeline()
         {
             // Arrange
             DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
@@ -44,13 +28,13 @@ namespace EstablishmentProject.test
             TimeResolution resolution = TimeResolution.Date;
 
             // Act
-            List<DateTime> result = TimeHelper.CreateTimelineAsList(start, end, resolution);
+            List<DateTime> result = TimeHelper.CreateTimeline(start, end, resolution);
 
             // Assert
             Assert.Equal(5, result.Count);
         }
 
-        public void CreateTimeLineAsList_WithMonth()
+        public void CreateTimeLineAsList_WithMonth_ShouldReturnTimeline()
         {
             // Arrange
             DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
@@ -58,13 +42,13 @@ namespace EstablishmentProject.test
             TimeResolution resolution = TimeResolution.Month;
 
             // Act
-            List<DateTime> result = TimeHelper.CreateTimelineAsList(start, end, resolution);
+            List<DateTime> result = TimeHelper.CreateTimeline(start, end, resolution);
 
             // Assert
             Assert.Equal(5, result.Count);
         }
 
-        public void CreateTimeLineAsList_WithYear()
+        public void CreateTimeLineAsList_WithYear_ShouldReturnTimeline()
         {
             // Arrange
             DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
@@ -72,7 +56,7 @@ namespace EstablishmentProject.test
             TimeResolution resolution = TimeResolution.Year;
 
             // Act
-            List<DateTime> result = TimeHelper.CreateTimelineAsList(start, end, resolution);
+            List<DateTime> result = TimeHelper.CreateTimeline(start, end, resolution);
 
             // Assert
             Assert.Equal(4, result.Count);
@@ -81,7 +65,7 @@ namespace EstablishmentProject.test
         //Add to date with timeresolution
 
         [Fact]
-        public void AddToDateTime_ShouldReturnDateTimeWithAddedAmount()
+        public void AddToDateTime_WithAddedAmount_ShouldReturnTimeline()
         {
             // Arrange
             DateTime datetime = new DateTime(2022, 1, 1, 12, 30, 45);

@@ -8,8 +8,6 @@
         Year,
     }
 
-
-
     public class DateTimePeriod
     {
         public DateTime Start { get; set; }
@@ -62,40 +60,6 @@
             }
         }
 
-        public static List<DateTime> CreateTimelineAsList(DateTime start, DateTime end, TimeResolution resolution)
-        {
-            if (end < start)
-            {
-                throw new ArgumentException("End must be equal or later than start");
-            }
-
-            Func<DateTime, DateTime> res = x =>
-            {
-                switch (resolution)
-                {
-                    case TimeResolution.Hour:
-                        return x.AddHours(1);
-                    case TimeResolution.Date:
-                        return x.AddDays(1);
-                    case TimeResolution.Month:
-                        return x.AddMonths(1);
-                    case TimeResolution.Year:
-                        return x.AddYears(1);
-                    default:
-                        return x;
-                }
-            };
-
-            List<DateTime> timeline = new List<DateTime>();
-
-            for (DateTime date = TimeResolutionUniqueRounder(start, resolution); date < end; date = res(date))
-            {
-                timeline.Add(date);
-            }
-
-            return timeline;
-        }
-
         public static DateTime TimeResolutionUniqueRounder(this DateTime dateTime, TimeResolution timeResolution)
         {
             switch (timeResolution)
@@ -113,64 +77,30 @@
             }
         }
 
+        //public static Dictionary<DateTime, List<T>> MapObjectsToTimelineV2<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        //{
+        //    Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
 
-        //v2
-        public static List<DateTime> CreateTimelineAsListV2(DateTime start, DateTime end, TimeResolution resolution)
-        {
-            List<DateTime> timeline = new List<DateTime>();
+        //    foreach (var obj in objects)
+        //    {
+        //        DateTime objDateTime = extractor(obj);
+        //        DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
 
-            DateTime current = start;
+        //        if (!mappedTimeline.ContainsKey(mappedDateTime))
+        //            mappedTimeline[mappedDateTime] = new List<T>();
 
-            while (current < end)
-            {
-                timeline.Add(current);
+        //        mappedTimeline[mappedDateTime].Add(obj);
+        //    }
 
-                switch (resolution)
-                {
-                    case TimeResolution.Hour:
-                        current = current.AddHours(1);
-                        break;
-                    case TimeResolution.Date:
-                        current = current.AddDays(1);
-                        break;
-                    case TimeResolution.Month:
-                        current = current.AddMonths(1);
-                        break;
-                    case TimeResolution.Year:
-                        current = current.AddYears(1);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid time resolution.");
-                }
-            }
+        //    // Fill in missing timeline points with empty lists
+        //    foreach (var timelinePoint in timeline)
+        //    {
+        //        if (!mappedTimeline.ContainsKey(timelinePoint))
+        //            mappedTimeline[timelinePoint] = new List<T>();
+        //    }
 
-            return timeline;
-        }
-
-        public static Dictionary<DateTime, List<T>> MapObjectsToTimelineV2<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
-        {
-            Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
-
-            foreach (var obj in objects)
-            {
-                DateTime objDateTime = extractor(obj);
-                DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
-
-                if (!mappedTimeline.ContainsKey(mappedDateTime))
-                    mappedTimeline[mappedDateTime] = new List<T>();
-
-                mappedTimeline[mappedDateTime].Add(obj);
-            }
-
-            // Fill in missing timeline points with empty lists
-            foreach (var timelinePoint in timeline)
-            {
-                if (!mappedTimeline.ContainsKey(timelinePoint))
-                    mappedTimeline[timelinePoint] = new List<T>();
-            }
-
-            return mappedTimeline;
-        }
+        //    return mappedTimeline;
+        //}
 
         private static DateTime MapDateTime(DateTime dateTime, TimeResolution timeResolution)
         {
@@ -189,30 +119,30 @@
             }
         }
 
-        public static List<(DateTime, List<T>)> MapObjectsToTimelineV3<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
-        {
-            Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
+        //public static List<(DateTime, List<T>)> MapObjectsToTimelineV3<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, List<DateTime> timeline, TimeResolution timeResolution)
+        //{
+        //    Dictionary<DateTime, List<T>> mappedTimeline = new Dictionary<DateTime, List<T>>();
 
-            foreach (var obj in objects)
-            {
-                DateTime objDateTime = extractor(obj);
-                DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
+        //    foreach (var obj in objects)
+        //    {
+        //        DateTime objDateTime = extractor(obj);
+        //        DateTime mappedDateTime = MapDateTime(objDateTime, timeResolution);
 
-                if (!mappedTimeline.ContainsKey(mappedDateTime))
-                    mappedTimeline[mappedDateTime] = new List<T>();
+        //        if (!mappedTimeline.ContainsKey(mappedDateTime))
+        //            mappedTimeline[mappedDateTime] = new List<T>();
 
-                mappedTimeline[mappedDateTime].Add(obj);
-            }
+        //        mappedTimeline[mappedDateTime].Add(obj);
+        //    }
 
-            // Fill in missing timeline points with empty lists
-            foreach (var timelinePoint in timeline)
-            {
-                if (!mappedTimeline.ContainsKey(timelinePoint))
-                    mappedTimeline[timelinePoint] = new List<T>();
-            }
+        //    // Fill in missing timeline points with empty lists
+        //    foreach (var timelinePoint in timeline)
+        //    {
+        //        if (!mappedTimeline.ContainsKey(timelinePoint))
+        //            mappedTimeline[timelinePoint] = new List<T>();
+        //    }
 
-            return mappedTimeline.Select(kv => (kv.Key, kv.Value)).ToList();
-        }
+        //    return mappedTimeline.Select(kv => (kv.Key, kv.Value)).ToList();
+        //}
 
         public static List<(DateTime, List<T>)> MapObjectsToTimelineV4<T>(IEnumerable<T> objects, Func<T, DateTime> extractor, DateTime start, DateTime end, TimeResolution timeResolution)
         {
@@ -237,8 +167,10 @@
             return mappedTimeline;
         }
 
-        private static List<DateTime> CreateTimeline(DateTime start, DateTime end, TimeResolution timeResolution)
+        public static List<DateTime> CreateTimeline(DateTime start, DateTime end, TimeResolution timeResolution)
         {
+
+
             List<DateTime> timeline = new List<DateTime>();
 
             DateTime current = start;

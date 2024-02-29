@@ -15,7 +15,7 @@ namespace EstablishmentProject.test.Application_Test.Handlers_Test.Entities_Test
         private Sale sale;
         private GetTablesCommand command;
 
-        public GetTablesHandler_Test() : base()
+        public GetTablesHandler_Test() : base(new List<ITestService> { DatabaseTestContainer.CreateAsync().Result })
         {
             unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             createTestData();

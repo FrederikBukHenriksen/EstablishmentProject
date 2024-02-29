@@ -6,7 +6,7 @@ import {
   DialogConfig,
   DialogSlider,
   TextInputField,
-} from '../dialog-checkbox/dialog-checkbox.component';
+} from '../dialog-base/dialog-base.component';
 import { TimeResolution } from 'api';
 
 export type BandwidthDialogSettings = {

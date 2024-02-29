@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogGraphSettingsComponent } from './dialog-graph-settings.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { DialogBaseModule } from '../dialog-checkbox/dialog.checkbox.component.module';
+import { DialogBase } from './dialog-base.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
@@ -13,13 +11,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [DialogGraphSettingsComponent],
+  declarations: [DialogBase],
   imports: [
     CommonModule,
-    MatDialogModule,
-    DialogBaseModule,
     MatTabsModule,
     MatCheckboxModule,
     FormsModule,
@@ -30,6 +27,7 @@ import { MatSliderModule } from '@angular/material/slider';
     MatNativeDateModule,
     MatSelectModule,
     MatSliderModule,
+    MatButtonModule,
   ],
 })
-export class DialogGraphSettingsModule {}
+export class DialogBaseModule {}

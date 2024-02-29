@@ -30,7 +30,6 @@ export class LoginComponent implements OnInit {
   }
 
   protected onLogin() {
-    console.log('onLogin');
     this.loginService.Login(
       this.loginFormDef.value.name!,
       this.loginFormDef.value.password!
@@ -39,11 +38,8 @@ export class LoginComponent implements OnInit {
 
   protected handleLogin() {
     this.loginService.loginSuccessful.subscribe({
-      error: (error: Error) => {
-        console.log('not signed in, login-comp.', error.message);
-      },
+      error: (error: Error) => {},
       next: () => {
-        console.log('login successful recived');
         this.router.navigate(['/select-establishment']);
       },
     });
