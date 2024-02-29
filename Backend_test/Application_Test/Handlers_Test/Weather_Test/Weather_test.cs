@@ -5,7 +5,7 @@ using WebApplication1.Application_Layer.CommandsQueriesHandlersReturns.Weather;
 using WebApplication1.CommandHandlers;
 using WebApplication1.Utils;
 
-namespace EstablishmentProject.test.Application_Test.Handlers_Test
+namespace EstablishmentProject.test.Application_Test.Handlers_Test.Weather_Test
 {
     public class Weather_test : IntegrationTest
     {

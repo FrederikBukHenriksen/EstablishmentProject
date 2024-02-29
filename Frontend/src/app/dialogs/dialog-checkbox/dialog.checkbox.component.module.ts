@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [DialogBase],
@@ -26,6 +27,7 @@ import { MatSliderModule } from '@angular/material/slider';
     MatNativeDateModule,
     MatSelectModule,
     MatSliderModule,
+    MatButtonModule,
   ],
 })
 export class DialogBaseModule {}
