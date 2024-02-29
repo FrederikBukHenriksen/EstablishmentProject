@@ -27,7 +27,6 @@ export class LoginService {
         },
         complete: () => {
           this.loginSuccessful.emit();
-          console.log('login successful');
         },
       });
   }

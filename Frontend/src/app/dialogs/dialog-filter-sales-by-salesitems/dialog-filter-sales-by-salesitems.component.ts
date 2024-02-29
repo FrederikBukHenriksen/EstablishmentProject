@@ -6,7 +6,7 @@ import {
   DialogConfig,
   DropDownMultipleSelects,
   DropDownOption,
-} from '../dialog-checkbox/dialog-checkbox.component';
+} from '../dialog-base/dialog-base.component';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 import { FilterSalesBySalesItems, GetItemsCommand, ItemDTO } from 'api';
 import { ItemService } from '../../services/API-implementations/item.service';

@@ -54,9 +54,7 @@ export class GraphComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes['chartData']) {
-      console.log(changes['chartData'].currentValue);
 
       this.data = changes['chartData'].currentValue;
     }
@@ -68,7 +66,6 @@ export class GraphComponent implements OnInit, OnChanges {
       this.type = changes['ChartType'].currentValue;
     }
     this.UpdateChart();
-    console.log('data', this.data);
   }
 
   private CreateChart(): Chart {

@@ -143,9 +143,9 @@ export class DialogSlider extends SettingsDataBase {
 }
 
 @Component({
-  selector: 'app-dialog-checkbox',
-  templateUrl: './dialog-checkbox.component.html',
-  styleUrls: ['./dialog-checkbox.component.css'],
+  selector: 'app-dialog-base',
+  templateUrl: './dialog-base.component.html',
+  styleUrls: ['./dialog-base.component.css'],
 })
 export class DialogBase implements OnInit {
   myFormGroup: FormGroup;
