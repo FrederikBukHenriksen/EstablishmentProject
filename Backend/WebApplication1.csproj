@@ -77,7 +77,6 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Folder Include="Domain Layer\Services\Repositories\Interface and abstract\" />
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

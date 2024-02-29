@@ -98,7 +98,6 @@ namespace WebApplication1.Services.Analysis
                     //Check for convergence
                     if (ClusterHelper.HasPointConverged(shift, this.toleranceForCovergence))
                     {
-                        var test = neighbouringPoints.Average(x => x.Location[0]);
                         dataPoint.HasConverged = true;
                     }
                     else

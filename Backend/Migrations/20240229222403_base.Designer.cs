@@ -12,8 +12,8 @@ using WebApplication1.Data;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240131153811_lolcat2")]
-    partial class lolcat2
+    [Migration("20240229222403_base")]
+    partial class @base
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,9 +21,11 @@ namespace WebApplication1.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "uuid-ossp");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("WebApplication1.Data.DataModels.SalesItems", b =>
@@ -50,83 +52,19 @@ namespace WebApplication1.Migrations
                     b.ToTable("SalesItems");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.DataRetrivalIntegration", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TypeOfService")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("credentials")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DataRetrivalIntegration");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ConfigurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("InformationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConfigurationId");
-
-                    b.HasIndex("InformationId");
-
                     b.ToTable("Establishment");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("information");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ItemDataRetrivalIntegrationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("SaleDataRetrivalIntegrationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TableDataRetrivalIntegrationId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemDataRetrivalIntegrationId");
-
-                    b.HasIndex("SaleDataRetrivalIntegrationId");
-
-                    b.HasIndex("TableDataRetrivalIntegrationId");
-
-                    b.ToTable("EstablishmentSettings");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Item", b =>
@@ -142,6 +80,9 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EstablishmentId");
@@ -152,49 +93,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("Item");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.OpeningHours", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("EstablishmentInformationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("close")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("dayOfWeek")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("open")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EstablishmentInformationId");
-
-                    b.ToTable("OpeningHours");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.RetrivedEntitiesJoiningTable", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ForeignId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("retrivedEntitiesJoiningTable");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Sale", b =>
                 {
                     b.Property<Guid>("Id")
@@ -202,15 +100,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("EstablishmentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int?>("PaymentType")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SaleType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("TableId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("TimestampArrival")
@@ -223,9 +112,28 @@ namespace WebApplication1.Migrations
 
                     b.HasIndex("EstablishmentId");
 
+                    b.ToTable("Sale", (string)null);
+                });
+
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.SalesTables", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SaleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TableId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SaleId");
+
                     b.HasIndex("TableId");
 
-                    b.ToTable("Sale", (string)null);
+                    b.ToTable("SalesTables");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Table", b =>
@@ -234,7 +142,7 @@ namespace WebApplication1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("EstablishmentId")
+                    b.Property<Guid>("EstablishmentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -314,65 +222,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Establishment", b =>
-                {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.EstablishmentSettings", "Configuration")
-                        .WithMany()
-                        .HasForeignKey("ConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", "Information")
-                        .WithMany()
-                        .HasForeignKey("InformationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Configuration");
-
-                    b.Navigation("Information");
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
-                {
-                    b.OwnsOne("WebApplication1.Domain_Layer.Entities.Location", "Location", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .HasColumnType("uuid");
-
-                            b1.HasKey("Id");
-
-                            b1.ToTable("information");
-
-                            b1.WithOwner()
-                                .HasForeignKey("Id");
-                        });
-
-                    b.Navigation("Location")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentSettings", b =>
-                {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.DataRetrivalIntegration", "ItemDataRetrivalIntegration")
-                        .WithMany()
-                        .HasForeignKey("ItemDataRetrivalIntegrationId");
-
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.DataRetrivalIntegration", "SaleDataRetrivalIntegration")
-                        .WithMany()
-                        .HasForeignKey("SaleDataRetrivalIntegrationId");
-
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.DataRetrivalIntegration", "TableDataRetrivalIntegration")
-                        .WithMany()
-                        .HasForeignKey("TableDataRetrivalIntegrationId");
-
-                    b.Navigation("ItemDataRetrivalIntegration");
-
-                    b.Navigation("SaleDataRetrivalIntegration");
-
-                    b.Navigation("TableDataRetrivalIntegration");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Item", b =>
                 {
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
@@ -380,38 +229,6 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.OwnsOne("WebApplication1.Domain_Layer.Entities.Price", "Price", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .HasColumnType("uuid");
-
-                            b1.Property<double>("Amount")
-                                .HasColumnType("double precision")
-                                .HasColumnName("PriceValue");
-
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("PriceCurrency");
-
-                            b1.HasKey("Id");
-
-                            b1.ToTable("Item");
-
-                            b1.WithOwner()
-                                .HasForeignKey("Id");
-                        });
-
-                    b.Navigation("Price")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.OpeningHours", b =>
-                {
-                    b.HasOne("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", null)
-                        .WithMany("OpeningHours")
-                        .HasForeignKey("EstablishmentInformationId");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Sale", b =>
@@ -421,10 +238,23 @@ namespace WebApplication1.Migrations
                         .HasForeignKey("EstablishmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.SalesTables", b =>
+                {
+                    b.HasOne("WebApplication1.Domain_Layer.Entities.Sale", "Sale")
+                        .WithMany("SalesTables")
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Table", "Table")
                         .WithMany()
-                        .HasForeignKey("TableId");
+                        .HasForeignKey("TableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sale");
 
                     b.Navigation("Table");
                 });
@@ -433,7 +263,9 @@ namespace WebApplication1.Migrations
                 {
                     b.HasOne("WebApplication1.Domain_Layer.Entities.Establishment", null)
                         .WithMany("Tables")
-                        .HasForeignKey("EstablishmentId");
+                        .HasForeignKey("EstablishmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.UserRole", b =>
@@ -464,14 +296,11 @@ namespace WebApplication1.Migrations
                     b.Navigation("Tables");
                 });
 
-            modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.EstablishmentInformation", b =>
-                {
-                    b.Navigation("OpeningHours");
-                });
-
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.Sale", b =>
                 {
                     b.Navigation("SalesItems");
+
+                    b.Navigation("SalesTables");
                 });
 
             modelBuilder.Entity("WebApplication1.Domain_Layer.Entities.User", b =>

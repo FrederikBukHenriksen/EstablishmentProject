@@ -205,9 +205,6 @@ export function CreateTimelineOfObjects<T>(
     if (!timeline.has(startDate)) {
       timeline.set(new Date(startDate), []);
     }
-    var test = ExtractDateByTimeResolution(groupedObjects[1].date, resolution);
-    var test1 = ExtractDateByTimeResolution(startDate, resolution);
-    var test3 = test == test1;
     var matchFromGroupedObjects = groupedObjects.find(
       (x) =>
         ExtractDateByTimeResolution(x.date, resolution) ==
